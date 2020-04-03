@@ -1,7 +1,5 @@
 from django.db import models
 
-# Create your models here.
-
 
 class Fishing(models.Model):
     pass
@@ -80,3 +78,56 @@ class Weather_Phenomena(models.Model):
     weather = models.ForeignKey(Weather, on_delete=models.CASCADE)
     # Погодные явления
     weather_phenomena_name = models.CharField(max_length=20)
+
+
+class Aroma(models.Model):
+    """
+    Содержит информацию о производителе и названию аромы
+    """
+    # Название производителя
+    aroma_manufacturer = models.CharField(max_length=100)
+    # Название аромы
+    aroma_name = models.CharField(max_length=100)
+
+
+class Lure(models.Model):
+    """
+    Содежит информацию о названии
+    производителя и названии прикормки
+    """
+    # Название производителя прикорки
+    lure_manufacturer = models.CharField(max_length=100)
+    # Название прикормки
+    lure_name = models.CharField(max_length=100)
+
+
+class Fishing_Tackle(models.Model):
+    """
+    Содержит информацию о снасти: донная, поплавочная и т.д.
+    """
+    # Привязка к рыбалке
+    fishing = models.ForeignKey(Fishing, on_delete=models.CASCADE)
+    # Инормация о используемой снасти
+    fishing_tackle_name = models.CharField(max_length=30)
+
+
+class nozzle(models.Model):
+    """
+    Сожердит информацию о наживках/насадках
+    При bait=True наживка (поле nozzle_manufacturer
+    неактивно) иначе насадка
+    """
+    # True наживка иначе насадка
+    bait = models.BooleanField(default=False)
+    # Производитель насадки
+    nozzle_manufacturer = models.CharField(max_length=100)
+    # Название насадки/наживки
+    nozzle_name = models.CharField(max_length=100)
+
+
+class District(models.Model):
+    """
+    Содержит информацию о районе рыбалки
+    """
+    # Название района
+    district_name = models.CharField(max_length=50)
