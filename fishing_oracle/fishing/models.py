@@ -12,6 +12,7 @@ class Fish(models.Model):
     Таблица хранящая в себе информацию о породах рыб,
     в дальнейшем планируется добавление изображение рыб
     """
+    # Название рыбы https://gdekluet.ru/directory/fish/
     name_of_fish = models.CharField(max_length=20)
 
     def __str__(self):
@@ -23,14 +24,59 @@ class Fishing_Result(models.Model):
     Содержит информацию о результате рыбалки, принимает
     в себя несколько значений пойманной рыбы
     """
+    # Привязка к рыбалке
     fishing = models.ForeignKey(Fishing, on_delete=models.CASCADE)
+    # Рыба
     fish = models.PositiveIntegerField(default=0)
+    # Количество хвостов
     nuber_of_fish = models.PositiveIntegerField(default=0)
+    # Масса улова по выбранной рыбе
     fish_weight = models.PositiveIntegerField(default=0)
 
 
 class Fish_Trophy(models.Model):
+    # Привязка к рыбалке
     fishing = models.ForeignKey(Fishing, on_delete=models.CASCADE)
+    # Порода трофея
     fish = models.PositiveIntegerField(default=0)
+    # Вес трофея
     fish_trophy_weight = models.PositiveIntegerField(default=0)
 #    fish_trophy_photo=models.ImageField()
+
+
+class Weather(models.Model):
+    """
+    Содержит сводные сведения о погоде
+    опираясь на ручной ввод
+    """
+    # облачность
+    overcast = models.CharField(max_length=30)
+    # Город
+    weather_locality = models.CharField(max_length=30)
+    # Температура воздуха
+    weather_temperature = models.DecimalField(
+        max_digits=4,
+        decimal_places=1,
+        default=0)
+    # Давление
+    pressure = models.PositiveIntegerField(default=750)
+    # Направление ветра
+    direction_wind = models.CharField(max_length=30)
+    # Скорость ветра
+    wind_speed = models.DecimalField(
+        max_digits=4,
+        decimal_places=1,
+        default=0)
+    # Лунный день
+    lunar_day = models.PositiveIntegerField(default=0)
+
+
+class Weather_Phenomena(models.Model):
+    """
+    Явления погоды, возможно несколько записей
+    для одного выезда
+    """
+    # Привязка к погоде
+    weather = models.ForeignKey(Weather, on_delete=models.CASCADE)
+    # Погодные явления
+    weather_phenomena_name = models.CharField(max_length=20)
