@@ -39,17 +39,11 @@ class Fishing_Result(models.Model):
         verbose_name = "Результат рыбалки"
         verbose_name_plural = "Результат рыбалок"
 
-    # Привязка к рыбалке
-    fishing = models.ForeignKey(
-        Fishing,
-        on_delete=models.CASCADE,
-        verbose_name="Рыбалка")
     # Рыба
     fish = models.ForeignKey(
         Fish,
         on_delete=models.CASCADE,
-        verbose_name="Рыба"
-    )
+        verbose_name="Рыба")
     # Количество хвостов
     nuber_of_fish = models.PositiveIntegerField(
         default=0,
@@ -67,11 +61,6 @@ class Fish_Trophy(models.Model):
     class Meta:
         verbose_name = "Трофейный улов"
         verbose_name_plural = "Трофейные уловы"
-    # Привязка к рыбалке
-    fishing = models.ForeignKey(
-        Fishing,
-        on_delete=models.CASCADE,
-        verbose_name="Рыбалка")
     # Порода трофея
     fish = models.ForeignKey(
         Fish,
@@ -118,10 +107,6 @@ class Weather(models.Model):
     class Meta:
         verbose_name = "Погода"
         verbose_name_plural = "Погода"
-    # облачность
-    overcast = models.CharField(
-        max_length=30,
-        verbose_name="Облачность")
     # Город
     weather_locality = models.CharField(
         max_length=30,
@@ -171,6 +156,7 @@ class Aroma(models.Model):
     class Meta:
         verbose_name = "Арома"
         verbose_name_plural = "Аромы"
+
     # Название производителя
     aroma_manufacturer = models.CharField(
         max_length=100,
@@ -189,6 +175,7 @@ class Lure(models.Model):
     class Meta:
         verbose_name = "Прикорм"
         verbose_name_plural = "Прикорм"
+
     # Название производителя прикорки
     lure_manufacturer = models.CharField(
         max_length=100,
@@ -206,11 +193,6 @@ class Fishing_Tackle(models.Model):
     class Meta:
         verbose_name = "Рыболовная снасть"
         verbose_name_plural = "Рыболовные снасти"
-    # Привязка к рыбалке
-    fishing = models.ForeignKey(
-        Fishing,
-        on_delete=models.CASCADE,
-        verbose_name="Рыбалка")
     # Инормация о используемой снасти
     fishing_tackle_name = models.CharField(
         max_length=30,
@@ -401,11 +383,6 @@ class Fishing_Point(models.Model):
     class Meta:
         verbose_name = "Точка ловли"
         verbose_name_plural = "Точки ловли"
-    # Связь с рыбалкой
-    fishing = models.ForeignKey(
-        Fishing,
-        on_delete=models.CASCADE,
-        verbose_name="Рыбалка")
     # Азимут заброса
     fishing_point_azimuth = models.PositiveIntegerField(
         default=0,
