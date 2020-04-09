@@ -2,16 +2,6 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
-class Fishing(models.Model):
-    class Meta:
-        verbose_name = "Рыбалка"
-        verbose_name_plural = "Рыбалки"
-    name_fishing = models.CharField(
-        max_length=30,
-        default=0,
-        verbose_name="Рыбалка")
-
-
 class Fish(models.Model):
     """
     Таблица хранящая в себе информацию о породах рыб,
@@ -21,6 +11,9 @@ class Fish(models.Model):
     name_of_fish = models.CharField(
         max_length=20,
         verbose_name="Рыба")
+    fish_description = models.TextField(
+        verbose_name="Описание"
+    )
 
     class Meta:
         verbose_name = "Рыба"
@@ -28,6 +21,86 @@ class Fish(models.Model):
 
     def __str__(self):
         return self.name_of_fish
+
+
+class Priming(models.Model):
+    """
+    Содержит варианты дна, например ил, камень, песок и т.д.
+    Возможно отказаться от таблицы, т.к. варианты можно выбить из списка
+    """
+    class Meta:
+        verbose_name = "Покрытие дна"
+        verbose_name_plural = "Покрытие дна"
+    # Наименование покрытия дна
+    priming_name = models.CharField(
+        max_length=50,
+        verbose_name="Грунт")
+
+
+class Overcast(models.Model):
+    """
+    Содержит варианты облочности для блока 'Погода'
+    """
+    class Meta:
+        verbose_name = "Облачность"
+        verbose_name_plural = "Облачность"
+    #
+    overcast_name = models.CharField(
+        max_length=20,
+        verbose_name="Классификация облачности")
+
+
+class Weather_Phenomena(models.Model):
+    """
+    Явления погоды, возможно несколько записей
+    для одного выезда
+    """
+    class Meta:
+        verbose_name = "Погодное явление"
+        verbose_name_plural = "Погодные явления"
+
+    # Погодные явления
+    weather_phenomena_name = models.CharField(
+        max_length=20,
+        verbose_name="Погодные явления")
+
+
+class Fishing_Point(models.Model):
+    """
+    Содежит информацию о точке ловли, возможно использование
+    в нескольких рыбалках
+    """
+    class Meta:
+        verbose_name = "Точка ловли"
+        verbose_name_plural = "Точки ловли"
+    # Азимут заброса
+    fishing_point_azimuth = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Азимут")
+    # Дистанция до точки ловли
+    fishing_point_distance = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Дистанция")
+    # Глубина в точке ловли
+    fishing_poiny_depth = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Глубина")
+    # Грунт в точке ловли
+    priming = models.ForeignKey(
+        Priming,
+        on_delete=models.PROTECT,
+        verbose_name="Грунт"
+    )
+
+
+class Fishing(models.Model):
+    class Meta:
+        verbose_name = "Рыбалка"
+        verbose_name_plural = "Рыбалки"
+    name_fishing = models.CharField(
+        max_length=30,
+        default=0,
+        verbose_name="Рыбалка")
 
 
 class Fishing_Result(models.Model):
@@ -72,31 +145,6 @@ class Fish_Trophy(models.Model):
         default=0,
         verbose_name="Вес трофея")
 #    fish_trophy_photo=models.ImageField(verbose_name="Фото трофея")
-
-
-class Overcast(models.Model):
-    class Meta:
-        verbose_name = "Облачность"
-        verbose_name_plural = "Облачность"
-    #
-    overcast_name = models.CharField(
-        max_length=20,
-        verbose_name="Классификация облачности")
-
-
-class Weather_Phenomena(models.Model):
-    """
-    Явления погоды, возможно несколько записей
-    для одного выезда
-    """
-    class Meta:
-        verbose_name = "Погодное явление"
-        verbose_name_plural = "Погодные явления"
-
-    # Погодные явления
-    weather_phenomena_name = models.CharField(
-        max_length=20,
-        verbose_name="Погодные явления")
 
 
 class Weather(models.Model):
@@ -253,20 +301,6 @@ class Water(models.Model):
         verbose_name="Водоем")
 
 
-class Priming(models.Model):
-    """
-    Содержит варианты дна, например ил, камень, песок и т.д.
-    Возможно отказаться от таблицы, т.к. варианты можно выбить из списка
-    """
-    class Meta:
-        verbose_name = "Покрытие дна"
-        verbose_name_plural = "Покрытие дна"
-    # Наименование покрытия дна
-    priming_name = models.CharField(
-        max_length=50,
-        verbose_name="Грунт")
-
-
 class Bottom_Map(models.Model):
     """
     Содержит информацию о маркерной карте, включает в себя
@@ -370,32 +404,6 @@ class Point(models.Model):
         default=0,
         verbose_name="Глубина")
     # Грунт
-    priming = models.PositiveIntegerField(
-        verbose_name="Грунт"
-    )
-
-
-class Fishing_Point(models.Model):
-    """
-    Содежит информацию о точке ловли, возможно использование
-    в нескольких рыбалках
-    """
-    class Meta:
-        verbose_name = "Точка ловли"
-        verbose_name_plural = "Точки ловли"
-    # Азимут заброса
-    fishing_point_azimuth = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Азимут")
-    # Дистанция до точки ловли
-    fishing_point_distance = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Дистанция")
-    # Глубина в точке ловли
-    fishing_poiny_depth = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Глубина")
-    # Грунт в точке ловли
     priming = models.PositiveIntegerField(
         verbose_name="Грунт"
     )
