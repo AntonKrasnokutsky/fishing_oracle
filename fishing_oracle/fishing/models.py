@@ -320,6 +320,9 @@ class Fishing_Point(models.Model):
         verbose_name="Грунт"
     )
 
+    def __str__(self):
+        return str(self.priming)
+
 
 class Priming(models.Model):
     """
@@ -394,6 +397,9 @@ class Overcast(models.Model):
         max_length=20,
         verbose_name="Классификация облачности")
 
+    def __str__(self):
+        return self.overcast_name
+
 
 class Weather_Phenomena(models.Model):
     """
@@ -440,6 +446,9 @@ class Fishing_Montage(models.Model):
     class Meta:
         verbose_name = "Монтаж"
         verbose_name_plural = "Монтажи"
+
+    def __str__(self):
+        return self.fishing_montage_name + ' ' + ('скользящий' if self.fishing_montage_sliding else '')
 
 
 class Fishing_Trough(models.Model):
@@ -493,6 +502,9 @@ class Model_Trough(models.Model):
         verbose_name = "Модель кормушки"
         verbose_name_plural = "Модели кормушек"
 
+    def __str__(self):
+        return str(self.model_trough_name) + ' ' + ('пластик' if self.model_trough_plastic else 'металл')
+
 
 class Model_Trough_Name(models.Model):
     """
@@ -506,6 +518,9 @@ class Model_Trough_Name(models.Model):
     class Meta:
         verbose_name = "Название модели кормушки"
         verbose_name_plural = "Названия моделей кормушек"
+
+    def __str__(self):
+        return self.model_trough_name
 
 
 class Feed_Capacity(models.Model):
@@ -582,6 +597,7 @@ class Nozzle(models.Model):
     # Производитель насадки
     nozzle_manufacturer = models.CharField(
         max_length=100,
+        blank=True,
         verbose_name="Производитель")
     # Название насадки/наживки
     nozzle_name = models.CharField(
@@ -590,11 +606,16 @@ class Nozzle(models.Model):
     # Диаметр насадки
     nozzel_diameter = models.PositiveIntegerField(
         default=0,
+        blank=True,
         verbose_name="Диаметр насадки")
     # тип насадки (Плавающий, тонущий, пылящий и т.д.)
     nozzel_type = models.CharField(
         max_length=20,
+        blank=True,
         verbose_name="Тип насадки")
+
+    def __str__(self):
+        return self.nozzle_name
 
 
 class Nozzle_State(models.Model):
@@ -652,6 +673,9 @@ class Fishing_Leash(models.Model):
     fishing_leash_length = models.PositiveIntegerField(
         default=0,
         verbose_name="Длина поводка")
+
+    def __str__(self):
+        return self.fishing_leash_material + ' ' + str(self.fishing_leash_diameter) + ' ' + str(self.fishing_leash_length) + ' см.'
 
 
 class Crochet(models.Model):
