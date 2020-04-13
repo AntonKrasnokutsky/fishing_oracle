@@ -112,7 +112,7 @@ class Place(models.Model):
     # Близайший населенный пункт
     place_locality = models.CharField(
         max_length=50,
-        verbose_name="Начеленный пункт")
+        verbose_name="Населенный пункт")
     # Карта дна
 
     # Координа места рыбалки, градусы северной широты от -90 до 90
@@ -279,7 +279,9 @@ class Point(models.Model):
         default=0,
         verbose_name="Дистанция")
     # Глубина в точке
-    point_depth = models.PositiveIntegerField(
+    point_depth = models.DecimalField(
+        max_digits=4,
+        decimal_places=2,
         default=0,
         verbose_name="Глубина")
     # Грунт
@@ -306,7 +308,9 @@ class Fishing_Point(models.Model):
         default=0,
         verbose_name="Дистанция")
     # Глубина в точке ловли
-    fishing_poiny_depth = models.PositiveIntegerField(
+    fishing_poiny_depth = models.DecimalField(
+        max_digits=4,
+        decimal_places=2,
         default=0,
         verbose_name="Глубина")
     # Грунт в точке ловли
@@ -623,6 +627,9 @@ class Aroma(models.Model):
         max_length=100,
         verbose_name="Название")
 
+    def __str__(self):
+        return self.aroma_manufacturer + ' ' + self.aroma_name
+
 
 class Fishing_Leash(models.Model):
     """
@@ -747,6 +754,9 @@ class District(models.Model):
         max_length=50,
         verbose_name="Район")
 
+    def __str__(self):
+        return self.district_name
+
 
 class Water(models.Model):
     """
@@ -764,3 +774,6 @@ class Water(models.Model):
     water_name = models.CharField(
         max_length=100,
         verbose_name="Водоем")
+
+    def __str__(self):
+        return str(self.district) + ' - ' + self.water_name
