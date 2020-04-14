@@ -11,11 +11,11 @@ class Fishing(models.Model):
         verbose_name_plural = "Рыбалки"
     # Дата проведения рыбалки
     date = models.DateField(
-        auto_now_add=True,
+        auto_now_add=False,
         verbose_name="Дата рыбалки")
     # Время начала рыбалки
     time = models.TimeField(
-        auto_now_add=True,
+        auto_now_add=False,
         verbose_name="Время начала")
     # Место проведения рыбалки
     place = models.ForeignKey(
@@ -74,6 +74,9 @@ class Fishing(models.Model):
         verbose_name="Темп")
     # Результат рыбалки
     # Трофей
+
+    def __str__(self):
+        return str(self.date) + ' ' + str(self.time)
 
 
 class Fish(models.Model):
@@ -179,6 +182,9 @@ class Place(models.Model):
     # photo_place=models.ImageField(
     #     verbose_name="Места")
 
+    def __str__(self):
+        return str(self.water) + ': ' + self.place_locality
+
 
 class Bottom_Map(models.Model):
     """
@@ -251,6 +257,9 @@ class Bottom_Map(models.Model):
     # Фотография места
     # bottom_map_photo=models.ImageField()
 
+    def __str__(self):
+        return str(self.water)
+
 
 class Point(models.Model):
     """
@@ -289,6 +298,9 @@ class Point(models.Model):
         'Priming',
         on_delete=models.PROTECT,
         verbose_name="Грунт")
+
+    def __str__(self):
+        return str(self.bottom_map) + ': ' + str(self.point_azimuth) + ' ' + str(self.point_distance)
 
 
 class Fishing_Point(models.Model):
@@ -394,7 +406,7 @@ class Overcast(models.Model):
         verbose_name_plural = "Облачность"
     #
     overcast_name = models.CharField(
-        max_length=20,
+        max_length=30,
         verbose_name="Классификация облачности")
 
     def __str__(self):
@@ -415,6 +427,9 @@ class Weather_Phenomena(models.Model):
         max_length=20,
         verbose_name="Погодные явления")
 
+    def __str__(self):
+        return self.weather_phenomena_name
+
 
 class Fishing_Tackle(models.Model):
     """
@@ -423,10 +438,25 @@ class Fishing_Tackle(models.Model):
     class Meta:
         verbose_name = "Рыболовная снасть"
         verbose_name_plural = "Рыболовные снасти"
+    #
+    fishing_tackle_manufacturer = models.CharField(
+        max_length=20,
+        verbose_name="Производитель")
     # Инормация о используемой снасти
     fishing_tackle_name = models.CharField(
         max_length=30,
-        verbose_name="Снасть")
+        verbose_name="Название")
+    fishing_tackle_length = models.DecimalField(
+        max_digits=3,
+        decimal_places=1,
+        default=0,
+        verbose_name="Длина (м)")
+    fishing_tackle_casting_weight = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Тест удилища (гр)")
+
+    def __str__(self):
+        return self.fishing_tackle_manufacturer + ' ' + self.fishing_tackle_name + ' ' + str(self.fishing_tackle_length) + ' ' + str(self.fishing_tackle_casting_weight)
 
 
 class Fishing_Montage(models.Model):
@@ -479,6 +509,9 @@ class Fishing_Trough(models.Model):
         verbose_name = "Рыболовная кормушка"
         verbose_name_plural = "Рыболовные кормушки"
 
+    def __str__(self):
+        return self.fishing_trough_manufacturer + ': ' + str(self.feed_capacity) + ' ' + str(self.model_trough) + ' ' + str(self.fishing_trough_weight) + 'гр.'
+
 
 class Model_Trough(models.Model):
     """
@@ -503,7 +536,7 @@ class Model_Trough(models.Model):
         verbose_name_plural = "Модели кормушек"
 
     def __str__(self):
-        return str(self.model_trough_name) + ' ' + ('пластик' if self.model_trough_plastic else 'металл')
+        return str(self.model_trough_name) + ' ' + ('пластик' if self.model_trough_plastic else 'металл') + (' с грунтозацепами' if self.model_trough_lugs else '')
 
 
 class Model_Trough_Name(models.Model):
@@ -535,6 +568,9 @@ class Feed_Capacity(models.Model):
     class Meta:
         verbose_name = "Кормоёмкость кормушки"
         verbose_name_plural = "Кормоёмкость кормушек"
+
+    def __str__(self):
+        return self.feed_capacity_name
 
 
 class Fishing_Lure(models.Model):
@@ -579,6 +615,9 @@ class Lure(models.Model):
     lure_name = models.CharField(
         max_length=100,
         verbose_name="Название")
+
+    def __str__(self):
+        return self.lure_manufacturer + ' ' + self.lure_name
 
 
 class Nozzle(models.Model):
@@ -629,6 +668,9 @@ class Nozzle_State(models.Model):
     state = models.CharField(
         max_length=20,
         verbose_name="Состояние наживки")
+
+    def __str__(self):
+        return self.state
 
 
 class Aroma(models.Model):
@@ -698,6 +740,9 @@ class Crochet(models.Model):
         default=0,
         verbose_name="Размер крючка")
 
+    def __str__(self):
+        return self.crochet_manufacturer + ' ' + self.crochet_model + ' ' + str(self.crochet_size)
+
 
 class Pace(models.Model):
     """
@@ -708,8 +753,11 @@ class Pace(models.Model):
         verbose_name_plural = "Темп"
     # Темп
     pace_interval = models.CharField(
-        max_length=20,
+        max_length=30,
         verbose_name="Темп")
+
+    def __str__(self):
+        return self.pace_interval
 
 
 class Fishing_Result(models.Model):
@@ -736,8 +784,13 @@ class Fishing_Result(models.Model):
     nuber_of_fish = models.PositiveIntegerField(
         verbose_name="Количество рыб")
     # Масса улова по выбранной рыбе
-    fish_weight = models.PositiveIntegerField(
+    fish_weight = models.DecimalField(
+        max_digits=6,
+        decimal_places=1,
         verbose_name="Вес улова")
+
+    def __str__(self):
+        return str(self.fish) + ': ' + str(self.nuber_of_fish) + 'шт. ' + str(self.fish_weight) + 'кг.'
 
 
 class Fish_Trophy(models.Model):
@@ -763,7 +816,10 @@ class Fish_Trophy(models.Model):
     # Вес трофея
     fish_trophy_weight = models.PositiveIntegerField(
         verbose_name="Вес трофея")
-#    fish_trophy_photo=models.ImageField(verbose_name="Фото трофея")
+    #fish_trophy_photo=models.ImageField(verbose_name="Фото трофея")
+
+    def __str__(self):
+        return 'Трофей: ' + str(self.fish) + ' ' + str(self.fish_trophy_weight) + 'кг.'
 
 
 class District(models.Model):

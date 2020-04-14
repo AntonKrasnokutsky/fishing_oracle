@@ -1,0 +1,9 @@
+{% if fishing_list %}
+<ul>
+  {% for fishing in fishing_list %}
+  <li><a href="/fishing/{{fishing.id}}/">{{fishing.date}}</a></li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Рыбалок еще не было</p>
+{% endif %}
