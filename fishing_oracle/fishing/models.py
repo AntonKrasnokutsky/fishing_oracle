@@ -95,6 +95,7 @@ class Fish(models.Model):
     class Meta:
         verbose_name = "Рыба"
         verbose_name_plural = "Рыбы"
+        ordering = ['name_of_fish']
 
     def __str__(self):
         return self.name_of_fish
@@ -115,7 +116,8 @@ class Place(models.Model):
     # Близайший населенный пункт
     place_locality = models.CharField(
         max_length=50,
-        verbose_name="Населенный пункт")
+        verbose_name="Населенный пункт",
+        help_text="Название ближайшего населенного пункта")
     # Карта дна
 
     # Координа места рыбалки, градусы северной широты от -90 до 90
@@ -404,6 +406,7 @@ class Overcast(models.Model):
     class Meta:
         verbose_name = "Облачность"
         verbose_name_plural = "Облачность"
+        ordering = ["overcast_name"]
     #
     overcast_name = models.CharField(
         max_length=30,
@@ -781,7 +784,7 @@ class Fishing_Result(models.Model):
         on_delete=models.PROTECT,
         verbose_name="Рыба")
     # Количество хвостов
-    nuber_of_fish = models.PositiveIntegerField(
+    number_of_fish = models.PositiveIntegerField(
         verbose_name="Количество рыб")
     # Масса улова по выбранной рыбе
     fish_weight = models.DecimalField(
@@ -814,7 +817,9 @@ class Fish_Trophy(models.Model):
         verbose_name="Рыба"
     )
     # Вес трофея
-    fish_trophy_weight = models.PositiveIntegerField(
+    fish_trophy_weight = models.DecimalField(
+        max_digits=4,
+        decimal_places=1,
         verbose_name="Вес трофея")
     #fish_trophy_photo=models.ImageField(verbose_name="Фото трофея")
 

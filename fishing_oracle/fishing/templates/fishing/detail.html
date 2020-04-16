@@ -1,1 +1,33 @@
-{{ fishing }}
+<p>Дата проведения рыбалки: {{ fishing.date }}</p>
+<p>Время начала рыбалки: {{ fishing.time }}</p>
+<p>Место проведения рыбалки: {{ fishing.place }}</p>
+<p>Погода во время рыбалки:</p>
+<p>Облачность: {{ fishing.weather.overcast }}</p>
+<p>Осадки: {{ fishing.weather.weather_phenomena}}</p>
+<p>Температруа воздуха: {{ fishing.weather.weather_temperature}}</p>
+<p>Давление: {{ fishing.weather.pressure}}</p>
+<p>Направление ветра: {{ fishing.weather.direction_wind}}</p>
+<p>Скорость ветра: {{ fishing.weather.wind_speed}}</p>
+<p>Лунный день: {{ fishing.weather.lunar_day}}</p>
+<p>Снасть: {{ fishing.fishing_tackle }}</p>
+<p>Монтаж: {{ fishing.fishing_montage }}</p>
+<p>Кормушка: {{ fishing.fishing_trough }}</p>
+<p>Прикормочная смесь: {{ fishing.fishing_lure }}</p>
+<p>Арома: {{ fishing.aroma }}</p>
+<p>Поводок: {{ fishing.fishing_leash }}</p>
+<p>Крючок: {{ fishing.crochet }}</p>
+<p>Наживка: {{ fishing.nozzle }}</p>
+<p>Темп: {{ fishing.pace }}</p>
+<p>Улов:</p>
+{% for fishing_result in fishing.fishing_result_set.all %}
+<p>
+  {{ fishing_result.fish }}: {{ fishing_result.number_of_fish }} шт. общим
+  весом: {{fishing_result.fish_weight }} кг.
+</p>
+{% endfor %}
+<p><strong>Трофеи:</strong></p>
+{% for fish_trophy in fishing.fish_trophy_set.all %}
+<p>
+  {{ fish_trophy.fish }}: вес трофея {{ fish_trophy.fish_trophy_weight }} кг.
+</p>
+{% endfor %}

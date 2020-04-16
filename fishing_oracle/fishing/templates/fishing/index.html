@@ -1,7 +1,7 @@
 {% if fishing_list %}
 <ul>
   {% for fishing in fishing_list %}
-  <li><a href="/fishing/{{fishing.id}}/">{{fishing.date}}</a></li>
+  <li><a href="{% url 'fishing:detail' fishing.id %}">{{fishing.date}}</a></li>
   {% endfor %}
 </ul>
 {% else %}
