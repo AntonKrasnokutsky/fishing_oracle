@@ -861,4 +861,4 @@ class Water(models.Model):
         verbose_name="Водоем")
 
     def __str__(self):
-        return str(self.district) + ' - ' + self.water_name
+        return self.water_name

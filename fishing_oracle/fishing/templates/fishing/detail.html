@@ -1,36 +1,106 @@
 <p><strong>Дата проведения рыбалки:</strong> {{ fishing.date }}</p>
 <p><strong>Время начала рыбалки:</strong> {{ fishing.time }}</p>
-<p><strong>Место проведения рыбалки:</strong> {{ fishing.place }}</p>
+<p><strong>Место проведения рыбалки:</strong></p>
+<p><strong>Район: </strong>{{ fishing.place.water.district }}</p>
+<p><strong>Водоём: </strong>{{ fishing.place.water }}</p>
+<p>
+  <strong>Ближайший населенный пункт: </strong>{{ fishing.place.place_locality}}
+</p>
+<p><strong>Погода во время рыбалки:</strong></p>
+<p><strong>Облачность: </strong>{{ fishing.weather.overcast }}</p>
+<p><strong>Осадки: </strong>{{ fishing.weather.weather_phenomena}}</p>
+<p>
+  <strong>Температруа воздуха: </strong>{{ fishing.weather.weather_temperature}}
+</p>
+<p><strong>Давление: </strong>{{ fishing.weather.pressure}}</p>
+<p><strong>Направление ветра: </strong>{{ fishing.weather.direction_wind}}</p>
+<p><strong>Скорость ветра: </strong>{{ fishing.weather.wind_speed}}</p>
+<p><strong>Лунный день: </strong>{{ fishing.weather.lunar_day}}</p>
+<p><strong>Снасть: </strong></p>
+<p>
+  <strong>Производитель: </strong>
+  {{fishing.fishing_tackle.fishing_tackle_manufacturer}}
+</p>
+<p><strong>Модель: </strong>{{fishing.fishing_tackle.fishing_tackle_name}}</p>
+<p><strong>Длина: </strong>{{fishing.fishing_tackle.fishing_tackle_length}}</p>
+<p>
+  <strong>Тест удилища: </strong>
+  {{fishing.fishing_tackle.fishing_tackle_casting_weight}}
+</p>
+<p><strong>Монтаж: </strong>{{ fishing.fishing_montage }}</p>
+<p><strong>Кормушка: </strong></p>
+<p>
+  <strong>Производитель :</strong>
+  {{fishing.fishing_trough.fishing_trough_manufacturer}}
+</p>
+<p>
+  <strong>Модель :</strong>
+  {{fishing.fishing_trough.model_trough.model_trough_name}}
+</p>
+{% if fishing.fishing_trough.model_trough.model_trough_plastic %}
+<p><strong>Материал: </strong>Пластик</p>
+{% endif %} {% if fishing.fishing_trough.model_trough.model_trough_lugs %}
+<p><strong>Грунтозацепы: </strong>да</p>
+{% endif %}
 
-<p>Погода во время рыбалки:</p>
-<p>Облачность: {{ fishing.weather.overcast }}</p>
-<p>Осадки: {{ fishing.weather.weather_phenomena}}</p>
-<p>Температруа воздуха: {{ fishing.weather.weather_temperature}}</p>
-<p>Давление: {{ fishing.weather.pressure}}</p>
-<p>Направление ветра: {{ fishing.weather.direction_wind}}</p>
-<p>Скорость ветра: {{ fishing.weather.wind_speed}}</p>
-<p>Лунный день: {{ fishing.weather.lunar_day}}</p>
-<p>Снасть: {{ fishing.fishing_tackle }}</p>
-<p>Монтаж: {{ fishing.fishing_montage }}</p>
-<p>Кормушка: {{ fishing.fishing_trough }}</p>
-<p>Прикормочная смесь: {{ fishing.fishing_lure }}</p>
-<p>Арома: {{ fishing.aroma }}</p>
-<p>Поводок: {{ fishing.fishing_leash }}</p>
-<p>Крючок: {{ fishing.crochet }}</p>
-<p>Наживка: {{ fishing.nozzle }}</p>
-<p>Темп: {{ fishing.pace }}</p>
+<p><strong>Прикормочная смесь: </strong></p>
+{% for lure in fishing.fishing_lure.lure_set.all %}
+<p><strong>Прикорм {{ forloop.counter }}</strong></p>
+<p><strong>Производитель: </strong>{{ lure.lure_manufacturer }}</p>
+<p><strong>Название: </strong>{{ lure.lure_name }}</p>
+{% endfor %}
+<p><strong>Добавки в корм:</strong></p>
+<p><strong>Мясо: </strong>{{fishing.fishing_lure.nozzle}}</p>
+<p><strong>Состояние мяса: </strong>{{fishing.fishing_lure.nozzle_state}}</p>
+<p><strong>Арома: </strong></p>
+<p><strong>Производитель: </strong>{{ fishing.aroma.aroma_manufacturer }}</p>
+<p><strong>Название: </strong>{{ fishing.aroma.aroma_name }}</p>
+
+<p><strong>Поводок:</strong></p>
+<p>
+  <strong>Поводочный материал: </strong>
+  {{fishing.fishing_leash.fishing_leash_material}}
+</p>
+<p>
+  <strong>Диаметр поводка: </strong>
+  {{fishing.fishing_leash.fishing_leash_diameter}}
+</p>
+<p>
+  <strong>Длина поводка: </strong>
+  {{fishing.fishing_leash.fishing_leash_length}}
+</p>
+<p><strong>Крючок:</strong></p>
+<p>
+  <strong>Производитель: </strong> {{ fishing.crochet.crochet_manufacturer }}
+</p>
+<p><strong>Модель: </strong>{{ fishing.crochet.crochet_model }}</p>
+<p><strong>Размер: </strong>{{ fishing.crochet.crochet_size }}</p>
+<p><strong>Наживка: </strong></p>
+
+{% if fishing.nozzle.bait %}
+<p><strong>Наживка: </strong>{{ fishing.nozzle.nozzle_name }}</p>
+{% endif %} {% if fishing.nozzle.bait != True %}
+<p><strong>Производитель: </strong>{{ fishing.nozzle.nozzle_manufacturer }}</p>
+<p><strong>Насадка: </strong>{{ fishing.nozzle.nozzle_name }}</p>
+<p><strong>Диаметр насадки: </strong>{{ fishing.nozzle.nozzel_diameter }}</p>
+<p><strong>Тип насадки: </strong>{{ fishing.nozzle.nozzel_type }}</p>
+{% endif %}
+
+<p><strong>Темп: </strong>{{ fishing.pace }}</p>
 
 <p><strong>Улов:</strong></p>
 {% for fishing_result in fishing.fishing_result_set.all %}
 <p>
-  {{ fishing_result.fish }}: {{ fishing_result.number_of_fish }} шт. общим
-  весом: {{fishing_result.fish_weight }} кг.
+  {{ forloop.counter }}. {{ fishing_result.fish }}:
+  {{fishing_result.number_of_fish }} шт. общим весом:
+  {{fishing_result.fish_weight }} кг.
 </p>
 {% endfor %}
 
 <p><strong>Трофеи:</strong></p>
 {% for fish_trophy in fishing.fish_trophy_set.all %}
 <p>
-  {{ fish_trophy.fish }}: вес трофея {{ fish_trophy.fish_trophy_weight }} кг.
+  {{ forloop.counter }}. {{ fish_trophy.fish }}: вес трофея
+  {{fish_trophy.fish_trophy_weight}} кг.
 </p>
 {% endfor %}

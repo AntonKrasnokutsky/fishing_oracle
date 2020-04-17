@@ -7,11 +7,14 @@ from .models import Place, Fishing
 
 def index(request):
     fishing_list = Fishing.objects.all()
-    context = {'fishing_list': fishing_list, }
-    return render(request, 'fishing/index.html', context)
+    return render(request, 'fishing/index.html', {'fishing_list': fishing_list, })
 
 
 def detail(request, fishing_id):
     fishing = get_object_or_404(Fishing, pk=fishing_id)
-    #place = get_object_or_404(Place, pk=fishing.place)
     return render(request, 'fishing/detail.html', {'fishing': fishing})
+
+
+def fishing_add(request):
+    # HttpResponse("Добавление рыбаки")
+    return render(request, 'fishing/fishing_add.html')
