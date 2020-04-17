@@ -793,7 +793,7 @@ class Fishing_Result(models.Model):
         verbose_name="Вес улова")
 
     def __str__(self):
-        return str(self.fish) + ': ' + str(self.nuber_of_fish) + 'шт. ' + str(self.fish_weight) + 'кг.'
+        return str(self.fish) + ': ' + str(self.number_of_fish) + 'шт. ' + str(self.fish_weight) + 'кг.'
 
 
 class Fish_Trophy(models.Model):
