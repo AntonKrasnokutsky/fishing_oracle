@@ -29,22 +29,22 @@ class Fishing(models.Model):
         verbose_name="Погода")
     # Снасть
     fishing_tackle = models.ForeignKey(
-        'Fishing_Tackle',
+        'FishingTackle',
         on_delete=models.PROTECT,
         verbose_name="Снасть")
     # Монтаж
     fishing_montage = models.ForeignKey(
-        'Fishing_Montage',
+        'FishingMontage',
         on_delete=models.PROTECT,
         verbose_name="Монтаж")
     # Используемая кормушка
     fishing_trough = models.ForeignKey(
-        'Fishing_Trough',
+        'FishingTrough',
         on_delete=models.PROTECT,
         verbose_name="Кормушка")
     # Прикормочная смесь
     fishing_lure = models.ForeignKey(
-        'Fishing_Lure',
+        'FishingLure',
         on_delete=models.PROTECT,
         verbose_name="Прикормочная смесь")
     # Арома
@@ -54,7 +54,7 @@ class Fishing(models.Model):
         verbose_name="Арома")
     # Поводок
     fishing_leash = models.ForeignKey(
-        'Fishing_Leash',
+        'FishingLeash',
         on_delete=models.PROTECT,
         verbose_name='Поводок')
     # Крючек
@@ -176,7 +176,7 @@ class Place(models.Model):
         verbose_name='E" (0 до 59.999)')
     # Точка ловли
     fishing_point = models.ForeignKey(
-        'Fishing_Point',
+        'FishingPoint',
         on_delete=models.PROTECT,
         verbose_name="Точка ловли"
     )
@@ -188,7 +188,7 @@ class Place(models.Model):
         return str(self.water) + ': ' + self.place_locality
 
 
-class Bottom_Map(models.Model):
+class BottomMap(models.Model):
     """
     Содержит информацию о маркерной карте, включает в себя
     координаты базовой точки, и привязку всех маркерных точек
@@ -274,7 +274,7 @@ class Point(models.Model):
         verbose_name_plural = "Точки карт дна"
     # Привязка к маркерной карте
     bottom_map = models.OneToOneField(
-        'Bottom_Map',
+        'BottomMap',
         on_delete=models.CASCADE,
         verbose_name="Карта дна")
     # Азимут луча (по компасу)
@@ -305,7 +305,7 @@ class Point(models.Model):
         return str(self.bottom_map) + ': ' + str(self.point_azimuth) + ' ' + str(self.point_distance)
 
 
-class Fishing_Point(models.Model):
+class FishingPoint(models.Model):
     """
     Содежит информацию о точке ловли, возможно использование
     в нескольких рыбалках
@@ -370,7 +370,7 @@ class Weather(models.Model):
         verbose_name="Облачность")
     # Связь с таблицей "Явления погоды"
     weather_phenomena = models.ForeignKey(
-        'Weather_Phenomena',
+        'WeatherPhenomena',
         on_delete=models.PROTECT,
         verbose_name="Явления погоды")
     # Температура воздуха
@@ -416,7 +416,7 @@ class Overcast(models.Model):
         return self.overcast_name
 
 
-class Weather_Phenomena(models.Model):
+class WeatherPhenomena(models.Model):
     """
     Явления погоды, возможно несколько записей
     для одного выезда
@@ -434,7 +434,7 @@ class Weather_Phenomena(models.Model):
         return self.weather_phenomena_name
 
 
-class Fishing_Tackle(models.Model):
+class FishingTackle(models.Model):
     """
     Содержит информацию о снасти: донная, поплавочная и т.д.
     """
@@ -462,7 +462,7 @@ class Fishing_Tackle(models.Model):
         return self.fishing_tackle_manufacturer + ' ' + self.fishing_tackle_name + ' ' + str(self.fishing_tackle_length) + ' ' + str(self.fishing_tackle_casting_weight)
 
 
-class Fishing_Montage(models.Model):
+class FishingMontage(models.Model):
     """
     Содержит в себе варианты монтажей с вариантом выбора
     скользящего
@@ -484,7 +484,7 @@ class Fishing_Montage(models.Model):
         return self.fishing_montage_name + ' ' + ('скользящий' if self.fishing_montage_sliding else '')
 
 
-class Fishing_Trough(models.Model):
+class FishingTrough(models.Model):
     """
     Содержит информацию о кормушках
     """
@@ -494,12 +494,12 @@ class Fishing_Trough(models.Model):
         verbose_name="Поизводитель")
     # Связь с таблицей модели кормушки
     model_trough = models.ForeignKey(
-        'Model_Trough',
+        'ModelTrough',
         on_delete=models.PROTECT,
         verbose_name="Модель кормушки")
     # Связь с таблицей кормоемкости
     feed_capacity = models.ForeignKey(
-        'Feed_Capacity',
+        'FeedCapacity',
         on_delete=models.PROTECT,
         verbose_name="Кормоёмкость")
     # Вес кормушки
@@ -516,13 +516,13 @@ class Fishing_Trough(models.Model):
         return self.fishing_trough_manufacturer + ': ' + str(self.feed_capacity) + ' ' + str(self.model_trough) + ' ' + str(self.fishing_trough_weight) + 'гр.'
 
 
-class Model_Trough(models.Model):
+class ModelTrough(models.Model):
     """
     Содержит комбинации моделей кормушек
     """
     # Связь со списком моделей
     model_trough_name = models.ForeignKey(
-        'Model_Trough_Name',
+        'ModelTroughName',
         on_delete=models.PROTECT,
         verbose_name="Модель кормушки")
     # Метка пластиковй кормушки
@@ -542,7 +542,7 @@ class Model_Trough(models.Model):
         return str(self.model_trough_name) + ' ' + ('пластик' if self.model_trough_plastic else 'металл') + (' с грунтозацепами' if self.model_trough_lugs else '')
 
 
-class Model_Trough_Name(models.Model):
+class ModelTroughName(models.Model):
     """
     Содержит варианты моделей кормкшек
     """
@@ -559,7 +559,7 @@ class Model_Trough_Name(models.Model):
         return self.model_trough_name
 
 
-class Feed_Capacity(models.Model):
+class FeedCapacity(models.Model):
     """
     Содержит варианты кормоемкости кормушек
     """
@@ -576,7 +576,7 @@ class Feed_Capacity(models.Model):
         return self.feed_capacity_name
 
 
-class Fishing_Lure(models.Model):
+class FishingLure(models.Model):
     """
     Содержит информацию о прикормочной смеси
     используемой в рыбалке
@@ -592,7 +592,7 @@ class Fishing_Lure(models.Model):
         verbose_name="Наживка")
     # Информация о состояни наживки
     nozzle_state = models.ForeignKey(
-        'Nozzle_State',
+        'NozzleState',
         on_delete=models.PROTECT,
         verbose_name="Состояние наживки")
 
@@ -607,7 +607,7 @@ class Lure(models.Model):
         verbose_name_plural = "Прикорм"
     # Связь с прикормочной смесью
     fishing_lure = models.ForeignKey(
-        'Fishing_Lure',
+        'FishingLure',
         on_delete=models.PROTECT,
         verbose_name="Прикормочная смесь")
     # Название производителя прикорки
@@ -660,7 +660,7 @@ class Nozzle(models.Model):
         return self.nozzle_name
 
 
-class Nozzle_State(models.Model):
+class NozzleState(models.Model):
     """
     Содержит информацию о состоянии насадки
     """
@@ -697,7 +697,7 @@ class Aroma(models.Model):
         return self.aroma_manufacturer + ' ' + self.aroma_name
 
 
-class Fishing_Leash(models.Model):
+class FishingLeash(models.Model):
     """
     Содержит информацию о поводках
     """
@@ -763,7 +763,7 @@ class Pace(models.Model):
         return self.pace_interval
 
 
-class Fishing_Result(models.Model):
+class FishingResult(models.Model):
     """
     Содержит информацию о результате рыбалки, принимает
     в себя несколько значений пойманной рыбы
@@ -796,7 +796,7 @@ class Fishing_Result(models.Model):
         return str(self.fish) + ': ' + str(self.number_of_fish) + 'шт. ' + str(self.fish_weight) + 'кг.'
 
 
-class Fish_Trophy(models.Model):
+class FishTrophy(models.Model):
     """
     Содержит информацию о пойманных трофеях
     """

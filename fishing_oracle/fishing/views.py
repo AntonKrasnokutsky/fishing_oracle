@@ -6,9 +6,9 @@ from .models import Place, Fishing, Fish
 from .forms import FishRenewalForm
 
 
-def index(request):
+def fishing(request):
     fishing_list = Fishing.objects.all()
-    return render(request, 'fishing/index.html', {'fishing_list': fishing_list, })
+    return render(request, 'fishing/fishing.html', {'fishing_list': fishing_list, })
 
 
 def detail(request, fishing_id):
