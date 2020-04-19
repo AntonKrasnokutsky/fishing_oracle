@@ -1,0 +1,10 @@
+<h1>Название рыбы: {{name_of_fish.name_of_fish}}</h1>
+<p>Название рыбы: {{name_of_fish.name_of_fish}}</p>
+
+<form action="" method="post">
+  {% csrf_token %}
+  <table>
+    {{ form }}
+  </table>
+  <input type="submit" value="Submit" />
+</form>
