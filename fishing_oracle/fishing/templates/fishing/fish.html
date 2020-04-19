@@ -1,0 +1,13 @@
+{% extends 'fishing/base.html' %} {% block content %} {% if fish_list %}
+<ul>
+  {% for fish in fish_list %}
+  <li>
+    <a href="{% url 'fishing:fish_details' fish.id %}">{{fish.name_of_fish}}</a>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>База рыб пуста</p>
+{% endif %}
+<p><a href="{% url 'fishing:add_fish' %}">Добавить</a></p>
+{% endblock %}

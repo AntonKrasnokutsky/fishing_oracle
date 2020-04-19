@@ -87,7 +87,8 @@ class Fish(models.Model):
     # Название рыбы https://gdekluet.ru/directory/fish/
     name_of_fish = models.CharField(
         max_length=20,
-        verbose_name="Рыба")
+        verbose_name="Рыба",
+        unique=True)
     fish_description = models.TextField(
         verbose_name="Описание"
     )
@@ -549,7 +550,8 @@ class ModelTroughName(models.Model):
     # Название модели кормушки
     model_trough_name = models.CharField(
         max_length=20,
-        verbose_name="Модель кормушки")
+        verbose_name="Модель кормушки",
+        unique=True)
 
     class Meta:
         verbose_name = "Название модели кормушки"
@@ -670,7 +672,8 @@ class NozzleState(models.Model):
     # Состояние
     state = models.CharField(
         max_length=20,
-        verbose_name="Состояние наживки")
+        verbose_name="Состояние наживки",
+        unique=True)
 
     def __str__(self):
         return self.state
@@ -837,7 +840,8 @@ class District(models.Model):
     # Название района
     district_name = models.CharField(
         max_length=50,
-        verbose_name="Район")
+        verbose_name="Район",
+        unique=True)
 
     def __str__(self):
         return self.district_name

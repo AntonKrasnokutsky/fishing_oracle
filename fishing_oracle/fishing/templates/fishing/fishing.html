@@ -1,4 +1,4 @@
-{% if fishing_list %}
+{% extends 'fishing/base.html' %} {% block content %} {% if fishing_list %}
 <ul>
   {% for fishing in fishing_list %}
   <li><a href="{% url 'fishing:detail' fishing.id %}">{{fishing.date}}</a></li>
@@ -6,4 +6,4 @@
 </ul>
 {% else %}
 <p>Рыбалок еще не было</p>
-{% endif %}
+{% endif %} {% endblock %}

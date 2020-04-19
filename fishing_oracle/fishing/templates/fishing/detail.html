@@ -1,3 +1,4 @@
+{% extends 'fishing/base.html' %} {% block content %}
 <p><strong>Дата проведения рыбалки:</strong> {{ fishing.date }}</p>
 <p><strong>Время начала рыбалки:</strong> {{ fishing.time }}</p>
 <p><strong>Место проведения рыбалки:</strong></p>
@@ -8,7 +9,7 @@
 </p>
 <p><strong>Погода во время рыбалки:</strong></p>
 <p><strong>Облачность: </strong>{{ fishing.weather.overcast }}</p>
-<p><strong>Осадки: </strong>{{ fishing.weather.weatherphenomena}}</p>
+<p><strong>Осадки: </strong>{{ fishing.weather.weather_phenomena}}</p>
 <p>
   <strong>Температруа воздуха: </strong>{{ fishing.weather.weather_temperature}}
 </p>
@@ -19,39 +20,39 @@
 <p><strong>Снасть: </strong></p>
 <p>
   <strong>Производитель: </strong>
-  {{fishing.fishingtackle.fishing_tackle_manufacturer}}
+  {{fishing.fishing_tackle.fishing_tackle_manufacturer}}
 </p>
-<p><strong>Модель: </strong>{{fishing.fishingtackle.fishing_tackle_name}}</p>
-<p><strong>Длина: </strong>{{fishing.fishingtackle.fishing_tackle_length}}</p>
+<p><strong>Модель: </strong>{{fishing.fishing_tackle.fishing_tackle_name}}</p>
+<p><strong>Длина: </strong>{{fishing.fishing_tackle.fishing_tackle_length}}</p>
 <p>
   <strong>Тест удилища: </strong>
-  {{fishing.fishingtackle.fishing_tackle_casting_weight}}
+  {{fishing.fishing_tackle.fishing_tackle_casting_weight}}
 </p>
-<p><strong>Монтаж: </strong>{{ fishing.fishingmontage }}</p>
+<p><strong>Монтаж: </strong>{{ fishing.fishing_montage }}</p>
 <p><strong>Кормушка: </strong></p>
 <p>
   <strong>Производитель :</strong>
-  {{fishing.fishingtrough.fishing_trough_manufacturer}}
+  {{fishing.fishing_trough.fishing_trough_manufacturer}}
 </p>
 <p>
   <strong>Модель :</strong>
-  {{fishing.fishingtrough.modeltrough.model_trough_name}}
+  {{fishing.fishing_trough.model_trough.model_trough_name}}
 </p>
-{% if fishing.fishingtrough.modeltrough.model_trough_plastic %}
+{% if fishing.fishing_trough.model_trough.model_trough_plastic %}
 <p><strong>Материал: </strong>Пластик</p>
-{% endif %} {% if fishing.fishingtrough.modeltrough.model_trough_lugs %}
+{% endif %} {% if fishing.fishing_trough.model_trough.model_trough_lugs %}
 <p><strong>Грунтозацепы: </strong>да</p>
 {% endif %}
 
 <p><strong>Прикормочная смесь: </strong></p>
-{% for lure in fishing.fishinglure.lure_set.all %}
+{% for lure in fishing.fishing_lure.lure_set.all %}
 <p><strong>Прикорм {{ forloop.counter }}</strong></p>
 <p><strong>Производитель: </strong>{{ lure.lure_manufacturer }}</p>
 <p><strong>Название: </strong>{{ lure.lure_name }}</p>
 {% endfor %}
 <p><strong>Добавки в корм:</strong></p>
-<p><strong>Мясо: </strong>{{fishing.fishinglure.nozzle}}</p>
-<p><strong>Состояние мяса: </strong>{{fishing.fishinglure.nozzlestate}}</p>
+<p><strong>Мясо: </strong>{{fishing.fishing_lure.nozzle}}</p>
+<p><strong>Состояние мяса: </strong>{{fishing.fishing_lure.nozzle_state}}</p>
 <p><strong>Арома: </strong></p>
 <p><strong>Производитель: </strong>{{ fishing.aroma.aroma_manufacturer }}</p>
 <p><strong>Название: </strong>{{ fishing.aroma.aroma_name }}</p>
@@ -59,15 +60,15 @@
 <p><strong>Поводок:</strong></p>
 <p>
   <strong>Поводочный материал: </strong>
-  {{fishing.fishingleash.fishing_leash_material}}
+  {{fishing.fishing_leash.fishing_leash_material}}
 </p>
 <p>
   <strong>Диаметр поводка: </strong>
-  {{fishing.fishingleash.fishing_leash_diameter}}
+  {{fishing.fishing_leash.fishing_leash_diameter}}
 </p>
 <p>
   <strong>Длина поводка: </strong>
-  {{fishing.fishingleash.fishing_leash_length}}
+  {{fishing.fishing_leash.fishing_leash_length}}
 </p>
 <p><strong>Крючок:</strong></p>
 <p>
@@ -89,7 +90,7 @@
 <p><strong>Темп: </strong>{{ fishing.pace }}</p>
 
 <p><strong>Улов:</strong></p>
-{% for fishingresult in fishing.fishingresult_set.all %}
+{% for fishing_result in fishing.fishingresult_set.all %}
 <p>
   {{ forloop.counter }}. {{ fishing_result.fish }}:
   {{fishing_result.number_of_fish }} шт. общим весом:
@@ -103,4 +104,4 @@
   {{ forloop.counter }}. {{ fish_trophy.fish }}: вес трофея
   {{fish_trophy.fish_trophy_weight}} кг.
 </p>
-{% endfor %} 2
+{% endfor %} {% endblock %}
