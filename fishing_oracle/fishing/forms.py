@@ -1,4 +1,4 @@
-from .models import Fish
+from .models import Fish, District, Priming
 from django import forms
 
 
@@ -8,12 +8,16 @@ class FishRenewalForm(forms.ModelForm):
         model = Fish
         fields = ('name_of_fish', 'fish_description',)
 
-    # class FishRenewalForm(forms.Form):
-#    renewal_name_of_fish = forms.CharField(
-#        max_length=20)
-#    renewal_fish_description = forms.TextField()
+#    renewal_name_of_fish = forms.CharField(max_length=20, label='Рыба')
 
-#    def clean_renewal_name_of_fish(self):
-#        name_of_fish = self.cleaned_data['renewal_name_of_fish']
 
-#        return name_of_fish
+class DistrictForm(forms.ModelForm):
+    class Meta:
+        model = District
+        fields = ('district_name',)
+
+
+class PrimingForm(forms.ModelForm):
+    class Meta:
+        model = Priming
+        fields = ('priming_name',)

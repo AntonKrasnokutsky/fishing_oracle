@@ -1,5 +1,5 @@
 {% extends 'fishing/base.html' %} {% block content %}
 <p><strong>Рыба:</strong> {{ fish.name_of_fish }}</p>
 <p><strong>Описание:</strong> {{ fish.fish_description }}</p>
-<p><a href="{% url 'fishing:renewal_fish' fish.id %}">Изменить</a></p>
+<p><a href="{% url 'fishing:fish_renewal' fish.id %}">Изменить</a></p>
 {% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'fishing/base.html' %} {% block content %} {% if districts_list %}
+<ul>
+  {% for district in districts_list %}
+  <li>
+    {{district.district_name}}
+    <a href="{% url 'fishing:district_renewal' district.id %}">Редактировать</a>
+    <a href="{% url 'fishing:district_remove' district.id %}">Удалить</a>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Список районов пуст</p>
+{% endif %}
+<p><a href="{% url 'fishing:district_add' %}">Добавить</a></p>
+{% endblock %}

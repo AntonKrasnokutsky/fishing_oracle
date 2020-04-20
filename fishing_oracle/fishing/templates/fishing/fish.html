@@ -3,11 +3,12 @@
   {% for fish in fish_list %}
   <li>
     <a href="{% url 'fishing:fish_details' fish.id %}">{{fish.name_of_fish}}</a>
+    <a href="{% url 'fishing:fish_remove' fish.id %}">Удалить</a>
   </li>
   {% endfor %}
 </ul>
 {% else %}
 <p>База рыб пуста</p>
 {% endif %}
-<p><a href="{% url 'fishing:add_fish' %}">Добавить</a></p>
+<p><a href="{% url 'fishing:fish_add' %}">Добавить</a></p>
 {% endblock %}

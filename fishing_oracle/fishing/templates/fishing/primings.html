@@ -1,0 +1,15 @@
+{% extends 'fishing/base.html' %} {% block content %} {% if primings_list %}
+<ul>
+  {% for priming in primings_list %}
+  <li>
+    {{priming.priming_name}}
+    <a href="{% url 'fishing:priming_renewal' priming.id %}">Редактировать</a>
+    <a href="{% url 'fishing:priming_remove' priming.id %}">Удалить</a>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Список районов пуст</p>
+{% endif %}
+<p><a href="{% url 'fishing:priming_add' %}">Добавить</a></p>
+{% endblock %}
