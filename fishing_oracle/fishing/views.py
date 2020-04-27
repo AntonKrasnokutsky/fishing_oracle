@@ -10,33 +10,45 @@ from .forms import DistrictForm
 from .forms import PrimingForm
 
 
+def visits(request, inc=0):
+    num_visits = request.session.get('num_visits', 0)
+    request.session['num_visits'] = num_visits + inc
+    return num_visits
+
+
 def index(request):
-    return render(request, 'fishing/index.html', {})
+    num_visits = visits(request, 1)
+    return render(request, 'fishing/index.html', {'num_visits': num_visits})
 
 
 def fishing(request):
     fishing_list = Fishing.objects.all()
-    return render(request, 'fishing/fishing.html', {'fishing_list': fishing_list, })
+    num_visits = visits(request)
+    return render(request, 'fishing/fishing.html', {'fishing_list': fishing_list, 'num_visits': num_visits})
 
 
 def fishing_add(request):
     # HttpResponse("Добавление рыбаки")
-    return render(request, 'fishing/fishing_add.html')
+    num_visits = visits(request)
+    return render(request, 'fishing/fishing_add.html', {'num_visits': num_visits})
 
 
 def detail(request, fishing_id):
     fishing = get_object_or_404(Fishing, pk=fishing_id)
-    return render(request, 'fishing/detail.html', {'fishing': fishing})
+    num_visits = visits(request)
+    return render(request, 'fishing/detail.html', {'fishing': fishing, 'num_visits': num_visits})
 
 
 def fishs(request):
     fish_list = Fish.objects.all()
-    return render(request, 'fishing/fish.html', {'fish_list': fish_list})
+    num_visits = visits(request)
+    return render(request, 'fishing/fish.html', {'fish_list': fish_list, 'num_visits': num_visits})
 
 
 def fish_details(request, fish_id):
     fish = get_object_or_404(Fish, pk=fish_id)
-    return render(request, 'fishing/fish_details.html', {'fish': fish})
+    num_visits = visits(request)
+    return render(request, 'fishing/fish_details.html', {'fish': fish, 'num_visits': num_visits})
 
 
 def fish_renewal(request, fish_id):
@@ -53,7 +65,8 @@ def fish_renewal(request, fish_id):
         form = FishRenewalForm(
             initial={'name_of_fish': fish.name_of_fish, 'fish_description': fish.fish_description, })
 
-    return render(request, 'fishing/fish_renewal.html', {'form': form, 'fish': fish})
+    num_visits = visits(request)
+    return render(request, 'fishing/fish_renewal.html', {'form': form, 'fish': fish, 'num_visits': num_visits})
 
 
 def fish_add(request):
@@ -70,7 +83,8 @@ def fish_add(request):
     else:
         form = FishRenewalForm()
 
-    return render(request, 'fishing/fish_renewal.html', {'form': form, 'fish': fish})
+    num_visits = visits(request)
+    return render(request, 'fishing/fish_renewal.html', {'form': form, 'fish': fish, 'num_visits': num_visits})
 
 
 def fish_remove(request, fish_id):
@@ -81,7 +95,8 @@ def fish_remove(request, fish_id):
 
 def districts(request):
     districts_list = District.objects.all()
-    return render(request, 'fishing/districts.html', {'districts_list': districts_list})
+    num_visits = visits(request)
+    return render(request, 'fishing/districts.html', {'districts_list': districts_list, 'num_visits': num_visits})
 
 
 def district_add(request):
@@ -96,7 +111,8 @@ def district_add(request):
     else:
         form = DistrictForm()
 
-    return render(request, 'fishing/district_renewal.html', {'form': form, 'district': district})
+    num_visits = visits(request)
+    return render(request, 'fishing/district_renewal.html', {'form': form, 'district': district, 'num_visits': num_visits})
 
 
 def district_renewal(request, district_id):
@@ -112,7 +128,8 @@ def district_renewal(request, district_id):
         form = DistrictForm(
             initial={'district_name': district.district_name, })
 
-    return render(request, 'fishing/district_renewal.html', {'form': form, 'district': district})
+    num_visits = visits(request)
+    return render(request, 'fishing/district_renewal.html', {'form': form, 'district': district, 'num_visits': num_visits})
 
 
 def district_remove(request, district_id):
@@ -123,7 +140,8 @@ def district_remove(request, district_id):
 
 def primings(request):
     primings_list = Priming.objects.all()
-    return render(request, 'fishing/primings.html', {'primings_list': primings_list})
+    num_visits = visits(request)
+    return render(request, 'fishing/primings.html', {'primings_list': primings_list, 'num_visits': num_visits})
 
 
 def priming_add(request):
@@ -138,7 +156,8 @@ def priming_add(request):
     else:
         form = PrimingForm()
 
-    return render(request, 'fishing/priming_renewal.html', {'form': form, 'priming': priming})
+    num_visits = visits(request)
+    return render(request, 'fishing/priming_renewal.html', {'form': form, 'priming': priming, 'num_visits': num_visits})
 
 
 def priming_renewal(request, priming_id):
@@ -154,7 +173,8 @@ def priming_renewal(request, priming_id):
         form = PrimingForm(
             initial={'priming_name': priming.priming_name, })
 
-    return render(request, 'fishing/priming_renewal.html', {'form': form, 'priming': priming})
+    num_visits = visits(request)
+    return render(request, 'fishing/priming_renewal.html', {'form': form, 'priming': priming, 'num_visits': num_visits})
 
 
 def priming_remove(request, priming_id):
