@@ -10,7 +10,7 @@ class Fishing(models.Model):
     class Meta:
         verbose_name = "Рыбалка"
         verbose_name_plural = "Рыбалки"
-    #Владелец записи
+    # Владелец записи
     owner = models.ForeignKey(
         User,
         on_delete=models.PROTECT,
@@ -828,8 +828,8 @@ class FishTrophy(models.Model):
     )
     # Вес трофея
     fish_trophy_weight = models.DecimalField(
-        max_digits=4,
-        decimal_places=1,
+        max_digits=5,
+        decimal_places=2,
         verbose_name="Вес трофея")
     #fish_trophy_photo=models.ImageField(verbose_name="Фото трофея")
 
