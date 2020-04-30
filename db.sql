@@ -1,8 +1,8 @@
--- MySQL dump 10.14  Distrib 5.5.64-MariaDB, for Linux (x86_64)
+-- MySQL dump 10.14  Distrib 5.5.65-MariaDB, for Linux (x86_64)
 --
 -- Host: localhost    Database: h9d1v8
 -- ------------------------------------------------------
--- Server version	5.5.64-MariaDB
+-- Server version	5.5.65-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -36,7 +36,7 @@ CREATE TABLE `auth_group` (
 
 LOCK TABLES `auth_group` WRITE;
 /*!40000 ALTER TABLE `auth_group` DISABLE KEYS */;
-INSERT INTO `auth_group` VALUES (1,'fishermen');
+INSERT INTO `auth_group` VALUES (1,'Рыбаки');
 /*!40000 ALTER TABLE `auth_group` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -126,7 +126,7 @@ CREATE TABLE `auth_user` (
 
 LOCK TABLES `auth_user` WRITE;
 /*!40000 ALTER TABLE `auth_user` DISABLE KEYS */;
-INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$180000$tQiSK6qe5nHM$cRjpF9Ap/TYyeRMTJqsx38ufl/wRDeNWnDe483sQceY=','2020-04-19 06:16:21.892476',1,'admin','','','',1,1,'2020-04-19 06:15:58.064444'),(2,'pbkdf2_sha256$180000$lD84hCH75fxA$2uasYQdAc9msKR0zgBCkmpiMFYbRCl6dF9EIDg6vVTI=',NULL,0,'user','','','',0,1,'2020-04-26 18:48:07.000000');
+INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$180000$jgtGfuwqTEex$iI/u9HK6ScB8TDiBFs209AD697KG1ZW5atShI9FHcBw=','2020-04-29 15:24:43.488696',1,'admin','','','',1,1,'2020-04-29 15:04:56.301395'),(2,'pbkdf2_sha256$180000$5xn6mSa9sRM4$e7xX6AFqC2emWr996EeluKJR+4tTW6eGPY7oFhqsTFQ=','2020-04-29 15:25:07.460935',0,'Антон','','','',0,1,'2020-04-29 15:07:37.000000');
 /*!40000 ALTER TABLE `auth_user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -217,7 +217,7 @@ CREATE TABLE `django_admin_log` (
 
 LOCK TABLES `django_admin_log` WRITE;
 /*!40000 ALTER TABLE `django_admin_log` DISABLE KEYS */;
-INSERT INTO `django_admin_log` VALUES (1,'2020-04-19 06:16:50.941144','1','Dunaev Scopex',1,'[{\"added\": {}}]',1,1),(2,'2020-04-19 06:17:00.318969','1','Сальский район',1,'[{\"added\": {}}]',4,1),(3,'2020-04-19 06:17:02.608126','1','река Маныч',1,'[{\"added\": {}}]',21,1),(4,'2020-04-19 06:17:17.169144','1','река Маныч',1,'[{\"added\": {}}]',2,1),(5,'2020-04-19 06:17:25.138195','1','Большая',1,'[{\"added\": {}}]',5,1),(6,'2020-04-19 06:17:31.433849','2','Малая',1,'[{\"added\": {}}]',5,1),(7,'2020-04-19 06:17:34.241914','3','Средняя',1,'[{\"added\": {}}]',5,1),(8,'2020-04-19 06:17:41.150779','4','груз',1,'[{\"added\": {}}]',5,1),(9,'2020-04-19 06:17:55.954427','1','Gamakatsu LS-2283B 14',1,'[{\"added\": {}}]',3,1),(10,'2020-04-19 06:18:20.804187','1','Ил',1,'[{\"added\": {}}]',18,1),(11,'2020-04-19 06:18:22.928760','1','Ил',1,'[{\"added\": {}}]',11,1),(12,'2020-04-19 06:18:24.110211','1','река Маныч: Манычстрой',1,'[{\"added\": {}}]',23,1),(13,'2020-04-19 06:18:37.082929','1','Аллигатор',1,'[{\"added\": {}}]',13,1),(14,'2020-04-19 06:18:39.679321','1','Аллигатор металл с грунтозацепами',1,'[{\"added\": {}}]',24,1),(15,'2020-04-19 06:18:49.058807','1','Гарднер ',1,'[{\"added\": {}}]',10,1),(16,'2020-04-19 06:18:58.128299','1','Опарыш',1,'[{\"added\": {}}]',14,1),(17,'2020-04-19 06:19:14.223733','1','Ясно',1,'[{\"added\": {}}]',16,1),(18,'2020-04-19 06:19:26.155094','1','леска 0.08 25 см.',1,'[{\"added\": {}}]',8,1),(19,'2020-04-19 06:19:35.996791','1','без явлений',1,'[{\"added\": {}}]',19,1),(20,'2020-04-19 06:19:44.983856','1','Weather object (1)',1,'[{\"added\": {}}]',20,1),(21,'2020-04-19 06:20:15.319961','1','Топленый',1,'[{\"added\": {}}]',15,1),(22,'2020-04-19 06:20:17.017372','1','FishingLure object (1)',1,'[{\"added\": {}}]',9,1),(23,'2020-04-19 06:20:21.053875','1','Dunaev Fadeev Carp classic',1,'[{\"added\": {}}]',25,1),(24,'2020-04-19 09:36:52.484422','1','Flagman Legend 3.6 100',1,'[{\"added\": {}}]',12,1),(25,'2020-04-19 09:37:07.638692','1','Дядя Вася: Большая Аллигатор металл с грунтозацепами 100гр.',1,'[{\"added\": {}}]',27,1),(26,'2020-04-19 09:37:20.588624','1','Быстрый (до 2 минут)',1,'[{\"added\": {}}]',17,1),(27,'2020-04-19 09:37:22.245604','1','2020-04-19 12:36:40',1,'[{\"added\": {}}]',7,1),(28,'2020-04-19 09:37:40.952242','1','Лещ',1,'[{\"added\": {}}]',6,1),(29,'2020-04-19 09:37:46.100148','1','Лещ: 3шт. 3кг.',1,'[{\"added\": {}}]',28,1),(30,'2020-04-19 09:38:07.762942','1','река Маныч: 100 50',1,'[{\"added\": {}}]',22,1),(31,'2020-04-19 09:38:26.720202','1','Трофей: Лещ 2кг.',1,'[{\"added\": {}}]',26,1),(32,'2020-04-26 18:47:01.026057','1','fishermen',1,'[{\"added\": {}}]',31,1),(33,'2020-04-26 18:48:07.528657','2','user',1,'[{\"added\": {}}]',32,1),(34,'2020-04-26 18:49:14.703888','2','user',2,'[{\"changed\": {\"fields\": [\"Groups\"]}}]',32,1);
+INSERT INTO `django_admin_log` VALUES (1,'2020-04-29 15:06:58.939992','1','Рыбаки',1,'[{\"added\": {}}]',31,1),(2,'2020-04-29 15:07:37.298687','2','Антон',1,'[{\"added\": {}}]',32,1),(3,'2020-04-29 15:08:11.183660','2','Антон',2,'[{\"changed\": {\"fields\": [\"Groups\"]}}]',32,1),(4,'2020-04-29 15:09:29.270306','1','Сальский район',1,'[{\"added\": {}}]',4,1),(5,'2020-04-29 15:09:35.257611','1','река Маныч',1,'[{\"added\": {}}]',21,1),(6,'2020-04-29 15:10:02.459745','1','Песок',1,'[{\"added\": {}}]',18,1),(7,'2020-04-29 15:10:03.824763','1','Песок',1,'[{\"added\": {}}]',11,1),(8,'2020-04-29 15:10:05.857175','1','река Маныч: Юловский',1,'[{\"added\": {}}]',23,1),(9,'2020-04-29 15:10:14.712844','1','Ясно',1,'[{\"added\": {}}]',16,1),(10,'2020-04-29 15:10:24.655939','1','без явлений',1,'[{\"added\": {}}]',19,1),(11,'2020-04-29 15:10:41.512064','1','Weather object (1)',1,'[{\"added\": {}}]',20,1),(12,'2020-04-29 15:10:56.420620','1','Flagman Legend 3.6 100',1,'[{\"added\": {}}]',12,1),(13,'2020-04-29 15:11:07.973086','1','ранинг скользящий',1,'[{\"added\": {}}]',10,1),(14,'2020-04-29 15:11:33.886611','1','Сербская пуля',1,'[{\"added\": {}}]',13,1),(15,'2020-04-29 15:11:35.954091','1','Сербская пуля металл',1,'[{\"added\": {}}]',24,1),(16,'2020-04-29 15:11:44.712983','1','Средняя',1,'[{\"added\": {}}]',5,1),(17,'2020-04-29 15:11:49.725461','1','noname: Средняя Сербская пуля металл 40гр.',1,'[{\"added\": {}}]',27,1),(18,'2020-04-29 15:12:06.928092','1','Опарыш',1,'[{\"added\": {}}]',14,1),(19,'2020-04-29 15:12:28.481998','1','без живого компонент',1,'[{\"added\": {}}]',15,1),(20,'2020-04-29 15:12:49.986400','2','без живого компонента',1,'[{\"added\": {}}]',14,1),(21,'2020-04-29 15:12:51.516128','1','FishingLure object (1)',1,'[{\"added\": {}}]',9,1),(22,'2020-04-29 15:13:13.733457','1','Dunaev Scopex',1,'[{\"added\": {}}]',1,1),(23,'2020-04-29 15:13:33.277783','1','леска 0.14 20 см.',1,'[{\"added\": {}}]',8,1),(24,'2020-04-29 15:13:53.426118','1','Gamakatsu fs- 14',1,'[{\"added\": {}}]',3,1),(25,'2020-04-29 15:14:01.923937','3','Опарыш',1,'[{\"added\": {}}]',14,1),(26,'2020-04-29 15:14:14.185958','1','Медленный',1,'[{\"added\": {}}]',17,1),(27,'2020-04-29 15:14:15.935482','1','2020-04-29 18:08:30',1,'[{\"added\": {}}]',7,1),(28,'2020-04-29 15:14:27.660307','1','река Маныч',1,'[{\"added\": {}}]',2,1),(29,'2020-04-29 15:14:59.274124','1','Dunaev Turbofider',1,'[{\"added\": {}}]',25,1),(30,'2020-04-29 15:15:22.990961','1','Плотва',1,'[{\"added\": {}}]',6,1),(31,'2020-04-29 15:15:37.563788','1','Плотва: 2шт. 0.8кг.',1,'[{\"added\": {}}]',28,1),(32,'2020-04-29 15:16:04.772370','1','река Маныч: 100 42',1,'[{\"added\": {}}]',22,1),(33,'2020-04-29 15:16:21.270869','1','Трофей: Плотва 380кг.',1,'[{\"added\": {}}]',26,1),(34,'2020-04-29 15:16:54.070017','1','Трофей: Плотва 0.4кг.',2,'[{\"changed\": {\"fields\": [\"\\u0412\\u0435\\u0441 \\u0442\\u0440\\u043e\\u0444\\u0435\\u044f\"]}}]',26,1);
 /*!40000 ALTER TABLE `django_admin_log` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -260,7 +260,7 @@ CREATE TABLE `django_migrations` (
   `name` varchar(255) COLLATE utf8_bin NOT NULL,
   `applied` datetime(6) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -269,7 +269,7 @@ CREATE TABLE `django_migrations` (
 
 LOCK TABLES `django_migrations` WRITE;
 /*!40000 ALTER TABLE `django_migrations` DISABLE KEYS */;
-INSERT INTO `django_migrations` VALUES (1,'contenttypes','0001_initial','2020-04-19 06:15:34.433335'),(2,'auth','0001_initial','2020-04-19 06:15:34.782660'),(3,'admin','0001_initial','2020-04-19 06:15:35.892173'),(4,'admin','0002_logentry_remove_auto_add','2020-04-19 06:15:36.084473'),(5,'admin','0003_logentry_add_action_flag_choices','2020-04-19 06:15:36.149273'),(6,'contenttypes','0002_remove_content_type_name','2020-04-19 06:15:36.629321'),(7,'auth','0002_alter_permission_name_max_length','2020-04-19 06:15:36.728214'),(8,'auth','0003_alter_user_email_max_length','2020-04-19 06:15:36.882816'),(9,'auth','0004_alter_user_username_opts','2020-04-19 06:15:36.908973'),(10,'auth','0005_alter_user_last_login_null','2020-04-19 06:15:37.081012'),(11,'auth','0006_require_contenttypes_0002','2020-04-19 06:15:37.091622'),(12,'auth','0007_alter_validators_add_error_messages','2020-04-19 06:15:37.136328'),(13,'auth','0008_alter_user_username_max_length','2020-04-19 06:15:37.281662'),(14,'auth','0009_alter_user_last_name_max_length','2020-04-19 06:15:37.410504'),(15,'auth','0010_alter_group_name_max_length','2020-04-19 06:15:37.520686'),(16,'auth','0011_update_proxy_permissions','2020-04-19 06:15:37.556768'),(17,'fishing','0001_initial','2020-04-19 06:15:40.872700'),(18,'sessions','0001_initial','2020-04-19 06:15:42.476718'),(19,'fishing','0002_auto_20200419_1555','2020-04-19 12:55:31.058473'),(20,'fishing','0003_auto_20200419_1559','2020-04-19 12:59:54.871736');
+INSERT INTO `django_migrations` VALUES (1,'contenttypes','0001_initial','2020-04-29 15:04:17.458710'),(2,'auth','0001_initial','2020-04-29 15:04:17.846382'),(3,'admin','0001_initial','2020-04-29 15:04:18.957463'),(4,'admin','0002_logentry_remove_auto_add','2020-04-29 15:04:19.148238'),(5,'admin','0003_logentry_add_action_flag_choices','2020-04-29 15:04:19.198478'),(6,'contenttypes','0002_remove_content_type_name','2020-04-29 15:04:19.470975'),(7,'auth','0002_alter_permission_name_max_length','2020-04-29 15:04:19.569792'),(8,'auth','0003_alter_user_email_max_length','2020-04-29 15:04:19.680012'),(9,'auth','0004_alter_user_username_opts','2020-04-29 15:04:19.711914'),(10,'auth','0005_alter_user_last_login_null','2020-04-29 15:04:19.845190'),(11,'auth','0006_require_contenttypes_0002','2020-04-29 15:04:19.856583'),(12,'auth','0007_alter_validators_add_error_messages','2020-04-29 15:04:19.881232'),(13,'auth','0008_alter_user_username_max_length','2020-04-29 15:04:20.021255'),(14,'auth','0009_alter_user_last_name_max_length','2020-04-29 15:04:20.120352'),(15,'auth','0010_alter_group_name_max_length','2020-04-29 15:04:20.219825'),(16,'auth','0011_update_proxy_permissions','2020-04-29 15:04:20.240927'),(17,'fishing','0001_initial','2020-04-29 15:04:23.903669'),(18,'sessions','0001_initial','2020-04-29 15:04:25.619276');
 /*!40000 ALTER TABLE `django_migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -295,7 +295,7 @@ CREATE TABLE `django_session` (
 
 LOCK TABLES `django_session` WRITE;
 /*!40000 ALTER TABLE `django_session` DISABLE KEYS */;
-INSERT INTO `django_session` VALUES ('wgxq9835il8lox1yr8vsxi1nh1bzzf83','YmNiOGNiNjgyYTU2MWM2OTY5OWJhMTkwNzg0ZWQ2YjllNzBhMTJjNzp7Il9hdXRoX3VzZXJfaWQiOiIxIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiIyNmEzYzJlNzNmNGFkMzgxOGVkMjY4N2IyNzg0MTM5YzVkZmI2M2U3IiwibnVtX3Zpc2l0cyI6MTh9','2020-05-10 18:34:41.056671');
+INSERT INTO `django_session` VALUES ('rvheu9keo71mkwdcwrigcydqxblat4m6','ZTlkOTRjYzYwOGU2MWNkNGJiZGYzNjk5ZjE2NmI3MDcxYTA2MjdmOTp7Il9hdXRoX3VzZXJfaWQiOiIyIiwiX2F1dGhfdXNlcl9iYWNrZW5kIjoiZGphbmdvLmNvbnRyaWIuYXV0aC5iYWNrZW5kcy5Nb2RlbEJhY2tlbmQiLCJfYXV0aF91c2VyX2hhc2giOiJkZTI4NmU4NTQwNzllYWRjZGYwYzRiZWI4MTE0MDM3MjliZDZmNjY2IiwibnVtX3Zpc2l0cyI6Mn0=','2020-05-13 15:25:23.215544');
 /*!40000 ALTER TABLE `django_session` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -352,7 +352,7 @@ CREATE TABLE `fishing_bottommap` (
 
 LOCK TABLES `fishing_bottommap` WRITE;
 /*!40000 ALTER TABLE `fishing_bottommap` DISABLE KEYS */;
-INSERT INTO `fishing_bottommap` VALUES (1,46,38,11.000,41,38,19.000,1);
+INSERT INTO `fishing_bottommap` VALUES (1,0,0,0.000,0,0,0.000,1);
 /*!40000 ALTER TABLE `fishing_bottommap` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -378,7 +378,7 @@ CREATE TABLE `fishing_crochet` (
 
 LOCK TABLES `fishing_crochet` WRITE;
 /*!40000 ALTER TABLE `fishing_crochet` DISABLE KEYS */;
-INSERT INTO `fishing_crochet` VALUES (1,'Gamakatsu','LS-2283B',14);
+INSERT INTO `fishing_crochet` VALUES (1,'Gamakatsu','fs-',14);
 /*!40000 ALTER TABLE `fishing_crochet` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -393,8 +393,8 @@ CREATE TABLE `fishing_district` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `district_name` varchar(50) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `fishing_district_district_name_7ad9aa15_uniq` (`district_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  UNIQUE KEY `district_name` (`district_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -403,7 +403,7 @@ CREATE TABLE `fishing_district` (
 
 LOCK TABLES `fishing_district` WRITE;
 /*!40000 ALTER TABLE `fishing_district` DISABLE KEYS */;
-INSERT INTO `fishing_district` VALUES (3,'Пролетарский район'),(1,'Сальский район');
+INSERT INTO `fishing_district` VALUES (1,'Сальский район');
 /*!40000 ALTER TABLE `fishing_district` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -418,7 +418,7 @@ CREATE TABLE `fishing_feedcapacity` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `feed_capacity_name` varchar(20) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -427,7 +427,7 @@ CREATE TABLE `fishing_feedcapacity` (
 
 LOCK TABLES `fishing_feedcapacity` WRITE;
 /*!40000 ALTER TABLE `fishing_feedcapacity` DISABLE KEYS */;
-INSERT INTO `fishing_feedcapacity` VALUES (1,'Большая'),(2,'Малая'),(3,'Средняя'),(4,'груз');
+INSERT INTO `fishing_feedcapacity` VALUES (1,'Средняя');
 /*!40000 ALTER TABLE `fishing_feedcapacity` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -443,8 +443,8 @@ CREATE TABLE `fishing_fish` (
   `name_of_fish` varchar(20) COLLATE utf8_bin NOT NULL,
   `fish_description` longtext COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `fishing_fish_name_of_fish_5dc979e1_uniq` (`name_of_fish`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+  UNIQUE KEY `name_of_fish` (`name_of_fish`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -453,7 +453,7 @@ CREATE TABLE `fishing_fish` (
 
 LOCK TABLES `fishing_fish` WRITE;
 /*!40000 ALTER TABLE `fishing_fish` DISABLE KEYS */;
-INSERT INTO `fishing_fish` VALUES (1,'Лещ','лещ');
+INSERT INTO `fishing_fish` VALUES (1,'Плотва','Плотва');
 /*!40000 ALTER TABLE `fishing_fish` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -476,6 +476,7 @@ CREATE TABLE `fishing_fishing` (
   `fishing_tackle_id` int(11) NOT NULL,
   `fishing_trough_id` int(11) NOT NULL,
   `nozzle_id` int(11) NOT NULL,
+  `owner_id` int(11) NOT NULL,
   `pace_id` int(11) NOT NULL,
   `place_id` int(11) NOT NULL,
   `weather_id` int(11) NOT NULL,
@@ -486,6 +487,7 @@ CREATE TABLE `fishing_fishing` (
   KEY `fishing_fishing_fishing_tackle_id_34854d74_fk_fishing_f` (`fishing_tackle_id`),
   KEY `fishing_fishing_fishing_trough_id_6f0f1cd5_fk_fishing_f` (`fishing_trough_id`),
   KEY `fishing_fishing_nozzle_id_f0856399_fk_fishing_nozzle_id` (`nozzle_id`),
+  KEY `fishing_fishing_owner_id_1317e47e_fk_auth_user_id` (`owner_id`),
   KEY `fishing_fishing_pace_id_d3d20faa_fk_fishing_pace_id` (`pace_id`),
   KEY `fishing_fishing_place_id_c3a97595_fk_fishing_place_id` (`place_id`),
   KEY `fishing_fishing_weather_id_ac377240_fk_fishing_weather_id` (`weather_id`),
@@ -499,6 +501,7 @@ CREATE TABLE `fishing_fishing` (
   CONSTRAINT `fishing_fishing_fishing_tackle_id_34854d74_fk_fishing_f` FOREIGN KEY (`fishing_tackle_id`) REFERENCES `fishing_fishingtackle` (`id`),
   CONSTRAINT `fishing_fishing_fishing_trough_id_6f0f1cd5_fk_fishing_f` FOREIGN KEY (`fishing_trough_id`) REFERENCES `fishing_fishingtrough` (`id`),
   CONSTRAINT `fishing_fishing_nozzle_id_f0856399_fk_fishing_nozzle_id` FOREIGN KEY (`nozzle_id`) REFERENCES `fishing_nozzle` (`id`),
+  CONSTRAINT `fishing_fishing_owner_id_1317e47e_fk_auth_user_id` FOREIGN KEY (`owner_id`) REFERENCES `auth_user` (`id`),
   CONSTRAINT `fishing_fishing_pace_id_d3d20faa_fk_fishing_pace_id` FOREIGN KEY (`pace_id`) REFERENCES `fishing_pace` (`id`),
   CONSTRAINT `fishing_fishing_place_id_c3a97595_fk_fishing_place_id` FOREIGN KEY (`place_id`) REFERENCES `fishing_place` (`id`),
   CONSTRAINT `fishing_fishing_weather_id_ac377240_fk_fishing_weather_id` FOREIGN KEY (`weather_id`) REFERENCES `fishing_weather` (`id`)
@@ -511,7 +514,7 @@ CREATE TABLE `fishing_fishing` (
 
 LOCK TABLES `fishing_fishing` WRITE;
 /*!40000 ALTER TABLE `fishing_fishing` DISABLE KEYS */;
-INSERT INTO `fishing_fishing` VALUES (1,'2020-04-19','12:36:40.000000',1,1,1,1,1,1,1,1,1,1,1);
+INSERT INTO `fishing_fishing` VALUES (1,'2020-04-29','18:08:30.000000',1,1,1,1,1,1,1,3,2,1,1,1);
 /*!40000 ALTER TABLE `fishing_fishing` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -537,7 +540,7 @@ CREATE TABLE `fishing_fishingleash` (
 
 LOCK TABLES `fishing_fishingleash` WRITE;
 /*!40000 ALTER TABLE `fishing_fishingleash` DISABLE KEYS */;
-INSERT INTO `fishing_fishingleash` VALUES (1,'леска',0.08,25);
+INSERT INTO `fishing_fishingleash` VALUES (1,'леска',0.14,20);
 /*!40000 ALTER TABLE `fishing_fishingleash` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -566,7 +569,7 @@ CREATE TABLE `fishing_fishinglure` (
 
 LOCK TABLES `fishing_fishinglure` WRITE;
 /*!40000 ALTER TABLE `fishing_fishinglure` DISABLE KEYS */;
-INSERT INTO `fishing_fishinglure` VALUES (1,1,1);
+INSERT INTO `fishing_fishinglure` VALUES (1,2,1);
 /*!40000 ALTER TABLE `fishing_fishinglure` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -591,7 +594,7 @@ CREATE TABLE `fishing_fishingmontage` (
 
 LOCK TABLES `fishing_fishingmontage` WRITE;
 /*!40000 ALTER TABLE `fishing_fishingmontage` DISABLE KEYS */;
-INSERT INTO `fishing_fishingmontage` VALUES (1,'Гарднер',0);
+INSERT INTO `fishing_fishingmontage` VALUES (1,'ранинг',1);
 /*!40000 ALTER TABLE `fishing_fishingmontage` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -620,7 +623,7 @@ CREATE TABLE `fishing_fishingpoint` (
 
 LOCK TABLES `fishing_fishingpoint` WRITE;
 /*!40000 ALTER TABLE `fishing_fishingpoint` DISABLE KEYS */;
-INSERT INTO `fishing_fishingpoint` VALUES (1,100,42,2.50,1);
+INSERT INTO `fishing_fishingpoint` VALUES (1,100,45,2.00,1);
 /*!40000 ALTER TABLE `fishing_fishingpoint` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -651,7 +654,7 @@ CREATE TABLE `fishing_fishingresult` (
 
 LOCK TABLES `fishing_fishingresult` WRITE;
 /*!40000 ALTER TABLE `fishing_fishingresult` DISABLE KEYS */;
-INSERT INTO `fishing_fishingresult` VALUES (1,3,3.0,1,1);
+INSERT INTO `fishing_fishingresult` VALUES (1,2,0.8,1,1);
 /*!40000 ALTER TABLE `fishing_fishingresult` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -709,7 +712,7 @@ CREATE TABLE `fishing_fishingtrough` (
 
 LOCK TABLES `fishing_fishingtrough` WRITE;
 /*!40000 ALTER TABLE `fishing_fishingtrough` DISABLE KEYS */;
-INSERT INTO `fishing_fishingtrough` VALUES (1,'Дядя Вася',100,1,1);
+INSERT INTO `fishing_fishingtrough` VALUES (1,'noname',40,1,1);
 /*!40000 ALTER TABLE `fishing_fishingtrough` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -739,7 +742,7 @@ CREATE TABLE `fishing_fishtrophy` (
 
 LOCK TABLES `fishing_fishtrophy` WRITE;
 /*!40000 ALTER TABLE `fishing_fishtrophy` DISABLE KEYS */;
-INSERT INTO `fishing_fishtrophy` VALUES (1,2.0,1,1);
+INSERT INTO `fishing_fishtrophy` VALUES (1,0.4,1,1);
 /*!40000 ALTER TABLE `fishing_fishtrophy` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -767,7 +770,7 @@ CREATE TABLE `fishing_lure` (
 
 LOCK TABLES `fishing_lure` WRITE;
 /*!40000 ALTER TABLE `fishing_lure` DISABLE KEYS */;
-INSERT INTO `fishing_lure` VALUES (1,'Dunaev Fadeev','Carp classic',1);
+INSERT INTO `fishing_lure` VALUES (1,'Dunaev','Turbofider',1);
 /*!40000 ALTER TABLE `fishing_lure` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -795,7 +798,7 @@ CREATE TABLE `fishing_modeltrough` (
 
 LOCK TABLES `fishing_modeltrough` WRITE;
 /*!40000 ALTER TABLE `fishing_modeltrough` DISABLE KEYS */;
-INSERT INTO `fishing_modeltrough` VALUES (1,0,1,1);
+INSERT INTO `fishing_modeltrough` VALUES (1,0,0,1);
 /*!40000 ALTER TABLE `fishing_modeltrough` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -810,7 +813,7 @@ CREATE TABLE `fishing_modeltroughname` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `model_trough_name` varchar(20) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `fishing_modeltroughname_model_trough_name_2405a6a2_uniq` (`model_trough_name`)
+  UNIQUE KEY `model_trough_name` (`model_trough_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -820,7 +823,7 @@ CREATE TABLE `fishing_modeltroughname` (
 
 LOCK TABLES `fishing_modeltroughname` WRITE;
 /*!40000 ALTER TABLE `fishing_modeltroughname` DISABLE KEYS */;
-INSERT INTO `fishing_modeltroughname` VALUES (1,'Аллигатор');
+INSERT INTO `fishing_modeltroughname` VALUES (1,'Сербская пуля');
 /*!40000 ALTER TABLE `fishing_modeltroughname` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -839,7 +842,7 @@ CREATE TABLE `fishing_nozzle` (
   `nozzel_diameter` int(10) unsigned NOT NULL,
   `nozzel_type` varchar(20) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -848,7 +851,7 @@ CREATE TABLE `fishing_nozzle` (
 
 LOCK TABLES `fishing_nozzle` WRITE;
 /*!40000 ALTER TABLE `fishing_nozzle` DISABLE KEYS */;
-INSERT INTO `fishing_nozzle` VALUES (1,1,'','Опарыш',0,'');
+INSERT INTO `fishing_nozzle` VALUES (1,1,'','Опарыш',0,''),(2,0,'','без живого компонента',0,''),(3,0,'','Опарыш',0,'');
 /*!40000 ALTER TABLE `fishing_nozzle` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -863,7 +866,7 @@ CREATE TABLE `fishing_nozzlestate` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `state` varchar(20) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `fishing_nozzlestate_state_d4215635_uniq` (`state`)
+  UNIQUE KEY `state` (`state`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -873,7 +876,7 @@ CREATE TABLE `fishing_nozzlestate` (
 
 LOCK TABLES `fishing_nozzlestate` WRITE;
 /*!40000 ALTER TABLE `fishing_nozzlestate` DISABLE KEYS */;
-INSERT INTO `fishing_nozzlestate` VALUES (1,'Топленый');
+INSERT INTO `fishing_nozzlestate` VALUES (1,'без живого компонент');
 /*!40000 ALTER TABLE `fishing_nozzlestate` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -921,7 +924,7 @@ CREATE TABLE `fishing_pace` (
 
 LOCK TABLES `fishing_pace` WRITE;
 /*!40000 ALTER TABLE `fishing_pace` DISABLE KEYS */;
-INSERT INTO `fishing_pace` VALUES (1,'Быстрый (до 2 минут)');
+INSERT INTO `fishing_pace` VALUES (1,'Медленный');
 /*!40000 ALTER TABLE `fishing_pace` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -957,7 +960,7 @@ CREATE TABLE `fishing_place` (
 
 LOCK TABLES `fishing_place` WRITE;
 /*!40000 ALTER TABLE `fishing_place` DISABLE KEYS */;
-INSERT INTO `fishing_place` VALUES (1,'Манычстрой',46,38,11.000,41,38,19.000,1,1);
+INSERT INTO `fishing_place` VALUES (1,'Юловский',0,0,0.000,0,0,0.000,1,1);
 /*!40000 ALTER TABLE `fishing_place` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -989,7 +992,7 @@ CREATE TABLE `fishing_point` (
 
 LOCK TABLES `fishing_point` WRITE;
 /*!40000 ALTER TABLE `fishing_point` DISABLE KEYS */;
-INSERT INTO `fishing_point` VALUES (1,100,50,2.00,1,1);
+INSERT INTO `fishing_point` VALUES (1,100,42,2.00,1,1);
 /*!40000 ALTER TABLE `fishing_point` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1004,7 +1007,7 @@ CREATE TABLE `fishing_priming` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `priming_name` varchar(50) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1013,7 +1016,7 @@ CREATE TABLE `fishing_priming` (
 
 LOCK TABLES `fishing_priming` WRITE;
 /*!40000 ALTER TABLE `fishing_priming` DISABLE KEYS */;
-INSERT INTO `fishing_priming` VALUES (1,'Ил'),(3,'Песок');
+INSERT INTO `fishing_priming` VALUES (1,'Песок');
 /*!40000 ALTER TABLE `fishing_priming` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1074,7 +1077,7 @@ CREATE TABLE `fishing_weather` (
 
 LOCK TABLES `fishing_weather` WRITE;
 /*!40000 ALTER TABLE `fishing_weather` DISABLE KEYS */;
-INSERT INTO `fishing_weather` VALUES (1,19.0,760,'СВ',2.5,0,1,1);
+INSERT INTO `fishing_weather` VALUES (1,15.0,758,'Юг',3.0,0,1,1);
 /*!40000 ALTER TABLE `fishing_weather` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1111,4 +1114,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-04-27 19:37:35
+-- Dump completed on 2020-04-30  7:18:36
