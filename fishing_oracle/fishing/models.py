@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.contrib.auth.models import User
+from users.models import CustomUser
+#from django.contrib.auth.models import User
 
 
 class Fishing(models.Model):
@@ -10,9 +11,9 @@ class Fishing(models.Model):
     class Meta:
         verbose_name = "Рыбалка"
         verbose_name_plural = "Рыбалки"
-    #Владелец записи
+    # Владелец записи
     owner = models.ForeignKey(
-        User,
+        CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи"
     )

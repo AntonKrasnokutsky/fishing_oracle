@@ -8,6 +8,7 @@ from .models import Priming
 from .forms import FishRenewalForm
 from .forms import DistrictForm
 from .forms import PrimingForm
+from django.contrib.auth.decorators import login_required
 
 
 def visits(request, inc=0):
@@ -16,6 +17,7 @@ def visits(request, inc=0):
     return num_visits
 
 
+# @login_required
 def index(request):
     num_visits = visits(request, 1)
     return render(request, 'fishing/index.html', {'num_visits': num_visits})
