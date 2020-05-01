@@ -3,13 +3,17 @@
   {% for district in districts_list %}
   <li>
     {{district.district_name}}
+    {% if user.is_staff %}
     <a href="{% url 'fishing:district_renewal' district.id %}">Редактировать</a>
     <a href="{% url 'fishing:district_remove' district.id %}">Удалить</a>
+    {% endif %}
   </li>
   {% endfor %}
 </ul>
 {% else %}
 <p>Список районов пуст</p>
 {% endif %}
+{% if user.is_staff %}
 <p><a href="{% url 'fishing:district_add' %}">Добавить</a></p>
+{% endif %}
 {% endblock %}

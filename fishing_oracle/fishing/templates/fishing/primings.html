@@ -3,13 +3,17 @@
   {% for priming in primings_list %}
   <li>
     {{priming.priming_name}}
+    {% if user.is_staff %}
     <a href="{% url 'fishing:priming_renewal' priming.id %}">Редактировать</a>
     <a href="{% url 'fishing:priming_remove' priming.id %}">Удалить</a>
+    {% endif %}
   </li>
   {% endfor %}
 </ul>
 {% else %}
 <p>Список районов пуст</p>
 {% endif %}
+{% if user.is_staff %}
 <p><a href="{% url 'fishing:priming_add' %}">Добавить</a></p>
+{% endif %}
 {% endblock %}

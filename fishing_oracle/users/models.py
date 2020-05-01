@@ -6,6 +6,10 @@ from .managers import CustomUserManager
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+
     email = models.EmailField('email address', unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)

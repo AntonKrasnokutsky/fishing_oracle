@@ -78,6 +78,9 @@ WSGI_APPLICATION = 'fishing_oracle.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': {
+            'sql_mode': 'STRICT_TRANS_TABLES',
+        },
         'NAME': 'h9d1v8',
         'USER': 'h7dhr',
         'PASSWORD': 'h6iHjLc4',
@@ -107,6 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/auth/login/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 

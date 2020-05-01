@@ -117,6 +117,12 @@ class Place(models.Model):
     class Meta:
         verbose_name = "Место рыбалки"
         verbose_name_plural = "Места рыбалок"
+
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи")
     # Привязка к водоему
     water = models.ForeignKey(
         'Water',
@@ -211,6 +217,13 @@ class BottomMap(models.Model):
         'Water',
         on_delete=models.CASCADE,
         verbose_name="Водоем")
+
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Координа базовой точки, градусы северной широты от -90 до 90
     bottom_map_northern_degree = models.IntegerField(
         default=0,
@@ -281,6 +294,12 @@ class Point(models.Model):
     class Meta:
         verbose_name = "Точка карты дна"
         verbose_name_plural = "Точки карт дна"
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Привязка к маркерной карте
     bottom_map = models.OneToOneField(
         'BottomMap',
@@ -322,6 +341,12 @@ class FishingPoint(models.Model):
     class Meta:
         verbose_name = "Точка ловли"
         verbose_name_plural = "Точки ловли"
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Азимут заброса
     fishing_point_azimuth = models.PositiveIntegerField(
         default=0,
@@ -355,6 +380,7 @@ class Priming(models.Model):
     class Meta:
         verbose_name = "Покрытие дна"
         verbose_name_plural = "Покрытие дна"
+        ordering = ['priming_name']
     # Наименование покрытия дна
     priming_name = models.CharField(
         max_length=50,
@@ -450,6 +476,12 @@ class FishingTackle(models.Model):
     class Meta:
         verbose_name = "Рыболовная снасть"
         verbose_name_plural = "Рыболовные снасти"
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     #
     fishing_tackle_manufacturer = models.CharField(
         max_length=20,
@@ -476,6 +508,12 @@ class FishingMontage(models.Model):
     Содержит в себе варианты монтажей с вариантом выбора
     скользящего
     """
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Вариант монтажа
     fishing_montage_name = models.CharField(
         max_length=15,
@@ -497,6 +535,12 @@ class FishingTrough(models.Model):
     """
     Содержит информацию о кормушках
     """
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Производитель кормушки
     fishing_trough_manufacturer = models.CharField(
         max_length=50,
@@ -529,6 +573,12 @@ class ModelTrough(models.Model):
     """
     Содержит комбинации моделей кормушек
     """
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Связь со списком моделей
     model_trough_name = models.ForeignKey(
         'ModelTroughName',
@@ -555,6 +605,12 @@ class ModelTroughName(models.Model):
     """
     Содержит варианты моделей кормкшек
     """
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Название модели кормушки
     model_trough_name = models.CharField(
         max_length=20,
@@ -573,6 +629,12 @@ class FeedCapacity(models.Model):
     """
     Содержит варианты кормоемкости кормушек
     """
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Кормоемкость кормушки
     feed_capacity_name = models.CharField(
         max_length=20,
@@ -594,6 +656,12 @@ class FishingLure(models.Model):
     class Meta:
         verbose_name = "Прикормочная смесь"
         verbose_name_plural = "Прикормочные смеси"
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     #Прикорм - Ok
     # Наживка
     nozzle = models.ForeignKey(
@@ -642,6 +710,12 @@ class Nozzle(models.Model):
     class Meta:
         verbose_name = "Наживка/насадка"
         verbose_name_plural = "Наживки/насадки"
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # True наживка иначе насадка
     bait = models.BooleanField(
         default=False,
@@ -677,6 +751,12 @@ class NozzleState(models.Model):
     class Meta:
         verbose_name = "Состояние насадки"
         verbose_name_plural = "Состояние насадок"
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Состояние
     state = models.CharField(
         max_length=20,
@@ -694,7 +774,12 @@ class Aroma(models.Model):
     class Meta:
         verbose_name = "Арома"
         verbose_name_plural = "Аромы"
-
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Название производителя
     aroma_manufacturer = models.CharField(
         max_length=100,
@@ -715,6 +800,12 @@ class FishingLeash(models.Model):
     class Meta:
         verbose_name = "Поводок"
         verbose_name_plural = "Поводки"
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Поводочный материал
     fishing_leash_material = models.CharField(
         max_length=20,
@@ -741,6 +832,12 @@ class Crochet(models.Model):
     class Meta:
         verbose_name = "Крючок"
         verbose_name_plural = "Крючки"
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Производитель
     crochet_manufacturer = models.CharField(
         max_length=20,
@@ -765,6 +862,12 @@ class Pace(models.Model):
     class Meta:
         verbose_name = "Темп"
         verbose_name_plural = "Темп"
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Темп
     pace_interval = models.CharField(
         max_length=30,
@@ -784,6 +887,12 @@ class FishingResult(models.Model):
         verbose_name_plural = "Результат рыбалок"
     # Привязка к рыбалке, т.к. может быть несколько вариантов
     # то именное модель результатов привязываем, а не на
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # оборот
     fishing = models.ForeignKey(
         'Fishing',
@@ -814,6 +923,12 @@ class FishTrophy(models.Model):
     class Meta:
         verbose_name = "Трофейный улов"
         verbose_name_plural = "Трофейные уловы"
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Привязка к рыбалке, т.к. может быть несколько вариантов
     # то именное модель трофеев привязываем, а не на
     # оборот
@@ -830,7 +945,7 @@ class FishTrophy(models.Model):
     # Вес трофея
     fish_trophy_weight = models.DecimalField(
         max_digits=4,
-        decimal_places=1,
+        decimal_places=2,
         verbose_name="Вес трофея")
     #fish_trophy_photo=models.ImageField(verbose_name="Фото трофея")
 

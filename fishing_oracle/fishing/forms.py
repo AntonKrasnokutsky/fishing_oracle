@@ -1,4 +1,4 @@
-from .models import Fish, District, Priming
+from .models import Fish, District, Priming, Overcast
 from django import forms
 
 
@@ -21,3 +21,9 @@ class PrimingForm(forms.ModelForm):
     class Meta:
         model = Priming
         fields = ('priming_name',)
+
+
+class OvercastForm(forms.ModelForm):
+    class Meta:
+        model = Overcast
+        fields = ('overcast_name',)
