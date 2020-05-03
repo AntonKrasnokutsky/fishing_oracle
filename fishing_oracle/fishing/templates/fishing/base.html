@@ -56,12 +56,15 @@
       <a href="/">Домой</a>
       {% if user.is_authenticated %}
       <a href="{% url 'fishing:fishing' %}">Рыбалки</a>
+      <a href="{% url 'fishing:overcast' %}">Облачность</a>
+      <a href="{% url 'fishing:weatherphenomena' %}">Погодные явления</a>
+      <a href="{% url 'fishing:feed_capacity' %}">Кормоёмкость</a>
+      <a href="{% url 'fishing:pace' %}">Темп</a>
       {% endif %}
       <a href="{% url 'fishing:fish' %}">Рыба</a>
       {% if user.is_staff %}
       <a href="{% url 'fishing:districts' %}">Районы</a>
       <a href="{% url 'fishing:primings' %}">Грунт</a>
-      <a href="{% url 'fishing:overcast' %}">Облачность</a>
       {% endif %}
       {% if user.is_authenticated %}
       <a href="{% url 'logout'%}?next={{request.path}}">{{ user.get_username }}</a>

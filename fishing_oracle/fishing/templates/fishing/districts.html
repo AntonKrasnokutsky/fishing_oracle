@@ -2,9 +2,9 @@
 <ul>
   {% for district in districts_list %}
   <li>
-    {{district.district_name}}
+    <a href="{% url 'fishiong:water' district.id}">{{district.district_name}}</a>
     {% if user.is_staff %}
-    <a href="{% url 'fishing:district_renewal' district.id %}">Редактировать</a>
+    <a href=" {% url 'fishing:district_renewal' district.id %}">Редактировать</a>
     <a href="{% url 'fishing:district_remove' district.id %}">Удалить</a>
     {% endif %}
   </li>

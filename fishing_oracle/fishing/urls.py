@@ -93,4 +93,72 @@ urlpatterns = [
     path('overcast/remove/<int:overcast_id>',
          views.overcast_remove,
          name='overcast_remove'),
+    # Погодные явления
+    # Список погодных явления
+    path('phenomena/',
+         views.weather_phenomenas_list,
+         name='weatherphenomena'),
+    # Добавление погодного явления
+    path('phenomena/add',
+         views.weather_phenomenas_add,
+         name="weatherphenomena_add"),
+    # Редактирование погодного явления
+    path('phenomena/renewal/<int:phenomena_id>',
+         views.weather_phenomenas_renewal,
+         name='weatherphenomena_renewal'),
+    # Удаление погодного явления
+    path('phenomena/remove/<int:phenomena_id>',
+         views.weather_phenomenas_remove,
+         name='weatherphenomena_remove'),
+    # Блок кормушек
+    # Кормоемкость
+    # Списк вариантов кормоемкости
+    path('capacity/',
+         views.feed_capacity_list,
+         name='feed_capacity'),
+    # Добавление варианта кормоемкости
+    path('capacity/add/',
+         views.feed_capacity_add,
+         name='feed_capacity_add'),
+    # Редактирование варианта кормоемскости
+    path('capacity/renewal/<int:feed_capacity_id>',
+         views.feed_capacity_renewal,
+         name='feed_capacity_renewal'),
+    # Удаление варианта кормоемкости
+    path('capacity/remove/<int:feed_capacity_id>',
+         views.feed_capacity_remove,
+         name='feed_capacity_remove'),
+    # Темп
+    # Список вариантов таблицы Темп
+    path('pace/',
+         views.pace_list,
+         name='pace'),
+    # Добавление варианта темпа
+    path('pace/add/',
+         views.pace_add, name='pace_add'),
+    # Редактирование варианта темпа
+    path('pace/renewal/<int:pace_id>',
+         views.pace_renewal,
+         name='pace_renewal'),
+    # Удаление варианта темпа
+    path('pace/remove/<int:pace_int>',
+         views.pace_remove,
+         name='pace_remove'),
+    # Водоемы
+    # Список водоемов
+    path('district/water/<int:district_id>',
+         views.water_list,
+         name='water'),
+    # Добавление водоема
+    path('water/add',
+         views.water_add,
+         name='water_add'),
+    # Редактирование водоема
+    path('water/renewal/<int:water_id>',
+         views.water_renewal,
+         name='water_renewal'),
+    # Удаление водоема
+    path('water/remove/<int:water_id>',
+         views.water_remove,
+         name='water_remove'),
 ]

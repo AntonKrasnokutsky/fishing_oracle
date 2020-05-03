@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from users.models import CustomUser
-#from django.contrib.auth.models import User
 
 
 class Fishing(models.Model):
@@ -459,6 +458,7 @@ class WeatherPhenomena(models.Model):
     class Meta:
         verbose_name = "Погодное явление"
         verbose_name_plural = "Погодные явления"
+        ordering = ["weather_phenomena_name"]
 
     # Погодные явления
     weather_phenomena_name = models.CharField(
@@ -629,12 +629,6 @@ class FeedCapacity(models.Model):
     """
     Содержит варианты кормоемкости кормушек
     """
-    # Владелец записи
-    owner = models.ForeignKey(
-        CustomUser,
-        on_delete=models.PROTECT,
-        verbose_name="Владелец записи"
-    )
     # Кормоемкость кормушки
     feed_capacity_name = models.CharField(
         max_length=20,
@@ -643,6 +637,7 @@ class FeedCapacity(models.Model):
     class Meta:
         verbose_name = "Кормоёмкость кормушки"
         verbose_name_plural = "Кормоёмкость кормушек"
+        ordering = ['feed_capacity_name']
 
     def __str__(self):
         return self.feed_capacity_name
@@ -683,6 +678,12 @@ class Lure(models.Model):
     class Meta:
         verbose_name = "Прикорм"
         verbose_name_plural = "Прикорм"
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
     # Связь с прикормочной смесью
     fishing_lure = models.ForeignKey(
         'FishingLure',
@@ -862,12 +863,7 @@ class Pace(models.Model):
     class Meta:
         verbose_name = "Темп"
         verbose_name_plural = "Темп"
-    # Владелец записи
-    owner = models.ForeignKey(
-        CustomUser,
-        on_delete=models.PROTECT,
-        verbose_name="Владелец записи"
-    )
+        ordering = ['pace_interval', ]
     # Темп
     pace_interval = models.CharField(
         max_length=30,

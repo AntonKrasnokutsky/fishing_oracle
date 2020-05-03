@@ -2,14 +2,31 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, Http404
 from django.template import loader
 from .models import Fishing
+
 from .models import Fish
+from .forms import FishForm
+
 from .models import District
-from .models import Priming
-from .models import Overcast
-from .forms import FishRenewalForm
 from .forms import DistrictForm
+
+from .models import Priming
 from .forms import PrimingForm
+
+from .models import Overcast
 from .forms import OvercastForm
+
+from .models import WeatherPhenomena
+from .forms import WeatherPhenomenaForm
+
+from .models import FeedCapacity
+from .forms import FeedCapacityForm
+
+from .models import Pace
+from .forms import PaceForm
+
+from .models import Water
+from .forms import WaterForm
+
 from django.contrib.auth.decorators import login_required
 
 
@@ -95,14 +112,14 @@ def fish_renewal(request, fish_id):
         fish = get_object_or_404(Fish, pk=fish_id)
         num_visits = visits(request)
         if request.method == 'POST':
-            form = FishRenewalForm(request.POST)
+            form = FishForm(request.POST)
             if form.is_valid():
                 fish.name_of_fish = form.cleaned_data['name_of_fish']
                 fish.fish_description = form.cleaned_data['fish_description']
                 fish.save()
             return redirect('fishing:fish')
         else:
-            form = FishRenewalForm(
+            form = FishForm(
                 initial={'name_of_fish': fish.name_of_fish, 'fish_description': fish.fish_description, })
         return render(request, 'fishing/fish_renewal.html', {'form': form, 'fish': fish, 'num_visits': num_visits})
     else:
@@ -115,7 +132,7 @@ def fish_add(request):
         fish = Fish()
         num_visits = visits(request)
         if request.method == 'POST':
-            form = FishRenewalForm(request.POST)
+            form = FishForm(request.POST)
             if form.is_valid():
 
                 fish.name_of_fish = form.cleaned_data['name_of_fish']
@@ -123,7 +140,7 @@ def fish_add(request):
                 fish.save()
             return redirect('fishing:fish')
         else:
-            form = FishRenewalForm()
+            form = FishForm()
         return render(request, 'fishing/fish_renewal.html', {'form': form, 'fish': fish, 'num_visits': num_visits})
     else:
         return redirect('fishing:fish')
@@ -169,7 +186,7 @@ def district_add(request):
 
 
 @login_required
-def district_renewal(request, district_id):
+def district_renewal(request, districtwater_name_id):
     """
     Редактирование района
     """
@@ -282,7 +299,7 @@ def priming_remove(request, priming_id):
 
 @login_required
 def overcast_list(request):
-    if request.user.is_staff:
+    if request.user.is_authenticated:
         overcasts_list = Overcast.objects.all()
         num_visits = visits(request)
         return render(request, 'fishing/overcast.html',
@@ -352,3 +369,288 @@ def overcast_remove(request, overcast_id):
         overcast = get_object_or_404(Overcast, pk=overcast_id)
         overcast.delete()
     return redirect('fishing:overcast')
+
+
+@login_required
+def weather_phenomenas_list(request):
+    num_visits = visits(request)
+    if request.user.is_authenticated:
+        weather_phenomena_list = WeatherPhenomena.objects.all()
+        return render(request, 'fishing/phenomena.html',
+                      {'weather_phenomena_list': weather_phenomena_list,
+                       'num_visits': num_visits})
+    return redirect('fishing:index')
+
+
+@login_required
+def weather_phenomenas_add(request):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        weather_phenomena = WeatherPhenomena()
+
+        if request.method == 'POST':
+            form = WeatherPhenomenaForm(request.POST)
+            if form.is_valid():
+                weather_phenomena.weather_phenomena_name = form.cleaned_data[
+                    'weather_phenomena_name']
+                weather_phenomena.save()
+            return redirect('fishing:weatherphenomena')
+        else:
+            form = WeatherPhenomenaForm()
+            return render(
+                request,
+                'fishing/phenomena_renewal_add.html',
+                {'form': form,
+                 'weather_penomena': weather_phenomena,
+                 'num_visits': num_visits})
+    else:
+        return redirect('fishing:index')
+
+
+@login_required
+def weather_phenomenas_renewal(request, phenomena_id):
+    """
+    Редактирование погодного явления
+    """
+    num_visits = visits(request, phenomena_id)
+    if request.user.is_staff:
+        weather_phenomena = get_object_or_404(
+            WeatherPhenomena, pk=phenomena_id)
+
+        if request.method == 'POST':
+            form = WeatherPhenomenaForm(request.POST)
+            if form.is_valid():
+                weather_phenomena.weather_phenomena_name = form.cleaned_data[
+                    'weather_phenomena_name']
+                weather_phenomena.save()
+            return redirect('fishing:weatherphenomena')
+        else:
+            form = WeatherPhenomenaForm(
+                initial={'weather_phenomena_name': weather_phenomena.weather_phenomena_name, })
+            return render(request,
+                          'fishing/phenomena_renewal_add.html',
+                          {'form': form,
+                           'phenomena': weather_phenomena,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:weatherphenomena')
+
+
+@login_required
+def weather_phenomenas_remove(request, phenomena_id):
+    """
+    Удаление явления
+    """
+    if request.user.is_staff:
+        weatherphenomena = get_object_or_404(WeatherPhenomena, pk=phenomena_id)
+        weatherphenomena.delete()
+    return redirect('fishing:weatherphenomena')
+
+
+@login_required
+def feed_capacity_list(request):
+    num_visits = visits(request)
+    if request.user.is_authenticated:
+        feed_capacity_list = FeedCapacity.objects.all()
+        return render(request, 'fishing/feed_capacity.html',
+                      {'feed_capacity_list': feed_capacity_list,
+                       'nem_visits': num_visits})
+    else:
+        return redirect('fishing:index')
+
+
+@login_required
+def feed_capacity_add(request):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        feed_capacity = FeedCapacity()
+
+        if request.method == 'POST':
+            form = FeedCapacityForm(request.POST)
+            if form.is_valid():
+                feed_capacity.feed_capacity_name = form.cleaned_data[
+                    'feed_capacity_name']
+                feed_capacity.save()
+            return redirect('fishing:feed_capacity')
+        else:
+            form = FeedCapacityForm()
+            return render(request,
+                          'fishing/feed_capacity_renewal_add.html',
+                          {'form': form,
+                           'feed_capacity': feed_capacity,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:index')
+
+
+@login_required
+def feed_capacity_renewal(request, feed_capacity_id):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        feed_capacity = get_object_or_404(FeedCapacity, pk=feed_capacity_id)
+
+        if request.method == 'POST':
+            form = FeedCapacityForm(request.POST)
+            if form.is_valid():
+                feed_capacity.feed_capacity_name = form.cleaned_data[
+                    'feed_capacity_name']
+                feed_capacity.save()
+            return redirect('fishing:feed_capacity')
+        else:
+            form = FeedCapacityForm(
+                initial={'feed_capacity_name': feed_capacity.feed_capacity_name, })
+            return render(request,
+                          'fishing/feed_capacity_renewal_add.html',
+                          {'form': form,
+                           'feed_capacity': feed_capacity,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:feed_capacity')
+
+
+@login_required
+def feed_capacity_remove(request, feed_capacity_id):
+    if request.user.is_staff:
+        feed_capacity = get_object_or_404(FeedCapacity, pk=feed_capacity_id)
+        feed_capacity.delete()
+    return redirect('fishing:feed_capacity')
+
+
+@login_required
+def pace_list(request):
+    num_visits = visits(request)
+    if request.user.is_authenticated:
+        pace_list = Pace.objects.all()
+        return render(request,
+                      'fishing/pace.html',
+                      {'pace_list': pace_list,
+                       'num_visits': num_visits})
+    return redirect('fishing:index')
+
+
+@login_required
+def pace_add(request):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        pace = Pace()
+        if request.method == 'POST':
+            form = PaceForm(request.POST)
+            if form.is_valid():
+                pace.pace_interval = form.cleaned_data['pace_interval']
+                pace.save()
+            return redirect('fishing:pace')
+        else:
+            form = PaceForm()
+            return render(request,
+                          'fishing/pace_renewal_add.html',
+                          {'form': form,
+                           'pace': pace,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:index')
+
+
+@login_required
+def pace_renewal(request, pace_id):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        pace = get_object_or_404(Pace, pk=pace_id)
+        if request.method == 'POST':
+            form = PaceForm(request.POST)
+            if form.is_valid():
+                pace.pace_interval = form.cleaned_data['pace_interval']
+                pace.save()
+            return redirect('fishing:pace')
+        else:
+            form = PaceForm(initial={'pace_interval': pace.pace_interval, })
+            return render(request,
+                          'fishing/pace_renewal_add.html',
+                          {'form': form,
+                           'pace': pace,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:index')
+
+
+@login_required
+def pace_remove(request, pace_id):
+    if request.user.is_staff:
+        pace = get_object_or_404(Pace, pk=pace_id)
+        pace.delete()
+    return redirect('fishing:pace')
+
+
+@login_required
+def water_list(request, district_id):
+    if request.user.is_authenticated:
+        num_visits = visits(request)
+        district_name = get_object_or_404(District, pk=district_id)
+        water_list = Water.objects.filter(district=district_name[0])
+        return render(request,
+                      'fishing/water.html',
+                      {'water_list': water_list,
+                       'num_visits': num_visits})
+    else:
+        return redirect('fishing:index')
+
+
+@login_required
+def water_add(request):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        water = Water()
+        if request.method == 'POST':
+            form = WaterForm(request.POST)
+            if form.is_valid():
+                water.water_name = form.cleaned_data['water_name']
+                disrtict_select = form.cleaned_data['district']
+                district = District.objects.filter(
+                    district_name=disrtict_select)
+                water.district = district[0]
+                water.save()
+            return redirect('fishing:water')
+        else:
+            form = WaterForm()
+            return render(request,
+                          'fishing/water_renewal_add.html',
+                          {'form': form,
+                           'water': water,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:index')
+
+
+@login_required
+def water_renewal(request, water_id):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        water = get_object_or_404(Water, pk=water_id)
+        if request.method == 'POST':
+            form = WaterForm(request.POST)
+            if form.is_valid():
+                water.water_name = form.cleaned_data['water_name']
+                disrtict_select = form.cleaned_data['district']
+                district = District.objects.filter(
+                    district_name=disrtict_select)
+                water.district = district[0]
+                water.save()
+            return redirect('fishing:water')
+        else:
+            form = WaterForm(
+                initial={'district': water.district,
+                         'water_name': water.water_name, })
+            return render(request,
+                          'fishing/water_renewal_add.html',
+                          {'form': form,
+                           'water': water,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:index')
+
+
+@login_required
+def water_remove(request, water_id):
+    if request.user.is_staff:
+        water = get_object_or_404(Water, pk=water_id)
+        water.delete()
+    return redirect('fishing:water')
