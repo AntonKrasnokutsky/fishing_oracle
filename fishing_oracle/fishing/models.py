@@ -189,11 +189,11 @@ class Place(models.Model):
         ],
         verbose_name='E" (0 до 59.999)')
     # Точка ловли
-    fishing_point = models.ForeignKey(
-        'FishingPoint',
-        on_delete=models.PROTECT,
-        verbose_name="Точка ловли"
-    )
+    # fishing_point = models.ForeignKey(
+    #     'FishingPoint',
+    #     on_delete=models.PROTECT,
+    #     verbose_name="Точка ловли"
+    # )
     # Фотография места рыбалки
     # photo_place=models.ImageField(
     #     verbose_name="Места")
@@ -341,11 +341,13 @@ class FishingPoint(models.Model):
         verbose_name = "Точка ловли"
         verbose_name_plural = "Точки ловли"
     # Владелец записи
-    owner = models.ForeignKey(
-        CustomUser,
-        on_delete=models.PROTECT,
-        verbose_name="Владелец записи"
-    )
+    owner = models.ForeignKey(CustomUser,
+                              on_delete=models.PROTECT,
+                              verbose_name="Владелец записи")
+    # Привязка к месту
+    place = models.OneToOneField('Place',
+                                 on_delete=models.PROTECT,
+                                 verbose_name='Место ловли')
     # Азимут заброса
     fishing_point_azimuth = models.PositiveIntegerField(
         default=0,
@@ -956,6 +958,7 @@ class District(models.Model):
     class Meta:
         verbose_name = "Район"
         verbose_name_plural = "Районы"
+        ordering = ['district_name', ]
     # Название района
     district_name = models.CharField(
         max_length=50,
@@ -973,6 +976,7 @@ class Water(models.Model):
     class Meta:
         verbose_name = "Водоем"
         verbose_name_plural = "Водоемы"
+        ordering = ['water_name', ]
     # Привязка к району
     district = models.ForeignKey(
         'District',

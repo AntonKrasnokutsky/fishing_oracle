@@ -585,17 +585,20 @@ def water_list(request, district_id):
     if request.user.is_authenticated:
         num_visits = visits(request)
         district_name = get_object_or_404(District, pk=district_id)
-        water_list = Water.objects.filter(district=district_name[0])
+
+        water_list = Water.objects.filter(
+            district=district_name)
         return render(request,
                       'fishing/water.html',
                       {'water_list': water_list,
+                       'district': district_name,
                        'num_visits': num_visits})
     else:
         return redirect('fishing:index')
 
 
 @login_required
-def water_add(request):
+def water_add(request, district_id):
     num_visits = visits(request)
     if request.user.is_staff:
         water = Water()
@@ -608,9 +611,9 @@ def water_add(request):
                     district_name=disrtict_select)
                 water.district = district[0]
                 water.save()
-            return redirect('fishing:water')
+            return redirect('fishing:water', district_id)
         else:
-            form = WaterForm()
+            form = WaterForm(initial={'district': district_id, })
             return render(request,
                           'fishing/water_renewal_add.html',
                           {'form': form,
@@ -621,7 +624,7 @@ def water_add(request):
 
 
 @login_required
-def water_renewal(request, water_id):
+def water_renewal(request, district_id, water_id):
     num_visits = visits(request)
     if request.user.is_staff:
         water = get_object_or_404(Water, pk=water_id)
@@ -634,7 +637,7 @@ def water_renewal(request, water_id):
                     district_name=disrtict_select)
                 water.district = district[0]
                 water.save()
-            return redirect('fishing:water')
+            return redirect('fishing:water', district_id)
         else:
             form = WaterForm(
                 initial={'district': water.district,
@@ -649,8 +652,33 @@ def water_renewal(request, water_id):
 
 
 @login_required
-def water_remove(request, water_id):
+def water_remove(request, district_id, water_id):
     if request.user.is_staff:
         water = get_object_or_404(Water, pk=water_id)
         water.delete()
-    return redirect('fishing:water')
+    return redirect('fishing:water', district_id)
+
+
+@login_required
+def place_list(request, district_id, water_id):
+    pass
+
+
+@login_required
+def place_detail(request, district_id, water_id, place_id):
+    pass
+
+
+@login_required
+def place_add(request, district_id, water_id):
+    pass
+
+
+@login_required
+def place_renewal(request, district_id, water_id, place_id):
+    pass
+
+
+@login_required
+def place_remove(request, district_id, water_id, place_id):
+    pass

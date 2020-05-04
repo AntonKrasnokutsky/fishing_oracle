@@ -26,7 +26,7 @@ urlpatterns = [
          views.fish_list,
          name='fish'),
     # Описание рыбы
-    path('fish/<int:fish_id>',
+    path('fish/<int:fish_id>/',
          views.fish_details,
          name='fish_details'),
     # Редактирование названия рыбы и описания
@@ -47,7 +47,7 @@ urlpatterns = [
          views.district_list,
          name='districts'),
     # Добавление района
-    path('districts/add',
+    path('districts/add/',
          views.district_add,
          name='district_add'),
     # Редактирование района
@@ -68,11 +68,11 @@ urlpatterns = [
          views.priming_add,
          name='priming_add'),
     # Редактирование грунта
-    path('primings/renewal/<int:priming_id>',
+    path('primings/renewal/<int:priming_id>/',
          views.priming_renewal,
          name='priming_renewal'),
     # Удаление грунта
-    path('primings/remove/<int:priming_id>',
+    path('primings/remove/<int:priming_id>/',
          views.priming_remove,
          name='priming_remove'),
     # Блок погоды
@@ -86,11 +86,11 @@ urlpatterns = [
          views.overcast_add,
          name='overcast_add'),
     # Редактирование варианта облачности
-    path('overcast/renewal/<int:overcast_id>',
+    path('overcast/renewal/<int:overcast_id>/',
          views.overcast_renewal,
          name='overcast_renewal'),
     # Удаление варианта облачности
-    path('overcast/remove/<int:overcast_id>',
+    path('overcast/remove/<int:overcast_id>/',
          views.overcast_remove,
          name='overcast_remove'),
     # Погодные явления
@@ -99,15 +99,15 @@ urlpatterns = [
          views.weather_phenomenas_list,
          name='weatherphenomena'),
     # Добавление погодного явления
-    path('phenomena/add',
+    path('phenomena/add/',
          views.weather_phenomenas_add,
          name="weatherphenomena_add"),
     # Редактирование погодного явления
-    path('phenomena/renewal/<int:phenomena_id>',
+    path('phenomena/renewal/<int:phenomena_id>/',
          views.weather_phenomenas_renewal,
          name='weatherphenomena_renewal'),
     # Удаление погодного явления
-    path('phenomena/remove/<int:phenomena_id>',
+    path('phenomena/remove/<int:phenomena_id>/',
          views.weather_phenomenas_remove,
          name='weatherphenomena_remove'),
     # Блок кормушек
@@ -121,11 +121,11 @@ urlpatterns = [
          views.feed_capacity_add,
          name='feed_capacity_add'),
     # Редактирование варианта кормоемскости
-    path('capacity/renewal/<int:feed_capacity_id>',
+    path('capacity/renewal/<int:feed_capacity_id>/',
          views.feed_capacity_renewal,
          name='feed_capacity_renewal'),
     # Удаление варианта кормоемкости
-    path('capacity/remove/<int:feed_capacity_id>',
+    path('capacity/remove/<int:feed_capacity_id>/',
          views.feed_capacity_remove,
          name='feed_capacity_remove'),
     # Темп
@@ -137,28 +137,49 @@ urlpatterns = [
     path('pace/add/',
          views.pace_add, name='pace_add'),
     # Редактирование варианта темпа
-    path('pace/renewal/<int:pace_id>',
+    path('pace/renewal/<int:pace_id>/',
          views.pace_renewal,
          name='pace_renewal'),
     # Удаление варианта темпа
-    path('pace/remove/<int:pace_int>',
+    path('pace/remove/<int:pace_int>/',
          views.pace_remove,
          name='pace_remove'),
     # Водоемы
     # Список водоемов
-    path('district/water/<int:district_id>',
+    path('districts/<int:district_id>/water/',
          views.water_list,
          name='water'),
     # Добавление водоема
-    path('water/add',
+    path('districts/<int:district_id>/water/add/',
          views.water_add,
          name='water_add'),
     # Редактирование водоема
-    path('water/renewal/<int:water_id>',
+    path('districts/<int:district_id>/water/renewal/<int:water_id>/',
          views.water_renewal,
          name='water_renewal'),
     # Удаление водоема
-    path('water/remove/<int:water_id>',
+    path('districts/<int:district_id>/water/remove/<int:water_id>/',
          views.water_remove,
          name='water_remove'),
+    # Место на водоёме
+    # Список мест
+    path('districts/<int:district_id>/water/remove/<int:water_id>/place/',
+         views.place_list,
+         name='place'),
+    # Просмотр деетальной информации о месте
+    path('districts/<int:district_id>/water/remove/<int:water_id>/place/<int:place_id>/',
+         views.place_detail,
+         name='place_detail'),
+    # Добавление места
+    path('districts/<int:district_id>/water/remove/<int:water_id>/place/add/',
+         views.place_add,
+         name='place_add'),
+    # Редактирование места
+    path('districts/<int:district_id>/water/remove/<int:water_id>/place/renewal/<int:place_id>/',
+         views.place_renewal,
+         name='place_renewal'),
+    # Удаление места
+    path('districts/<int:district_id>/water/remove/<int:water_id>/place/remove/<int:place_id>/',
+         views.place_remove,
+         name='place_remove'),
 ]

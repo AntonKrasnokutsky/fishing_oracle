@@ -4,10 +4,10 @@
 <ul>
   {% for water in water_list %}
   <li>
-    {{water.district}} - {{water.water_name}}
+    {{water.water_name}}
     {% if user.is_staff %}
-    <a href="{% url 'fishing:water_renewal' water.id %}">Редактировать</a>
-    <a href="{% url 'fishing:water_remove' water.id %}">Удалить</a>
+    <a href="{% url 'fishing:water_renewal' district.id water.id %}">Редактировать</a>
+    <a href="{% url 'fishing:water_remove' district.id water.id %}">Удалить</a>
     {% endif %}
   </li>
   {% endfor %}
@@ -16,6 +16,6 @@
 <p>Список водоемов пуст</p>
 {% endif %}
 {% if user.is_staff %}
-<p><a href="{% url 'fishing:water_add' %}">Добавить</a></p>
+<p><a href="{% url 'fishing:water_add' district.id %}">Добавить</a></p>
 {% endif %}
 {% endblock %}
