@@ -163,23 +163,23 @@ urlpatterns = [
          name='water_remove'),
     # Место на водоёме
     # Список мест
-    path('districts/<int:district_id>/water/remove/<int:water_id>/place/',
+    path('districts/<int:district_id>/water/<int:water_id>/place/',
          views.place_list,
          name='place'),
     # Просмотр деетальной информации о месте
-    path('districts/<int:district_id>/water/remove/<int:water_id>/place/<int:place_id>/',
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/',
          views.place_detail,
          name='place_detail'),
     # Добавление места
-    path('districts/<int:district_id>/water/remove/<int:water_id>/place/add/',
+    path('districts/<int:district_id>/water/<int:water_id>/place/add/',
          views.place_add,
          name='place_add'),
     # Редактирование места
-    path('districts/<int:district_id>/water/remove/<int:water_id>/place/renewal/<int:place_id>/',
+    path('districts/<int:district_id>/water/<int:water_id>/place/renewal/<int:place_id>/',
          views.place_renewal,
          name='place_renewal'),
     # Удаление места
-    path('districts/<int:district_id>/water/remove/<int:water_id>/place/remove/<int:place_id>/',
+    path('districts/<int:district_id>/water/<int:water_id>/place/remove/<int:place_id>/',
          views.place_remove,
          name='place_remove'),
 ]

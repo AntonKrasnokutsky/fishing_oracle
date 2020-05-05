@@ -27,6 +27,9 @@ from .forms import PaceForm
 from .models import Water
 from .forms import WaterForm
 
+from .models import Place
+from .forms import PlaceForm
+
 from django.contrib.auth.decorators import login_required
 
 
@@ -186,7 +189,7 @@ def district_add(request):
 
 
 @login_required
-def district_renewal(request, districtwater_name_id):
+def district_renewal(request, district_id):
     """
     Редактирование района
     """
@@ -661,7 +664,24 @@ def water_remove(request, district_id, water_id):
 
 @login_required
 def place_list(request, district_id, water_id):
-    pass
+    """
+    Список мест, для сотрудников сисок всех мест
+    в базе, для остальных список только своих мест
+    """
+    if not request.user.is_staff:
+        place_list = Place.objects.filter(
+            owner=request.user)
+    else:
+        place_list = Place.objects.all()
+    num_visits = visits(request)
+    district = get_object_or_404(District, pk=district_id)
+    water = get_object_or_404(Water, pk=water_id)
+    return render(
+        request, 'fishing/place.html',
+        {'place_list': place_list,
+         'district': district,
+         'water': water,
+         'num_visits': num_visits})
 
 
 @login_required
@@ -671,7 +691,29 @@ def place_detail(request, district_id, water_id, place_id):
 
 @login_required
 def place_add(request, district_id, water_id):
-    pass
+    num_visits = visits(request)
+    if request.user.is_staff:
+        place = Place()
+        if request.method == 'POST':
+            form = PlaceForm(request.POST)
+            if form.is_valid():
+                pass
+                # water.water_name = form.cleaned_data['water_name']
+                # disrtict_select = form.cleaned_data['district']
+                # district = District.objects.filter(
+                #     district_name=disrtict_select)
+                # water.district = district[0]
+                # place.save()
+            return redirect('fishing:place', district_id, water_id)
+        else:
+            form = PlaceForm()  # initial={'district': district_id, })
+            return render(request,
+                          'fishing/place_renewal_add.html',
+                          {'form': form,
+                           'place': place,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:index')
 
 
 @login_required

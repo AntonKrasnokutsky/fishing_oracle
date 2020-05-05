@@ -4,7 +4,7 @@
 <ul>
   {% for water in water_list %}
   <li>
-    {{water.water_name}}
+    <a href="{% url 'fishing:place' district.id water.id %}">{{water.water_name}}</a>
     {% if user.is_staff %}
     <a href="{% url 'fishing:water_renewal' district.id water.id %}">Редактировать</a>
     <a href="{% url 'fishing:water_remove' district.id water.id %}">Удалить</a>

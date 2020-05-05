@@ -1,4 +1,12 @@
-from .models import Fish, District, Priming, Overcast, WeatherPhenomena, FeedCapacity, Pace, Water
+from .models import Fish
+from .models import District
+from .models import Priming
+from .models import Overcast
+from .models import WeatherPhenomena
+from .models import FeedCapacity
+from .models import Pace
+from .models import Water
+from .models import Place
 from django import forms
 
 
@@ -51,3 +59,12 @@ class WaterForm(forms.ModelForm):
     class Meta:
         model = Water
         fields = ('district', 'water_name',)
+
+
+class PlaceForm(forms.ModelForm):
+    class Meta:
+        model = Place
+        fields = ['water', 'place_locality', 'place_northern_degree',
+                  'place_northern_minute', 'place_northern_second',
+                  'place_easter_degree', 'place_easter_minute',
+                  'place_easter_second', ]
