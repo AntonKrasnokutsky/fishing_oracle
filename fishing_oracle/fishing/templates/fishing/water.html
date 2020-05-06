@@ -5,7 +5,7 @@
   {% for water in water_list %}
   <li>
     <a href="{% url 'fishing:place' district.id water.id %}">{{water.water_name}}</a>
-    {% if user.is_staff %}
+    {% if user.is_authenticated %}
     <a href="{% url 'fishing:water_renewal' district.id water.id %}">Редактировать</a>
     <a href="{% url 'fishing:water_remove' district.id water.id %}">Удалить</a>
     {% endif %}
@@ -15,7 +15,7 @@
 {% else %}
 <p>Список водоемов пуст</p>
 {% endif %}
-{% if user.is_staff %}
+{% if user.is_authenticated %}
 <p><a href="{% url 'fishing:water_add' district.id %}">Добавить</a></p>
 {% endif %}
 {% endblock %}

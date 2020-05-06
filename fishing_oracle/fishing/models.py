@@ -127,13 +127,11 @@ class Place(models.Model):
         'Water',
         on_delete=models.PROTECT,
         verbose_name="Водоем")
-    # Близайший населенный пункт
+    # Ближайший населенный пункт
     place_locality = models.CharField(
         max_length=50,
         verbose_name="Населенный пункт",
         help_text="Название ближайшего населенного пункта")
-    # Карта дна
-
     # Координа места рыбалки, градусы северной широты от -90 до 90
     place_northern_degree = models.IntegerField(
         default=0,
@@ -188,12 +186,6 @@ class Place(models.Model):
             MinValueValidator(0)
         ],
         verbose_name='E" (0 до 59.999)')
-    # Точка ловли
-    # fishing_point = models.ForeignKey(
-    #     'FishingPoint',
-    #     on_delete=models.PROTECT,
-    #     verbose_name="Точка ловли"
-    # )
     # Фотография места рыбалки
     # photo_place=models.ImageField(
     #     verbose_name="Места")

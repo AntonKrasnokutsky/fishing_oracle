@@ -97,7 +97,10 @@ def fish_list(request):
     """
     fishs_list = Fish.objects.all()
     num_visits = visits(request)
-    return render(request, 'fishing/fish.html', {'fish_list': fishs_list, 'num_visits': num_visits})
+    return render(request,
+                  'fishing/fish.html',
+                  {'fish_list': fishs_list,
+                   'num_visits': num_visits})
 
 
 def fish_details(request, fish_id):
@@ -106,12 +109,15 @@ def fish_details(request, fish_id):
     """
     fish = get_object_or_404(Fish, pk=fish_id)
     num_visits = visits(request)
-    return render(request, 'fishing/fish_details.html', {'fish': fish, 'num_visits': num_visits})
+    return render(request,
+                  'fishing/fish_details.html',
+                  {'fish': fish,
+                   'num_visits': num_visits})
 
 
 @login_required
 def fish_renewal(request, fish_id):
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         fish = get_object_or_404(Fish, pk=fish_id)
         num_visits = visits(request)
         if request.method == 'POST':
@@ -131,7 +137,7 @@ def fish_renewal(request, fish_id):
 
 @login_required
 def fish_add(request):
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         fish = Fish()
         num_visits = visits(request)
         if request.method == 'POST':
@@ -151,7 +157,7 @@ def fish_add(request):
 
 @login_required
 def fish_remove(request, fish_id):
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         fish = get_object_or_404(Fish, pk=fish_id)
         fish.delete()
     return redirect('fishing:fish')
@@ -162,17 +168,18 @@ def district_list(request):
     """
     Список районов
     """
-    if request.user.is_staff:
-        districts_list = District.objects.all()
-        num_visits = visits(request)
-        return render(request, 'fishing/districts.html', {'districts_list': districts_list, 'num_visits': num_visits})
-    return redirect('fishing:index')
+    districts_list = District.objects.all()
+    num_visits = visits(request)
+    return render(request,
+                  'fishing/districts.html',
+                  {'districts_list': districts_list,
+                   'num_visits': num_visits})
 
 
 @login_required
 def district_add(request):
     num_visits = visits(request)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         district = District()
 
         if request.method == 'POST':
@@ -194,7 +201,7 @@ def district_renewal(request, district_id):
     Редактирование района
     """
     num_visits = visits(request)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         district = get_object_or_404(District, pk=district_id)
 
         if request.method == 'POST':
@@ -218,7 +225,7 @@ def district_remove(request, district_id):
     """
     Удаление района
     """
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         district = get_object_or_404(District, pk=district_id)
         district.delete()
     return redirect('fishing:districts')
@@ -229,13 +236,11 @@ def priming_list(request):
     """
     Список видов грунта
     """
-    if request.user.is_staff:
-        primings_list = Priming.objects.all()
-        num_visits = visits(request)
-        return render(request, 'fishing/primings.html',
-                      {'primings_list': primings_list,
-                       'num_visits': num_visits})
-    return redirect('fishing:index')
+    primings_list = Priming.objects.all()
+    num_visits = visits(request)
+    return render(request, 'fishing/primings.html',
+                  {'primings_list': primings_list,
+                   'num_visits': num_visits})
 
 
 @login_required
@@ -244,7 +249,7 @@ def priming_add(request):
     Добавление вида грунта
     """
     num_visits = visits(request)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         priming = Priming()
 
         if request.method == 'POST':
@@ -272,7 +277,7 @@ def priming_renewal(request, priming_id):
     Редактирование грунта
     """
     num_visits = visits(request)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         priming = get_object_or_404(Priming, pk=priming_id)
 
         if request.method == 'POST':
@@ -294,7 +299,7 @@ def priming_remove(request, priming_id):
     """
     Удаление грунта
     """
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         priming = get_object_or_404(Priming, pk=priming_id)
         priming.delete()
     return redirect('fishing:primings')
@@ -302,19 +307,17 @@ def priming_remove(request, priming_id):
 
 @login_required
 def overcast_list(request):
-    if request.user.is_authenticated:
-        overcasts_list = Overcast.objects.all()
-        num_visits = visits(request)
-        return render(request, 'fishing/overcast.html',
-                      {'overcasts_list': overcasts_list,
-                       'num_visits': num_visits})
-    return redirect('fishing:index')
+    overcasts_list = Overcast.objects.all()
+    num_visits = visits(request)
+    return render(request, 'fishing/overcast.html',
+                  {'overcasts_list': overcasts_list,
+                   'num_visits': num_visits})
 
 
 @login_required
 def overcast_add(request):
     num_visits = visits(request)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         overcast = Overcast()
 
         if request.method == 'POST':
@@ -333,7 +336,7 @@ def overcast_add(request):
                  'overcast': overcast,
                  'num_visits': num_visits})
     else:
-        return redirect('fishing:index')
+        return redirect('fishing:overcast')
 
 
 @login_required
@@ -342,7 +345,7 @@ def overcast_renewal(request, overcast_id):
     Редактирование облачности
     """
     num_visits = visits(request)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         overcast = get_object_or_404(Overcast, pk=overcast_id)
 
         if request.method == 'POST':
@@ -368,7 +371,7 @@ def overcast_remove(request, overcast_id):
     """
     Удаление облачности
     """
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         overcast = get_object_or_404(Overcast, pk=overcast_id)
         overcast.delete()
     return redirect('fishing:overcast')
@@ -377,18 +380,16 @@ def overcast_remove(request, overcast_id):
 @login_required
 def weather_phenomenas_list(request):
     num_visits = visits(request)
-    if request.user.is_authenticated:
-        weather_phenomena_list = WeatherPhenomena.objects.all()
-        return render(request, 'fishing/phenomena.html',
-                      {'weather_phenomena_list': weather_phenomena_list,
-                       'num_visits': num_visits})
-    return redirect('fishing:index')
+    weather_phenomena_list = WeatherPhenomena.objects.all()
+    return render(request, 'fishing/phenomena.html',
+                  {'weather_phenomena_list': weather_phenomena_list,
+                   'num_visits': num_visits})
 
 
 @login_required
 def weather_phenomenas_add(request):
     num_visits = visits(request)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         weather_phenomena = WeatherPhenomena()
 
         if request.method == 'POST':
@@ -407,7 +408,7 @@ def weather_phenomenas_add(request):
                  'weather_penomena': weather_phenomena,
                  'num_visits': num_visits})
     else:
-        return redirect('fishing:index')
+        return redirect('fishing:weatherphenomena')
 
 
 @login_required
@@ -416,7 +417,7 @@ def weather_phenomenas_renewal(request, phenomena_id):
     Редактирование погодного явления
     """
     num_visits = visits(request, phenomena_id)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         weather_phenomena = get_object_or_404(
             WeatherPhenomena, pk=phenomena_id)
 
@@ -444,7 +445,7 @@ def weather_phenomenas_remove(request, phenomena_id):
     """
     Удаление явления
     """
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         weatherphenomena = get_object_or_404(WeatherPhenomena, pk=phenomena_id)
         weatherphenomena.delete()
     return redirect('fishing:weatherphenomena')
@@ -453,19 +454,16 @@ def weather_phenomenas_remove(request, phenomena_id):
 @login_required
 def feed_capacity_list(request):
     num_visits = visits(request)
-    if request.user.is_authenticated:
-        feed_capacity_list = FeedCapacity.objects.all()
-        return render(request, 'fishing/feed_capacity.html',
-                      {'feed_capacity_list': feed_capacity_list,
-                       'nem_visits': num_visits})
-    else:
-        return redirect('fishing:index')
+    feed_capacity_list = FeedCapacity.objects.all()
+    return render(request, 'fishing/feed_capacity.html',
+                  {'feed_capacity_list': feed_capacity_list,
+                   'nem_visits': num_visits})
 
 
 @login_required
 def feed_capacity_add(request):
     num_visits = visits(request)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         feed_capacity = FeedCapacity()
 
         if request.method == 'POST':
@@ -483,13 +481,13 @@ def feed_capacity_add(request):
                            'feed_capacity': feed_capacity,
                            'num_visits': num_visits})
     else:
-        return redirect('fishing:index')
+        return redirect('fishing:feed_capacity')
 
 
 @login_required
 def feed_capacity_renewal(request, feed_capacity_id):
     num_visits = visits(request)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         feed_capacity = get_object_or_404(FeedCapacity, pk=feed_capacity_id)
 
         if request.method == 'POST':
@@ -513,7 +511,7 @@ def feed_capacity_renewal(request, feed_capacity_id):
 
 @login_required
 def feed_capacity_remove(request, feed_capacity_id):
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         feed_capacity = get_object_or_404(FeedCapacity, pk=feed_capacity_id)
         feed_capacity.delete()
     return redirect('fishing:feed_capacity')
@@ -522,19 +520,17 @@ def feed_capacity_remove(request, feed_capacity_id):
 @login_required
 def pace_list(request):
     num_visits = visits(request)
-    if request.user.is_authenticated:
-        pace_list = Pace.objects.all()
-        return render(request,
-                      'fishing/pace.html',
-                      {'pace_list': pace_list,
-                       'num_visits': num_visits})
-    return redirect('fishing:index')
+    pace_list = Pace.objects.all()
+    return render(request,
+                  'fishing/pace.html',
+                  {'pace_list': pace_list,
+                   'num_visits': num_visits})
 
 
 @login_required
 def pace_add(request):
     num_visits = visits(request)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         pace = Pace()
         if request.method == 'POST':
             form = PaceForm(request.POST)
@@ -550,13 +546,13 @@ def pace_add(request):
                            'pace': pace,
                            'num_visits': num_visits})
     else:
-        return redirect('fishing:index')
+        return redirect('fishing:pace')
 
 
 @login_required
 def pace_renewal(request, pace_id):
     num_visits = visits(request)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         pace = get_object_or_404(Pace, pk=pace_id)
         if request.method == 'POST':
             form = PaceForm(request.POST)
@@ -572,12 +568,12 @@ def pace_renewal(request, pace_id):
                            'pace': pace,
                            'num_visits': num_visits})
     else:
-        return redirect('fishing:index')
+        return redirect('fishing:pace')
 
 
 @login_required
 def pace_remove(request, pace_id):
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         pace = get_object_or_404(Pace, pk=pace_id)
         pace.delete()
     return redirect('fishing:pace')
@@ -585,25 +581,21 @@ def pace_remove(request, pace_id):
 
 @login_required
 def water_list(request, district_id):
-    if request.user.is_authenticated:
-        num_visits = visits(request)
-        district_name = get_object_or_404(District, pk=district_id)
-
-        water_list = Water.objects.filter(
-            district=district_name)
-        return render(request,
-                      'fishing/water.html',
-                      {'water_list': water_list,
-                       'district': district_name,
-                       'num_visits': num_visits})
-    else:
-        return redirect('fishing:index')
+    num_visits = visits(request)
+    district_name = get_object_or_404(District, pk=district_id)
+    water_list = Water.objects.filter(
+        district=district_name)
+    return render(request,
+                  'fishing/water.html',
+                  {'water_list': water_list,
+                   'district': district_name,
+                   'num_visits': num_visits})
 
 
 @login_required
 def water_add(request, district_id):
     num_visits = visits(request)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         water = Water()
         if request.method == 'POST':
             form = WaterForm(request.POST)
@@ -623,13 +615,13 @@ def water_add(request, district_id):
                            'water': water,
                            'num_visits': num_visits})
     else:
-        return redirect('fishing:index')
+        return redirect('fishing:water', district_id)
 
 
 @login_required
 def water_renewal(request, district_id, water_id):
     num_visits = visits(request)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         water = get_object_or_404(Water, pk=water_id)
         if request.method == 'POST':
             form = WaterForm(request.POST)
@@ -651,12 +643,12 @@ def water_renewal(request, district_id, water_id):
                            'water': water,
                            'num_visits': num_visits})
     else:
-        return redirect('fishing:index')
+        return redirect('fishing:water', district_id)
 
 
 @login_required
 def water_remove(request, district_id, water_id):
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         water = get_object_or_404(Water, pk=water_id)
         water.delete()
     return redirect('fishing:water', district_id)
@@ -668,14 +660,14 @@ def place_list(request, district_id, water_id):
     Список мест, для сотрудников сисок всех мест
     в базе, для остальных список только своих мест
     """
+    water = get_object_or_404(Water, pk=water_id)
     if not request.user.is_staff:
         place_list = Place.objects.filter(
-            owner=request.user)
+            owner=request.user, water=water)
     else:
-        place_list = Place.objects.all()
+        place_list = Place.objects.filter(water=water)
     num_visits = visits(request)
     district = get_object_or_404(District, pk=district_id)
-    water = get_object_or_404(Water, pk=water_id)
     return render(
         request, 'fishing/place.html',
         {'place_list': place_list,
@@ -686,41 +678,92 @@ def place_list(request, district_id, water_id):
 
 @login_required
 def place_detail(request, district_id, water_id, place_id):
-    pass
+    place = get_object_or_404(Place, pk=place_id)
+    if request.user.is_staff or place.owner == request.user:
+        num_visits = visits(request)
+        return render(request,
+                      'fishing/place_details.html',
+                      {'place': place,
+                       'district': district_id,
+                       'water': water_id,
+                       'num_visits': num_visits})
+    else:
+        return redirect('fishing:place', district_id, water_id)
 
 
 @login_required
 def place_add(request, district_id, water_id):
     num_visits = visits(request)
-    if request.user.is_staff:
+    if request.user.is_authenticated:  # is_staff
         place = Place()
+        water = get_object_or_404(Water, pk=water_id)
         if request.method == 'POST':
             form = PlaceForm(request.POST)
             if form.is_valid():
-                pass
-                # water.water_name = form.cleaned_data['water_name']
-                # disrtict_select = form.cleaned_data['district']
-                # district = District.objects.filter(
-                #     district_name=disrtict_select)
-                # water.district = district[0]
-                # place.save()
+                place.owner = request.user
+                place.water = water
+                place.place_locality = form.cleaned_data['place_locality']
+                place.place_northern_degree = form.cleaned_data['place_northern_degree']
+                place.place_northern_minute = form.cleaned_data['place_northern_minute']
+                place.place_northern_second = form.cleaned_data['place_northern_second']
+                place.place_easter_degree = form.cleaned_data['place_easter_degree']
+                place.place_easter_minute = form.cleaned_data['place_easter_minute']
+                place.place_easter_second = form.cleaned_data['place_easter_second']
+                place.save()
             return redirect('fishing:place', district_id, water_id)
         else:
-            form = PlaceForm()  # initial={'district': district_id, })
+            form = PlaceForm()
             return render(request,
                           'fishing/place_renewal_add.html',
                           {'form': form,
                            'place': place,
                            'num_visits': num_visits})
     else:
-        return redirect('fishing:index')
+        return redirect('fishing:place', district_id, water_id)
 
 
 @login_required
 def place_renewal(request, district_id, water_id, place_id):
-    pass
+    num_visits = visits(request)
+    if request.user.is_authenticated:  # is_staff
+        place = get_object_or_404(Place, pk=place_id)
+        if request.method == 'POST':
+            form = PlaceForm(request.POST)
+            if form.is_valid():
+                place.place_locality = form.cleaned_data['place_locality']
+                place.place_northern_degree = form.cleaned_data['place_northern_degree']
+                place.place_northern_minute = form.cleaned_data['place_northern_minute']
+                place.place_northern_second = form.cleaned_data['place_northern_second']
+                place.place_easter_degree = form.cleaned_data['place_easter_degree']
+                place.place_easter_minute = form.cleaned_data['place_easter_minute']
+                place.place_easter_second = form.cleaned_data['place_easter_second']
+                place.save()
+            return redirect('fishing:place', district_id, water_id)
+        else:
+            form = PlaceForm(initial={'place_locality': place.place_locality,
+                                      'place_northern_degree': place.place_northern_degree,
+                                      'place_northern_minute': place.place_northern_minute,
+                                      'place_northern_second': place.place_northern_second,
+                                      'place_easter_degree': place.place_easter_degree,
+                                      'place_easter_minute': place.place_easter_minute,
+                                      'place_easter_second': place.place_easter_second})
+            return render(request,
+                          'fishing/place_renewal_add.html',
+                          {'form': form,
+                           'place': place,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:place', district_id, water_id)
 
 
 @login_required
 def place_remove(request, district_id, water_id, place_id):
+    if request.user.is_authenticated:  # is_staff
+        place = get_object_or_404(Place, pk=place_id)
+        place.delete()
+    return redirect('fishing:place', district_id, water_id)
+
+
+@login_required
+def fishing_point_list(request, district_id, water_id, place_id):
     pass

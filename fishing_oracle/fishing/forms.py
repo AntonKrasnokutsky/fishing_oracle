@@ -64,7 +64,7 @@ class WaterForm(forms.ModelForm):
 class PlaceForm(forms.ModelForm):
     class Meta:
         model = Place
-        fields = ['water', 'place_locality', 'place_northern_degree',
+        fields = ['place_locality', 'place_northern_degree',
                   'place_northern_minute', 'place_northern_second',
                   'place_easter_degree', 'place_easter_minute',
                   'place_easter_second', ]

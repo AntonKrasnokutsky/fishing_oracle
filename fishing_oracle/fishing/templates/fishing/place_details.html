@@ -1,0 +1,11 @@
+{% extends 'fishing/base.html' %} {% block content %}
+<p><strong>Ближайший населенный пункт:</strong> {{ place.place_locality }}</p>
+<p><strong>N° (-90 до 90):</strong> {{ place.place_northern_degree }}</p>
+<p><strong>N' (0 до 59):</strong> {{ place.place_northern_minute }}</p>
+<p><strong>N" (0 до 59.999):</strong> {{ place.place_northern_second }}</p>
+<p><strong>E° (-90 до 90):</strong> {{ place.place_easter_degree }}</p>
+<p><strong>E' (0 до 59):</strong> {{ place.place_easter_minute }}</p>
+<p><strong>E" (0 до 59.999):</strong> {{ place.place_easter_second }}</p>
+{% if user.is_staff %}
+<p><a href="{% url 'fishing:fishing_point' district water place.id %}">Изменить</a></p>
+{% endif %} {% endblock %}

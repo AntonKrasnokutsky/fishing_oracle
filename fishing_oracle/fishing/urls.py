@@ -182,4 +182,9 @@ urlpatterns = [
     path('districts/<int:district_id>/water/<int:water_id>/place/remove/<int:place_id>/',
          views.place_remove,
          name='place_remove'),
+    # Блок точек ловли
+    # Список точек ловли
+    path('districts/<int:district_id>/water/<int:water_id>/place/remove/<int:place_id>/fishingpoint/',
+         views.fishing_point_list,
+         name='fishing_point'),
 ]
