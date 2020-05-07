@@ -30,6 +30,9 @@ from .forms import WaterForm
 from .models import Place
 from .forms import PlaceForm
 
+from .models import FishingPoint
+from .forms import FishingPointForm
+
 from django.contrib.auth.decorators import login_required
 
 
@@ -694,9 +697,9 @@ def place_detail(request, district_id, water_id, place_id):
 @login_required
 def place_add(request, district_id, water_id):
     num_visits = visits(request)
-    if request.user.is_authenticated:  # is_staff
+    water = get_object_or_404(Water, pk=water_id)
+    if water.owner == request.user:
         place = Place()
-        water = get_object_or_404(Water, pk=water_id)
         if request.method == 'POST':
             form = PlaceForm(request.POST)
             if form.is_valid():
@@ -725,8 +728,8 @@ def place_add(request, district_id, water_id):
 @login_required
 def place_renewal(request, district_id, water_id, place_id):
     num_visits = visits(request)
-    if request.user.is_authenticated:  # is_staff
-        place = get_object_or_404(Place, pk=place_id)
+    place = get_object_or_404(Place, pk=place_id)
+    if place.owner == request.user:
         if request.method == 'POST':
             form = PlaceForm(request.POST)
             if form.is_valid():
@@ -758,12 +761,112 @@ def place_renewal(request, district_id, water_id, place_id):
 
 @login_required
 def place_remove(request, district_id, water_id, place_id):
-    if request.user.is_authenticated:  # is_staff
-        place = get_object_or_404(Place, pk=place_id)
+    place = get_object_or_404(Place, pk=place_id)
+    if place.owner == request.user:
         place.delete()
     return redirect('fishing:place', district_id, water_id)
 
 
 @login_required
 def fishing_point_list(request, district_id, water_id, place_id):
-    pass
+    place = get_object_or_404(Place, pk=place_id)
+    if not request.user.is_staff:
+        fishing_point_list = FishingPoint.objects.filter(
+            owner=request.user, place=place)
+    else:
+        fishing_point_list = FishingPoint.objects.filter(place=place)
+
+    num_visits = visits(request)
+    water = get_object_or_404(Water, pk=water_id)
+    district = get_object_or_404(District, pk=district_id)
+    return render(
+        request, 'fishing/fishing_point.html',
+        {'fishing_point_list': fishing_point_list,
+         'district': district,
+         'water': water,
+         'place': place,
+         'num_visits': num_visits})
+
+
+@login_required
+def fishing_point_add(request, district_id, water_id, place_id):
+    num_visits = visits(request)
+    place = get_object_or_404(Place, pk=place_id)
+    if place.owner == request.user:
+        fishing_point = FishingPoint()
+        if request.method == 'POST':
+            form = FishingPointForm(request.POST)
+            if form.is_valid():
+                fishing_point.owner = request.user
+                fishing_point.place = place
+                fishing_point.fishing_point_azimuth = form.cleaned_data['fishing_point_azimuth']
+                fishing_point.fishing_point_distance = form.cleaned_data['fishing_point_distance']
+                fishing_point.fishing_poiny_depth = form.cleaned_data['fishing_poiny_depth']
+                priming_name = form.cleaned_data['priming']
+                priming = Priming.objects.filter(priming_name=priming_name)
+                fishing_point.priming = priming[0]
+                fishing_point.save()
+            return redirect('fishing:fishing_point', district_id, water_id, place_id)
+        else:
+            form = FishingPointForm()
+            return render(request,
+                          'fishing/fishing_point_renewal_add.html',
+                          {'form': form,
+                           'fishing_point': fishing_point,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:water', district_id)
+
+
+@login_required
+def fishing_point_renewal(request, district_id, water_id, place_id, fishing_point_id):
+    num_visits = visits(request)
+    fishing_point = get_object_or_404(FishingPoint, pk=fishing_point_id)
+    if fishing_point.owner == request.user:
+        if request.method == 'POST':
+            form = FishingPointForm(request.POST)
+            if form.is_valid():
+                fishing_point.fishing_point_azimuth = form.cleaned_data['fishing_point_azimuth']
+                fishing_point.fishing_point_distance = form.cleaned_data['fishing_point_distance']
+                fishing_point.fishing_poiny_depth = form.cleaned_data['fishing_poiny_depth']
+                priming_name = form.cleaned_data['priming']
+                priming = Priming.objects.filter(priming_name=priming_name)
+                fishing_point.priming = priming[0]
+                fishing_point.save()
+            return redirect('fishing:fishing_point', district_id, water_id, place_id)
+        else:
+            form = FishingPointForm(initial={'fishing_point_azimuth': fishing_point.fishing_point_azimuth,
+                                             'fishing_point_distance': fishing_point.fishing_point_distance,
+                                             'fishing_poiny_depth': fishing_point.fishing_poiny_depth,
+                                             'priming': fishing_point.priming, })
+            return render(request,
+                          'fishing/fishing_point_renewal_add.html',
+                          {'form': form,
+                           'fishing_point': fishing_point,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:water', district_id)
+
+
+@login_required
+def fishing_point_details(request, district_id, water_id, place_id, fishing_point_id):
+    fishing_point = get_object_or_404(FishingPoint, pk=fishing_point_id)
+    if request.user.is_staff or fishing_point.owner == request.user:
+        num_visits = visits(request)
+        return render(request,
+                      'fishing/fishing_point_details.html',
+                      {'fishing_point': fishing_point,
+                       'place': place_id,
+                       'district': district_id,
+                       'water': water_id,
+                       'num_visits': num_visits})
+    else:
+        return redirect('fishing:water', district_id)
+
+
+@login_required
+def fishing_point_remove(request, district_id, water_id, place_id, fishing_point_id):
+    fishing_point = get_object_or_404(FishingPoint, pk=fishing_point_id)
+    if fishing_point.owner == request.user:
+        fishing_point.delete()
+    return redirect('fishing:water', district_id)

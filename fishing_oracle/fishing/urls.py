@@ -184,7 +184,23 @@ urlpatterns = [
          name='place_remove'),
     # Блок точек ловли
     # Список точек ловли
-    path('districts/<int:district_id>/water/<int:water_id>/place/remove/<int:place_id>/fishingpoint/',
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/fishingpoint/',
          views.fishing_point_list,
          name='fishing_point'),
+    # Добавление точки ловли
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/fishingpoint/add/',
+         views.fishing_point_add,
+         name='fishing_point_add'),
+    # Редактирование точки ловли
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/fishingpoint/renewal/<int:fishing_point_id>/',
+         views.fishing_point_renewal,
+         name='fishing_point_renewal'),
+    # Просмотр точки ловли
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/fishingpoint/<int:fishing_point_id>/',
+         views.fishing_point_details,
+         name='fishing_point_details'),
+    # Удаление точки ловли
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/fishingpoint/remove/<int:fishing_point_id>/',
+         views.fishing_point_remove,
+         name='fishing_point_remove'),
 ]

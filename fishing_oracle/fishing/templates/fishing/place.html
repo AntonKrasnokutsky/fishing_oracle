@@ -5,7 +5,10 @@
   {% for place in place_list %}
   <li>
     <a href="{% url 'fishing:place_detail' district.id water.id place.id %}">{{place.place_locality}}</a>
-    {% if user.is_authenticated %}
+    {% if user.is_staff %}
+    {{place.owner}}
+    {% endif %}
+    {% if place.owner == user %}
     <a href="{% url 'fishing:place_renewal' district.id water.id place.id %}">Редактировать</a>
     <a href="{% url 'fishing:place_remove' district.id water.id place.id%}">Удалить</a>
     {% endif %}

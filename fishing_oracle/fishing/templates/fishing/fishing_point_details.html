@@ -1,0 +1,11 @@
+{% extends 'fishing/base.html' %} {% block content %}
+<p><strong>Азимут:</strong> {{ fishing_point.fishing_point_azimuth }}</p>
+<p><strong>Дистанция:</strong> {{ fishing_point.fishing_point_distance }}</p>
+<p><strong>Глубина:</strong> {{ fishing_point.fishing_poiny_depth }}</p>
+<p><strong>Грунт:</strong> {{ fishing_point.priming }}</p>
+<p>
+    {% if fishing_point.owner == user %}
+    <a href="{% url 'fishing:fishing_point_renewal' district water place fishing_point.id%}">Редактировать</a>
+    {% endif %}
+</p>
+{% endblock %}

@@ -7,6 +7,8 @@ from .models import FeedCapacity
 from .models import Pace
 from .models import Water
 from .models import Place
+from .models import FishingPoint
+
 from django import forms
 
 
@@ -68,3 +70,12 @@ class PlaceForm(forms.ModelForm):
                   'place_northern_minute', 'place_northern_second',
                   'place_easter_degree', 'place_easter_minute',
                   'place_easter_second', ]
+
+
+class FishingPointForm(forms.ModelForm):
+    class Meta:
+        model = FishingPoint
+        fields = ['fishing_point_azimuth',
+                  'fishing_point_distance',
+                  'fishing_poiny_depth',
+                  'priming', ]

@@ -6,6 +6,10 @@
 <p><strong>E° (-90 до 90):</strong> {{ place.place_easter_degree }}</p>
 <p><strong>E' (0 до 59):</strong> {{ place.place_easter_minute }}</p>
 <p><strong>E" (0 до 59.999):</strong> {{ place.place_easter_second }}</p>
-{% if user.is_staff %}
-<p><a href="{% url 'fishing:fishing_point' district water place.id %}">Изменить</a></p>
-{% endif %} {% endblock %}
+<p>
+    {% if place.owner == user %}
+    <a href="{% url 'fishing:place_renewal' district water place.id %}">Редактировать</a>
+    {% endif %}
+    <a href="{% url 'fishing:fishing_point' district water place.id %}">Точки ловли</a>
+</p>
+{% endblock %}
