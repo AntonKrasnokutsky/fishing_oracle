@@ -1,11 +1,11 @@
 {% extends 'fishing/base.html' %}
 {% block content %}
-{% if water.water_name %}
-<h1>Водоём: {{water.water_name}}</h1>
-<p>Водоём: {{water.water_name}}</p>
+{% if place.place_locality %}
+<h1>Место: {{place.place_locality}}</h1>
+<p>Водоём: {{place.place_locality}}</p>
 {% else %}
-<h1>Добавление водоёма</h1>
-<p>Новый водоём:</p>
+<h1>Добавление места</h1>
+<p>Новое место:</p>
 {% endif %}
 
 <form action="" method="post">

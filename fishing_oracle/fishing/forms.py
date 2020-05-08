@@ -8,6 +8,7 @@ from .models import Pace
 from .models import Water
 from .models import Place
 from .models import FishingPoint
+from .models import BottomMap
 
 from django import forms
 
@@ -60,7 +61,7 @@ class PaceForm(forms.ModelForm):
 class WaterForm(forms.ModelForm):
     class Meta:
         model = Water
-        fields = ('district', 'water_name',)
+        fields = ('water_name',)
 
 
 class PlaceForm(forms.ModelForm):
@@ -79,3 +80,10 @@ class FishingPointForm(forms.ModelForm):
                   'fishing_point_distance',
                   'fishing_poiny_depth',
                   'priming', ]
+
+class BottomMapForm(forms.ModelForm):
+    class Meta:
+        model = BottomMap
+        fields = ['bottom_map_northern_degree', 'bottom_map_northern_minute',
+                  'bottom_map_northern_second', 'bottom_map_easter_degree',
+                  'bottom_map_easter_minute', 'bottom_map_easter_second',]

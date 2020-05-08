@@ -11,5 +11,6 @@
     <a href="{% url 'fishing:place_renewal' district water place.id %}">Редактировать</a>
     {% endif %}
     <a href="{% url 'fishing:fishing_point' district water place.id %}">Точки ловли</a>
+    <a href="{% url 'fishing:bottom_map' district water place.id %}">Маркерная карта</a>
 </p>
 {% endblock %}

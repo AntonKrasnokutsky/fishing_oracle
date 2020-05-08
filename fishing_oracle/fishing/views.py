@@ -33,6 +33,9 @@ from .forms import PlaceForm
 from .models import FishingPoint
 from .forms import FishingPointForm
 
+from .models import BottomMap
+from .forms import BottomMapForm
+
 from django.contrib.auth.decorators import login_required
 
 
@@ -604,14 +607,12 @@ def water_add(request, district_id):
             form = WaterForm(request.POST)
             if form.is_valid():
                 water.water_name = form.cleaned_data['water_name']
-                disrtict_select = form.cleaned_data['district']
-                district = District.objects.filter(
-                    district_name=disrtict_select)
-                water.district = district[0]
+                district = get_object_or_404(District, pk=district_id)
+                water.district = district
                 water.save()
             return redirect('fishing:water', district_id)
         else:
-            form = WaterForm(initial={'district': district_id, })
+            form = WaterForm()
             return render(request,
                           'fishing/water_renewal_add.html',
                           {'form': form,
@@ -630,10 +631,8 @@ def water_renewal(request, district_id, water_id):
             form = WaterForm(request.POST)
             if form.is_valid():
                 water.water_name = form.cleaned_data['water_name']
-                disrtict_select = form.cleaned_data['district']
-                district = District.objects.filter(
-                    district_name=disrtict_select)
-                water.district = district[0]
+                district = get_object_or_404(District, pk=district_id)
+                water.district = district
                 water.save()
             return redirect('fishing:water', district_id)
         else:
@@ -867,3 +866,125 @@ def fishing_point_remove(request, district_id, water_id, place_id, fishing_point
     if fishing_point.owner == request.user:
         fishing_point.delete()
     return redirect('fishing:water', district_id)
+
+@login_required
+def bottom_map_list(request, district_id, water_id, place_id):
+    place = get_object_or_404(Place, pk=place_id)
+    if not request.user.is_staff:
+        bottom_map_list = BottomMap.objects.filter(
+            owner=request.user, place=place)
+    else:
+        bottom_map_list = BottomMap.objects.filter(place=place)
+
+    num_visits = visits(request)
+    water = get_object_or_404(Water, pk=water_id)
+    district = get_object_or_404(District, pk=district_id)
+    return render(
+        request, 'fishing/bottom_map.html',
+        {'bottom_map_list': bottom_map_list,
+         'district': district,
+         'water': water,
+         'place': place,
+         'num_visits': num_visits})
+
+@login_required
+def bottom_map_add(request, district_id, water_id, place_id):
+    num_visits = visits(request)
+    place = get_object_or_404(Place, pk=place_id)
+    if place.owner == request.user:
+        bottom_map = BottomMap()
+        if request.method == 'POST':
+            form = BottomMapForm(request.POST)
+            if form.is_valid():
+                bottom_map.owner=request.user
+                bottom_map.place=place
+                bottom_map.bottom_map_northern_degree = form.cleaned_data['bottom_map_northern_degree']
+                bottom_map.bottom_map_northern_minute = form.cleaned_data['bottom_map_northern_minute']
+                bottom_map.bottom_map_northern_second = form.cleaned_data['bottom_map_northern_second']
+                bottom_map.bottom_map_easter_degree = form.cleaned_data['bottom_map_easter_degree']
+                bottom_map.bottom_map_easter_minute = form.cleaned_data['bottom_map_easter_minute']
+                bottom_map.bottom_map_easter_second = form.cleaned_data['bottom_map_easter_second']
+                bottom_map.save()
+            return redirect('fishing:bottom_map', district_id, water_id, place_id)
+        else:
+            form = BottomMapForm()
+            return render(request,
+                          'fishing/bottom_map_renewal_add.html',
+                          {'form': form,
+                           'bottom_map': bottom_map,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:water', district_id)
+
+@login_required
+def bottom_map_renewal(request, district_id, water_id, place_id, bottom_map_id):
+    num_visits = visits(request)
+    bottom_map = get_object_or_404(BottomMap, pk=bottom_map_id)
+    if bottom_map.owner == request.user:
+        if request.method == 'POST':
+            form = BottomMapForm(request.POST)
+            if form.is_valid():
+                bottom_map.bottom_map_northern_degree = form.cleaned_data['bottom_map_northern_degree']
+                bottom_map.bottom_map_northern_minute = form.cleaned_data['bottom_map_northern_minute']
+                bottom_map.bottom_map_northern_second = form.cleaned_data['bottom_map_northern_second']
+                bottom_map.bottom_map_easter_degree = form.cleaned_data['bottom_map_easter_degree']
+                bottom_map.bottom_map_easter_minute = form.cleaned_data['bottom_map_easter_minute']
+                bottom_map.bottom_map_easter_second = form.cleaned_data['bottom_map_easter_second']
+                bottom_map.save()
+            return redirect('fishing:bottom_map', district_id, water_id, place_id)
+        else:
+            form = BottomMapForm(initial={'bottom_map_northern_degree': bottom_map.bottom_map_northern_degree,
+                                          'bottom_map_northern_minute': bottom_map.bottom_map_northern_minute,
+                                          'bottom_map_northern_second': bottom_map.bottom_map_northern_second,
+                                          'bottom_map_easter_degree': bottom_map.bottom_map_easter_degree,
+                                          'bottom_map_easter_minute': bottom_map.bottom_map_easter_minute,
+                                          'bottom_map_easter_second': bottom_map.bottom_map_easter_second,})
+            return render(request,
+                          'fishing/bottom_map_renewal_add.html',
+                          {'form': form,
+                           'bottom_map': bottom_map,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:water', district_id)
+
+@login_required
+def bottom_map_details(request, district_id, water_id, place_id, bottom_map_id):
+    bottom_map = get_object_or_404(BottomMap, pk=bottom_map_id)
+    if request.user.is_staff or bottom_map.owner == request.user:
+        num_visits = visits(request)
+        return render(request,
+                      'fishing/bottom_map_details.html',
+                      {'bottom_map': bottom_map,
+                       'place': place_id,
+                       'district': district_id,
+                       'water': water_id,
+                       'num_visits': num_visits})
+    else:
+        return redirect('fishing:water', district_id)
+
+@login_required
+def bottom_map_remove(request, district_id, water_id, place_id, bottom_map_id):
+    bottom_map = get_object_or_404(BottomMap, pk=bottom_map_id)
+    if bottom_map.owner == request.user:
+        bottom_map.delete()
+    return redirect('fishing:bottom_map', district_id, water_id, place_id)
+
+@login_required
+def point(request, district_id, water_id, place_id, bottom_map_id):
+    pass
+
+@login_required
+def point_add(request, district_id, water_id, place_id, bottom_map_id):
+    pass
+
+@login_required
+def point_renewal(request, district_id, water_id, place_id, bottom_map_id, point_id):
+    pass
+
+@login_required
+def point_details(request, district_id, water_id, place_id, bottom_map_id, point_id):
+    pass
+
+@login_required
+def point_remove(request, district_id, water_id, place_id, bottom_map_id, point_id):
+    pass

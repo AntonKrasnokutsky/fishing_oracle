@@ -1,0 +1,24 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+{% if bottom_map_list %}
+<ul>
+  {% for bottom_map in bottom_map_list %}
+  <li>
+    <a href="{% url 'fishing:bottom_map_details' district.id water.id place.id bottom_map.id %}">{{bottom_map}}</a>
+    {% if user.is_staff %}
+    {{bottom_map.owner}}
+    {% endif %}
+    {% if place.owner == user %}
+    <a href="{% url 'fishing:bottom_map_renewal' district.id water.id place.id bottom_map.id %}">Редактировать</a>
+    <a href="{% url 'fishing:bottom_map_remove' district.id water.id place.id bottom_map.id %}">Удалить</a>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Список маркерных карт пуст</p>
+{% endif %}
+{% if user.is_authenticated %}
+<p><a href="{% url 'fishing:bottom_map_add' district.id water.id place.id %}">Добавить</a></p>
+{% endif %}
+{% endblock %}

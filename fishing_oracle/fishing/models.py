@@ -204,10 +204,10 @@ class BottomMap(models.Model):
     class Meta:
         verbose_name = "Карта дна"
         verbose_name_plural = "Карты дна"
-    water = models.OneToOneField(
-        'Water',
+    place = models.OneToOneField(
+        'Place',
         on_delete=models.CASCADE,
-        verbose_name="Водоем")
+        verbose_name="Место")
 
     # Владелец записи
     owner = models.ForeignKey(
@@ -273,7 +273,9 @@ class BottomMap(models.Model):
     # bottom_map_photo=models.ImageField()
 
     def __str__(self):
-        return str(self.water)
+        str_n = 'N: ' + str(self.bottom_map_northern_degree) + '° ' + str(self.bottom_map_northern_minute) + "' " + str(self.bottom_map_northern_second) + '" '
+        str_e = 'E: ' + str(self.bottom_map_easter_degree) + '° ' + str(self.bottom_map_easter_minute) + "' " + str(self.bottom_map_easter_second) + '"'
+        return (str_n + ' ' + str_e)
 
 
 class Point(models.Model):

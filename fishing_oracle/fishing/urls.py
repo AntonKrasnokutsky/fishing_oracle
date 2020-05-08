@@ -30,7 +30,7 @@ urlpatterns = [
          views.fish_details,
          name='fish_details'),
     # Редактирование названия рыбы и описания
-    path('fish/renewal/<int:fish_id>/',
+    path('fish/<int:fish_id>/renewal/',
          views.fish_renewal,
          name="fish_renewal"),
     # Добавление рыбы
@@ -38,7 +38,7 @@ urlpatterns = [
          views.fish_add,
          name='fish_add'),
     # Удаление рыбы
-    path('fish/remove/<int:fish_id>/',
+    path('fish/<int:fish_id>/remove/',
          views.fish_remove,
          name='fish_remove'),
     # Блок Районов
@@ -51,11 +51,11 @@ urlpatterns = [
          views.district_add,
          name='district_add'),
     # Редактирование района
-    path('district/renewal/<int:district_id>/',
+    path('district/<int:district_id>/renewal',
          views.district_renewal,
          name='district_renewal'),
     # Удаление района
-    path('districts/remove/<int:district_id>/',
+    path('districts/<int:district_id>/remove/',
          views.district_remove,
          name='district_remove'),
     # Блок грунта
@@ -68,11 +68,11 @@ urlpatterns = [
          views.priming_add,
          name='priming_add'),
     # Редактирование грунта
-    path('primings/renewal/<int:priming_id>/',
+    path('primings/<int:priming_id>/renewal/',
          views.priming_renewal,
          name='priming_renewal'),
     # Удаление грунта
-    path('primings/remove/<int:priming_id>/',
+    path('primings/<int:priming_id>/remove',
          views.priming_remove,
          name='priming_remove'),
     # Блок погоды
@@ -86,11 +86,11 @@ urlpatterns = [
          views.overcast_add,
          name='overcast_add'),
     # Редактирование варианта облачности
-    path('overcast/renewal/<int:overcast_id>/',
+    path('overcast/<int:overcast_id>/renewal/',
          views.overcast_renewal,
          name='overcast_renewal'),
     # Удаление варианта облачности
-    path('overcast/remove/<int:overcast_id>/',
+    path('overcast/<int:overcast_id>/remove/',
          views.overcast_remove,
          name='overcast_remove'),
     # Погодные явления
@@ -103,11 +103,11 @@ urlpatterns = [
          views.weather_phenomenas_add,
          name="weatherphenomena_add"),
     # Редактирование погодного явления
-    path('phenomena/renewal/<int:phenomena_id>/',
+    path('phenomena/<int:phenomena_id>/renewal/',
          views.weather_phenomenas_renewal,
          name='weatherphenomena_renewal'),
     # Удаление погодного явления
-    path('phenomena/remove/<int:phenomena_id>/',
+    path('phenomena/<int:phenomena_id>/remove/',
          views.weather_phenomenas_remove,
          name='weatherphenomena_remove'),
     # Блок кормушек
@@ -121,11 +121,11 @@ urlpatterns = [
          views.feed_capacity_add,
          name='feed_capacity_add'),
     # Редактирование варианта кормоемскости
-    path('capacity/renewal/<int:feed_capacity_id>/',
+    path('capacity/<int:feed_capacity_id>/renewal/',
          views.feed_capacity_renewal,
          name='feed_capacity_renewal'),
     # Удаление варианта кормоемкости
-    path('capacity/remove/<int:feed_capacity_id>/',
+    path('capacity/<int:feed_capacity_id>/remove/',
          views.feed_capacity_remove,
          name='feed_capacity_remove'),
     # Темп
@@ -137,11 +137,11 @@ urlpatterns = [
     path('pace/add/',
          views.pace_add, name='pace_add'),
     # Редактирование варианта темпа
-    path('pace/renewal/<int:pace_id>/',
+    path('pace/<int:pace_id>/renewal',
          views.pace_renewal,
          name='pace_renewal'),
     # Удаление варианта темпа
-    path('pace/remove/<int:pace_int>/',
+    path('pace/<int:pace_int>/remove/',
          views.pace_remove,
          name='pace_remove'),
     # Водоемы
@@ -154,11 +154,11 @@ urlpatterns = [
          views.water_add,
          name='water_add'),
     # Редактирование водоема
-    path('districts/<int:district_id>/water/renewal/<int:water_id>/',
+    path('districts/<int:district_id>/water/<int:water_id>/renewal/',
          views.water_renewal,
          name='water_renewal'),
     # Удаление водоема
-    path('districts/<int:district_id>/water/remove/<int:water_id>/',
+    path('districts/<int:district_id>/water/<int:water_id>/remove/',
          views.water_remove,
          name='water_remove'),
     # Место на водоёме
@@ -175,11 +175,11 @@ urlpatterns = [
          views.place_add,
          name='place_add'),
     # Редактирование места
-    path('districts/<int:district_id>/water/<int:water_id>/place/renewal/<int:place_id>/',
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/renewal/',
          views.place_renewal,
          name='place_renewal'),
     # Удаление места
-    path('districts/<int:district_id>/water/<int:water_id>/place/remove/<int:place_id>/',
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/remove/',
          views.place_remove,
          name='place_remove'),
     # Блок точек ловли
@@ -192,7 +192,7 @@ urlpatterns = [
          views.fishing_point_add,
          name='fishing_point_add'),
     # Редактирование точки ловли
-    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/fishingpoint/renewal/<int:fishing_point_id>/',
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/fishingpoint/<int:fishing_point_id>/renewal/',
          views.fishing_point_renewal,
          name='fishing_point_renewal'),
     # Просмотр точки ловли
@@ -200,7 +200,48 @@ urlpatterns = [
          views.fishing_point_details,
          name='fishing_point_details'),
     # Удаление точки ловли
-    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/fishingpoint/remove/<int:fishing_point_id>/',
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/fishingpoint/<int:fishing_point_id>/remove/',
          views.fishing_point_remove,
          name='fishing_point_remove'),
+    # Блок маркерных карт
+    # Список маркерных карт
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/',
+         views.bottom_map_list,
+         name='bottom_map'),
+    # Добавление маркерной карты
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/add/',
+         views.bottom_map_add,
+         name='bottom_map_add'),
+    # Редактирование маркерной карты
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/<int:bottom_map_id>/renewal/',
+         views.bottom_map_renewal,
+         name='bottom_map_renewal'),
+    # Описание маркерной карты
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/<int:bottom_map_id>/',
+         views.bottom_map_details,
+         name='bottom_map_details'),
+    # Удаление маркерной карты
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/<int:bottom_map_id>/remove/',
+         views.bottom_map_remove,
+         name='bottom_map_remove'),
+    # Точки маркерной карты
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/<int:bottom_map_id>/point/',
+         views.point,
+         name='point'),
+    # Добавление точки маркерной карты
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/<int:bottom_map_id>/point/add/',
+         views.point_add,
+         name='point_add'),
+    # Редактирование точки маркерной карты
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/<int:bottom_map_id>/point/<int:point_id>/renewal/',
+         views.point_renewal,
+         name='point_renewal'),
+    # Информация о точке маркерной карты
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/<int:bottom_map_id>/point/<int:point_id>',
+         views.point_details,
+         name='point_details'),
+    # Удаление точки маркерной карты
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/<int:bottom_map_id>/point/<int:point_id>/remove/',
+         views.point_remove,
+         name='point_remove'),
 ]

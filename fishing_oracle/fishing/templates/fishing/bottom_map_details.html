@@ -1,0 +1,15 @@
+{% extends 'fishing/base.html' %} {% block content %}
+<p><strong>Маркерная карта:</strong> {{ bottom_map }}</p>
+<p><strong>N° (-90 до 90):</strong> {{ bottom_map.bottom_map_northern_degree }}</p>
+<p><strong>N' (0 до 59):</strong> {{ bottom_map.bottom_map_northern_minute }}</p>
+<p><strong>N" (0 до 59.999):</strong> {{ bottom_map.bottom_map_northern_second }}</p>
+<p><strong>E° (-90 до 90):</strong> {{ bottom_map.bottom_map_easter_degree }}</p>
+<p><strong>E' (0 до 59):</strong> {{ bottom_map.bottom_map_easter_minute }}</p>
+<p><strong>E" (0 до 59.999):</strong> {{ bottom_map.bottom_map_easter_second }}</p>
+<p>
+    {% if bottom_map.owner == user %}
+    <a href="{% url 'fishing:bottom_map_renewal' district water place bottom_map.id %}">Редактировать</a>
+    {% endif %}
+    <a href="{% url 'fishing:point' district water place bottom_map.id %}">Точки маркерной карты</a>
+</p>
+{% endblock %}
