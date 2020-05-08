@@ -698,31 +698,28 @@ def place_detail(request, district_id, water_id, place_id):
 def place_add(request, district_id, water_id):
     num_visits = visits(request)
     water = get_object_or_404(Water, pk=water_id)
-    if water.owner == request.user:
-        place = Place()
-        if request.method == 'POST':
-            form = PlaceForm(request.POST)
-            if form.is_valid():
-                place.owner = request.user
-                place.water = water
-                place.place_locality = form.cleaned_data['place_locality']
-                place.place_northern_degree = form.cleaned_data['place_northern_degree']
-                place.place_northern_minute = form.cleaned_data['place_northern_minute']
-                place.place_northern_second = form.cleaned_data['place_northern_second']
-                place.place_easter_degree = form.cleaned_data['place_easter_degree']
-                place.place_easter_minute = form.cleaned_data['place_easter_minute']
-                place.place_easter_second = form.cleaned_data['place_easter_second']
-                place.save()
-            return redirect('fishing:place', district_id, water_id)
-        else:
-            form = PlaceForm()
-            return render(request,
-                          'fishing/place_renewal_add.html',
-                          {'form': form,
-                           'place': place,
-                           'num_visits': num_visits})
-    else:
+    place = Place()
+    if request.method == 'POST':
+        form = PlaceForm(request.POST)
+        if form.is_valid():
+            place.owner = request.user
+            place.water = water
+            place.place_locality = form.cleaned_data['place_locality']
+            place.place_northern_degree = form.cleaned_data['place_northern_degree']
+            place.place_northern_minute = form.cleaned_data['place_northern_minute']
+            place.place_northern_second = form.cleaned_data['place_northern_second']
+            place.place_easter_degree = form.cleaned_data['place_easter_degree']
+            place.place_easter_minute = form.cleaned_data['place_easter_minute']
+            place.place_easter_second = form.cleaned_data['place_easter_second']
+            place.save()
         return redirect('fishing:place', district_id, water_id)
+    else:
+        form = PlaceForm()
+        return render(request,
+                      'fishing/place_renewal_add.html',
+                      {'form': form,
+                       'place': place,
+                       'num_visits': num_visits})
 
 
 @login_required
