@@ -4,8 +4,8 @@
   <li>
     {{priming.priming_name}}
     {% if user.is_staff %}
-    <a href="{% url 'fishing:priming_renewal' priming.id %}">Редактировать</a>
-    <a href="{% url 'fishing:priming_remove' priming.id %}">Удалить</a>
+    <a href="{% url 'fishing:priming_renewal' priming.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:priming_remove' priming.id %}" class="btn">Удалить</a>
     {% endif %}
   </li>
   {% endfor %}
@@ -13,7 +13,10 @@
 {% else %}
 <p>Список районов пуст</p>
 {% endif %}
-{% if user.is_staff %}
-<p><a href="{% url 'fishing:priming_add' %}">Добавить</a></p>
-{% endif %}
+<p>
+  {% if user.is_staff %}
+  <a href="{% url 'fishing:priming_add' %}" class="btn">Добавить</a>
+  {% endif %}
+  <a onclick="back()" class="btn">Назад</a>
+</p>
 {% endblock %}

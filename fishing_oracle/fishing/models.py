@@ -273,8 +273,10 @@ class BottomMap(models.Model):
     # bottom_map_photo=models.ImageField()
 
     def __str__(self):
-        str_n = 'N: ' + str(self.bottom_map_northern_degree) + '° ' + str(self.bottom_map_northern_minute) + "' " + str(self.bottom_map_northern_second) + '" '
-        str_e = 'E: ' + str(self.bottom_map_easter_degree) + '° ' + str(self.bottom_map_easter_minute) + "' " + str(self.bottom_map_easter_second) + '"'
+        str_n = 'N: ' + str(self.bottom_map_northern_degree) + '° ' + str(
+            self.bottom_map_northern_minute) + "' " + str(self.bottom_map_northern_second) + '" '
+        str_e = 'E: ' + str(self.bottom_map_easter_degree) + '° ' + str(
+            self.bottom_map_easter_minute) + "' " + str(self.bottom_map_easter_second) + '"'
         return (str_n + ' ' + str_e)
 
 
@@ -294,7 +296,7 @@ class Point(models.Model):
         verbose_name="Владелец записи"
     )
     # Привязка к маркерной карте
-    bottom_map = models.OneToOneField(
+    bottom_map = models.ForeignKey(
         'BottomMap',
         on_delete=models.CASCADE,
         verbose_name="Карта дна")
@@ -393,16 +395,22 @@ class Weather(models.Model):
     class Meta:
         verbose_name = "Погода"
         verbose_name_plural = "Погода"
+    # Привязка к месту
+    place = models.ForeignKey('Place',
+                              on_delete=models.PROTECT,
+                              verbose_name='Место')
+    # Дата погоды
+    date = models.DateField(
+        auto_now_add=False,
+        verbose_name="Дата")
     # Облачность
-    overcast = models.ForeignKey(
-        'Overcast',
-        on_delete=models.PROTECT,
-        verbose_name="Облачность")
+    overcast = models.ForeignKey('Overcast',
+                                 on_delete=models.PROTECT,
+                                 verbose_name="Облачность")
     # Связь с таблицей "Явления погоды"
-    weather_phenomena = models.ForeignKey(
-        'WeatherPhenomena',
-        on_delete=models.PROTECT,
-        verbose_name="Явления погоды")
+    weather_phenomena = models.ForeignKey('WeatherPhenomena',
+                                          on_delete=models.PROTECT,
+                                          verbose_name="Явления погоды")
     # Температура воздуха
     weather_temperature = models.DecimalField(
         max_digits=4,
@@ -428,6 +436,9 @@ class Weather(models.Model):
         default=0,
         verbose_name="Лунный день")
 
+    def __str__(self):
+        return str(self.date)
+
 
 class Overcast(models.Model):
     """
@@ -440,7 +451,8 @@ class Overcast(models.Model):
     #
     overcast_name = models.CharField(
         max_length=30,
-        verbose_name="Классификация облачности")
+        verbose_name="Классификация облачности",
+        unique=True)
 
     def __str__(self):
         return self.overcast_name
@@ -628,7 +640,8 @@ class FeedCapacity(models.Model):
     # Кормоемкость кормушки
     feed_capacity_name = models.CharField(
         max_length=20,
-        verbose_name="Кормоемкость")
+        verbose_name="Кормоемкость",
+        unique=True)
 
     class Meta:
         verbose_name = "Кормоёмкость кормушки"
@@ -863,7 +876,8 @@ class Pace(models.Model):
     # Темп
     pace_interval = models.CharField(
         max_length=30,
-        verbose_name="Темп")
+        verbose_name="Темп",
+        unique=True)
 
     def __str__(self):
         return self.pace_interval

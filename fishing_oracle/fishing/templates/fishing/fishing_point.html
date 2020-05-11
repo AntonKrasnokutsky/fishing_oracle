@@ -9,8 +9,8 @@
     {% if user.is_staff %}
     {{place.owner}}
     {% endif %}
-    <a href="{% url 'fishing:fishing_point_renewal' district.id water.id place.id fishing_point.id %}">Редактировать</a>
-    <a href="{% url 'fishing:fishing_point_remove' district.id water.id place.id fishing_point.id %}">Удалить</a>
+    <a href="{% url 'fishing:fishing_point_renewal' district.id water.id place.id fishing_point.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:fishing_point_remove' district.id water.id place.id fishing_point.id %}" class="btn">Удалить</a>
     {% endif %}
   </li>
   {% endfor %}
@@ -18,7 +18,10 @@
 {% else %}
 <p>Список точек ловли пуст</p>
 {% endif %}
-{% if place.owner == user %}
-<p><a href="{% url 'fishing:fishing_point_add' district.id water.id place.id %}">Добавить</a></p>
-{% endif %}
+<p>
+  {% if place.owner == user %}
+  <a href="{% url 'fishing:fishing_point_add' district.id water.id place.id %}" class="btn">Добавить</a>
+  {% endif %}
+  <a onclick="back()" class="btn">Назад</a>
+</p>
 {% endblock %}

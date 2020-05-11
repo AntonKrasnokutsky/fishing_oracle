@@ -76,38 +76,58 @@ urlpatterns = [
          views.priming_remove,
          name='priming_remove'),
     # Блок погоды
+    # Погода
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/weather/',
+         views.weather_list,
+         name='weather'),
+    # Добавление погоды
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/weather/add/',
+         views.weather_add,
+         name='weather_add'),
+    # Редактирование погоды
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/weather/<int:weather_id>/renewal/',
+         views.weather_renewal,
+         name='weather_renewal'),
+    # Детали погоды
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/weather/<int:weather_id>/details/',
+         views.weather_details,
+         name='weather_details'),
+    # Удаление погоды
+    path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/weather/<int:weather_id>/remove/',
+         views.weather_remove,
+         name='weather_remove'),
     # Облачность
     # Список вариантов облачности
-    path('overcast/',
+    path('weather/overcast/',
          views.overcast_list,
          name='overcast'),
     # Добавдение варианта облачности
-    path('overcast/add/',
+    path('weather/overcast/add/',
          views.overcast_add,
          name='overcast_add'),
     # Редактирование варианта облачности
-    path('overcast/<int:overcast_id>/renewal/',
+    path('weather/overcast/<int:overcast_id>/renewal/',
          views.overcast_renewal,
          name='overcast_renewal'),
     # Удаление варианта облачности
-    path('overcast/<int:overcast_id>/remove/',
+    path('weather/overcast/<int:overcast_id>/remove/',
          views.overcast_remove,
          name='overcast_remove'),
     # Погодные явления
     # Список погодных явления
-    path('phenomena/',
+    path('weather/phenomena/',
          views.weather_phenomenas_list,
          name='weatherphenomena'),
     # Добавление погодного явления
-    path('phenomena/add/',
+    path('weather/phenomena/add/',
          views.weather_phenomenas_add,
          name="weatherphenomena_add"),
     # Редактирование погодного явления
-    path('phenomena/<int:phenomena_id>/renewal/',
+    path('weather/phenomena/<int:phenomena_id>/renewal/',
          views.weather_phenomenas_renewal,
          name='weatherphenomena_renewal'),
     # Удаление погодного явления
-    path('phenomena/<int:phenomena_id>/remove/',
+    path('weather/phenomena/<int:phenomena_id>/remove/',
          views.weather_phenomenas_remove,
          name='weatherphenomena_remove'),
     # Блок кормушек

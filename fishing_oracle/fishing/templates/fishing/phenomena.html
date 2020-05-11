@@ -6,8 +6,8 @@
   <li>
     {{phenomena.weather_phenomena_name}}
     {% if user.is_staff %}
-    <a href="{% url 'fishing:weatherphenomena_renewal' phenomena.id %}">Редактировать</a>
-    <a href="{% url 'fishing:weatherphenomena_remove' phenomena.id %}">Удалить</a>
+    <a href="{% url 'fishing:weatherphenomena_renewal' phenomena.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:weatherphenomena_remove' phenomena.id %}" class="btn">Удалить</a>
     {% endif %}
   </li>
   {% endfor %}
@@ -15,7 +15,10 @@
 {% else %}
 <p>Список погодных явлений пуст</p>
 {% endif %}
-{% if user.is_staff %}
-<p><a href="{% url 'fishing:weatherphenomena_add' %}">Добавить</a></p>
-{% endif %}
+<p>
+  {% if user.is_staff %}
+  <a href="{% url 'fishing:weatherphenomena_add' %}" class="btn">Добавить</a>
+  {% endif %}
+  <a onclick="back()" class="btn">Назад</a>
+</p>
 {% endblock %}

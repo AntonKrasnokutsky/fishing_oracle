@@ -5,7 +5,8 @@
 <p><strong>Грунт:</strong> {{ fishing_point.priming }}</p>
 <p>
     {% if fishing_point.owner == user %}
-    <a href="{% url 'fishing:fishing_point_renewal' district water place fishing_point.id%}">Редактировать</a>
+    <a href="{% url 'fishing:fishing_point_renewal' district water place fishing_point.id%}" class="btn">Редактировать</a>
     {% endif %}
+    <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endblock %}

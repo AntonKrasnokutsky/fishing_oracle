@@ -1,0 +1,24 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+{% if weather_list %}
+<ul>
+  {% for weather in weather_list %}
+  <li>
+    <a href="{% url 'fishing:weather_detail' district.id water.id place.id weather.id %}">{{weather}}</a>
+    {% if place.owner == user %}
+    <a href="{% url 'fishing:weather_renewal' district.id water.id place.id weather.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:weather_remove' district.id water.id place.id weather.id%}" class="btn">Удалить</a>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Погода не внесена</p>
+{% endif %}
+<p>
+  {% if user.is_authenticated %}
+  <a href="{% url 'fishing:weather_add' district.id water.id place.id %}" class="btn">Добавить</a>
+  {% endif %}
+  <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endblock %}

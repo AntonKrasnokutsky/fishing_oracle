@@ -8,8 +8,9 @@
 <p><strong>E" (0 до 59.999):</strong> {{ bottom_map.bottom_map_easter_second }}</p>
 <p>
     {% if bottom_map.owner == user %}
-    <a href="{% url 'fishing:bottom_map_renewal' district water place bottom_map.id %}">Редактировать</a>
+    <a href="{% url 'fishing:bottom_map_renewal' district water place bottom_map.id %}" class="btn">Редактировать</a>
     {% endif %}
-    <a href="{% url 'fishing:point' district water place bottom_map.id %}">Точки маркерной карты</a>
+    <a href="{% url 'fishing:point' district water place bottom_map.id %}" class="btn">Точки маркерной карты</a>
+    <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endblock %}

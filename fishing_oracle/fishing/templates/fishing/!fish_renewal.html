@@ -1,7 +1,6 @@
-{% extends 'fishing/base.html' %}
-{% block content %}
-{% if not bottom_map.owner %}
-<p>Новая маркерная карта:</p>
+{% extends 'fishing/base.html' %} {% block content %}
+{% if not fish.name_of_fish %}
+<p>Описание новой рыбы</p>
 {% endif %}
 
 <form action="" method="post">

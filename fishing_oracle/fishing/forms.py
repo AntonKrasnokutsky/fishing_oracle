@@ -9,6 +9,8 @@ from .models import Water
 from .models import Place
 from .models import FishingPoint
 from .models import BottomMap
+from .models import Point
+from .models import Weather
 
 from django import forms
 
@@ -81,9 +83,26 @@ class FishingPointForm(forms.ModelForm):
                   'fishing_poiny_depth',
                   'priming', ]
 
+
 class BottomMapForm(forms.ModelForm):
     class Meta:
         model = BottomMap
         fields = ['bottom_map_northern_degree', 'bottom_map_northern_minute',
                   'bottom_map_northern_second', 'bottom_map_easter_degree',
-                  'bottom_map_easter_minute', 'bottom_map_easter_second',]
+                  'bottom_map_easter_minute', 'bottom_map_easter_second', ]
+
+
+class PointForm(forms.ModelForm):
+    class Meta:
+        model = Point
+        fields = ['point_azimuth', 'point_distance',
+                  'point_depth', 'priming']
+
+
+class WeatherForm(forms.ModelForm):
+    class Meta:
+        model = Weather
+        fields = ['date', 'overcast', 'weather_phenomena',
+                  'weather_temperature', 'pressure',
+                  'direction_wind', 'wind_speed',
+                  'lunar_day']

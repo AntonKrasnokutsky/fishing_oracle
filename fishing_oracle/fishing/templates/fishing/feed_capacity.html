@@ -6,8 +6,8 @@
   <li>
     {{capacity.feed_capacity_name}}
     {% if user.is_staff %}
-    <a href="{% url 'fishing:feed_capacity_renewal' capacity.id %}">Редактировать</a>
-    <a href="{% url 'fishing:feed_capacity_remove' capacity.id %}">Удалить</a>
+    <a href="{% url 'fishing:feed_capacity_renewal' capacity.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:feed_capacity_remove' capacity.id %}" class="btn">Удалить</a>
     {% endif %}
   </li>
   {% endfor %}
@@ -15,7 +15,10 @@
 {% else %}
 <p>Список вариантов кормоёмкости пуст</p>
 {% endif %}
-{% if user.is_staff %}
-<p><a href="{% url 'fishing:feed_capacity_add' %}">Добавить</a></p>
-{% endif %}
+<p>
+  {% if user.is_staff %}
+  <a href="{% url 'fishing:feed_capacity_add' %}" class="btn">Добавить</a>
+  {% endif %}
+  <a onclick="back()" class="btn">Назад</a>
+</p>
 {% endblock %}

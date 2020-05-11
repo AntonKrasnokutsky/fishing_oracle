@@ -8,9 +8,10 @@
 <p><strong>E" (0 до 59.999):</strong> {{ place.place_easter_second }}</p>
 <p>
     {% if place.owner == user %}
-    <a href="{% url 'fishing:place_renewal' district water place.id %}">Редактировать</a>
+    <a href="{% url 'fishing:place_renewal' district water place.id %}" class="btn">Редактировать</a>
     {% endif %}
-    <a href="{% url 'fishing:fishing_point' district water place.id %}">Точки ловли</a>
-    <a href="{% url 'fishing:bottom_map' district water place.id %}">Маркерная карта</a>
+    <a href="{% url 'fishing:fishing_point' district water place.id %}" class="btn">Точки ловли</a>
+    <a href="{% url 'fishing:bottom_map' district water place.id %}" class="btn">Маркерная карта</a>
+    <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endblock %}

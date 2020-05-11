@@ -6,8 +6,8 @@
   <li>
     {{pace.pace_interval}}
     {% if user.is_staff %}
-    <a href="{% url 'fishing:pace_renewal' pace.id %}">Редактировать</a>
-    <a href="{% url 'fishing:pace_remove' pace.id %}">Удалить</a>
+    <a href="{% url 'fishing:pace_renewal' pace.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:pace_remove' pace.id %}" class="btn">Удалить</a>
     {% endif %}
   </li>
   {% endfor %}
@@ -15,7 +15,10 @@
 {% else %}
 <p>Список интервалов пуст</p>
 {% endif %}
-{% if user.is_staff %}
-<p><a href="{% url 'fishing:pace_add' %}">Добавить</a></p>
-{% endif %}
+<p>
+  {% if user.is_staff %}
+  <a href="{% url 'fishing:pace_add' %}" class="btn">Добавить</a>
+  {% endif %}
+  <a onclick="back()" class="btn">Назад</a>
+</p>
 {% endblock %}

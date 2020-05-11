@@ -9,8 +9,8 @@
     {{bottom_map.owner}}
     {% endif %}
     {% if place.owner == user %}
-    <a href="{% url 'fishing:bottom_map_renewal' district.id water.id place.id bottom_map.id %}">Редактировать</a>
-    <a href="{% url 'fishing:bottom_map_remove' district.id water.id place.id bottom_map.id %}">Удалить</a>
+    <a href="{% url 'fishing:bottom_map_renewal' district.id water.id place.id bottom_map.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:bottom_map_remove' district.id water.id place.id bottom_map.id %}" class="btn">Удалить</a>
     {% endif %}
   </li>
   {% endfor %}
@@ -18,7 +18,10 @@
 {% else %}
 <p>Список маркерных карт пуст</p>
 {% endif %}
-{% if user.is_authenticated %}
-<p><a href="{% url 'fishing:bottom_map_add' district.id water.id place.id %}">Добавить</a></p>
+<p>
+  {% if user.is_authenticated %}
+  <a href="{% url 'fishing:bottom_map_add' district.id water.id place.id %}" class="btn">Добавить</a>
+  <a onclick="back()" class="btn">Назад</a>
+</p>
 {% endif %}
 {% endblock %}
