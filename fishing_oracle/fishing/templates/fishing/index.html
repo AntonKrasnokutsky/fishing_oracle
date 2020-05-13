@@ -2,14 +2,19 @@
 <ul>
     {% if user.is_authenticated  %}
     <li><a href="{% url 'fishing:fishing' %}">Рыбалки</a></li>
-    <li><a href="{% url 'fishing:overcast' %}">Облачность</a></li>
-    <li><a href="{% url 'fishing:weatherphenomena' %}">Погодные явления</a></li>
     <li><a href="{% url 'fishing:feed_capacity' %}">Кормоёмкость</a></li>
     <li><a href="{% url 'fishing:pace' %}">Темп</a></li>
+    <li><a href="{% url 'fishing:fishing_tackle' %}">Снасти</a></li>
+    <li><a href="{% url 'fishing:fishing_montage' %}">Монтажи</a></li>
+    <li><a href="{% url 'fishing:model_trough_name' %}">Название моделей кормушек</a></li>
+    <li><a href="{% url 'fishing:model_trough' %}">Врианты моделей кормушек</a></li>
+    <li><a href="{% url 'fishing:fishing_trough' %}">Кормушки</a></li>
     {% endif %}
     <li><a href="{% url 'fishing:fish' %}">Рыба</a></li>
     {% if user.is_staff %}
     <li><a href="{% url 'fishing:districts' %}">Районы</a></li>
+    <li><a href="{% url 'fishing:overcast' %}">Облачность</a></li>
+    <li><a href="{% url 'fishing:weatherphenomena' %}">Погодные явления</a></li>
     <li><a href="{% url 'fishing:primings' %}">Грунт</a></li>
     {% endif %}
 </ul>

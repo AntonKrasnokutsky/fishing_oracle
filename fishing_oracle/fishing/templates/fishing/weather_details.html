@@ -1,0 +1,14 @@
+{% extends 'fishing/base.html' %} {% block content %}
+<p><strong>Погода:</strong> {{ weather }}</p>
+<p><strong>Облачность:</strong> {{ weather.overcast }}</p>
+<p><strong>Явления:</strong> {{ weather.weather_phenomena }}</p>
+<p><strong>Температура:</strong> {{ weather.weather_temperature }}</p>
+<p><strong>Давление:</strong> {{ weather.pressure }}</p>
+<p><strong>Направление ветра:</strong> {{ weather.direction_wind }}</p>
+<p><strong>Скорость ветра:</strong> {{ weather.wind_speed }}</p>
+<p><strong>Лунный день:</strong> {{ weather.lunar_day }}</p>
+<p>
+    <a href="{% url 'fishing:weather_renewal' district water place weather.id %}" class="btn">Редактировать</a>
+    <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endblock %}

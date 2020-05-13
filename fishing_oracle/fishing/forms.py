@@ -1,27 +1,23 @@
 from .models import Fish
-from .models import District
+from .models import District, Water, Place
 from .models import Priming
-from .models import Overcast
-from .models import WeatherPhenomena
 from .models import FeedCapacity
 from .models import Pace
-from .models import Water
-from .models import Place
 from .models import FishingPoint
-from .models import BottomMap
-from .models import Point
-from .models import Weather
+from .models import FishingTackle, FishingMontage, ModelTroughName, ModelTrough
+from .models import FishingTrough
+from .models import BottomMap, Point
+from .models import Weather, Overcast, WeatherPhenomena
 
 from django import forms
 
 
-class FishForm(forms.ModelForm):
-
+class BottomMapForm(forms.ModelForm):
     class Meta:
-        model = Fish
-        fields = ('name_of_fish', 'fish_description',)
-
-#    renewal_name_of_fish = forms.CharField(max_length=20, label='Рыба')
+        model = BottomMap
+        fields = ['bottom_map_northern_degree', 'bottom_map_northern_minute',
+                  'bottom_map_northern_second', 'bottom_map_easter_degree',
+                  'bottom_map_easter_minute', 'bottom_map_easter_second', ]
 
 
 class DistrictForm(forms.ModelForm):
@@ -30,49 +26,24 @@ class DistrictForm(forms.ModelForm):
         fields = ('district_name',)
 
 
-class PrimingForm(forms.ModelForm):
-    class Meta:
-        model = Priming
-        fields = ('priming_name',)
-
-
-class OvercastForm(forms.ModelForm):
-    class Meta:
-        model = Overcast
-        fields = ('overcast_name',)
-
-
-class WeatherPhenomenaForm(forms.ModelForm):
-    class Meta:
-        model = WeatherPhenomena
-        fields = ('weather_phenomena_name',)
-
-
 class FeedCapacityForm(forms.ModelForm):
     class Meta:
         model = FeedCapacity
         fields = ('feed_capacity_name',)
 
 
-class PaceForm(forms.ModelForm):
+class FishForm(forms.ModelForm):
+
     class Meta:
-        model = Pace
-        fields = ('pace_interval',)
+        model = Fish
+        fields = ('name_of_fish', 'fish_description', )
+    #renewal_name_of_fish = forms.CharField(max_length=20, label='Рыба')
 
 
-class WaterForm(forms.ModelForm):
+class FishingMontageForm(forms.ModelForm):
     class Meta:
-        model = Water
-        fields = ('water_name',)
-
-
-class PlaceForm(forms.ModelForm):
-    class Meta:
-        model = Place
-        fields = ['place_locality', 'place_northern_degree',
-                  'place_northern_minute', 'place_northern_second',
-                  'place_easter_degree', 'place_easter_minute',
-                  'place_easter_second', ]
+        model = FishingMontage
+        fields = ('fishing_montage_name', 'fishing_montage_sliding', )
 
 
 class FishingPointForm(forms.ModelForm):
@@ -84,12 +55,53 @@ class FishingPointForm(forms.ModelForm):
                   'priming', ]
 
 
-class BottomMapForm(forms.ModelForm):
+class FishingTackleForm(forms.ModelForm):
     class Meta:
-        model = BottomMap
-        fields = ['bottom_map_northern_degree', 'bottom_map_northern_minute',
-                  'bottom_map_northern_second', 'bottom_map_easter_degree',
-                  'bottom_map_easter_minute', 'bottom_map_easter_second', ]
+        model = FishingTackle
+        fields = ['fishing_tackle_manufacturer', 'fishing_tackle_name',
+                  'fishing_tackle_length', 'fishing_tackle_casting_weight', ]
+
+
+class FishingTroughForm(forms.ModelForm):
+    class Meta:
+        model = FishingTrough
+        fields = ('fishing_trough_manufacturer', 'model_trough',
+                  'feed_capacity', 'fishing_trough_weight',)
+
+
+
+class ModelTroughForm(forms.ModelForm):
+    class Meta:
+        model = ModelTrough
+        fields = ('model_trough_name', 'model_trough_plastic',
+                  'model_trough_lugs',)
+
+
+class ModelTroughNameForm(forms.ModelForm):
+    class Meta:
+        model = ModelTroughName
+        fields = ('model_trough_name',)
+
+
+class OvercastForm(forms.ModelForm):
+    class Meta:
+        model = Overcast
+        fields = ('overcast_name',)
+
+
+class PaceForm(forms.ModelForm):
+    class Meta:
+        model = Pace
+        fields = ('pace_interval',)
+
+
+class PlaceForm(forms.ModelForm):
+    class Meta:
+        model = Place
+        fields = ['place_locality', 'place_northern_degree',
+                  'place_northern_minute', 'place_northern_second',
+                  'place_easter_degree', 'place_easter_minute',
+                  'place_easter_second', ]
 
 
 class PointForm(forms.ModelForm):
@@ -99,6 +111,18 @@ class PointForm(forms.ModelForm):
                   'point_depth', 'priming']
 
 
+class PrimingForm(forms.ModelForm):
+    class Meta:
+        model = Priming
+        fields = ('priming_name',)
+
+
+class WaterForm(forms.ModelForm):
+    class Meta:
+        model = Water
+        fields = ('water_name',)
+
+
 class WeatherForm(forms.ModelForm):
     class Meta:
         model = Weather
@@ -106,3 +130,9 @@ class WeatherForm(forms.ModelForm):
                   'weather_temperature', 'pressure',
                   'direction_wind', 'wind_speed',
                   'lunar_day']
+
+
+class WeatherPhenomenaForm(forms.ModelForm):
+    class Meta:
+        model = WeatherPhenomena
+        fields = ('weather_phenomena_name',)

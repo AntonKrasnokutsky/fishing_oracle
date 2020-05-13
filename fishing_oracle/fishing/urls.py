@@ -246,22 +246,107 @@ urlpatterns = [
          name='bottom_map_remove'),
     # Точки маркерной карты
     path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/<int:bottom_map_id>/point/',
-         views.point,
+         views.bottom_map_point_list,
          name='point'),
     # Добавление точки маркерной карты
     path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/<int:bottom_map_id>/point/add/',
-         views.point_add,
+         views.bottom_map_point_add,
          name='point_add'),
     # Редактирование точки маркерной карты
     path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/<int:bottom_map_id>/point/<int:point_id>/renewal/',
-         views.point_renewal,
+         views.bottom_map_point_renewal,
          name='point_renewal'),
     # Информация о точке маркерной карты
     path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/<int:bottom_map_id>/point/<int:point_id>',
-         views.point_details,
+         views.bottom_map_point_details,
          name='point_details'),
     # Удаление точки маркерной карты
     path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/<int:bottom_map_id>/point/<int:point_id>/remove/',
-         views.point_remove,
+         views.bottom_map_point_remove,
          name='point_remove'),
+    # Снасти
+    # Список снастей
+    path('fishingtackle/',
+         views.fishing_tackle_list,
+         name='fishing_tackle'),
+    # Добавление снасти
+    path('fishingtackle/add/',
+         views.fishing_tackle_add,
+         name='fishing_tackle_add'),
+    # Редактирование снасти
+    path('fishingtackle/<int:fishing_tackle_id>/renewal/',
+         views.fishing_tackle_renewal,
+         name='fishing_tackle_renewal'),
+    # Удаление снасти
+    path('fishingtackle/<int:fishing_tackle_id>/remove/',
+         views.fishing_tackle_remove,
+         name='fishing_tackle_remove'),
+    # Монтажи
+    # Список монтажей
+    path('fishingmontage/',
+         views.fishing_montage_list,
+         name='fishing_montage'),
+    # Добавить монтаж
+    path('fishingmontage/add/',
+         views.fishing_montage_add,
+         name='fishing_montage_add'),
+    # Изменить монтаж
+    path('fishingmontage/<int:fishing_montage_id>/renewal/',
+         views.fishing_montage_renewal,
+         name='fishing_montage_renewal'),
+    # Удалить монтаж
+    path('fishingmontage/<int:fishing_montage_id>/remove/',
+         views.fishing_montage_remove,
+         name='fishing_montage_remove'),
+    # Названия моделей кормушек
+    # Список названий моделей кормушек
+    path('modeltroughname/',
+         views.model_trough_name_list,
+         name='model_trough_name'),
+    # Добавление названия модели кормушек
+    path('modeltroughname/add/',
+         views.model_trough_name_add,
+         name='model_trough_name_add'),
+    # Редактирование названия модели кормушек
+    path('modeltroughname/<int:model_trough_name_id>/renewal/',
+         views.model_trough_name_renewal,
+         name='model_trough_name_renewal'),
+    # Удаление названия моделей кормушек
+    path('modeltroughname/<int:model_trough_name_id>/remove/',
+         views.model_trough_name_remove,
+         name='model_trough_name_remove'),
+    # Комбинации моделей кормушек
+    # Список комбинаций моделей кормушек
+    path('modeltrough/',
+         views.model_trough_list,
+         name='model_trough'),
+    # Добавлении комбинации модели кормушек
+    path('modeltrough/add/',
+         views.model_trough_add,
+         name='model_trough_add'),
+    # Редактирование комбинация моделей кормушек
+    path('modeltrough/<int:model_trough_id>/renewal/',
+         views.model_trough_renewal,
+         name='model_trough_renewal'),
+    # Удаление комбинаций моделей кормушек
+    path('modeltrough/<int:model_trough_id>/remove/',
+         views.model_trough_remove,
+         name='model_trough_remove'),
+    # Кормушки
+    # Список кормушек
+    path('fishingtrough/',
+         views.fishing_trough_list,
+         name='fishing_trough'),
+    # Добавление кормушки
+    path('fishingtrough/add/',
+         views.fishing_trough_add,
+         name='fishing_trough_add'),
+    # Редактирование кормушки
+    path('fishingtrough/<int:fishing_trough_id>/renewal/',
+         views.fishing_trough_renewal,
+         name='fishing_trough_renewal'),
+    # Удаление кормушки
+    path('fishingtrough/<int:fishing_trough_id>/remove/',
+         views.fishing_trough_remove,
+         name='fishing_trough_remove'),
 ]

@@ -10,6 +10,7 @@
     {% if place.owner == user %}
     <a href="{% url 'fishing:place_renewal' district water place.id %}" class="btn">Редактировать</a>
     {% endif %}
+    <a href="{% url 'fishing:weather' district water place.id %}" class="btn">Погода</a>
     <a href="{% url 'fishing:fishing_point' district water place.id %}" class="btn">Точки ловли</a>
     <a href="{% url 'fishing:bottom_map' district water place.id %}" class="btn">Маркерная карта</a>
     <a onclick="back()" class="btn">Назад</a>
