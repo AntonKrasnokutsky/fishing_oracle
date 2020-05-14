@@ -1,4 +1,16 @@
-{% extends 'fishing/base.html' %} {% block content %}
+{% extends 'fishing/base.html' %}
+{% block content %}
+<!-- Наживки -->
+{% if nozzle != None %}
+<p><strong>Живой компонент: </strong>{{ nozzle.bait }}</p>
+<p><strong>Производитель: </strong>{{ nozzle.nozzle_manufacturer }}</p>
+<p><strong>Название: </strong>{{ nozzle.nozzle_name }}</p>
+<p><strong>Диаметр: </strong>{{ nozzle.nozzle_diameter }}</p>
+<p><strong>Тип: </strong>{{ nozzle.nozzle_type }}</p>
+{% endif %}
+
+<!-- Погода -->
+{% if weather != None %}
 <p><strong>Погода:</strong> {{ weather }}</p>
 <p><strong>Облачность:</strong> {{ weather.overcast }}</p>
 <p><strong>Явления:</strong> {{ weather.weather_phenomena }}</p>
@@ -11,4 +23,5 @@
     <a href="{% url 'fishing:weather_renewal' district water place weather.id %}" class="btn">Редактировать</a>
     <a onclick="back()" class="btn">Назад</a>
 </p>
+{% endif %}
 {% endblock %}

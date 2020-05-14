@@ -94,6 +94,8 @@
       <a href="{% url 'fishing:model_trough_name' %}">Название моделей кормушек</a>
       <a href="{% url 'fishing:model_trough' %}">Врианты моделей кормушек</a>
       <a href="{% url 'fishing:fishing_trough' %}">Кормушки</a>
+      <a href="{% url 'fishing:nozzle_state' %}">Состояния наживки</a>
+      <!--<a href="{% url 'fishing:nozzle' %}">Наживка</a>-->
       <a href="{% url 'logout'%}?next={{request.path}}">{{ user.get_username }}</a>
       {% else %}
       <a href="{% url 'login'%}?next={{request.path}}">Войти</a>

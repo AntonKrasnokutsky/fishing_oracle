@@ -8,6 +8,7 @@ from .models import FishingTackle, FishingMontage, ModelTroughName, ModelTrough
 from .models import FishingTrough
 from .models import BottomMap, Point
 from .models import Weather, Overcast, WeatherPhenomena
+from .models import NozzleState, Nozzle
 
 from django import forms
 
@@ -69,7 +70,6 @@ class FishingTroughForm(forms.ModelForm):
                   'feed_capacity', 'fishing_trough_weight',)
 
 
-
 class ModelTroughForm(forms.ModelForm):
     class Meta:
         model = ModelTrough
@@ -81,6 +81,20 @@ class ModelTroughNameForm(forms.ModelForm):
     class Meta:
         model = ModelTroughName
         fields = ('model_trough_name',)
+
+
+class NozzleForm(forms.ModelForm):
+    class Meta:
+        model = Nozzle
+        fields = ('bait', 'nozzle_manufacturer',
+                  'nozzle_name', 'nozzle_diameter',
+                  'nozzle_type')
+
+
+class NozzleStateForm(forms.ModelForm):
+    class Meta:
+        model = NozzleState
+        fields = ('state',)
 
 
 class OvercastForm(forms.ModelForm):

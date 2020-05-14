@@ -1,0 +1,57 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+
+<!-- Навивки -->
+{% if nozzle_list != None %}
+{% if nozzle_list %}
+<ul>
+  {% for nozzle in nozzle_list %}
+  <li>
+    <a href="{% url 'fishing:nozzle_details' nozzle.id %}">{{nozzle}}</a>
+    {% if user.is_staff %}
+    {{ nozzle.owner }}
+    {% endif %}
+    {% if nozzle.owner == user %}
+    <a href="{% url 'fishing:nozzle_renewal' nozzle.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:nozzle_remove' nozzle.id %}" class="btn">Удалить</a>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Наживки и насадки не внесены</p>
+{% endif %}
+<p>
+  <a href="{% url 'fishing:nozzle_add' %}" class="btn">Добавить</a>
+  <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endif %}
+
+<!-- Состояние наживок -->
+{% if nozzle_state_list != None %}
+{% if nozzle_state_list %}
+<ul>
+  {% for nozzle_state in nozzle_state_list %}
+  <li>
+    {{nozzle_state}}
+    {% if user.is_staff %}
+    {{ nozzle_state.owner }}
+    {% endif %}
+    {% if nozzle_state.owner == user %}
+    <a href="{% url 'fishing:nozzle_state_renewal' nozzle_state.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:nozzle_state_remove' nozzle_state.id %}" class="btn">Удалить</a>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Состояний наживки не внесено</p>
+{% endif %}
+<p>
+  <a href="{% url 'fishing:nozzle_state_add' %}" class="btn">Добавить</a>
+  <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endif %}
+
+
+{% endblock %}

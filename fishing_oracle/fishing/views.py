@@ -24,11 +24,16 @@ from .forms import FishingTackleForm, FishingMontageForm, ModelTroughNameForm, M
 from .models import FishingTrough
 from .forms import FishingTroughForm
 
+from .models import NozzleState, Nozzle
+from .forms import NozzleStateForm, NozzleForm
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
 # Переменные
 template_renewal_add_path = 'fishing/renewal_add.html'
+template_list_path = 'fishing/list.html'
+template_details_path = 'fishing/details.html'
 
 
 def visits(request, inc=0):
@@ -968,6 +973,152 @@ def model_trough_name_renewal(request, model_trough_name_id):
                        'num_visits': num_visits})
 
 
+@login_required
+def nozzle_add(request):
+    num_visits = visits(request)
+    if request.method == "POST":
+        nozzle = Nozzle()
+        form = NozzleForm(request.POST)
+        if form.is_valid():
+            nozzle.owner = request.user
+            nozzle.bait = form.cleaned_data['bait']
+            nozzle.nozzle_manufacturer = form.cleaned_data['nozzle_manufacturer']
+            nozzle.nozzle_name = form.cleaned_data['nozzle_name']
+            nozzle.nozzle_diameter = form.cleaned_data['nozzle_diameter']
+            nozzle.nozzle_type = form.cleaned_data['nozzle_type']
+            nozzle.save()
+        return redirect('fishing:nozzle')
+    else:
+        form = NozzleForm()
+        return render(request,
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
+
+
+@login_required
+def nozzle_details(request, nozzle_id):
+    num_visits = visits(request)
+    nozzle = get_object_or_404(Nozzle, pk=nozzle_id)
+    if nozzle.owner == request.user or request.user.is_staff:
+        return render(request,
+                      template_details_path,
+                      {'nozzle': nozzle,
+                       'num_visits': num_visits})
+    else:
+        return redirect('fishing:nozzle')
+
+
+@login_required
+def nozzle_list(request):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        nozzle_list = Nozzle.objects.all()
+    else:
+        nozzle_list = Nozzle.objects.filter(owner=request.user)
+    return render(request,
+                  template_list_path,
+                  {'nozzle_list': nozzle_list,
+                   'num_visits': num_visits})
+
+
+@login_required
+def nozzle_remove(request, nozzle_id):
+    nozzle = get_object_or_404(Nozzle, pk=nozzle_id)
+    if nozzle.owner == request.user:
+        nozzle.delete()
+    return redirect('fishing:nozzle')
+
+
+@login_required
+def nozzle_renewal(request, nozzle_id):
+    num_visits = visits(request)
+    nozzle = get_object_or_404(Nozzle, pk=nozzle_id)
+    if nozzle.owner == request.user:
+        if request.method == "POST":
+            form = NozzleForm(request.POST)
+            if form.is_valid():
+                nozzle.bait = form.cleaned_data['bait']
+                nozzle.nozzle_manufacturer = form.cleaned_data['nozzle_manufacturer']
+                nozzle.nozzle_name = form.cleaned_data['nozzle_name']
+                nozzle.nozzle_diameter = form.cleaned_data['nozzle_diameter']
+                nozzle.nozzle_type = form.cleaned_data['nozzle_type']
+                nozzle.save()
+            return redirect('fishing:nozzle')
+        else:
+            form = NozzleForm(initial={'bait': nozzle.bait,
+                                       'nozzle_manufacturer': nozzle.nozzle_manufacturer,
+                                       'nozzle_name': nozzle.nozzle_name,
+                                       'nozzle_diameter': nozzle.nozzle_diameter,
+                                       'nozzle_type': nozzle.nozzle_type, })
+            return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
+
+
+@login_required
+def nozzle_state_add(request):
+    num_visits = visits(request)
+    if request.method == 'POST':
+        nozzle_state = NozzleState()
+        form = NozzleStateForm(request.POST)
+        if form.is_valid():
+            nozzle_state.owner = request.user
+            nozzle_state.state = form.cleaned_data['state']
+            nozzle_state.save()
+            return redirect('fishing:nozzle_state')
+    else:
+        form = NozzleStateForm()
+        return render(request,
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
+
+
+@login_required
+def nozzle_state_list(request):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        nozzle_state_list = NozzleState.objects.all()
+    else:
+        nozzle_state_list = NozzleState.objects.filter(owner=request.user)
+    return render(request,
+                  template_list_path,
+                  {'nozzle_state_list': nozzle_state_list,
+                   'num_visits': num_visits})
+
+
+@login_required
+def nozzle_state_remove(request, nozzle_state_id):
+    nozzle_state = get_object_or_404(NozzleState, pk=nozzle_state_id)
+    if nozzle_state.owner == request.user:
+        nozzle_state.delete()
+    return redirect('fishing:nozzle_state')
+
+
+@login_required
+def nozzle_state_renewal(request, nozzle_state_id):
+    num_visits = visits(request)
+    nozzle_state = get_object_or_404(NozzleState, pk=nozzle_state_id)
+    if nozzle_state.owner == request.user:
+        if request.method == 'POST':
+            form = NozzleStateForm(request.POST)
+            if form.is_valid():
+                nozzle_state.state = form.cleaned_data['state']
+                nozzle_state.save()
+                return redirect('fishing:nozzle_state')
+        else:
+            form = NozzleStateForm(
+                initial={'state': nozzle_state.state})
+            return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:nozzle_state')
+
+
 @staff_member_required
 def overcast_add(request):
     num_visits = visits(request)
@@ -1372,7 +1523,7 @@ def weather_details(request, district_id, water_id, place_id, weather_id):
     weather = get_object_or_404(Weather, pk=weather_id)
     num_visits = visits(request)
     return render(request,
-                  'fishing/weather_details.html',
+                  template_details_path,
                   {'weather': weather,
                    'place': place_id,
                    'district': district_id,

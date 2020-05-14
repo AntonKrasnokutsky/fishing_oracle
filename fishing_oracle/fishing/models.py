@@ -682,7 +682,7 @@ class Nozzle(models.Model):  # Насдаки и наживки
         verbose_name = "Наживка/насадка"
         verbose_name_plural = "Наживки/насадки"
         ordering = ['bait', 'nozzle_manufacturer', 'nozzle_name',
-                    'nozzel_type', 'nozzel_diameter', ]
+                    'nozzle_type', 'nozzle_diameter', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
@@ -702,12 +702,12 @@ class Nozzle(models.Model):  # Насдаки и наживки
         max_length=100,
         verbose_name="Название")
     # Диаметр насадки
-    nozzel_diameter = models.PositiveIntegerField(
+    nozzle_diameter = models.PositiveIntegerField(
         default=0,
         blank=True,
         verbose_name="Диаметр насадки")
     # тип насадки (Плавающий, тонущий, пылящий и т.д.)
-    nozzel_type = models.CharField(
+    nozzle_type = models.CharField(
         max_length=20,
         blank=True,
         verbose_name="Тип насадки")

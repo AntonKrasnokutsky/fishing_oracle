@@ -349,4 +349,42 @@ urlpatterns = [
     path('fishingtrough/<int:fishing_trough_id>/remove/',
          views.fishing_trough_remove,
          name='fishing_trough_remove'),
+    # Состояние наживки
+    # Список состояний наживки
+    path('nozzlestate/',
+         views.nozzle_state_list,
+         name='nozzle_state'),
+    # Добавление состояния наживки
+    path('nozzlestate/add/',
+         views.nozzle_state_add,
+         name='nozzle_state_add'),
+    # Редактирование состояния наживки
+    path('nozzlestate/<int:nozzle_state_id>/renewal/',
+         views.nozzle_state_renewal,
+         name='nozzle_state_renewal'),
+    # Удаление состояния наживки
+    path('nozzlestate/<int:nozzle_state_id>/remove/',
+         views.nozzle_state_remove,
+         name='nozzle_state_remove'),
+    # Наживки
+    # Список наживок
+    path('nozzle/',
+         views.nozzle_list,
+         name='nozzle'),
+    # Описание наживки
+    path('nozzle/<int:nozzle_id>/details/',
+         views.nozzle_details,
+         name='nozzle_details'),
+    # Добавление наживки
+    path('nozzle/add/',
+         views.nozzle_add,
+         name='nozzle_add'),
+    # Редактирование наживки
+    path('nozzle/<int:nozzle_id>/renewal/',
+         views.nozzle_renewal,
+         name='nozzle_renewal'),
+    # Удаление наживки
+    path('nozzle/<int:nozzle_id>/remove/',
+         views.nozzle_remove,
+         name='nozzle_remove'),
 ]
