@@ -387,4 +387,42 @@ urlpatterns = [
     path('nozzle/<int:nozzle_id>/remove/',
          views.nozzle_remove,
          name='nozzle_remove'),
+    # Прикормочная смесь
+    # Список прикормочных смесей
+    path('fushinglure/',
+         views.fishing_lure_list,
+         name='fishing_lure'),
+    # Добавление прикормочной смеси
+    path('fushinglure/add/',
+         views.fishing_lure_add,
+         name='fishing_lure_add'),
+    # Детали прикормочной смеси
+    path('fushinglure/<int:fishing_lure_id>/details/',
+         views.fishing_lure_details,
+         name='fishing_lure_details'),
+    # Редактирование прикормочной смеси
+    path('fushinglure/<int:fishing_lure_id>/renewal/',
+         views.fishing_lure_renewal,
+         name='fishing_lure_renewal'),
+    # Удаление прикормочной смеси
+    path('fushinglure/<int:fishing_lure_id>/remove/',
+         views.fishing_lure_remove,
+         name='fishing_lure_remove'),
+    # Прикорм
+    # Список прикормов
+    path('lurebase/',
+         views.lure_base_list,
+         name='lure_base'),
+    # Добавление прикорма
+    path('lurebase/add/',
+         views.lure_base_add,
+         name='lure_base_add'),
+    # Редактирование прикорма
+    path('lurebase/<int:lure_base_id>/renewal/',
+         views.lure_base_renewal,
+         name='lure_base_renewal'),
+    # Удаление прикорма
+    path('lurebase/<int:lure_base_id>/remove/',
+         views.lure_base_remove,
+         name='lure_base_remove'),
 ]

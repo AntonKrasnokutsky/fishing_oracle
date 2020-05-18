@@ -24,8 +24,8 @@ from .forms import FishingTackleForm, FishingMontageForm, ModelTroughNameForm, M
 from .models import FishingTrough
 from .forms import FishingTroughForm
 
-from .models import NozzleState, Nozzle
-from .forms import NozzleStateForm, NozzleForm
+from .models import NozzleState, Nozzle, LureBase, FishingLure
+from .forms import NozzleStateForm, NozzleForm, LureBaseForm, FishingLureForm
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -92,11 +92,11 @@ def bottom_map_details(request, district_id, water_id, place_id, bottom_map_id):
     if request.user.is_staff or bottom_map.owner == request.user:
         num_visits = visits(request)
         return render(request,
-                      'fishing/bottom_map_details.html',
+                      template_details_path,
                       {'bottom_map': bottom_map,
-                       'place': place_id,
-                       'district': district_id,
-                       'water': water_id,
+                       'place_id': place_id,
+                       'district_id': district_id,
+                       'water_id': water_id,
                        'num_visits': num_visits})
     else:
         return redirect('fishing:water', district_id)
@@ -114,13 +114,13 @@ def bottom_map_list(request, district_id, water_id, place_id):
     num_visits = visits(request)
     water = get_object_or_404(Water, pk=water_id)
     district = get_object_or_404(District, pk=district_id)
-    return render(
-        request, 'fishing/bottom_map.html',
-        {'bottom_map_list': bottom_map_list,
-         'district': district,
-         'water': water,
-         'place': place,
-         'num_visits': num_visits})
+    return render(request,
+                  template_list_path,
+                  {'bottom_map_list': bottom_map_list,
+                   'district': district,
+                   'water': water,
+                   'place': place,
+                   'num_visits': num_visits})
 
 
 @login_required
@@ -206,7 +206,7 @@ def bottom_map_point_details(request, district_id, water_id, place_id, bottom_ma
     if request.user.is_staff or point.owner == request.user:
         num_visits = visits(request)
         return render(request,
-                      'fishing/bottom_map_point_details.html',
+                      template_details_path,
                       {'point': point,
                        'bottom_map': bottom_map_id,
                        'place': place_id,
@@ -229,14 +229,14 @@ def bottom_map_point_list(request, district_id, water_id, place_id, bottom_map_i
     water = get_object_or_404(Water, pk=water_id)
     district = get_object_or_404(District, pk=district_id)
     place = get_object_or_404(Place, pk=place_id)
-    return render(
-        request, 'fishing/bottom_map_point.html',
-        {'point_list': point_list,
-         'district': district,
-         'water': water,
-         'place': place,
-         'bottom_map': bottom_map,
-         'num_visits': num_visits})
+    return render(request,
+                  template_list_path,
+                  {'point_list': point_list,
+                   'district': district,
+                   'water': water,
+                   'place': place,
+                   'bottom_map': bottom_map,
+                   'num_visits': num_visits})
 
 
 @login_required
@@ -308,7 +308,7 @@ def district_list(request):
     districts_list = District.objects.all()
     num_visits = visits(request)
     return render(request,
-                  'fishing/districts.html',
+                  template_list_path,
                   {'districts_list': districts_list,
                    'num_visits': num_visits})
 
@@ -370,7 +370,8 @@ def feed_capacity_add(request):
 def feed_capacity_list(request):
     num_visits = visits(request)
     feed_capacity_list = FeedCapacity.objects.all()
-    return render(request, 'fishing/feed_capacity.html',
+    return render(request,
+                  template_list_path,
                   {'feed_capacity_list': feed_capacity_list,
                    'nem_visits': num_visits})
 
@@ -441,7 +442,7 @@ def fish_list(request):
     fishs_list = Fish.objects.all()
     num_visits = visits(request)
     return render(request,
-                  'fishing/fish.html',
+                  template_list_path,
                   {'fish_list': fishs_list,
                    'num_visits': num_visits})
 
@@ -492,7 +493,10 @@ def fishing_detail(request, fishing_id):
     fishing = get_object_or_404(Fishing, pk=fishing_id)
     num_visits = visits(request)
     if request.user == fishing.owner or request.user.is_staff:
-        return render(request, 'fishing/detail.html', {'fishing': fishing, 'num_visits': num_visits})
+        return render(request,
+                      template_details_path,
+                      {'fishing': fishing,
+                       'num_visits': num_visits})
     else:
         return redirect('fishing:fishing')
 
@@ -509,10 +513,97 @@ def fishing_list(request):
     else:
         fishings_list = Fishing.objects.all()
     num_visits = visits(request)
-    return render(
-        request, 'fishing/fishing.html',
-        {'fishing_list': fishings_list,
-         'num_visits': num_visits})
+    return render(request,
+                  template_list_path,
+                  {'fishing_list': fishings_list,
+                   'num_visits': num_visits})
+
+
+@login_required
+def fishing_lure_add(request):
+    num_visits = visits(request)
+    if request.method == 'POST':
+        fishing_lure = FishingLure()
+        form = FishingLureForm(request.POST)
+        if form.is_valid():
+            fishing_lure.owner = request.user
+            nozzle_select = form.cleaned_data['nozzle']
+            nozzle = Nozzle.objects.filter(nozzle_name=nozzle_select)
+            fishing_lure.nozzle = nozzle[0]
+            nozzle_state_select = form.cleaned_data['nozzle_state']
+            nozzle_state = NozzleState.objects.filter(
+                state=nozzle_state_select)
+            fishing_lure.nozzle_state = nozzle_state[0]
+            fishing_lure.save()
+            return redirect('fishing:fishing_lure')
+    else:
+        form = FishingLureForm()
+        return render(request,
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
+
+
+@login_required
+def fishing_lure_details(request, fishing_lure_id):
+    num_visits = visits(request)
+    fishing_lure = get_object_or_404(FishingLure, pk=fishing_lure_id)
+    if request.user.is_staff or fishing_lure.owner == request.user:
+        return render(request,
+                      template_details_path,
+                      {'fishing_lure': fishing_lure,
+                       'num_visits': num_visits})
+    return redirect('fishing:fishing_lure')
+
+
+@login_required
+def fishing_lure_list(request):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        fishing_lure_list = FishingLure.objects.all()
+    else:
+        fishing_lure_list = FishingLure.objects.filter(owner=request.user)
+    return render(request,
+                  template_list_path,
+                  {'fishing_lure_list': fishing_lure_list,
+                   'num_visits': num_visits})
+
+
+@login_required
+def fishing_lure_remove(request, fishing_lure_id):
+    fishing_lure = get_object_or_404(FishingLure, pk=fishing_lure_id)
+    if fishing_lure.owner == request.user:
+        fishing_lure.delete()
+    return redirect('fishing:fishing_lure')
+
+
+@login_required
+def fishing_lure_renewal(request, fishing_lure_id):
+    num_visits = visits(request)
+    fishing_lure = get_object_or_404(FishingLure, pk=fishing_lure_id)
+    if fishing_lure.owner == request.user:
+        if request.method == 'POST':
+            form = FishingLureForm(request.POST)
+            if form.is_valid():
+                nozzle_select = form.cleaned_data['nozzle']
+                nozzle = Nozzle.objects.filter(nozzle_name=nozzle_select)
+                fishing_lure.nozzle = nozzle
+                nozzle_state_select = form.cleaned_data['nozzle_state']
+                nozzle_state = NozzleState.objects.filter(
+                    state=nozzle_state_select)
+                fishing_lure.nozzle_state = nozzle_state
+                fishing_lure.save()
+                return redirect('fishing:fishnig_lure')
+        else:
+            form = FishingLureForm(initial={'nozzle': fishing_lure.nozzle,
+                                            'npzzle_state': fishing_lure.nozzle_state,
+                                            'num_visits': num_visits})
+            return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:fishing_lure')
 
 
 @login_required
@@ -544,7 +635,7 @@ def fishing_montage_list(request):
         fishing_montage_list = FishingMontage.objects.filter(
             owner=request.user)
     return render(request,
-                  'fishing/fishing_montage.html',
+                  template_list_path,
                   {'fishing_montage_list': fishing_montage_list,
                    'num_visits': num_visits})
 
@@ -591,13 +682,13 @@ def fishing_point_list(request, district_id, water_id, place_id):
     num_visits = visits(request)
     water = get_object_or_404(Water, pk=water_id)
     district = get_object_or_404(District, pk=district_id)
-    return render(
-        request, 'fishing/fishing_point.html',
-        {'fishing_point_list': fishing_point_list,
-         'district': district,
-         'water': water,
-         'place': place,
-         'num_visits': num_visits})
+    return render(request,
+                  template_list_path,
+                  {'fishing_point_list': fishing_point_list,
+                   'district': district,
+                   'water': water,
+                   'place': place,
+                   'num_visits': num_visits})
 
 
 @login_required
@@ -636,11 +727,11 @@ def fishing_point_details(request, district_id, water_id, place_id, fishing_poin
     if request.user.is_staff or fishing_point.owner == request.user:
         num_visits = visits(request)
         return render(request,
-                      'fishing/fishing_point_details.html',
+                      template_details_path,
                       {'fishing_point': fishing_point,
-                       'place': place_id,
-                       'district': district_id,
-                       'water': water_id,
+                       'place_id': place_id,
+                       'district_id': district_id,
+                       'water_id': water_id,
                        'num_visits': num_visits})
     else:
         return redirect('fishing:water', district_id)
@@ -716,7 +807,7 @@ def fishing_tackle_list(request):
     else:
         fishing_tackle_list = FishingTackle.objects.filter(owner=request.user)
     return render(request,
-                  'fishing/fishingtackle.html',
+                  template_list_path,
                   {'fishing_tackle_list': fishing_tackle_list,
                    'num_visits': num_visits})
 
@@ -795,7 +886,7 @@ def fishing_trough_list(request):
     else:
         fishing_trough_list = FishingTrough.objects.filter(owner=request.user)
     return render(request,
-                  'fishing/fishing_trough.html',
+                  template_list_path,
                   {'fishing_trough_list': fishing_trough_list,
                    'num_visits': num_visits})
 
@@ -847,6 +938,26 @@ def fishing_trough_renewal(request, fishing_trough_id):
 
 
 @login_required
+def lure_base_list(request):
+    pass
+
+
+@login_required
+def lure_base_add(request):
+    pass
+
+
+@login_required
+def lure_base_remove(request, lure_base_id):
+    pass
+
+
+@login_required
+def lure_base_renewal(request, lure_base_id):
+    pass
+
+
+@login_required
 def model_trough_add(request):
     num_visits = visits(request)
     if request.method == 'POST':
@@ -875,7 +986,7 @@ def model_trough_list(request):
     else:
         model_trough_list = ModelTrough.objects.filter(owner=request.user)
     return render(request,
-                  'fishing/model_trough.html',
+                  template_list_path,
                   {'model_trough_list': model_trough_list,
                    'num_visits': num_visits})
 
@@ -939,7 +1050,7 @@ def model_trough_name_list(request):
         model_trough_name_list = ModelTroughName.objects.filter(
             owner=request.user)
     return render(request,
-                  'fishing/model_trough_name.html',
+                  template_list_path,
                   {'model_trough_name_list': model_trough_name_list,
                    'num_visits': num_visits})
 
@@ -1144,7 +1255,8 @@ def overcast_add(request):
 def overcast_list(request):
     overcasts_list = Overcast.objects.all()
     num_visits = visits(request)
-    return render(request, 'fishing/overcast.html',
+    return render(request,
+                  template_list_path,
                   {'overcasts_list': overcasts_list,
                    'num_visits': num_visits})
 
@@ -1206,7 +1318,7 @@ def pace_list(request):
     num_visits = visits(request)
     pace_list = Pace.objects.all()
     return render(request,
-                  'fishing/pace.html',
+                  template_list_path,
                   {'pace_list': pace_list,
                    'num_visits': num_visits})
 
@@ -1273,10 +1385,10 @@ def place_detail(request, district_id, water_id, place_id):
     if request.user.is_staff or place.owner == request.user:
         num_visits = visits(request)
         return render(request,
-                      'fishing/place_details.html',
+                      template_details_path,
                       {'place': place,
-                       'district': district_id,
-                       'water': water_id,
+                       'district_id': district_id,
+                       'water_id': water_id,
                        'num_visits': num_visits})
     else:
         return redirect('fishing:place', district_id, water_id)
@@ -1296,12 +1408,12 @@ def place_list(request, district_id, water_id):
         place_list = Place.objects.filter(water=water)
     num_visits = visits(request)
     district = get_object_or_404(District, pk=district_id)
-    return render(
-        request, 'fishing/place.html',
-        {'place_list': place_list,
-         'district': district,
-         'water': water,
-         'num_visits': num_visits})
+    return render(request,
+                  template_list_path,
+                  {'place_list': place_list,
+                   'district': district,
+                   'water': water,
+                   'num_visits': num_visits})
 
 
 @login_required
@@ -1379,7 +1491,8 @@ def priming_list(request):
     """
     primings_list = Priming.objects.all()
     num_visits = visits(request)
-    return render(request, 'fishing/primings.html',
+    return render(request,
+                  template_list_path,
                   {'primings_list': primings_list,
                    'num_visits': num_visits})
 
@@ -1445,7 +1558,7 @@ def water_list(request, district_id):
     water_list = Water.objects.filter(
         district=district_name)
     return render(request,
-                  'fishing/water.html',
+                  template_list_path,
                   {'water_list': water_list,
                    'district': district_name,
                    'num_visits': num_visits})
@@ -1525,9 +1638,9 @@ def weather_details(request, district_id, water_id, place_id, weather_id):
     return render(request,
                   template_details_path,
                   {'weather': weather,
-                   'place': place_id,
-                   'district': district_id,
-                   'water': water_id,
+                   'place_id': place_id,
+                   'district_id': district_id,
+                   'water_id': water_id,
                    'num_visits': num_visits})
 
 
@@ -1538,7 +1651,7 @@ def weather_list(request, district_id, water_id, place_id):
     weather_list = Weather.objects.filter(
         place=place)
     return render(request,
-                  'fishing/weather.html',
+                  template_list_path,
                   {'weather_list': weather_list,
                    'district': district_id,
                    'water': water_id,
@@ -1619,7 +1732,7 @@ def weather_phenomenas_add(request):
 def weather_phenomenas_list(request):
     num_visits = visits(request)
     weather_phenomena_list = WeatherPhenomena.objects.all()
-    return render(request, 'fishing/phenomena.html',
+    return render(request, template_list_path,
                   {'weather_phenomena_list': weather_phenomena_list,
                    'num_visits': num_visits})
 

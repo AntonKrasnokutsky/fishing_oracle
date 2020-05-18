@@ -585,15 +585,14 @@ class FishTrophy(models.Model):  # Трофей рыбалки
         return 'Трофей: ' + str(self.fish) + ' ' + str(self.fish_trophy_weight) + 'кг.'
 
 
-class Lure(models.Model):  # Прикорм
+class Lure(models.Model):  # Смесь прикорма
     """
-    Содежит информацию о названии
-    производителя и названии прикормки
+    Содежит информацию о прикорме в составе смеси
     """
     class Meta:
         verbose_name = "Прикорм"
         verbose_name_plural = "Прикорм"
-        ordering = ['lure_manufacturer', 'lure_name', ]
+        ordering = ['lure_base', 'lure_weight', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
@@ -604,6 +603,36 @@ class Lure(models.Model):  # Прикорм
         'FishingLure',
         on_delete=models.PROTECT,
         verbose_name="Прикормочная смесь")
+    # Связь с базовым прикормом
+    lure_base = models.ForeignKey(
+        'LureBase',
+        on_delete=models.PROTECT,
+        verbose_name="Базовый прикорм")
+    # Вес базового прикорма
+    lure_weight = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        verbose_name="Вес прикорма")
+
+    def __str__(self):
+        return self.lure_base
+
+
+class LureBase(models.Model):  # Прикорм
+    """
+    Содержит базовые прикормы, из которых в свою
+    очередь замещивается кормовая смесь
+    """
+    class Meta:
+        verbose_name = "Базовый прикорм"
+        verbose_name_plural = "Базовый прикорм"
+        ordering = ['lure_manufacturer', 'lure_name']
+
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи")
     # Название производителя прикорки
     lure_manufacturer = models.CharField(
         max_length=100,
@@ -615,7 +644,7 @@ class Lure(models.Model):  # Прикорм
         verbose_name="Название")
 
     def __str__(self):
-        return self.lure_manufacturer + ' ' + self.lure_name
+        return self.lure_manufacturer
 
 
 class ModelTrough(models.Model):  # Модели кормушек

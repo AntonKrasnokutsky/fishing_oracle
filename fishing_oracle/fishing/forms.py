@@ -9,6 +9,7 @@ from .models import FishingTrough
 from .models import BottomMap, Point
 from .models import Weather, Overcast, WeatherPhenomena
 from .models import NozzleState, Nozzle
+from .models import LureBase, FishingLure
 
 from django import forms
 
@@ -41,6 +42,12 @@ class FishForm(forms.ModelForm):
     #renewal_name_of_fish = forms.CharField(max_length=20, label='Рыба')
 
 
+class FishingLureForm(forms.ModelForm):
+    class Meta:
+        model = FishingLure
+        fields = ('nozzle', 'nozzle_state',)
+
+
 class FishingMontageForm(forms.ModelForm):
     class Meta:
         model = FishingMontage
@@ -68,6 +75,12 @@ class FishingTroughForm(forms.ModelForm):
         model = FishingTrough
         fields = ('fishing_trough_manufacturer', 'model_trough',
                   'feed_capacity', 'fishing_trough_weight',)
+
+
+class LureBaseForm(forms.ModelForm):
+    class Meta:
+        model = LureBase
+        fields = ('lure_manufacturer', 'lure_name',)
 
 
 class ModelTroughForm(forms.ModelForm):

@@ -1,16 +1,239 @@
 {% extends 'fishing/base.html' %}
 {% block content %}
-<!-- Наживки -->
+
+
+{% if bottom_map != None %}
+<!-- Маркерная карта -->
+<p><strong>Маркерная карта:</strong> {{ bottom_map }}</p>
+<p><strong>N° (-90 до 90):</strong> {{ bottom_map.bottom_map_northern_degree }}</p>
+<p><strong>N' (0 до 59):</strong> {{ bottom_map.bottom_map_northern_minute }}</p>
+<p><strong>N" (0 до 59.999):</strong> {{ bottom_map.bottom_map_northern_second }}</p>
+<p><strong>E° (-90 до 90):</strong> {{ bottom_map.bottom_map_easter_degree }}</p>
+<p><strong>E' (0 до 59):</strong> {{ bottom_map.bottom_map_easter_minute }}</p>
+<p><strong>E" (0 до 59.999):</strong> {{ bottom_map.bottom_map_easter_second }}</p>
+<p>
+    {% if bottom_map.owner == user %}
+    <a href="{% url 'fishing:bottom_map_renewal' district_id water_id place_id bottom_map.id %}" class="btn">Редактировать</a>
+    {% endif %}
+    <a href="{% url 'fishing:point' district_id water_id place_id bottom_map.id %}" class="btn">Точки маркерной карты</a>
+    <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endif %}
+
+
+
+{% if point != None %}
+<!-- Точка маркерной карты -->
+<p><strong>Точка марнкерной карты:</strong> {{ point }}</p>
+<p><strong>Азимут:</strong> {{ point.point_azimuth }}</p>
+<p><strong>Дистанция:</strong> {{ point.point_distance }}</p>
+<p><strong>Глубина:</strong> {{ point.point_depth }}</p>
+<p><strong>Грунт:</strong> {{ point.priming }}</p>
+<p>
+    <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endif %}
+
+
+
+{% if fish != None %}
+<!-- Рыба -->
+<p><strong>Рыба:</strong> {{ fish.name_of_fish }}</p>
+<p><strong>Описание:</strong> {{ fish.fish_description }}</p>
+<p>
+    {% if user.is_staff %}
+    <a href="{% url 'fishing:fish_renewal' fish.id %}" class="btn">Редактировать</a>
+    {% endif %}
+    <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endif %}
+
+
+
+{% if fishing != None %}
+<!-- Рыбалка -->
+<p><strong>Дата проведения рыбалки:</strong> {{ fishing.date }}</p>
+<p><strong>Время начала рыбалки:</strong> {{ fishing.time }}</p>
+<p><strong>Место проведения рыбалки:</strong></p>
+<p><strong>Район: </strong>{{ fishing.place.water.district }}</p>
+<p><strong>Водоём: </strong>{{ fishing.place.water }}</p>
+<p>
+    <strong>Ближайший населенный пункт: </strong>{{ fishing.place.place_locality}}
+</p>
+<p><strong>Погода во время рыбалки:</strong></p>
+<p><strong>Облачность: </strong>{{ fishing.weather.overcast }}</p>
+<p><strong>Осадки: </strong>{{ fishing.weather.weather_phenomena}}</p>
+<p>
+    <strong>Температруа воздуха: </strong>{{ fishing.weather.weather_temperature}}
+</p>
+<p><strong>Давление: </strong>{{ fishing.weather.pressure}}</p>
+<p><strong>Направление ветра: </strong>{{ fishing.weather.direction_wind}}</p>
+<p><strong>Скорость ветра: </strong>{{ fishing.weather.wind_speed}}</p>
+<p><strong>Лунный день: </strong>{{ fishing.weather.lunar_day}}</p>
+<p><strong>Снасть: </strong></p>
+<p>
+    <strong>Производитель: </strong>
+    {{fishing.fishing_tackle.fishing_tackle_manufacturer}}
+</p>
+<p><strong>Модель: </strong>{{fishing.fishing_tackle.fishing_tackle_name}}</p>
+<p><strong>Длина: </strong>{{fishing.fishing_tackle.fishing_tackle_length}}</p>
+<p>
+    <strong>Тест удилища: </strong>
+    {{fishing.fishing_tackle.fishing_tackle_casting_weight}}
+</p>
+<p><strong>Монтаж: </strong>{{ fishing.fishing_montage }}</p>
+<p><strong>Кормушка: </strong></p>
+<p>
+    <strong>Производитель :</strong>
+    {{fishing.fishing_trough.fishing_trough_manufacturer}}
+</p>
+<p>
+    <strong>Модель :</strong>
+    {{fishing.fishing_trough.model_trough.model_trough_name}}
+</p>
+{% if fishing.fishing_trough.model_trough.model_trough_plastic %}
+<p><strong>Материал: </strong>Пластик</p>
+{% endif %} {% if fishing.fishing_trough.model_trough.model_trough_lugs %}
+<p><strong>Грунтозацепы: </strong>да</p>
+{% endif %}
+
+<p><strong>Прикормочная смесь: </strong></p>
+{% for lure in fishing.fishing_lure.lure_set.all %}
+<p><strong>Прикорм {{ forloop.counter }}</strong></p>
+<p><strong>Производитель: </strong>{{ lure.lure_manufacturer }}</p>
+<p><strong>Название: </strong>{{ lure.lure_name }}</p>
+{% endfor %}
+<p><strong>Добавки в корм:</strong></p>
+<p><strong>Мясо: </strong>{{fishing.fishing_lure.nozzle}}</p>
+<p><strong>Состояние мяса: </strong>{{fishing.fishing_lure.nozzle_state}}</p>
+<p><strong>Арома: </strong></p>
+<p><strong>Производитель: </strong>{{ fishing.aroma.aroma_manufacturer }}</p>
+<p><strong>Название: </strong>{{ fishing.aroma.aroma_name }}</p>
+
+<p><strong>Поводок:</strong></p>
+<p>
+    <strong>Поводочный материал: </strong>
+    {{fishing.fishing_leash.fishing_leash_material}}
+</p>
+<p>
+    <strong>Диаметр поводка: </strong>
+    {{fishing.fishing_leash.fishing_leash_diameter}}
+</p>
+<p>
+    <strong>Длина поводка: </strong>
+    {{fishing.fishing_leash.fishing_leash_length}}
+</p>
+<p><strong>Крючок:</strong></p>
+<p>
+    <strong>Производитель: </strong> {{ fishing.crochet.crochet_manufacturer }}
+</p>
+<p><strong>Модель: </strong>{{ fishing.crochet.crochet_model }}</p>
+<p><strong>Размер: </strong>{{ fishing.crochet.crochet_size }}</p>
+<p><strong>Наживка: </strong></p>
+
+{% if fishing.nozzle.bait %}
+<p><strong>Наживка: </strong>{{ fishing.nozzle.nozzle_name }}</p>
+{% endif %} {% if fishing.nozzle.bait != True %}
+<p><strong>Производитель: </strong>{{ fishing.nozzle.nozzle_manufacturer }}</p>
+<p><strong>Насадка: </strong>{{ fishing.nozzle.nozzle_name }}</p>
+<p><strong>Диаметр насадки: </strong>{{ fishing.nozzle.nozzel_diameter }}</p>
+<p><strong>Тип насадки: </strong>{{ fishing.nozzle.nozzel_type }}</p>
+{% endif %}
+
+<p><strong>Темп: </strong>{{ fishing.pace }}</p>
+
+<p><strong>Улов:</strong></p>
+{% for fishing_result in fishing.fishingresult_set.all %}
+<p>
+    {{ forloop.counter }}. {{ fishing_result.fish }}:
+    {{fishing_result.number_of_fish }} шт. общим весом:
+    {{fishing_result.fish_weight }} кг.
+</p>
+{% endfor %}
+
+<p><strong>Трофеи:</strong></p>
+{% for fish_trophy in fishing.fishtrophy_set.all %}
+<p>
+    {{ forloop.counter }}. {{ fish_trophy.fish }}: вес трофея
+    {{fish_trophy.fish_trophy_weight}} кг.
+</p>
+{% endfor %}
+<a onclick="back()" class="btn">Назад</a>
+{% endif %}
+
+
+
+{% if fishing_point != None %}
+<!-- Толчка ловли -->
+<p><strong>Азимут:</strong> {{ fishing_point.fishing_point_azimuth }}</p>
+<p><strong>Дистанция:</strong> {{ fishing_point.fishing_point_distance }}</p>
+<p><strong>Глубина:</strong> {{ fishing_point.fishing_poiny_depth }}</p>
+<p><strong>Грунт:</strong> {{ fishing_point.priming }}</p>
+<p>
+    {% if fishing_point.owner == user %}
+    <a href="{% url 'fishing:fishing_point_renewal' district_id water_id place_id fishing_point.id%}" class="btn">Редактировать</a>
+    {% endif %}
+    <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endif %}
+
+
+
+{% if fishing_lure != None %}
+<!-- Прикормочная смесь -->
+<p><strong>Наживка: </strong>{{ fishing_lure.nozzle }}</p>
+<p><strong>Состояние наживки: </strong>{{ fishing_lure.nozzle_state }}</p>
+{% for lure in fishing_lure.fishinglure_set.all %}
+<p>
+    {{lure.lure_manufacturer}}
+    {{lure.lure_name}}
+</p>
+{% endfor %}
+
+<p>
+    <a href="{% url 'fishing:lure' %}">Добавить прикорм</a>
+    <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endif %}
+
+
+
 {% if nozzle != None %}
+<!-- Наживки -->
 <p><strong>Живой компонент: </strong>{{ nozzle.bait }}</p>
 <p><strong>Производитель: </strong>{{ nozzle.nozzle_manufacturer }}</p>
 <p><strong>Название: </strong>{{ nozzle.nozzle_name }}</p>
 <p><strong>Диаметр: </strong>{{ nozzle.nozzle_diameter }}</p>
 <p><strong>Тип: </strong>{{ nozzle.nozzle_type }}</p>
+<p><a onclick="back()" class="btn">Назад</a></p>
 {% endif %}
 
-<!-- Погода -->
+
+
+{% if place != None %}
+<!-- Место -->
+<p><strong>Ближайший населенный пункт:</strong> {{ place.place_locality }}</p>
+<p><strong>N° (-90 до 90):</strong> {{ place.place_northern_degree }}</p>
+<p><strong>N' (0 до 59):</strong> {{ place.place_northern_minute }}</p>
+<p><strong>N" (0 до 59.999):</strong> {{ place.place_northern_second }}</p>
+<p><strong>E° (-90 до 90):</strong> {{ place.place_easter_degree }}</p>
+<p><strong>E' (0 до 59):</strong> {{ place.place_easter_minute }}</p>
+<p><strong>E" (0 до 59.999):</strong> {{ place.place_easter_second }}</p>
+<p>
+    {% if place.owner == user %}
+    <a href="{% url 'fishing:place_renewal' district_id water_id place.id %}" class="btn">Редактировать</a>
+    {% endif %}
+    <a href="{% url 'fishing:weather' district_id water_id place.id %}" class="btn">Погода</a>
+    <a href="{% url 'fishing:fishing_point' district_id water_id place.id %}" class="btn">Точки ловли</a>
+    <a href="{% url 'fishing:bottom_map' district_id water_id place.id %}" class="btn">Маркерная карта</a>
+    <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endif %}
+
+
+
 {% if weather != None %}
+<!-- Погода -->
 <p><strong>Погода:</strong> {{ weather }}</p>
 <p><strong>Облачность:</strong> {{ weather.overcast }}</p>
 <p><strong>Явления:</strong> {{ weather.weather_phenomena }}</p>
@@ -20,7 +243,7 @@
 <p><strong>Скорость ветра:</strong> {{ weather.wind_speed }}</p>
 <p><strong>Лунный день:</strong> {{ weather.lunar_day }}</p>
 <p>
-    <a href="{% url 'fishing:weather_renewal' district water place weather.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:weather_renewal' district_id water_id place_id weather.id %}" class="btn">Редактировать</a>
     <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}
