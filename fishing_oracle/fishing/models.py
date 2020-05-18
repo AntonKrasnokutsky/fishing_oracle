@@ -615,7 +615,7 @@ class Lure(models.Model):  # Смесь прикорма
         verbose_name="Вес прикорма")
 
     def __str__(self):
-        return self.lure_base
+        return str(self.lure_base)
 
 
 class LureBase(models.Model):  # Прикорм
@@ -644,7 +644,7 @@ class LureBase(models.Model):  # Прикорм
         verbose_name="Название")
 
     def __str__(self):
-        return self.lure_manufacturer
+        return self.lure_manufacturer + ' ' + self.lure_name
 
 
 class ModelTrough(models.Model):  # Модели кормушек

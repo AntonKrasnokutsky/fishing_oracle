@@ -425,4 +425,17 @@ urlpatterns = [
     path('lurebase/<int:lure_base_id>/remove/',
          views.lure_base_remove,
          name='lure_base_remove'),
+    # Смеси прикорма
+    # Добавление прикорма в смесь
+    path('fushinglure/<int:fishing_lure_id>/lure/add/',
+         views.lure_add,
+         name='lure_add'),
+    # Редактирование прикорма в смеси
+    path('fushinglure/<int:fishing_lure_id>/lure/<int:lure_id>/renewal/',
+         views.lure_renewal,
+         name='lure_renewal'),
+    # Удаление прикорма из смеси
+    path('fushinglure/<int:fishing_lure_id>/lure/<int:lure_id>/remove/',
+         views.lure_remove,
+         name='lure_remove'),
 ]

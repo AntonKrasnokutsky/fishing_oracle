@@ -183,15 +183,19 @@
 <!-- Прикормочная смесь -->
 <p><strong>Наживка: </strong>{{ fishing_lure.nozzle }}</p>
 <p><strong>Состояние наживки: </strong>{{ fishing_lure.nozzle_state }}</p>
-{% for lure in fishing_lure.fishinglure_set.all %}
+{% for lure in fishing_lure.lure_set.all %}
 <p>
-    {{lure.lure_manufacturer}}
-    {{lure.lure_name}}
+    {{lure.lure_base}}
+    {{lure.lure_weight}}
+    {% if fishing_lure.owner == user %}
+    <a href="{% url 'fishing:lure_renewal' fishing_lure.id lure.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:lure_remove' fishing_lure.id lure.id %}" class="btn">Удалить</a>
+    {% endif %}
 </p>
 {% endfor %}
 
 <p>
-    <a href="{% url 'fishing:lure_base' %}" class="btn">Добавить прикорм</a>
+    <a href=" {% url 'fishing:lure_add' fishing_lure.id %}" class="btn">Добавить прикорм</a>
     <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}

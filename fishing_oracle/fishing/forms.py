@@ -9,7 +9,7 @@ from .models import FishingTrough
 from .models import BottomMap, Point
 from .models import Weather, Overcast, WeatherPhenomena
 from .models import NozzleState, Nozzle
-from .models import LureBase, FishingLure
+from .models import Lure, LureBase, FishingLure
 
 from django import forms
 
@@ -75,6 +75,12 @@ class FishingTroughForm(forms.ModelForm):
         model = FishingTrough
         fields = ('fishing_trough_manufacturer', 'model_trough',
                   'feed_capacity', 'fishing_trough_weight',)
+
+
+class LureForm(forms.ModelForm):
+    class Meta:
+        model = Lure
+        fields = ['lure_base', 'lure_weight', ]
 
 
 class LureBaseForm(forms.ModelForm):

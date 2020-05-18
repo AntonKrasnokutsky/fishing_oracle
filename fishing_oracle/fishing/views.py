@@ -24,8 +24,8 @@ from .forms import FishingTackleForm, FishingMontageForm, ModelTroughNameForm, M
 from .models import FishingTrough
 from .forms import FishingTroughForm
 
-from .models import NozzleState, Nozzle, LureBase, FishingLure
-from .forms import NozzleStateForm, NozzleForm, LureBaseForm, FishingLureForm
+from .models import NozzleState, Nozzle, Lure, LureBase, FishingLure
+from .forms import NozzleStateForm, NozzleForm, LureForm, LureBaseForm, FishingLureForm
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -935,6 +935,61 @@ def fishing_trough_renewal(request, fishing_trough_id):
                            'num_visits': num_visits})
     else:
         return redirect('fishing:fishing_trough')
+
+
+@login_required
+def lure_add(request, fishing_lure_id):
+    num_visits = visits(request)
+    if request.method == 'POST':
+        lure = Lure()
+        form = LureForm(request.POST)
+        if form.is_valid():
+            fishing_lure = get_object_or_404(FishingLure, pk=fishing_lure_id)
+            lure = form.save(commit=False)
+            lure.owner = request.user
+            lure.fishing_lure = fishing_lure
+            lure.save()
+            return redirect('fishing:fishing_lure_details',
+                            fishing_lure_id)
+    else:
+        form = LureForm()
+        return render(request,
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
+
+
+@login_required
+def lure_remove(request, fishing_lure_id, lure_id):
+    lure = get_object_or_404(Lure, pk=lure_id)
+    if lure.owner == request.user:
+        lure.delete()
+    return redirect('fishing:fishing_lure_details', fishing_lure_id)
+
+
+@login_required
+def lure_renewal(request, fishing_lure_id, lure_id):
+    num_visits = visits(request)
+    lure = get_object_or_404(Lure, pk=lure_id)
+    if lure.owner == request.user:
+        if request.method == 'POST':
+            form = LureForm(request.POST, instance=lure)
+            if form.is_valid():
+                fishing_lure = get_object_or_404(
+                    FishingLure, pk=fishing_lure_id)
+                lure = form.save(commit=False)
+                lure.owner = request.user
+                lure.fishing_lure = fishing_lure
+                lure.save()
+                return redirect('fishing:fishing_lure_details',
+                                fishing_lure_id)
+        else:
+            form = LureForm(initial={'lure_base': lure.lure_base,
+                                     'lure_weight': lure.lure_weight})
+            return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
 
 
 @login_required
