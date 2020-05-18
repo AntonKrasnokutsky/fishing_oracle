@@ -939,22 +939,65 @@ def fishing_trough_renewal(request, fishing_trough_id):
 
 @login_required
 def lure_base_list(request):
-    pass
+    num_visits = visits(request)
+    if request.user.is_staff:
+        lure_base_list = LureBase.objects.all()
+    else:
+        lure_base_list = LureBase.objects.filter(owner=request.user)
+    return render(request,
+                  template_list_path,
+                  {'lure_base_list': lure_base_list,
+                   'num_visits': num_visits})
 
 
 @login_required
 def lure_base_add(request):
-    pass
+    num_visits = visits(request)
+    if request.method == 'POST':
+        lure_base = LureBase()
+        form = LureBaseForm(request.POST)
+        if form.is_valid():
+            lure_base.owner = request.user
+            lure_base.lure_manufacturer = form.cleaned_data['lure_manufacturer']
+            lure_base.lure_name = form.cleaned_data['lure_name']
+            lure_base.save()
+            return redirect('fishing:lure_base')
+    else:
+        form = LureBaseForm()
+        return render(request,
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
 
 
 @login_required
 def lure_base_remove(request, lure_base_id):
-    pass
+    lure_base = get_object_or_404(LureBase, pk=lure_base_id)
+    if lure_base.owner == request.user:
+        lure_base.delete()
+    return redirect('fishing:lure_base')
 
 
 @login_required
 def lure_base_renewal(request, lure_base_id):
-    pass
+    num_visits = visits(request)
+    lure_base = get_object_or_404(LureBase, pk=lure_base_id)
+    if lure_base.owner == request.user:
+        if request.method == 'POST':
+            form = LureBaseForm(request.POST)
+            if form.is_valid():
+                lure_base.lure_manufacturer = form.cleaned_data['lure_manufacturer']
+                lure_base.lure_name = form.cleaned_data['lure_name']
+                lure_base.save()
+                return redirect('fishing:lure_base')
+        else:
+            form = LureBaseForm()
+            return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:lure_base')
 
 
 @login_required

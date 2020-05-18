@@ -1,8 +1,6 @@
 {% extends 'fishing/base.html' %}
 {% block content %}
 
-
-
 {% if bottom_map_list != None %}
 <!-- Маркерные карты -->
 {% if bottom_map_list %}
@@ -31,8 +29,6 @@
 </p>
 {% endif %}
 
-
-
 {% if point_list != None %}
 <!-- Точки маркерной карты -->
 {% if point_list %}
@@ -57,8 +53,6 @@
   <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}
-
-
 
 {% if districts_list != None %}
 <!-- Районы -->
@@ -85,8 +79,6 @@
 </p>
 {% endif %}
 
-
-
 {% if feed_capacity_list != None %}
 <!-- Кормоемкость -->
 {% if feed_capacity_list %}
@@ -111,8 +103,6 @@
   <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}
-
-
 
 {% if fish_list != None %}
 <!-- Рыбы -->
@@ -139,8 +129,6 @@
 </p>
 {% endif %}
 
-
-
 {% if fishing_list != None %}
 <!-- Рыбалки -->
 {% if fishing_list %}
@@ -155,7 +143,31 @@
 <a onclick="back()" class="btn">Назад</a>
 {% endif %}
 
-
+{% if fishing_lure_list != None %}
+<!-- Прикормочные смеси -->
+{% if fishing_lure_list %}
+<ul>
+  {% for fishing_lure in fishing_lure_list %}
+  <li>
+    <a href="{% url 'fishing:fishing_lure_details' fishing_lure.id %}">{{fishing_lure}}</a>
+    {% if user.is_staff %}
+    {{ fishing_lure.owner }}
+    {% endif %}
+    {% if fishing_lure.owner == user %}
+    <a href="{% url 'fishing:fishing_lure_renewal' fishing_lure.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:fishing_lure_remove' fishing_lure.id %}" class="btn">Удалить</a>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Прикормочных смесей не добавлено</p>
+{% endif %}
+<p>
+  <a href="{% url 'fishing:fishing_lure_add' %}" class="btn">Добавить</a>
+  <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endif %}
 
 {% if fishing_montage_list != None %}
 <!-- Монтажи -->
@@ -181,15 +193,14 @@
 </p>
 {% endif %}
 
-
-
 {% if fishing_point_list != None %}
 <!-- Точки ловли -->
 {% if fishing_point_list %}
 <ul>
   {% for fishing_point in fishing_point_list %}
   <li>
-    <a href="{% url 'fishing:fishing_point_details' district.id water.id place.id fishing_point.id %}">{{fishing_point}}</a>
+    <a
+      href="{% url 'fishing:fishing_point_details' district.id water.id place.id fishing_point.id %}">{{fishing_point}}</a>
     {% if fishing_point.owner == user %}
     {% if user.is_staff %}
     {{place.owner}}
@@ -210,8 +221,6 @@
   <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}
-
-
 
 {% if fishing_tackle_list != None %}
 <!-- Снасти -->
@@ -235,8 +244,6 @@
   <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}
-
-
 
 {% if fishing_trough_list != None %}
 <!-- Кормушки -->
@@ -264,34 +271,31 @@
 </p>
 {% endif %}
 
-
-{% if fishing_lure_list != None %}
-<!-- Модели кормушек -->
-{% if fishing_lure_list %}
+{% if lure_base_list != None%}
+<!-- Прикормы базовые -->
+{% if lure_base_list %}
 <ul>
-  {% for fishing_lure in fishing_lure_list %}
+  {% for lure_base in lure_base_list %}
   <li>
-    <a href="{% url 'fishing:fishing_lure_details' fishing_lure.id %}">{{fishing_lure}}</a>
+    {{lure_base}}
     {% if user.is_staff %}
-    {{ fishing_lure.owner }}
+    {{ lure_base.owner }}
     {% endif %}
-    {% if fishing_lure.owner == user %}
-    <a href="{% url 'fishing:fishing_lure_renewal' fishing_lure.id %}" class="btn">Редактировать</a>
-    <a href="{% url 'fishing:fishing_lure_remove' fishing_lure.id %}" class="btn">Удалить</a>
+    {% if lure_base.owner == user %}
+    <a href="{% url 'fishing:lure_base_renewal' lure_base.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:lure_base_remove' lure_base.id %}" class="btn">Удалить</a>
     {% endif %}
   </li>
   {% endfor %}
 </ul>
 {% else %}
-<p>Прикормочных смесей не добавлено</p>
+<p>Прикормов не добавлено</p>
 {% endif %}
 <p>
-  <a href="{% url 'fishing:fishing_lure_add' %}" class="btn">Добавить</a>
+  <a href="{% url 'fishing:lure_base_add' %}" class="btn">Добавить</a>
   <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}
-
-
 
 {% if model_trough_list != None %}
 <!-- Модели кормушек -->
@@ -305,7 +309,7 @@
     {% else %}
     металл
     {% endif %}
-    {% if model_trough.model_trough_lugs %}
+    {% if model_trough.model_trough_lugs%}
     с грунтозацепами
     {% endif %}
     {% if user.is_staff %}
@@ -326,8 +330,6 @@
   <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}
-
-
 
 {% if model_trough_name_list != None %}
 <!-- Название моделей кормушек -->
@@ -355,8 +357,6 @@
 </p>
 {% endif %}
 
-
-
 {% if nozzle_list != None %}
 <!-- Навивки -->
 {% if nozzle_list %}
@@ -382,8 +382,6 @@
   <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}
-
-
 
 {% if nozzle_state_list != None %}
 <!-- Состояние наживок -->
@@ -411,8 +409,6 @@
 </p>
 {% endif %}
 
-
-
 {% if overcasts_list != None %}
 <!-- Облачность -->
 {% if overcasts_list %}
@@ -438,8 +434,6 @@
 </p>
 {% endif %}
 
-
-
 {% if pace_list != None %}
 <!-- Темп -->
 {% if pace_list %}
@@ -464,8 +458,6 @@
   <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}
-
-
 
 {% if place_list != None %}
 <!-- Места -->
@@ -495,8 +487,6 @@
 </p>
 {% endif %}
 
-
-
 {% if primings_list != None %}
 <!-- Грунт -->
 {% if primings_list %}
@@ -521,8 +511,6 @@
   <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}
-
-
 
 {% if water_list != None %}
 <!-- Водоемы -->
@@ -549,8 +537,6 @@
 </p>
 {% endif %}
 
-
-
 {% if weather_list != None %}
 <!-- Погода -->
 {% if weather_list %}
@@ -574,16 +560,13 @@
 </p>
 {% endif %}
 
-
-
 {% if weather_phenomena_list != None %}
 <!-- Погодные явления -->
 {% if weather_phenomena_list %}
 <ul>
   {% for phenomena in weather_phenomena_list %}
   <li>
-    {{phenomena.weather_phenomena_name}}
-    {% if user.is_staff %}
+    {{phenomena.weather_phenomena_name}} {% if user.is_staff %}
     <a href="{% url 'fishing:weatherphenomena_renewal' phenomena.id %}" class="btn">Редактировать</a>
     <a href="{% url 'fishing:weatherphenomena_remove' phenomena.id %}" class="btn">Удалить</a>
     {% endif %}
