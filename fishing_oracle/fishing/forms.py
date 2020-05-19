@@ -10,8 +10,17 @@ from .models import BottomMap, Point
 from .models import Weather, Overcast, WeatherPhenomena
 from .models import NozzleState, Nozzle
 from .models import Lure, LureBase, FishingLure
-
+from .models import AromaBase, Aroma
 from django import forms
+
+class AromaForm(forms.ModelForm):
+    class Meta:
+        model=Aroma
+        fields=['aroma_base', 'aroma_volume', ]
+class AromaBaseForm(forms.ModelForm):
+    class Meta:
+        model=AromaBase
+        fields=['aroma_manufacturer', 'aroma_name', ]
 
 
 class BottomMapForm(forms.ModelForm):

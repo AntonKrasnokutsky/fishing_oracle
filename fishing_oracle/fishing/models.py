@@ -3,13 +3,37 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from users.models import CustomUser
 
 
-class Aroma(models.Model):  # Аромы
+class Aroma(models.Model):
+    class Meta:
+        verbose_name='Арома в прикормочной смеси'
+        verbose_name_plural='Аромы в прикормочной смеси'
+        ordering=['fishing_lure', 'aroma_base', 'aroma_volume',]
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи")
+    fishing_lure = models.ForeignKey(
+        'FishingLure',
+        on_delete=models.PROTECT,
+        verbose_name="Прикормочная смесь")
+    aroma_base=models.ForeignKey(
+        'AromaBase',
+        on_delete=models.PROTECT,
+        verbose_name="Арома базовая")
+    aroma_volume=models.DecimalField(
+        max_digits=4,
+        decimal_places=2,
+        default=0,
+        verbose_name="Объем аромы в литрах")
+
+
+class AromaBase(models.Model):  # Аромы
     """
     Содержит информацию о производителе и названию аромы
     """
     class Meta:
-        verbose_name = "Арома"
-        verbose_name_plural = "Аромы"
+        verbose_name = "Арома базовая"
+        verbose_name_plural = "Аромы базовые"
         ordering = ['aroma_manufacturer', 'aroma_name', ]
     # Владелец записи
     owner = models.ForeignKey(
@@ -28,7 +52,6 @@ class Aroma(models.Model):  # Аромы
 
     def __str__(self):
         return self.aroma_manufacturer + ' ' + self.aroma_name
-
 
 class BottomMap(models.Model):  # Карты дна
     """

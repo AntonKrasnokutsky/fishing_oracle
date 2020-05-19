@@ -27,6 +27,9 @@ from .forms import FishingTroughForm
 from .models import NozzleState, Nozzle, Lure, LureBase, FishingLure
 from .forms import NozzleStateForm, NozzleForm, LureForm, LureBaseForm, FishingLureForm
 
+from .models import AromaBase, Aroma
+from .forms import AromaBaseForm, AromaForm
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -51,6 +54,121 @@ def index(request):
     """
     num_visits = visits(request, 1)
     return render(request, 'fishing/index.html', {'num_visits': num_visits})
+
+
+@login_required
+def aroma_add(request, fishing_lure_id):
+    num_visits=visits(request)
+    if request.method=='POST':
+        aroma=Aroma()
+        form=AromaForm(request.POST)
+        if form.is_valid():
+            aroma=form.save(commit=False)
+            aroma.owner=request.user
+            fishing_lure=get_object_or_404(FishingLure, pk=fishing_lure_id)
+            aroma.fishing_lure=fishing_lure
+            aroma.save()
+            return redirect('fishing:fishing_lure', fishing_lure_id)
+    else:
+        form=AromaForm()
+        return render(request,
+        template_renewal_add_path,
+        {'form':form,
+        'num_visits':num_visits})
+
+@login_required
+def aroma_remove(request, fishing_lure_id, aroma_id):
+    aroma=get_object_or_404(Aroma, pk=aroma_id)
+    if aroma.owner == request.user:
+        aroma.delete()
+    return redirect('fishing:fushing_lure', fishing_lure_id)
+
+@login_required
+def aroma_renewal(request, fishing_lure_id, aroma_id):
+    num_visits=visits(request)
+    aroma=get_object_or_404(Aroma, pk=aroma_id)
+    if aroma.owner == request.user:
+        if request.method=='POST':
+            form=AromaForm(request.POST, instance=aroma)
+            if form.is_valid():
+                aroma=form.save(commit=False)
+                aroma.owner=request.user
+                fishing_lure=get_object_or_404(FishingLure, pk=fishing_lure_id)
+                aroma.fishing_lure=fishing_lure
+                aroma.save()
+        else:
+            form=AromaForm(initial={
+                'aroma_base':aroma.aroma_base,
+                'aroma_volume':aroma.aroma_volume})
+            return render(request,
+            template_renewal_add_path,
+            {'form':form,
+            'num_visits':num_visits})
+
+
+@login_required
+def aroma_base_add(request):
+    num_visits = visits(request)
+    if request.method == 'POST':
+        aroma_base=AromaBase()
+        form = AromaBaseForm(request.POST)
+        if form.is_valid():
+            aroma_base=form.save(commit=False)
+            aroma_base.owner=request.user
+            aroma_base.save()
+            return redirect('fishing:aroma_base')
+    else:
+        form=AromaBaseForm()
+        return render(request,
+        template_renewal_add_path,
+        {'form':form,
+        'num_visits':num_visits})
+
+
+
+@login_required
+def aroma_base_list(request):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        aroma_base_list = AromaBase.objects.all()
+    else:
+        aroma_base_list = AromaBase.objects.filter(owner = request.user)
+    return render(request,
+    template_list_path,
+    {'aroma_base_list':aroma_base_list,
+    'num_visits':num_visits})
+
+
+@login_required
+def aroma_base_remove(request, aroma_base_id):
+    aroma_base=get_object_or_404(AromaBase, pk=aroma_base_id)
+    if aroma_base.owner==request.user:
+        aroma_base.delete()
+    return redirect('fishing:aroma_base')
+
+@login_required
+def aroma_base_renewal(request, aroma_base_id):
+    num_visits = visits(request)
+    aroma_base=get_object_or_404(AromaBase, pk=aroma_base_id)
+    if aroma_base.owner == request.user:
+        if request.method == 'POST':
+            form = AromaBaseForm(request.POST, instance=aroma_base)
+            if form.is_valid():
+                aroma_base=form.save(commit=False)
+                aroma_base.owner=request.user
+                aroma_base.save()
+                return redirect('fishing:aroma_base')
+        else:
+            form=AromaBaseForm(initial={
+                'aroma_manufacturer':aroma_base.aroma_manufacturer,
+                'aroma_name':aroma_base.aroma_name,
+                'num_visits':num_visits})
+            return render(request,
+            template_renewal_add_path,
+            {'form':form,
+            'num_visits':num_visits})
+    else:
+        return redirect('fishing:aroma_base')
 
 
 @login_required

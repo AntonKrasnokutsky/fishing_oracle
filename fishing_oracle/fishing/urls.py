@@ -438,4 +438,34 @@ urlpatterns = [
     path('fushinglure/<int:fishing_lure_id>/lure/<int:lure_id>/remove/',
          views.lure_remove,
          name='lure_remove'),
+    # Арома базовая
+    # Список аром
+    path('aromabase/',
+         views.aroma_base_list,
+         name='aroma_base'),
+    #Добавление аромы
+    path('aromabase/add/',
+         views.aroma_base_add,
+         name='aroma_base_add'),
+    #Редактирование аромы
+    path('aromabase/<int:aroma_base_id>/renewal/',
+         views.aroma_base_renewal,
+         name='aroma_base_renewal'),
+    #Удаление аромы
+    path('aromabase/<int:aroma_base_id>/remove/',
+         views.aroma_base_remove,
+         name='aroma_base_remove'),
+    #Аромы в прикорме
+    #Добавление аромы в прикорм
+    path('fushinglure/<int:fishing_lure_id>/aroma/add/',
+         views.aroma_add,
+         name='aroma_add'),
+    #Редактирование аромы в прикорме
+    path('fushinglure/<int:fishing_lure_id>/aroma/<int:aroma_id>/renewal/',
+         views.aroma_renewal,
+         name='aroma_renewal'),
+    #Удаление аромы из приколрма
+    path('fushinglure/<int:fishing_lure_id>/aroma/<int:aroma_id>/remove/',
+         views.aroma_remove,
+         name='aroma_remove'),
 ]
