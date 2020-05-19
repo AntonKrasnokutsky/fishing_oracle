@@ -83,6 +83,33 @@
 </p>
 {% endif %}
 
+
+{% if crochet_list != None %}
+<!-- Крючки -->
+{% if crochet_list %}
+<ul>
+  {% for crochet in crochet_list %}
+  <li>
+    {{crochet}}
+    {% if crochet.owner == user %}
+    <a href=" {% url 'fishing:crochet_renewal' crochet.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:crochet_remove' crochet.id %}" class="btn">Удалить</a>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Список крючков пуст</p>
+{% endif %}
+<p>
+  {% if user.is_staff %}
+  <a href="{% url 'fishing:crochet_add' %}" class="btn">Добавить</a>
+  {% endif %}
+  <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endif %}
+
+
 {% if districts_list != None %}
 <!-- Районы -->
 {% if districts_list %}
@@ -172,6 +199,30 @@
 <a onclick="back()" class="btn">Назад</a>
 {% endif %}
 
+{% if fishing_leash_list != None %}
+<!-- Поводки -->
+{% if fishing_leash_list %}
+<ul>
+  <li>
+    {% for fishing_leash in fishing_leash_list %}
+    {{fishing_leash}}
+    {% if fishing_leash.owner == user %}
+    <a href="{% url 'fishing:fishing_leash_renewal' fishing_leash.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:fishing_leash_remove' fishing_leash.id %}" class="btn">Удалить</a>
+    {% endif %}
+    {% endfor %}
+  </li>
+</ul>
+{% else %}
+<p>Поводков еще не добавлено</p>
+{% endif %}
+<p>
+  <a href="{% url 'fishing:fishing_leash_add' %}" class="btn">Добавить</a>
+  <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endif %}
+
+
 {% if fishing_lure_list != None %}
 <!-- Прикормочные смеси -->
 {% if fishing_lure_list %}
@@ -228,8 +279,7 @@
 <ul>
   {% for fishing_point in fishing_point_list %}
   <li>
-    <a
-      href="{% url 'fishing:fishing_point_details' district.id water.id place.id fishing_point.id %}">{{fishing_point}}</a>
+    <a href="{% url 'fishing:fishing_point_details' district.id water.id place.id fishing_point.id %}">{{fishing_point}}</a>
     {% if fishing_point.owner == user %}
     {% if user.is_staff %}
     {{place.owner}}

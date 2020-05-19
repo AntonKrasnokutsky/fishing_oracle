@@ -30,6 +30,9 @@ from .forms import NozzleStateForm, NozzleForm, LureForm, LureBaseForm, FishingL
 from .models import AromaBase, Aroma
 from .forms import AromaBaseForm, AromaForm
 
+from .models import Crochet, FishingLeash
+from .forms import CrochetForm, FishingLeashForm
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -58,72 +61,75 @@ def index(request):
 
 @login_required
 def aroma_add(request, fishing_lure_id):
-    num_visits=visits(request)
-    if request.method=='POST':
-        aroma=Aroma()
-        form=AromaForm(request.POST)
+    num_visits = visits(request)
+    if request.method == 'POST':
+        aroma = Aroma()
+        form = AromaForm(request.POST)
         if form.is_valid():
-            aroma=form.save(commit=False)
-            aroma.owner=request.user
-            fishing_lure=get_object_or_404(FishingLure, pk=fishing_lure_id)
-            aroma.fishing_lure=fishing_lure
+            aroma = form.save(commit=False)
+            aroma.owner = request.user
+            fishing_lure = get_object_or_404(FishingLure, pk=fishing_lure_id)
+            aroma.fishing_lure = fishing_lure
             aroma.save()
-            return redirect('fishing:fishing_lure', fishing_lure_id)
+            return redirect('fishing:fishing_lure_details', fishing_lure_id)
     else:
-        form=AromaForm()
+        form = AromaForm()
         return render(request,
-        template_renewal_add_path,
-        {'form':form,
-        'num_visits':num_visits})
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
+
 
 @login_required
 def aroma_remove(request, fishing_lure_id, aroma_id):
-    aroma=get_object_or_404(Aroma, pk=aroma_id)
+    aroma = get_object_or_404(Aroma, pk=aroma_id)
     if aroma.owner == request.user:
         aroma.delete()
-    return redirect('fishing:fushing_lure', fishing_lure_id)
+    return redirect('fishing:fishing_lure_details', fishing_lure_id)
+
 
 @login_required
 def aroma_renewal(request, fishing_lure_id, aroma_id):
-    num_visits=visits(request)
-    aroma=get_object_or_404(Aroma, pk=aroma_id)
+    num_visits = visits(request)
+    aroma = get_object_or_404(Aroma, pk=aroma_id)
     if aroma.owner == request.user:
-        if request.method=='POST':
-            form=AromaForm(request.POST, instance=aroma)
+        if request.method == 'POST':
+            form = AromaForm(request.POST, instance=aroma)
             if form.is_valid():
-                aroma=form.save(commit=False)
-                aroma.owner=request.user
-                fishing_lure=get_object_or_404(FishingLure, pk=fishing_lure_id)
-                aroma.fishing_lure=fishing_lure
+                aroma = form.save(commit=False)
+                aroma.owner = request.user
+                fishing_lure = get_object_or_404(
+                    FishingLure, pk=fishing_lure_id)
+                aroma.fishing_lure = fishing_lure
                 aroma.save()
+                return redirect('fishing:fishing_lure_details', fishing_lure_id)
         else:
-            form=AromaForm(initial={
-                'aroma_base':aroma.aroma_base,
-                'aroma_volume':aroma.aroma_volume})
+            form = AromaForm(initial={
+                'aroma_base': aroma.aroma_base,
+                'aroma_volume': aroma.aroma_volume})
             return render(request,
-            template_renewal_add_path,
-            {'form':form,
-            'num_visits':num_visits})
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
 
 
 @login_required
 def aroma_base_add(request):
     num_visits = visits(request)
     if request.method == 'POST':
-        aroma_base=AromaBase()
+        aroma_base = AromaBase()
         form = AromaBaseForm(request.POST)
         if form.is_valid():
-            aroma_base=form.save(commit=False)
-            aroma_base.owner=request.user
+            aroma_base = form.save(commit=False)
+            aroma_base.owner = request.user
             aroma_base.save()
-            return redirect('fishing:aroma_base')
+        return redirect('fishing:aroma_base')
     else:
-        form=AromaBaseForm()
+        form = AromaBaseForm()
         return render(request,
-        template_renewal_add_path,
-        {'form':form,
-        'num_visits':num_visits})
-
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
 
 
 @login_required
@@ -132,41 +138,42 @@ def aroma_base_list(request):
     if request.user.is_staff:
         aroma_base_list = AromaBase.objects.all()
     else:
-        aroma_base_list = AromaBase.objects.filter(owner = request.user)
+        aroma_base_list = AromaBase.objects.filter(owner=request.user)
     return render(request,
-    template_list_path,
-    {'aroma_base_list':aroma_base_list,
-    'num_visits':num_visits})
+                  template_list_path,
+                  {'aroma_base_list': aroma_base_list,
+                   'num_visits': num_visits})
 
 
 @login_required
 def aroma_base_remove(request, aroma_base_id):
-    aroma_base=get_object_or_404(AromaBase, pk=aroma_base_id)
-    if aroma_base.owner==request.user:
+    aroma_base = get_object_or_404(AromaBase, pk=aroma_base_id)
+    if aroma_base.owner == request.user:
         aroma_base.delete()
     return redirect('fishing:aroma_base')
+
 
 @login_required
 def aroma_base_renewal(request, aroma_base_id):
     num_visits = visits(request)
-    aroma_base=get_object_or_404(AromaBase, pk=aroma_base_id)
+    aroma_base = get_object_or_404(AromaBase, pk=aroma_base_id)
     if aroma_base.owner == request.user:
         if request.method == 'POST':
             form = AromaBaseForm(request.POST, instance=aroma_base)
             if form.is_valid():
-                aroma_base=form.save(commit=False)
-                aroma_base.owner=request.user
+                aroma_base = form.save(commit=False)
+                aroma_base.owner = request.user
                 aroma_base.save()
-                return redirect('fishing:aroma_base')
+            return redirect('fishing:aroma_base')
         else:
-            form=AromaBaseForm(initial={
-                'aroma_manufacturer':aroma_base.aroma_manufacturer,
-                'aroma_name':aroma_base.aroma_name,
-                'num_visits':num_visits})
+            form = AromaBaseForm(initial={
+                'aroma_manufacturer': aroma_base.aroma_manufacturer,
+                'aroma_name': aroma_base.aroma_name,
+                'num_visits': num_visits})
             return render(request,
-            template_renewal_add_path,
-            {'form':form,
-            'num_visits':num_visits})
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
     else:
         return redirect('fishing:aroma_base')
 
@@ -398,6 +405,68 @@ def bottom_map_point_renewal(request, district_id, water_id, place_id, bottom_ma
                            'num_visits': num_visits})
     else:
         return redirect('fishing:water', district_id)
+
+
+@login_required
+def crochet_add(request):
+    num_visits = visits(request)
+    if request.method == 'POST':
+        crochet = Crochet()
+        form = CrochetForm(request.POST)
+        if form.is_valid():
+            crochet = form.save(commit=False)
+            crochet.owner = request.user
+            crochet.save()
+        return redirect('fishing:crochet')
+    else:
+        form = CrochetForm()
+        return render(request,
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
+
+
+@login_required
+def crochet_list(request):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        crochet_list = Crochet.objects.all()
+    else:
+        crochet_list = Crochet.objects.filter(owner=request.user)
+    return render(request,
+                  template_list_path,
+                  {'crochet_list': crochet_list,
+                   'num_visits': num_visits})
+
+
+@login_required
+def crochet_remove(request, crochet_id):
+    crochet = get_object_or_404(Crochet, pk=crochet_id)
+    if crochet.owner == request.user:
+        crochet.delete()
+    return redirect('fishing:crochet')
+
+
+@login_required
+def crochet_renewal(request, crochet_id):
+    num_visits = visits(request)
+    crochet = get_object_or_404(Crochet, pk=crochet_id)
+    if crochet.owner == request.user:
+        if request.method == 'POST':
+            form = CrochetForm(request.POST, instance=crochet)
+            if form.is_valid():
+                crochet = form.save(commit=False)
+                crochet.owner = request.user
+                crochet.save()
+            return redirect('fishing:crochet')
+        else:
+            form = CrochetForm(initial={'crochet_manufacturer': crochet.crochet_manufacturer,
+                                        'crochet_model': crochet.crochet_model,
+                                        'crochet_size': crochet.crochet_size})
+            return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
 
 
 @staff_member_required
@@ -635,6 +704,70 @@ def fishing_list(request):
                   template_list_path,
                   {'fishing_list': fishings_list,
                    'num_visits': num_visits})
+
+
+@login_required
+def fishing_leash_add(request):
+    num_visits = visits(request)
+    if request.method == 'POST':
+        fishing_leash = FishingLeash()
+        form = FishingLeashForm(request.POST)
+        if form.is_valid():
+            fishing_leash = form.save(commit=False)
+            fishing_leash.owner = request.user
+            fishing_leash.save()
+        return redirect('fishing:fishing_leash')
+    else:
+        form = FishingLeashForm()
+        return render(request,
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
+
+
+@login_required
+def fishing_leash_list(request):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        fishing_leash_list = FishingLeash.objects.all()
+    else:
+        fishing_leash_list = FishingLeash.objects.filter(owner=request.user)
+    return render(request,
+                  template_list_path,
+                  {'fishing_leash_list': fishing_leash_list,
+                   'num_visits': num_visits})
+
+
+@login_required
+def fishing_leash_remove(request, fishing_leash_id):
+    fishing_leash = get_object_or_404(FishingLeash, pk=fishing_leash_id)
+    if fishing_leash.owner == request.user:
+        fishing_leash.delete()
+    return redirect('fishing:fishing_leash')
+
+
+@login_required
+def fishing_leash_renewal(request, fishing_leash_id):
+    num_visits = visits(request)
+    fishing_leash = get_object_or_404(FishingLeash, pk=fishing_leash_id)
+    if fishing_leash.owner == request.user:
+        if request.method == 'POST':
+            form = FishingLeashForm(request.POST, instance=fishing_leash)
+            if form.is_valid():
+                fishing_leash = form.save(commit=False)
+                fishing_leash.owner = request.user
+                fishing_leash.save()
+            return redirect('fishing:fishing_leash')
+        else:
+            form = FishingLeashForm(initial={'fishing_leash_material': fishing_leash.fishing_leash_material,
+                                             'fishing_leash_diameter': fishing_leash.fishing_leash_diameter,
+                                             'fishing_leash_length': fishing_leash.fishing_leash_length})
+            return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:fishing_leash')
 
 
 @login_required

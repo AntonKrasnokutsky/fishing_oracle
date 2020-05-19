@@ -3,11 +3,11 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from users.models import CustomUser
 
 
-class Aroma(models.Model):
+class Aroma(models.Model):  # Аромы в прикормочной смеси
     class Meta:
-        verbose_name='Арома в прикормочной смеси'
-        verbose_name_plural='Аромы в прикормочной смеси'
-        ordering=['fishing_lure', 'aroma_base', 'aroma_volume',]
+        verbose_name = 'Арома в прикормочной смеси'
+        verbose_name_plural = 'Аромы в прикормочной смеси'
+        ordering = ['fishing_lure', 'aroma_base', 'aroma_volume', ]
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
@@ -16,18 +16,18 @@ class Aroma(models.Model):
         'FishingLure',
         on_delete=models.PROTECT,
         verbose_name="Прикормочная смесь")
-    aroma_base=models.ForeignKey(
+    aroma_base = models.ForeignKey(
         'AromaBase',
         on_delete=models.PROTECT,
         verbose_name="Арома базовая")
-    aroma_volume=models.DecimalField(
+    aroma_volume = models.DecimalField(
         max_digits=4,
         decimal_places=2,
         default=0,
         verbose_name="Объем аромы в литрах")
 
 
-class AromaBase(models.Model):  # Аромы
+class AromaBase(models.Model):  # Аромы базовые
     """
     Содержит информацию о производителе и названию аромы
     """
@@ -52,6 +52,7 @@ class AromaBase(models.Model):  # Аромы
 
     def __str__(self):
         return self.aroma_manufacturer + ' ' + self.aroma_name
+
 
 class BottomMap(models.Model):  # Карты дна
     """

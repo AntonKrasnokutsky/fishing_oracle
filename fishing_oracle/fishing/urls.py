@@ -443,29 +443,63 @@ urlpatterns = [
     path('aromabase/',
          views.aroma_base_list,
          name='aroma_base'),
-    #Добавление аромы
+    # Добавление аромы
     path('aromabase/add/',
          views.aroma_base_add,
          name='aroma_base_add'),
-    #Редактирование аромы
+    # Редактирование аромы
     path('aromabase/<int:aroma_base_id>/renewal/',
          views.aroma_base_renewal,
          name='aroma_base_renewal'),
-    #Удаление аромы
+    # Удаление аромы
     path('aromabase/<int:aroma_base_id>/remove/',
          views.aroma_base_remove,
          name='aroma_base_remove'),
-    #Аромы в прикорме
-    #Добавление аромы в прикорм
+    # Аромы в прикорме
+    # Добавление аромы в прикорм
     path('fushinglure/<int:fishing_lure_id>/aroma/add/',
          views.aroma_add,
          name='aroma_add'),
-    #Редактирование аромы в прикорме
+    # Редактирование аромы в прикорме
     path('fushinglure/<int:fishing_lure_id>/aroma/<int:aroma_id>/renewal/',
          views.aroma_renewal,
          name='aroma_renewal'),
-    #Удаление аромы из приколрма
+    # Удаление аромы из приколрма
     path('fushinglure/<int:fishing_lure_id>/aroma/<int:aroma_id>/remove/',
          views.aroma_remove,
          name='aroma_remove'),
+    # Крючки
+    # Список крючков
+    path('crochet/',
+         views.crochet_list,
+         name='crochet'),
+    # Добавление крючка
+    path('crochet/add/',
+         views.crochet_add,
+         name='crochet_add'),
+    # Редактирование крючка
+    path('crochet/<int:crochet_id>/renewal/',
+         views.crochet_renewal,
+         name='crochet_renewal'),
+    # Удаление крючка
+    path('crochet/<int:crochet_id>/remove/',
+         views.crochet_remove,
+         name='crochet_remove'),
+    # Поводки
+    # Список поводков
+    path('fishingleash/',
+         views.fishing_leash_list,
+         name='fishing_leash'),
+    # Добавление поводка
+    path('fishingleash/add/',
+         views.fishing_leash_add,
+         name='fishing_leash_add'),
+    # Редактирование поводка
+    path('fishingleash/<int:fishing_leash_id>/renewal/',
+         views.fishing_leash_renewal,
+         name='fishing_leash_renewal'),
+    # Удаление поводка
+    path('fishingleash/<int:fishing_leash_id>/remove/',
+         views.fishing_leash_remove,
+         name='fishing_leash_remove'),
 ]

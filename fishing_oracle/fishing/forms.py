@@ -11,16 +11,20 @@ from .models import Weather, Overcast, WeatherPhenomena
 from .models import NozzleState, Nozzle
 from .models import Lure, LureBase, FishingLure
 from .models import AromaBase, Aroma
+from .models import Crochet, FishingLeash
 from django import forms
+
 
 class AromaForm(forms.ModelForm):
     class Meta:
-        model=Aroma
-        fields=['aroma_base', 'aroma_volume', ]
+        model = Aroma
+        fields = ['aroma_base', 'aroma_volume', ]
+
+
 class AromaBaseForm(forms.ModelForm):
     class Meta:
-        model=AromaBase
-        fields=['aroma_manufacturer', 'aroma_name', ]
+        model = AromaBase
+        fields = ['aroma_manufacturer', 'aroma_name', ]
 
 
 class BottomMapForm(forms.ModelForm):
@@ -29,6 +33,12 @@ class BottomMapForm(forms.ModelForm):
         fields = ['bottom_map_northern_degree', 'bottom_map_northern_minute',
                   'bottom_map_northern_second', 'bottom_map_easter_degree',
                   'bottom_map_easter_minute', 'bottom_map_easter_second', ]
+
+
+class CrochetForm(forms.ModelForm):
+    class Meta:
+        model = Crochet
+        fields = ['crochet_manufacturer', 'crochet_model', 'crochet_size', ]
 
 
 class DistrictForm(forms.ModelForm):
@@ -49,6 +59,13 @@ class FishForm(forms.ModelForm):
         model = Fish
         fields = ('name_of_fish', 'fish_description', )
     #renewal_name_of_fish = forms.CharField(max_length=20, label='Рыба')
+
+
+class FishingLeashForm(forms.ModelForm):
+    class Meta:
+        model = FishingLeash
+        fields = ['fishing_leash_material',
+                  'fishing_leash_diameter', 'fishing_leash_length', ]
 
 
 class FishingLureForm(forms.ModelForm):
