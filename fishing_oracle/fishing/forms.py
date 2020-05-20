@@ -12,7 +12,7 @@ from .models import NozzleState, Nozzle
 from .models import Lure, LureBase, FishingLure
 from .models import AromaBase, Aroma
 from .models import Crochet, FishingLeash
-from .models import Fishing
+from .models import Fishing, FishingResult, FishTrophy
 from django import forms
 
 
@@ -61,14 +61,16 @@ class FishForm(forms.ModelForm):
         fields = ('name_of_fish', 'fish_description', )
     #renewal_name_of_fish = forms.CharField(max_length=20, label='Рыба')
 
+
 class FishingForm(forms.ModelForm):
     class Meta:
-        model=Fishing
-        fields=['date', 'time', 'place', 'weather',
-                'fishing_tackle', 'fishing_montage',
-                'fishing_trough', 'fishing_lure',
-                'aroma', 'fishing_leash', 'crochet',
-                'nozzle', 'pace',]
+        model = Fishing
+        fields = ['date', 'time', 'place', 'weather',
+                  'fishing_tackle', 'fishing_montage',
+                  'fishing_trough', 'fishing_lure',
+                  'aroma', 'fishing_leash', 'crochet',
+                  'nozzle', 'pace', ]
+
 
 class FishingLeashForm(forms.ModelForm):
     class Meta:
@@ -98,6 +100,12 @@ class FishingPointForm(forms.ModelForm):
                   'priming', ]
 
 
+class FishingResultForm(forms.ModelForm):
+    class Meta:
+        model = FishingResult
+        fields = ['fish', 'number_of_fish', 'fish_weight', ]
+
+
 class FishingTackleForm(forms.ModelForm):
     class Meta:
         model = FishingTackle
@@ -110,6 +118,12 @@ class FishingTroughForm(forms.ModelForm):
         model = FishingTrough
         fields = ('fishing_trough_manufacturer', 'model_trough',
                   'feed_capacity', 'fishing_trough_weight',)
+
+
+class FishTrophyForm(forms.ModelForm):
+    class Meta:
+        model = FishTrophy
+        fields = ['fish', 'fish_trophy_weight', ]
 
 
 class LureForm(forms.ModelForm):

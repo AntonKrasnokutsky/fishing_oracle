@@ -34,7 +34,7 @@ from .models import Crochet, FishingLeash
 from .forms import CrochetForm, FishingLeashForm
 
 from .models import Fishing, FishingResult, FishTrophy
-from .forms import FishingForm
+from .forms import FishingForm, FishingResultForm, FishTrophyForm
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -666,6 +666,60 @@ def fish_renewal(request, fish_id):
 
 
 @login_required
+def fish_trophy_add(request, fishing_id):
+    num_visits = visits(request)
+    fishing = get_object_or_404(Fishing, pk=fishing_id)
+    if fishing.owner == request.user:
+        if request.method == 'POST':
+            fish_trophy = FishTrophy()
+            form = FishTrophyForm(request.POST)
+            if form.is_valid():
+                fish_trophy = form.save(commit=False)
+                fish_trophy.owner = request.user
+                fish_trophy.fishing = fishing
+                fish_trophy.save()
+            return redirect('fishing:fishing_details', fishing_id)
+        else:
+            form = FishTrophyForm()
+            return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
+    return redirect('fishing:fishing_details', fishing_id)
+
+
+@login_required
+def fish_trophy_remove(request, fishing_id, fish_trophy_id):
+    fish_trophy = get_object_or_404(FishTrophy, pk=fish_trophy_id)
+    if fish_trophy.owner == request.user:
+        fish_trophy.delete()
+    return redirect('fishing:fishing_details', fishing_id)
+
+
+@login_required
+def fish_trophy_renewal(request, fishing_id, fish_trophy_id):
+    num_visits = visits(request)
+    fish_trophy = get_object_or_404(FishTrophy, pk=fish_trophy_id)
+    if fish_trophy.owner == request.user:
+        if request.method == 'POST':
+            form = FishTrophyForm(request.POST, instance=fish_trophy)
+            if form.is_valid():
+                fish_trophy = form.save(commit=False)
+                fish_trophy.owner = request.user
+                fishing = get_object_or_404(Fishing, pk=fishing_id)
+                fish_trophy.fishing = fishing
+                fish_trophy.save()
+            return redirect('fishing:fishing_details', fishing_id)
+        else:
+            form = FishTrophyForm(instance=fish_trophy)
+            return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
+    return redirect('fishing:fishing_details', fishing_id)
+
+
+@login_required
 def fishing_add(request):
     """
     Добавление рыбалки
@@ -675,19 +729,20 @@ def fishing_add(request):
         fishing = Fishing()
         form = FishingForm(request.POST)
         if form.is_valid():
-            fishing=form.save(commit=False)
-            fishing.owner=request.user
+            fishing = form.save(commit=False)
+            fishing.owner = request.user
             fishing.save()
         return redirect('fishing:fishing')
     else:
-        form=FishingForm()
+        form = FishingForm()
         return render(request,
                       template_renewal_add_path,
-                      {'form':form,
-                       'num_visits':num_visits})
+                      {'form': form,
+                       'num_visits': num_visits})
+
 
 @login_required
-def fishing_detail(request, fishing_id):
+def fishing_details(request, fishing_id):
     """
     Детальная информация о рыбалке
     """
@@ -719,12 +774,14 @@ def fishing_list(request):
                   {'fishing_list': fishings_list,
                    'num_visits': num_visits})
 
+
 @login_required
 def fishing_remove(request, fishing_id):
-    fishing=get_object_or_404(Fishing, pk=fishing_id)
+    fishing = get_object_or_404(Fishing, pk=fishing_id)
     if fishing.owner == request.user:
         fishing.delete()
     return redirect('fishing:fishing')
+
 
 @login_required
 def fishing_renewal(request, fishing_id):
@@ -737,18 +794,19 @@ def fishing_renewal(request, fishing_id):
         if request.method == 'POST':
             form = FishingForm(request.POST, instance=fishing)
             if form.is_valid():
-                fishing=form.save(commit=False)
-                fishing.owner=request.user
+                fishing = form.save(commit=False)
+                fishing.owner = request.user
                 fishing.save()
             return redirect('fishing:fishing')
         else:
-            form=FishingForm(instance=fishing)
+            form = FishingForm(instance=fishing)
             return render(request,
-                        template_renewal_add_path,
-                        {'form':form,
-                        'num_visits':num_visits})
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
     else:
         return redirect('fishing:fishing')
+
 
 @login_required
 def fishing_leash_add(request):
@@ -1068,6 +1126,62 @@ def fishing_point_renewal(request, district_id, water_id, place_id, fishing_poin
                            'num_visits': num_visits})
     else:
         return redirect('fishing:water', district_id)
+
+
+@login_required
+def fishing_result_add(request, fishing_id):
+    num_visits = visits(request)
+    fishing = get_object_or_404(Fishing, pk=fishing_id)
+    if fishing.owner == request.user:
+        if request.method == 'POST':
+            fishing_result = FishingResult()
+            form = FishingResultForm(request.POST)
+            if form.is_valid():
+                fishing_result = form.save(commit=False)
+                fishing_result.owner = request.user
+                fishing_result.fishing = fishing
+                fishing_result.save()
+            return redirect('fishing:fishing_details', fishing_id)
+        else:
+            form = FishingResultForm()
+            return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:fishing_details', fishing_id)
+
+
+@login_required
+def fishing_result_remove(request, fishing_id, fishing_result_id):
+    fishing_result = get_object_or_404(FishingResult, pk=fishing_result_id)
+    if fishing_result.owner == request.user:
+        fishing_result.delete()
+    return redirect('fishing:fishing_details', fishing_id)
+
+
+@login_required
+def fishing_result_renewal(request, fishing_id, fishing_result_id):
+    num_visits = visits(request)
+    fishing_result = get_object_or_404(FishingResult, pk=fishing_result_id)
+    if fishing_result.owner == request.user:
+        if request.method == 'POST':
+            form = FishingResultForm(request.POST, instance=fishing_result)
+            if form.is_valid():
+                fishing_result = form.save(commit=False)
+                fishing_result.owner = request.user
+                fishing = get_object_or_404(Fishing, pk=fishing_id)
+                fishing_result.fishing = fishing
+                fishing_result.save()
+            return redirect('fishing:fishing_details', fishing_id)
+        else:
+            form = FishingResultForm(instance=fishing_result)
+            return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:fishing_details', fishing_id)
 
 
 @login_required

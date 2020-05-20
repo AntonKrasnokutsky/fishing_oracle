@@ -148,6 +148,8 @@
     {{ forloop.counter }}. {{ fishing_result.fish }}:
     {{fishing_result.number_of_fish }} шт. общим весом:
     {{fishing_result.fish_weight }} кг.
+    <a href="{% url 'fishing:fishing_result_renewal' fishing.id fishing_result.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:fishing_result_remove' fishing.id fishing_result.id %}" class="btn">Удалить</a>
 </p>
 {% endfor %}
 
@@ -156,8 +158,15 @@
 <p>
     {{ forloop.counter }}. {{ fish_trophy.fish }}: вес трофея
     {{fish_trophy.fish_trophy_weight}} кг.
+    <a href="{% url 'fishing:fish_trophy_renewal' fishing.id fish_trophy.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:fish_trophy_remove' fishing.id fish_trophy.id %}" class="btn">Удалить</a>
 </p>
 {% endfor %}
+{% if fishing.owner == user %}
+<a href="{% url 'fishing:fishing_result_add' fishing.id %}" class="btn">Добвить результат</a>
+<a href="{% url 'fishing:fish_trophy_add' fishing.id %}" class="btn">Добвить трофей</a>
+<a onclick="back()" class="btn">Назад</a>
+{% endif %}
 <a onclick="back()" class="btn">Назад</a>
 {% endif %}
 

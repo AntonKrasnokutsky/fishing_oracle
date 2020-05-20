@@ -14,8 +14,8 @@ urlpatterns = [
          name='fishing'),
     # Простомтр делатлей о рыбалке
     path('fishing/<int:fishing_id>/details',
-         views.fishing_detail,
-         name='fishing_detail'),
+         views.fishing_details,
+         name='fishing_details'),
     # Добавление рыбалки
     path('fishing/add/',
          views.fishing_add,
@@ -24,7 +24,7 @@ urlpatterns = [
     path('fishing/<int:fishing_id>/renewal/',
          views.fishing_renewal,
          name='fishing_renewal'),
-    #Удаление рыбалки
+    # Удаление рыбалки
     path('fishing/<int:fishing_id>/remove/',
          views.fishing_remove,
          name='fishing_remove'),
@@ -397,23 +397,23 @@ urlpatterns = [
          name='nozzle_remove'),
     # Прикормочная смесь
     # Список прикормочных смесей
-    path('fushinglure/',
+    path('fishinglure/',
          views.fishing_lure_list,
          name='fishing_lure'),
     # Добавление прикормочной смеси
-    path('fushinglure/add/',
+    path('fishinglure/add/',
          views.fishing_lure_add,
          name='fishing_lure_add'),
     # Детали прикормочной смеси
-    path('fushinglure/<int:fishing_lure_id>/details/',
+    path('fishinglure/<int:fishing_lure_id>/details/',
          views.fishing_lure_details,
          name='fishing_lure_details'),
     # Редактирование прикормочной смеси
-    path('fushinglure/<int:fishing_lure_id>/renewal/',
+    path('fishinglure/<int:fishing_lure_id>/renewal/',
          views.fishing_lure_renewal,
          name='fishing_lure_renewal'),
     # Удаление прикормочной смеси
-    path('fushinglure/<int:fishing_lure_id>/remove/',
+    path('fishinglure/<int:fishing_lure_id>/remove/',
          views.fishing_lure_remove,
          name='fishing_lure_remove'),
     # Прикорм
@@ -435,15 +435,15 @@ urlpatterns = [
          name='lure_base_remove'),
     # Смеси прикорма
     # Добавление прикорма в смесь
-    path('fushinglure/<int:fishing_lure_id>/lure/add/',
+    path('fishinglure/<int:fishing_lure_id>/lure/add/',
          views.lure_add,
          name='lure_add'),
     # Редактирование прикорма в смеси
-    path('fushinglure/<int:fishing_lure_id>/lure/<int:lure_id>/renewal/',
+    path('fishinglure/<int:fishing_lure_id>/lure/<int:lure_id>/renewal/',
          views.lure_renewal,
          name='lure_renewal'),
     # Удаление прикорма из смеси
-    path('fushinglure/<int:fishing_lure_id>/lure/<int:lure_id>/remove/',
+    path('fishinglure/<int:fishing_lure_id>/lure/<int:lure_id>/remove/',
          views.lure_remove,
          name='lure_remove'),
     # Арома базовая
@@ -465,15 +465,15 @@ urlpatterns = [
          name='aroma_base_remove'),
     # Аромы в прикорме
     # Добавление аромы в прикорм
-    path('fushinglure/<int:fishing_lure_id>/aroma/add/',
+    path('fishinglure/<int:fishing_lure_id>/aroma/add/',
          views.aroma_add,
          name='aroma_add'),
     # Редактирование аромы в прикорме
-    path('fushinglure/<int:fishing_lure_id>/aroma/<int:aroma_id>/renewal/',
+    path('fishinglure/<int:fishing_lure_id>/aroma/<int:aroma_id>/renewal/',
          views.aroma_renewal,
          name='aroma_renewal'),
     # Удаление аромы из приколрма
-    path('fushinglure/<int:fishing_lure_id>/aroma/<int:aroma_id>/remove/',
+    path('fishinglure/<int:fishing_lure_id>/aroma/<int:aroma_id>/remove/',
          views.aroma_remove,
          name='aroma_remove'),
     # Крючки
@@ -510,4 +510,30 @@ urlpatterns = [
     path('fishingleash/<int:fishing_leash_id>/remove/',
          views.fishing_leash_remove,
          name='fishing_leash_remove'),
+    # Результат рыбалки
+    # Добавление результата рыбалки
+    path('fishing/<int:fishing_id>/fishingresult/add/',
+         views.fishing_result_add,
+         name='fishing_result_add'),
+    # Редактирование ррезультата рыбалки
+    path('fishing/<int:fishing_id>/fishingresult/<int:fishing_result_id>/renewal/',
+         views.fishing_result_renewal,
+         name='fishing_result_renewal'),
+    # Удаление результата рыбалки
+    path('fishing/<int:fishing_id>/fishingresult/<int:fishing_result_id>/remove/',
+         views.fishing_result_remove,
+         name='fishing_result_remove'),
+    # Трофейные уловы
+    # Добавление трофейного улова
+    path('fishing/<int:fishing_id>/fishtrophy/add/',
+         views.fish_trophy_add,
+         name='fish_trophy_add'),
+    # Редактирование трофейного улова
+    path('fishing/<int:fishing_id>/fishtrophy/<int:fish_trophy_id>/renewal/',
+         views.fish_trophy_renewal,
+         name='fish_trophy_renewal'),
+    # Удаление трофейного улова
+    path('fishing/<int:fishing_id>/fishtrophy/<int:fish_trophy_id>/remove/',
+         views.fish_trophy_remove,
+         name='fish_trophy_remove'),
 ]
