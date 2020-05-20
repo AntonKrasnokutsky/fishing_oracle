@@ -190,12 +190,17 @@
 {% if fishing_list %}
 <ul>
   {% for fishing in fishing_list %}
-  <li><a href="{% url 'fishing:detail' fishing.id %}">{{fishing.date}}</a></li>
+  <li>
+    <a href="{% url 'fishing:fishing_detail' fishing.id %}">{{fishing.date}}</a>
+    <a href="{% url 'fishing:fishing_renewal' fishing.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:fishing_remove' fishing.id %}" class="btn">Удалить</a>
+  </li>
   {% endfor %}
 </ul>
 {% else %}
 <p>Рыбалок еще не было</p>
 {% endif %}
+<a href="{% url 'fishing:fishing_add' %}" class="btn">Добавить</a>
 <a onclick="back()" class="btn">Назад</a>
 {% endif %}
 

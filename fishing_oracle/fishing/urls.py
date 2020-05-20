@@ -13,13 +13,21 @@ urlpatterns = [
          views.fishing_list,
          name='fishing'),
     # Простомтр делатлей о рыбалке
-    path('fishing/<int:fishing_id>/',
+    path('fishing/<int:fishing_id>/details',
          views.fishing_detail,
-         name='detail'),
+         name='fishing_detail'),
     # Добавление рыбалки
-    path('add/',
+    path('fishing/add/',
          views.fishing_add,
          name='fishing_add'),
+    # Редактирование рыбалки
+    path('fishing/<int:fishing_id>/renewal/',
+         views.fishing_renewal,
+         name='fishing_renewal'),
+    #Удаление рыбалки
+    path('fishing/<int:fishing_id>/remove/',
+         views.fishing_remove,
+         name='fishing_remove'),
     # Блок рыб
     # Справочник рыб
     path('fish/',

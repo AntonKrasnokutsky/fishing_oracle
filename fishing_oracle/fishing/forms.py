@@ -12,6 +12,7 @@ from .models import NozzleState, Nozzle
 from .models import Lure, LureBase, FishingLure
 from .models import AromaBase, Aroma
 from .models import Crochet, FishingLeash
+from .models import Fishing
 from django import forms
 
 
@@ -60,6 +61,14 @@ class FishForm(forms.ModelForm):
         fields = ('name_of_fish', 'fish_description', )
     #renewal_name_of_fish = forms.CharField(max_length=20, label='Рыба')
 
+class FishingForm(forms.ModelForm):
+    class Meta:
+        model=Fishing
+        fields=['date', 'time', 'place', 'weather',
+                'fishing_tackle', 'fishing_montage',
+                'fishing_trough', 'fishing_lure',
+                'aroma', 'fishing_leash', 'crochet',
+                'nozzle', 'pace',]
 
 class FishingLeashForm(forms.ModelForm):
     class Meta:

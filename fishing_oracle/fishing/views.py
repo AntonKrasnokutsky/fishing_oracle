@@ -33,6 +33,9 @@ from .forms import AromaBaseForm, AromaForm
 from .models import Crochet, FishingLeash
 from .forms import CrochetForm, FishingLeashForm
 
+from .models import Fishing, FishingResult, FishTrophy
+from .forms import FishingForm
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -667,10 +670,21 @@ def fishing_add(request):
     """
     Добавление рыбалки
     """
-    # HttpResponse("Добавление рыбаки")
     num_visits = visits(request)
-    return render(request, 'fishing/fishing_add.html', {'num_visits': num_visits})
-
+    if request.method == 'POST':
+        fishing = Fishing()
+        form = FishingForm(request.POST)
+        if form.is_valid():
+            fishing=form.save(commit=False)
+            fishing.owner=request.user
+            fishing.save()
+        return redirect('fishing:fishing')
+    else:
+        form=FishingForm()
+        return render(request,
+                      template_renewal_add_path,
+                      {'form':form,
+                       'num_visits':num_visits})
 
 @login_required
 def fishing_detail(request, fishing_id):
@@ -705,6 +719,36 @@ def fishing_list(request):
                   {'fishing_list': fishings_list,
                    'num_visits': num_visits})
 
+@login_required
+def fishing_remove(request, fishing_id):
+    fishing=get_object_or_404(Fishing, pk=fishing_id)
+    if fishing.owner == request.user:
+        fishing.delete()
+    return redirect('fishing:fishing')
+
+@login_required
+def fishing_renewal(request, fishing_id):
+    """
+    Редактирование рыбалки
+    """
+    num_visits = visits(request)
+    fishing = get_object_or_404(Fishing, pk=fishing_id)
+    if fishing.owner == request.user:
+        if request.method == 'POST':
+            form = FishingForm(request.POST, instance=fishing)
+            if form.is_valid():
+                fishing=form.save(commit=False)
+                fishing.owner=request.user
+                fishing.save()
+            return redirect('fishing:fishing')
+        else:
+            form=FishingForm(instance=fishing)
+            return render(request,
+                        template_renewal_add_path,
+                        {'form':form,
+                        'num_visits':num_visits})
+    else:
+        return redirect('fishing:fishing')
 
 @login_required
 def fishing_leash_add(request):
@@ -1032,7 +1076,7 @@ def fishing_tackle_add(request):
     if request.method == 'POST':
         fishing_tackle = FishingTackle()
         form = FishingTackleForm(request.POST)
-        if form.is_valid:
+        if form.is_valid():
             fishing_tackle.owner = request.user
             fishing_tackle.fishing_tackle_manufacturer = form.cleaned_data[
                 'fishing_tackle_manufacturer']
@@ -1077,7 +1121,7 @@ def fishing_tackle_renewal(request, fishing_tackle_id):
     fishing_tackle = get_object_or_404(FishingTackle, pk=fishing_tackle_id)
     if request.method == 'POST':
         form = FishingTackleForm(request.POST)
-        if form.is_valid:
+        if form.is_valid():
             fishing_tackle.fishing_tackle_manufacturer = form.cleaned_data[
                 'fishing_tackle_manufacturer']
             fishing_tackle.fishing_tackle_name = form.cleaned_data['fishing_tackle_name']
@@ -1087,11 +1131,7 @@ def fishing_tackle_renewal(request, fishing_tackle_id):
             fishing_tackle.save()
         return redirect('fishing:fishing_tackle')
     else:
-        form = FishingTackleForm(
-            initial={'fishing_tackle_manufacturer': fishing_tackle.fishing_tackle_manufacturer,
-                     'fishing_tackle_name': fishing_tackle.fishing_tackle_name,
-                     'fishing_tackle_length': fishing_tackle.fishing_tackle_length,
-                     'fishing_tackle_casting_weight': fishing_tackle.fishing_tackle_casting_weight})
+        form = FishingTackleForm(instance=fishing_tackle)
         return render(request,
                       template_renewal_add_path,
                       {'form': form,
