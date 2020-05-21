@@ -254,10 +254,7 @@ class Fishing(models.Model):  # Рыбалки
         auto_now_add=False,
         verbose_name="Время начала")
     # Место проведения рыбалки
-    place = models.ForeignKey(
-        'Place',
-        on_delete=models.PROTECT,
-        verbose_name="Место рыбалки")
+    #PlaceFishing
     # Погода
     weather = models.ForeignKey(
         'Weather',
@@ -828,6 +825,7 @@ class Pace(models.Model):  # Темп
         return self.pace_interval
 
 
+
 class Place(models.Model):  # Места
     """
     Содержит информацию о месте рыбалки
@@ -851,6 +849,10 @@ class Place(models.Model):  # Места
         max_length=50,
         verbose_name="Населенный пункт",
         help_text="Название ближайшего населенного пункта")
+    #Название места
+    place_name = models.CharField(
+        max_length=50,
+        verbose_name="Название места")
     # Координа места рыбалки, градусы северной широты от -90 до 90
     place_northern_degree = models.IntegerField(
         default=0,
@@ -912,6 +914,16 @@ class Place(models.Model):  # Места
     def __str__(self):
         return self.place_locality
 
+class PlaceFishing(models.Model):
+    class Meta:
+        verbose_name='Место рыбалки'
+        verbose_name_plural='Места рыбалки'
+    fishing=models.ForeignKey('Fishing',
+                               on_delete=models.PROTECT,
+                               verbose_name='Рыбалка')
+    place=models.ForeignKey('Place',
+                            on_delete=models.PROTECT,
+                            verbose_name='Место рыбалки')
 
 class Point(models.Model):  # Точки карт дна
     """

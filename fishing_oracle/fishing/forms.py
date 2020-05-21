@@ -65,7 +65,7 @@ class FishForm(forms.ModelForm):
 class FishingForm(forms.ModelForm):
     class Meta:
         model = Fishing
-        fields = ['date', 'time', 'place', 'weather',
+        fields = ['date', 'time', 'weather',
                   'fishing_tackle', 'fishing_montage',
                   'fishing_trough', 'fishing_lure',
                   'aroma', 'fishing_leash', 'crochet',
@@ -180,7 +180,7 @@ class PaceForm(forms.ModelForm):
 class PlaceForm(forms.ModelForm):
     class Meta:
         model = Place
-        fields = ['place_locality', 'place_northern_degree',
+        fields = ['place_locality', 'place_name', 'place_northern_degree',
                   'place_northern_minute', 'place_northern_second',
                   'place_easter_degree', 'place_easter_minute',
                   'place_easter_second', ]

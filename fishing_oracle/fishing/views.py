@@ -1962,6 +1962,17 @@ def place_renewal(request, district_id, water_id, place_id):
     else:
         return redirect('fishing:place', district_id, water_id)
 
+@login_required
+def place_fishing_add(request, fishing_id):
+    pass
+
+@login_required
+def place_fishing_remove(request, fishing_id, place_fishing_id):
+    pass
+
+@login_required
+def place_fishing_renewal(request, fishing_id, place_fishing_id):
+    pass
 
 @staff_member_required
 def priming_add(request):
