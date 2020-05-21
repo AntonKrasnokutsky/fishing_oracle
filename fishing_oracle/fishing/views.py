@@ -36,6 +36,8 @@ from .forms import CrochetForm, FishingLeashForm
 from .models import Fishing, FishingResult, FishTrophy
 from .forms import FishingForm, FishingResultForm, FishTrophyForm
 
+from .models import PlaceFishing
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -43,6 +45,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 template_renewal_add_path = 'fishing/renewal_add.html'
 template_list_path = 'fishing/list.html'
 template_details_path = 'fishing/details.html'
+template_select_path = 'fishing/select.html'
 
 
 def visits(request, inc=0):
@@ -732,7 +735,7 @@ def fishing_add(request):
             fishing = form.save(commit=False)
             fishing.owner = request.user
             fishing.save()
-        return redirect('fishing:fishing')
+        return redirect('fishing:fishing_details', fishing.id)
     else:
         form = FishingForm()
         return render(request,
@@ -797,7 +800,7 @@ def fishing_renewal(request, fishing_id):
                 fishing = form.save(commit=False)
                 fishing.owner = request.user
                 fishing.save()
-            return redirect('fishing:fishing')
+            return redirect('fishing:fishing_details', fishing.id)
         else:
             form = FishingForm(instance=fishing)
             return render(request,
@@ -1860,15 +1863,9 @@ def place_add(request, district_id, water_id):
     if request.method == 'POST':
         form = PlaceForm(request.POST)
         if form.is_valid():
+            place = form.save(commit=False)
             place.owner = request.user
             place.water = water
-            place.place_locality = form.cleaned_data['place_locality']
-            place.place_northern_degree = form.cleaned_data['place_northern_degree']
-            place.place_northern_minute = form.cleaned_data['place_northern_minute']
-            place.place_northern_second = form.cleaned_data['place_northern_second']
-            place.place_easter_degree = form.cleaned_data['place_easter_degree']
-            place.place_easter_minute = form.cleaned_data['place_easter_minute']
-            place.place_easter_second = form.cleaned_data['place_easter_second']
             place.save()
         return redirect('fishing:place', district_id, water_id)
     else:
@@ -1933,25 +1930,16 @@ def place_renewal(request, district_id, water_id, place_id):
     place = get_object_or_404(Place, pk=place_id)
     if place.owner == request.user:
         if request.method == 'POST':
-            form = PlaceForm(request.POST)
+            form = PlaceForm(request.POST, instance=place)
             if form.is_valid():
-                place.place_locality = form.cleaned_data['place_locality']
-                place.place_northern_degree = form.cleaned_data['place_northern_degree']
-                place.place_northern_minute = form.cleaned_data['place_northern_minute']
-                place.place_northern_second = form.cleaned_data['place_northern_second']
-                place.place_easter_degree = form.cleaned_data['place_easter_degree']
-                place.place_easter_minute = form.cleaned_data['place_easter_minute']
-                place.place_easter_second = form.cleaned_data['place_easter_second']
+                place = form.save(commit=False)
+                place.owner = request.user
+                water = get_object_or_404(Water, pk=water_id)
+                place.water = water
                 place.save()
             return redirect('fishing:place', district_id, water_id)
         else:
-            form = PlaceForm(initial={'place_locality': place.place_locality,
-                                      'place_northern_degree': place.place_northern_degree,
-                                      'place_northern_minute': place.place_northern_minute,
-                                      'place_northern_second': place.place_northern_second,
-                                      'place_easter_degree': place.place_easter_degree,
-                                      'place_easter_minute': place.place_easter_minute,
-                                      'place_easter_second': place.place_easter_second})
+            form = PlaceForm(instance=place)
             return render(request,
                           template_renewal_add_path,
                           {'form': form,
@@ -1962,17 +1950,42 @@ def place_renewal(request, district_id, water_id, place_id):
     else:
         return redirect('fishing:place', district_id, water_id)
 
+
 @login_required
-def place_fishing_add(request, fishing_id):
-    pass
+def place_fishing_add(request, fishing_id, place_id):
+    place = get_object_or_404(Place, pk=place_id)
+    fishing = get_object_or_404(Fishing, pk=fishing_id)
+    if place.owner == request.user and fishing.owner == request.user:
+        try:
+            place_fishing = PlaceFishing.objects.get(fishing=fishing)
+        except PlaceFishing.DoesNotExist:
+            place_fishing = PlaceFishing()
+        place_fishing.owner = request.user
+        place_fishing.fishing = fishing
+        place_fishing.place = place
+        place_fishing.save()
+    return redirect('fishing:fishing_details', fishing_id)
+
 
 @login_required
 def place_fishing_remove(request, fishing_id, place_fishing_id):
-    pass
+    place_fishing = get_object_or_404(PlaceFishing, pk=place_fishing_id)
+    if place_fishing.owner == request.user:
+        place_fishing.delete()
+    return redirect('fishing:fishing_details', fishing_id)
+
+
 
 @login_required
-def place_fishing_renewal(request, fishing_id, place_fishing_id):
-    pass
+def place_fishing_select(request, fishing_id):
+    num_visits = visits(request)
+    place_list = Place.objects.filter(owner=request.user)
+    return render(request,
+                  template_select_path,
+                  {'place_list': place_list,
+                   'fishing_id': fishing_id,
+                   'num_visits': num_visits})
+
 
 @staff_member_required
 def priming_add(request):

@@ -254,7 +254,7 @@ class Fishing(models.Model):  # Рыбалки
         auto_now_add=False,
         verbose_name="Время начала")
     # Место проведения рыбалки
-    #PlaceFishing
+    # PlaceFishing
     # Погода
     weather = models.ForeignKey(
         'Weather',
@@ -825,14 +825,13 @@ class Pace(models.Model):  # Темп
         return self.pace_interval
 
 
-
 class Place(models.Model):  # Места
     """
     Содержит информацию о месте рыбалки
     """
     class Meta:
-        verbose_name = "Место рыбалки"
-        verbose_name_plural = "Места рыбалок"
+        verbose_name = "Место"
+        verbose_name_plural = "Места"
         ordering = ['place_locality', ]
     # Владелец записи
     owner = models.ForeignKey(
@@ -849,7 +848,7 @@ class Place(models.Model):  # Места
         max_length=50,
         verbose_name="Населенный пункт",
         help_text="Название ближайшего населенного пункта")
-    #Название места
+    # Название места
     place_name = models.CharField(
         max_length=50,
         verbose_name="Название места")
@@ -914,16 +913,25 @@ class Place(models.Model):  # Места
     def __str__(self):
         return self.place_locality
 
+
 class PlaceFishing(models.Model):
     class Meta:
-        verbose_name='Место рыбалки'
-        verbose_name_plural='Места рыбалки'
-    fishing=models.ForeignKey('Fishing',
-                               on_delete=models.PROTECT,
-                               verbose_name='Рыбалка')
-    place=models.ForeignKey('Place',
-                            on_delete=models.PROTECT,
-                            verbose_name='Место рыбалки')
+        verbose_name = 'Место рыбалки'
+        verbose_name_plural = 'Места рыбалки'
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи")
+    # Рыбалка
+    fishing = models.ForeignKey('Fishing',
+                                on_delete=models.PROTECT,
+                                verbose_name='Рыбалка')
+    # Место
+    place = models.ForeignKey('Place',
+                              on_delete=models.PROTECT,
+                              verbose_name='Место рыбалки')
+
 
 class Point(models.Model):  # Точки карт дна
     """

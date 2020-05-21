@@ -5,26 +5,20 @@
 {% if place_list %}
 <!-- Место рыбалки -->
 <ul>
-{% for place in place_list %}
-<li>
-<a href="">{{ place }}</a>
-</li>
-{% endfor %}
+    {% for place in place_list %}
+    <li>
+        {{place.water.district}} {{ place.water }} {{place.place_name}}<a href="{% url 'fishing:place_fishing_add' fishing_id place.id %}" class="btn">Выбрать</a>
+    </li>
+    {% endfor %}
 </ul>
-<p><strong>Погода:</strong> {{ weather }}</p>
-<p><strong>Облачность:</strong> {{ weather.overcast }}</p>
-<p><strong>Явления:</strong> {{ weather.weather_phenomena }}</p>
-<p><strong>Температура:</strong> {{ weather.weather_temperature }}</p>
-<p><strong>Давление:</strong> {{ weather.pressure }}</p>
-<p><strong>Направление ветра:</strong> {{ weather.direction_wind }}</p>
-<p><strong>Скорость ветра:</strong> {{ weather.wind_speed }}</p>
-<p><strong>Лунный день:</strong> {{ weather.lunar_day }}</p>
-<p>
 {% else %}
 <p>Мест еще не добавлено</p>
 {% endif %}
-    <a href="{% url 'fishing:weather_renewal' district_id water_id place_id weather.id %}" class="btn">Редактировать</a>
+<p>
+    {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
     <a onclick="back()" class="btn">Назад</a>
 </p>
+{% else %}
+Пусто
 {% endif %}
 {% endblock %}

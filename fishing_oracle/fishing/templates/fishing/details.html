@@ -55,11 +55,24 @@
 <p><strong>Дата проведения рыбалки:</strong> {{ fishing.date }}</p>
 <p><strong>Время начала рыбалки:</strong> {{ fishing.time }}</p>
 <p><strong>Место проведения рыбалки:</strong></p>
-<p><strong>Район: </strong>{{ fishing.place.water.district }}</p>
-<p><strong>Водоём: </strong>{{ fishing.place.water }}</p>
+
+{% if fishing.placefishing_set.get %}
+<p><strong>Район: </strong>{{ fishing.placefishing_set.get.place.water.district }}</p>
+<p><strong>Водоём: </strong>{{ fishing.placefishing_set.get.place.water }}</p>
 <p>
-    <strong>Ближайший населенный пункт: </strong>{{ fishing.place.place_locality}}
+    <strong>Ближайший населенный пункт: </strong>{{ fishing.placefishing_set.get.place.place_locality}}
 </p>
+<p>
+    <strong>Название места: </strong>{{ fishing.placefishing_set.get.place.place_name}}
+</p>
+<p>
+    <a href="{% url 'fishing:place_fishing_select' fishing.id %}" class="btn">Изменить место</a>
+    <a href="{% url 'fishing:place_fishing_remove' fishing.id fishing.placefishing_set.get.id %}" class="btn">Удалить место</a>
+</p>
+{% else %}
+<p>Место не указано
+    <a href="{% url 'fishing:place_fishing_select' fishing.id %}" class="btn">Добавить</a></p>
+{% endif %}
 <p><strong>Погода во время рыбалки:</strong></p>
 <p><strong>Облачность: </strong>{{ fishing.weather.overcast }}</p>
 <p><strong>Осадки: </strong>{{ fishing.weather.weather_phenomena}}</p>

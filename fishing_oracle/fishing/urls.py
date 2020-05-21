@@ -536,16 +536,16 @@ urlpatterns = [
     path('fishing/<int:fishing_id>/fishtrophy/<int:fish_trophy_id>/remove/',
          views.fish_trophy_remove,
          name='fish_trophy_remove'),
-    #Место рыбалки
-    #Добавление места рыбалки
-    path('fishing/<int:fishing_id>/placefishing/add/',
+    # Место рыбалки
+    # Добавление места рыбалки
+    path('fishing/<int:fishing_id>/placefishing/select/',
+         views.place_fishing_select,
+         name='place_fishing_select'),
+    # Добавление и изменение места рыбалки
+    path('fishing/<int:fishing_id>/placefishing/<int:place_id>/add/',
          views.place_fishing_add,
          name='place_fishing_add'),
-    #Редактирование маста рыбалки
-    path('fishing/<int:fishing_id>/placefishing/<int:place_fishing_id>/renewal/',
-         views.place_fishing_renewal,
-         name='place_fishing_renewal'),
-    #Удаление места рыбалки
+    # Удаление места рыбалки
     path('fishing/<int:fishing_id>/placefishing/<int:place_fishing_id>/remove/',
          views.place_fishing_remove,
          name='place_fishing_remove'),

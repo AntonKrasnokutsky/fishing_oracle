@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import Fishing
 from .models import Fish
 from .models import Place
+from .models import PlaceFishing
 from .models import BottomMap
 from .models import Point
 from .models import FishingPoint
@@ -33,6 +34,7 @@ from .models import Water
 admin.site.register(Fishing)
 admin.site.register(Fish)
 admin.site.register(Place)
+admin.site.register(PlaceFishing)
 admin.site.register(BottomMap)
 admin.site.register(Point)
 admin.site.register(FishingPoint)
