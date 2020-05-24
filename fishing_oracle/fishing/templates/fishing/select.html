@@ -18,7 +18,25 @@
     {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
     <a onclick="back()" class="btn">Назад</a>
 </p>
-{% else %}
-Пусто
 {% endif %}
+
+{% if tackle_list != None %}
+{% if tackle_list %}
+<!-- Снасти для рыбалки -->
+<ul>
+    {% for tackle in tackle_list %}
+    <li>
+        {{tackle}}<a href="{% url 'fishing:fishing_tackle_add' fishing_id tackle.id fishing_tackle_id %}" class="btn">Выбрать</a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Снастей еще не добавлено</p>
+{% endif %}
+<p>
+    {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
+    <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endif %}
+
 {% endblock %}

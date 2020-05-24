@@ -261,10 +261,7 @@ class Fishing(models.Model):  # Рыбалки
         on_delete=models.PROTECT,
         verbose_name="Погода")
     # Снасть
-    fishing_tackle = models.ForeignKey(
-        'FishingTackle',
-        on_delete=models.PROTECT,
-        verbose_name="Снасть")
+    # fishing_tackle
     # Монтаж
     fishing_montage = models.ForeignKey(
         'FishingMontage',
@@ -463,8 +460,7 @@ class FishingResult(models.Model):  # Результат рыбалки
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
-        verbose_name="Владелец записи"
-    )
+        verbose_name="Владелец записи")
     # оборот
     fishing = models.ForeignKey(
         'Fishing',
@@ -491,43 +487,24 @@ class FishingResult(models.Model):  # Результат рыбалки
                 'шт. ' + str(self.fish_weight) + 'кг.')
 
 
-class FishingTackle(models.Model):  # Снасти
-    """
-    Содержит информацию о снасти: донная, поплавочная и т.д.
-    """
+class FishingTackle(models.Model):  # Снасть использованная в рыбалке
     class Meta:
-        verbose_name = "Рыболовная снасть"
-        verbose_name_plural = "Рыболовные снасти"
-        ordering = ['fishing_tackle_manufacturer', 'fishing_tackle_name',
-                    'fishing_tackle_length', 'fishing_tackle_casting_weight', ]
+        verbose_name = ''
+        verbose_name_plural = ''
+        ordering = ['tackle', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
-    # Производитель снасти
-    fishing_tackle_manufacturer = models.CharField(
-        max_length=20,
-        blank=True,
-        verbose_name="Производитель")
-    # Инормация о используемой снасти
-    fishing_tackle_name = models.CharField(
-        max_length=30,
-        verbose_name="Название")
-    fishing_tackle_length = models.DecimalField(
-        max_digits=3,
-        decimal_places=1,
-        default=0,
-        verbose_name="Длина (м)")
-    fishing_tackle_casting_weight = models.PositiveIntegerField(
-        default=0,
-        blank=True,
-        verbose_name="Тест удилища (гр)")
-
-    def __str__(self):
-        return (self.fishing_tackle_manufacturer + ' ' + self.fishing_tackle_name +
-                ' ' + str(self.fishing_tackle_length) + ' ' +
-                str(self.fishing_tackle_casting_weight))
+    # Привязка к рыбалке
+    fishing = models.ForeignKey('Fishing',
+                                on_delete=models.PROTECT,
+                                verbose_name='Рыбалка')
+    # Привязка снасти
+    tackle = models.ForeignKey('Tackle',
+                               on_delete=models.PROTECT,
+                               verbose_name='Снасть')
 
 
 class FishingTrough(models.Model):  # Кормушки
@@ -914,7 +891,7 @@ class Place(models.Model):  # Места
         return self.place_locality
 
 
-class PlaceFishing(models.Model):
+class PlaceFishing(models.Model):  # Место рыбалки
     class Meta:
         verbose_name = 'Место рыбалки'
         verbose_name_plural = 'Места рыбалки'
@@ -1000,6 +977,45 @@ class Priming(models.Model):  # Грунт
 
     def __str__(self):
         return self.priming_name
+
+
+class Tackle(models.Model):  # Снасти
+    """
+    Содержит информацию о снасти: донная, поплавочная и т.д.
+    """
+    class Meta:
+        verbose_name = "Рыболовная снасть"
+        verbose_name_plural = "Рыболовные снасти"
+        ordering = ['tackle_manufacturer', 'tackle_name',
+                    'tackle_length', 'tackle_casting_weight', ]
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи")
+    # Производитель снасти
+    tackle_manufacturer = models.CharField(
+        max_length=20,
+        blank=True,
+        verbose_name="Производитель")
+    # Инормация о используемой снасти
+    tackle_name = models.CharField(
+        max_length=30,
+        verbose_name="Название")
+    tackle_length = models.DecimalField(
+        max_digits=3,
+        decimal_places=1,
+        default=0,
+        verbose_name="Длина (м)")
+    tackle_casting_weight = models.PositiveIntegerField(
+        default=0,
+        blank=True,
+        verbose_name="Тест удилища (гр)")
+
+    def __str__(self):
+        return (self.tackle_manufacturer + ' ' + self.tackle_name +
+                ' ' + str(self.tackle_length) + ' ' +
+                str(self.tackle_casting_weight))
 
 
 class Water(models.Model):  # Водоемы

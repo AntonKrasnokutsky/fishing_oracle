@@ -274,21 +274,21 @@ urlpatterns = [
          name='point_remove'),
     # Снасти
     # Список снастей
-    path('fishingtackle/',
-         views.fishing_tackle_list,
-         name='fishing_tackle'),
+    path('tackle/',
+         views.tackle_list,
+         name='tackle'),
     # Добавление снасти
-    path('fishingtackle/add/',
-         views.fishing_tackle_add,
-         name='fishing_tackle_add'),
+    path('tackle/add/',
+         views.tackle_add,
+         name='tackle_add'),
     # Редактирование снасти
-    path('fishingtackle/<int:fishing_tackle_id>/renewal/',
-         views.fishing_tackle_renewal,
-         name='fishing_tackle_renewal'),
+    path('tackle/<int:tackle_id>/renewal/',
+         views.tackle_renewal,
+         name='tackle_renewal'),
     # Удаление снасти
-    path('fishingtackle/<int:fishing_tackle_id>/remove/',
-         views.fishing_tackle_remove,
-         name='fishing_tackle_remove'),
+    path('tackle/<int:tackle_id>/remove/',
+         views.tackle_remove,
+         name='tackle_remove'),
     # Монтажи
     # Список монтажей
     path('fishingmontage/',
@@ -549,4 +549,21 @@ urlpatterns = [
     path('fishing/<int:fishing_id>/placefishing/<int:place_fishing_id>/remove/',
          views.place_fishing_remove,
          name='place_fishing_remove'),
+    # Снасть использованная в рыбалке
+    # Добавпить снасть в рыбалку
+    path('fishing/<int:fishing_id>/fishingtackle/<int:tackle_id>/add/<int:fishing_tackle_id>/',
+         views.fishing_tackle_add,
+         name='fishing_tackle_add'),
+    # Выбор снасти для рыбалки
+    path('fishing/<int:fishing_id>/fishingtackle/select/<int:fishing_tackle_id>/',
+         views.fishing_tackle_select,
+         name='fishing_tackle_select'),
+    # Изменить снасть из рыбалки
+    path('fishing/<int:fishing_id>/fishingtackle/<int:fishing_tackle_id>/renewal/',
+         views.fishing_tackle_renewal,
+         name='fishing_tackle_renewal'),
+    # Удалить снасть в рыбалке
+    path('fishing/<int:fishing_id>/fishingtackle/<int:fishing_tackle_id>/remove/',
+         views.fishing_tackle_remove,
+         name='fishing_tackle_remove'),
 ]

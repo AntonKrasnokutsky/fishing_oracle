@@ -18,8 +18,8 @@ from .forms import PaceForm
 from .models import District, Water, Place, FishingPoint, BottomMap, Point, Priming
 from .forms import DistrictForm, WaterForm, PlaceForm, FishingPointForm, BottomMapForm, PointForm, PrimingForm
 
-from .models import FishingTackle, FishingMontage, ModelTroughName, ModelTrough
-from .forms import FishingTackleForm, FishingMontageForm, ModelTroughNameForm, ModelTroughForm
+from .models import Tackle, FishingMontage, ModelTroughName, ModelTrough
+from .forms import TackleForm, FishingMontageForm, ModelTroughNameForm, ModelTroughForm
 
 from .models import FishingTrough
 from .forms import FishingTroughForm
@@ -33,7 +33,7 @@ from .forms import AromaBaseForm, AromaForm
 from .models import Crochet, FishingLeash
 from .forms import CrochetForm, FishingLeashForm
 
-from .models import Fishing, FishingResult, FishTrophy
+from .models import Fishing, FishingResult, FishTrophy, FishingTackle
 from .forms import FishingForm, FishingResultForm, FishTrophyForm
 
 from .models import PlaceFishing
@@ -482,9 +482,9 @@ def district_add(request):
     if request.method == 'POST':
         form = DistrictForm(request.POST)
         if form.is_valid():
-            district.district_name = form.cleaned_data['district_name']
+            district = form.save(commit=False)
             district.save()
-        return redirect('fishing:districts')
+        return redirect('fishing:water', district.id)
     else:
         form = DistrictForm()
     return render(request, template_renewal_add_path,
@@ -524,19 +524,17 @@ def district_renewal(request, district_id):
     num_visits = visits(request)
     district = get_object_or_404(District, pk=district_id)
     if request.method == 'POST':
-        form = DistrictForm(request.POST)
+        form = DistrictForm(request.POST, instance=district)
         if form.is_valid():
-            district.district_name = form.cleaned_data['district_name']
+            district = form.save(commit=False)
             district.save()
         return redirect('fishing:districts')
     else:
-        form = DistrictForm(
-            initial={'district_name': district.district_name, })
-    num_visits = visits(request)
-    return render(request, template_renewal_add_path,
-                  {'form': form,
-                   'district': district,
-                   'num_visits': num_visits})
+        form = DistrictForm(instance=district)
+        return render(request, template_renewal_add_path,
+                      {'form': form,
+                       'district': district,
+                       'num_visits': num_visits})
 
 
 @staff_member_required
@@ -1188,71 +1186,46 @@ def fishing_result_renewal(request, fishing_id, fishing_result_id):
 
 
 @login_required
-def fishing_tackle_add(request):
-    num_visits = visits(request)
-    if request.method == 'POST':
+def fishing_tackle_add(request, fishing_id, tackle_id, fishing_tackle_id):
+    fishing = get_object_or_404(Fishing, pk=fishing_id)
+    tackle = get_object_or_404(Tackle, pk=tackle_id)
+    if fishing_tackle_id != 0:
+        fishing_tackle = get_object_or_404(FishingTackle, pk=fishing_tackle_id)
+        fishing_tackle.fishing = fishing
+        fishing_tackle.tackle = tackle
+        fishing_tackle.save()
+    else:
         fishing_tackle = FishingTackle()
-        form = FishingTackleForm(request.POST)
-        if form.is_valid():
-            fishing_tackle.owner = request.user
-            fishing_tackle.fishing_tackle_manufacturer = form.cleaned_data[
-                'fishing_tackle_manufacturer']
-            fishing_tackle.fishing_tackle_name = form.cleaned_data['fishing_tackle_name']
-            fishing_tackle.fishing_tackle_length = form.cleaned_data['fishing_tackle_length']
-            fishing_tackle.fishing_tackle_casting_weight = form.cleaned_data[
-                'fishing_tackle_casting_weight']
-            fishing_tackle.save()
-        return redirect('fishing:fishing_tackle')
-    else:
-        form = FishingTackleForm()
-        return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
+        fishing_tackle.owner = request.user
+        fishing_tackle.fishing = fishing
+        fishing_tackle.tackle = tackle
+        fishing_tackle.save()
+    return redirect('fishing:fishing_details', fishing_id)
 
 
 @login_required
-def fishing_tackle_list(request):
-    num_visits = visits(request)
-    if request.user.is_staff:
-        fishing_tackle_list = FishingTackle.objects.all()
-    else:
-        fishing_tackle_list = FishingTackle.objects.filter(owner=request.user)
-    return render(request,
-                  template_list_path,
-                  {'fishing_tackle_list': fishing_tackle_list,
-                   'num_visits': num_visits})
-
-
-@login_required
-def fishing_tackle_remove(request, fishing_tackle_id):
+def fishing_tackle_remove(request, fishing_id, fishing_tackle_id):
     fishing_tackle = get_object_or_404(FishingTackle, pk=fishing_tackle_id)
     if fishing_tackle.owner == request.user:
         fishing_tackle.delete()
-    return redirect('fishing:fishing_tackle')
+    return redirect('fishing:fishing_details', fishing_id)
 
 
 @login_required
-def fishing_tackle_renewal(request, fishing_tackle_id):
+def fishing_tackle_renewal(request, fishing_id, fishing_tackle_id):
+    pass
+
+
+@login_required
+def fishing_tackle_select(request, fishing_id, fishing_tackle_id):
     num_visits = visits(request)
-    fishing_tackle = get_object_or_404(FishingTackle, pk=fishing_tackle_id)
-    if request.method == 'POST':
-        form = FishingTackleForm(request.POST)
-        if form.is_valid():
-            fishing_tackle.fishing_tackle_manufacturer = form.cleaned_data[
-                'fishing_tackle_manufacturer']
-            fishing_tackle.fishing_tackle_name = form.cleaned_data['fishing_tackle_name']
-            fishing_tackle.fishing_tackle_length = form.cleaned_data['fishing_tackle_length']
-            fishing_tackle.fishing_tackle_casting_weight = form.cleaned_data[
-                'fishing_tackle_casting_weight']
-            fishing_tackle.save()
-        return redirect('fishing:fishing_tackle')
-    else:
-        form = FishingTackleForm(instance=fishing_tackle)
-        return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
+    tackle_list = Tackle.objects.filter(owner=request.user)
+    return render(request,
+                  template_select_path,
+                  {'tackle_list': tackle_list,
+                   'fishing_id': fishing_id,
+                   'fishing_tackle_id': fishing_tackle_id,
+                   'num_visits': num_visits})
 
 
 @login_required
@@ -1975,7 +1948,6 @@ def place_fishing_remove(request, fishing_id, place_fishing_id):
     return redirect('fishing:fishing_details', fishing_id)
 
 
-
 @login_required
 def place_fishing_select(request, fishing_id):
     num_visits = visits(request)
@@ -2056,6 +2028,68 @@ def priming_renewal(request, priming_id):
                        'num_visits': num_visits})
 
 
+@login_required
+def tackle_add(request):
+    num_visits = visits(request)
+    if request.method == 'POST':
+        tackle = Tackle()
+        form = TackleForm(request.POST)
+        if form.is_valid():
+            tackle = form.save(commit=False)
+            tackle.owner = request.user
+            tackle.save()
+        return redirect('fishing:tackle')
+    else:
+        form = TackleForm()
+        return render(request,
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
+
+
+@login_required
+def tackle_list(request):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        tackle_list = Tackle.objects.all()
+    else:
+        tackle_list = Tackle.objects.filter(owner=request.user)
+    return render(request,
+                  template_list_path,
+                  {'tackle_list': tackle_list,
+                   'num_visits': num_visits})
+
+
+@login_required
+def tackle_remove(request, tackle_id):
+    tackle = get_object_or_404(Tackle, pk=tackle_id)
+    if tackle.owner == request.user:
+        tackle.delete()
+    return redirect('fishing:tackle')
+
+
+@login_required
+def tackle_renewal(request, tackle_id):
+    num_visits = visits(request)
+    tackle = get_object_or_404(Tackle, pk=tackle_id)
+    if tackle.owner == request.user:
+        if request.method == 'POST':
+            form = TackleForm(request.POST, instance=tackle)
+            if form.is_valid():
+                tackle = form.save(commit=False)
+                tackle.owner = request.user
+                tackle.save()
+            return redirect('fishing:tackle')
+        else:
+            form = TackleForm(instance=tackle)
+            return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:tackle')
+
+
 @staff_member_required
 def water_add(request, district_id):
     num_visits = visits(request)
@@ -2063,11 +2097,11 @@ def water_add(request, district_id):
     if request.method == 'POST':
         form = WaterForm(request.POST)
         if form.is_valid():
-            water.water_name = form.cleaned_data['water_name']
+            water = form.save(commit=False)
             district = get_object_or_404(District, pk=district_id)
             water.district = district
             water.save()
-        return redirect('fishing:water', district_id)
+        return redirect('fishing:place', district.id, water.id)
     else:
         form = WaterForm()
         return render(request,
@@ -2103,17 +2137,15 @@ def water_renewal(request, district_id, water_id):
     num_visits = visits(request)
     water = get_object_or_404(Water, pk=water_id)
     if request.method == 'POST':
-        form = WaterForm(request.POST)
+        form = WaterForm(request.POST, instance=water)
         if form.is_valid():
-            water.water_name = form.cleaned_data['water_name']
+            water = form.save(commit=False)
             district = get_object_or_404(District, pk=district_id)
             water.district = district
             water.save()
         return redirect('fishing:water', district_id)
     else:
-        form = WaterForm(
-            initial={'district': water.district,
-                     'water_name': water.water_name, })
+        form = WaterForm(instance=water)
         return render(request,
                       template_renewal_add_path,
                       {'form': form,

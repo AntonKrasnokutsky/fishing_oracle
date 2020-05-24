@@ -306,16 +306,16 @@
 </p>
 {% endif %}
 
-{% if fishing_tackle_list != None %}
+{% if tackle_list != None %}
 <!-- Снасти -->
-{% if fishing_tackle_list %}
+{% if tackle_list %}
 <ul>
-  {% for fishing_tackle in fishing_tackle_list %}
+  {% for tackle in tackle_list %}
   <li>
-    {{fishing_tackle}}
-    {% if fishing_tackle.owner == user %}
-    <a href="{% url 'fishing:fishing_tackle_renewal' fishing_tackle.id %}" class="btn">Редактировать</a>
-    <a href="{% url 'fishing:fishing_tackle_remove' fishing_tackle.id %}" class="btn">Удалить</a>
+    {{tackle}}
+    {% if tackle.owner == user %}
+    <a href="{% url 'fishing:tackle_renewal' tackle.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:tackle_remove' tackle.id %}" class="btn">Удалить</a>
     {% endif %}
   </li>
   {% endfor %}
@@ -324,7 +324,7 @@
 <p>База рыб пуста</p>
 {% endif %}
 <p>
-  <a href="{% url 'fishing:fishing_tackle_add' %}" class="btn">Добавить</a>
+  <a href="{% url 'fishing:tackle_add' %}" class="btn">Добавить</a>
   <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}

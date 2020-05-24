@@ -71,7 +71,7 @@
 </p>
 {% else %}
 <p>Место не указано
-    <a href="{% url 'fishing:place_fishing_select' fishing.id %}" class="btn">Добавить</a></p>
+    <a href="{% url 'fishing:place_fishing_select' fishing.id %}" class="btn">Указать место</a></p>
 {% endif %}
 <p><strong>Погода во время рыбалки:</strong></p>
 <p><strong>Облачность: </strong>{{ fishing.weather.overcast }}</p>
@@ -83,17 +83,25 @@
 <p><strong>Направление ветра: </strong>{{ fishing.weather.direction_wind}}</p>
 <p><strong>Скорость ветра: </strong>{{ fishing.weather.wind_speed}}</p>
 <p><strong>Лунный день: </strong>{{ fishing.weather.lunar_day}}</p>
+
 <p><strong>Снасть: </strong></p>
+{% for fishing_tackle in fishing.fishingtackle_set.all %}
 <p>
     <strong>Производитель: </strong>
-    {{fishing.fishing_tackle.fishing_tackle_manufacturer}}
+    {{fishing_tackle.tackle.tackle_manufacturer}}
 </p>
-<p><strong>Модель: </strong>{{fishing.fishing_tackle.fishing_tackle_name}}</p>
-<p><strong>Длина: </strong>{{fishing.fishing_tackle.fishing_tackle_length}}</p>
+<p><strong>Модель: </strong>{{fishing_tackle.tackle.tackle_name}}</p>
+<p><strong>Длина: </strong>{{fishing_tackle.tackle.tackle_length}}</p>
 <p>
     <strong>Тест удилища: </strong>
-    {{fishing.fishing_tackle.fishing_tackle_casting_weight}}
+    {{fishing_tackle.tackle.tackle_casting_weight}}
+    <a href="{% url 'fishing:fishing_tackle_select' fishing.id fishing_tackle.id %}" class="btn">Изменить снасть</a>
+    <a href="{% url 'fishing:fishing_tackle_remove' fishing.id fishing_tackle.id %}" class="btn">Убрать снасть</a>
 </p>
+{% endfor %}
+
+<a href="{% url 'fishing:fishing_tackle_select' fishing.id 0 %}" class="btn">Добавить снасть</a>
+
 <p><strong>Монтаж: </strong>{{ fishing.fishing_montage }}</p>
 <p><strong>Кормушка: </strong></p>
 <p>

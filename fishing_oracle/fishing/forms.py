@@ -4,7 +4,7 @@ from .models import Priming
 from .models import FeedCapacity
 from .models import Pace
 from .models import FishingPoint
-from .models import FishingTackle, FishingMontage, ModelTroughName, ModelTrough
+from .models import Tackle, FishingMontage, ModelTroughName, ModelTrough
 from .models import FishingTrough
 from .models import BottomMap, Point
 from .models import Weather, Overcast, WeatherPhenomena
@@ -66,7 +66,7 @@ class FishingForm(forms.ModelForm):
     class Meta:
         model = Fishing
         fields = ['date', 'time', 'weather',
-                  'fishing_tackle', 'fishing_montage',
+                  'fishing_montage',
                   'fishing_trough', 'fishing_lure',
                   'aroma', 'fishing_leash', 'crochet',
                   'nozzle', 'pace', ]
@@ -104,13 +104,6 @@ class FishingResultForm(forms.ModelForm):
     class Meta:
         model = FishingResult
         fields = ['fish', 'number_of_fish', 'fish_weight', ]
-
-
-class FishingTackleForm(forms.ModelForm):
-    class Meta:
-        model = FishingTackle
-        fields = ['fishing_tackle_manufacturer', 'fishing_tackle_name',
-                  'fishing_tackle_length', 'fishing_tackle_casting_weight', ]
 
 
 class FishingTroughForm(forms.ModelForm):
@@ -197,6 +190,13 @@ class PrimingForm(forms.ModelForm):
     class Meta:
         model = Priming
         fields = ('priming_name',)
+
+
+class TackleForm(forms.ModelForm):
+    class Meta:
+        model = Tackle
+        fields = ['tackle_manufacturer', 'tackle_name',
+                  'tackle_length', 'tackle_casting_weight', ]
 
 
 class WaterForm(forms.ModelForm):
