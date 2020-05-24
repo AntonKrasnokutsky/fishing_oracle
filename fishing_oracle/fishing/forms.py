@@ -4,14 +4,14 @@ from .models import Priming
 from .models import FeedCapacity
 from .models import Pace
 from .models import FishingPoint
-from .models import Tackle, FishingMontage, ModelTroughName, ModelTrough
-from .models import FishingTrough
+from .models import Tackle, Montage, ModelTroughName, ModelTrough
+from .models import Trough
 from .models import BottomMap, Point
 from .models import Weather, Overcast, WeatherPhenomena
 from .models import NozzleState, Nozzle
 from .models import Lure, LureBase, FishingLure
 from .models import AromaBase, Aroma
-from .models import Crochet, FishingLeash
+from .models import Crochet, Leash
 from .models import Fishing, FishingResult, FishTrophy
 from django import forms
 
@@ -65,18 +65,7 @@ class FishForm(forms.ModelForm):
 class FishingForm(forms.ModelForm):
     class Meta:
         model = Fishing
-        fields = ['date', 'time', 'weather',
-                  'fishing_montage',
-                  'fishing_trough', 'fishing_lure',
-                  'aroma', 'fishing_leash', 'crochet',
-                  'nozzle', 'pace', ]
-
-
-class FishingLeashForm(forms.ModelForm):
-    class Meta:
-        model = FishingLeash
-        fields = ['fishing_leash_material',
-                  'fishing_leash_diameter', 'fishing_leash_length', ]
+        fields = ['date', 'time', ]
 
 
 class FishingLureForm(forms.ModelForm):
@@ -85,10 +74,10 @@ class FishingLureForm(forms.ModelForm):
         fields = ('nozzle', 'nozzle_state',)
 
 
-class FishingMontageForm(forms.ModelForm):
+class MontageForm(forms.ModelForm):
     class Meta:
-        model = FishingMontage
-        fields = ('fishing_montage_name', 'fishing_montage_sliding', )
+        model = Montage
+        fields = ('montage_name', 'montage_sliding', )
 
 
 class FishingPointForm(forms.ModelForm):
@@ -106,17 +95,17 @@ class FishingResultForm(forms.ModelForm):
         fields = ['fish', 'number_of_fish', 'fish_weight', ]
 
 
-class FishingTroughForm(forms.ModelForm):
-    class Meta:
-        model = FishingTrough
-        fields = ('fishing_trough_manufacturer', 'model_trough',
-                  'feed_capacity', 'fishing_trough_weight',)
-
-
 class FishTrophyForm(forms.ModelForm):
     class Meta:
         model = FishTrophy
         fields = ['fish', 'fish_trophy_weight', ]
+
+
+class LeashForm(forms.ModelForm):
+    class Meta:
+        model = Leash
+        fields = ['leash_material',
+                  'leash_diameter', 'leash_length', ]
 
 
 class LureForm(forms.ModelForm):
@@ -197,6 +186,13 @@ class TackleForm(forms.ModelForm):
         model = Tackle
         fields = ['tackle_manufacturer', 'tackle_name',
                   'tackle_length', 'tackle_casting_weight', ]
+
+
+class TroughForm(forms.ModelForm):
+    class Meta:
+        model = Trough
+        fields = ('trough_manufacturer', 'model_trough',
+                  'feed_capacity', 'trough_weight',)
 
 
 class WaterForm(forms.ModelForm):

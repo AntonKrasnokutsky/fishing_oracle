@@ -7,7 +7,7 @@
 <p><strong>Маркерная карта:</strong> {{ bottom_map }}</p>
 <p><strong>N° (-90 до 90):</strong> {{ bottom_map.bottom_map_northern_degree }}</p>
 <p><strong>N' (0 до 59):</strong> {{ bottom_map.bottom_map_northern_minute }}</p>
-<p><strong>N" (0 до 59.999):</strong> {{ bottom_map.bottom_map_northern_second }}</p>
+<p><strong>N" (0 до 59.999):</strong> {{ bottom_map.bottom_map_northern_second}}</p>
 <p><strong>E° (-90 до 90):</strong> {{ bottom_map.bottom_map_easter_degree }}</p>
 <p><strong>E' (0 до 59):</strong> {{ bottom_map.bottom_map_easter_minute }}</p>
 <p><strong>E" (0 до 59.999):</strong> {{ bottom_map.bottom_map_easter_second }}</p>
@@ -57,13 +57,13 @@
 <p><strong>Место проведения рыбалки:</strong></p>
 
 {% if fishing.placefishing_set.get %}
-<p><strong>Район: </strong>{{ fishing.placefishing_set.get.place.water.district }}</p>
+<p><strong>Район: </strong>{{ fishing.placefishing_set.get.place.water.district}}</p>
 <p><strong>Водоём: </strong>{{ fishing.placefishing_set.get.place.water }}</p>
 <p>
-    <strong>Ближайший населенный пункт: </strong>{{ fishing.placefishing_set.get.place.place_locality}}
+    <strong>Ближайший населенный пункт: </strong>{{ fishing.placefishing_set.get.place.place_locality }}
 </p>
 <p>
-    <strong>Название места: </strong>{{ fishing.placefishing_set.get.place.place_name}}
+    <strong>Название места: </strong>{{fishing.placefishing_set.get.place.place_name}}
 </p>
 <p>
     <a href="{% url 'fishing:place_fishing_select' fishing.id %}" class="btn">Изменить место</a>
@@ -77,46 +77,91 @@
 <p><strong>Облачность: </strong>{{ fishing.weather.overcast }}</p>
 <p><strong>Осадки: </strong>{{ fishing.weather.weather_phenomena}}</p>
 <p>
-    <strong>Температруа воздуха: </strong>{{ fishing.weather.weather_temperature}}
+    <strong>Температруа воздуха: </strong>{{fishing.weather.weather_temperature}}
 </p>
 <p><strong>Давление: </strong>{{ fishing.weather.pressure}}</p>
 <p><strong>Направление ветра: </strong>{{ fishing.weather.direction_wind}}</p>
 <p><strong>Скорость ветра: </strong>{{ fishing.weather.wind_speed}}</p>
 <p><strong>Лунный день: </strong>{{ fishing.weather.lunar_day}}</p>
+<table>
+    <tr>
+        <th>Снасть:</th>
+        <th>Монтаж:</th>
+        <th>Кормушка:</th>
+        <th>Поводок:</th>
+        <th>Крючок:</th>
+    </tr>
+    <tr>
+        <td>
+            {% for fishing_tackle in fishing.fishingtackle_set.all %}
+            <p><strong>Производитель: </strong> {{fishing_tackle.tackle.tackle_manufacturer}}</p>
+            <p><strong>Модель: </strong>{{fishing_tackle.tackle.tackle_name}}</p>
+            <p><strong>Длина: </strong>{{fishing_tackle.tackle.tackle_length}}</p>
+            <p><strong>Тест удилища: </strong>{{fishing_tackle.tackle.tackle_casting_weight}}</p>
+            <p>
+                <a href="{% url 'fishing:fishing_tackle_select' fishing.id fishing_tackle.id %}" class="btn">Изменить снасть</a>
+                <a href="{% url 'fishing:fishing_tackle_remove' fishing.id fishing_tackle.id %}" class="btn">Убрать снасть</a>
+            </p>
+            {% endfor %}
+        </td>
+        <td>
+            {% for fishing_montage in fishing.fishingmontage_set.all %}
+            <p>{{ fishing_montage.montage }}</p>
+            <p>
+                <a href="{% url 'fishing:fishing_montage_select' fishing.id fishing_montage.id %}" class="btn">Изменить монтаж</a>
+                <a href="{% url 'fishing:fishing_montage_remove' fishing.id fishing_montage.id %}" class="btn">Убрать монтаж</a>
+            </p>
+            {% endfor %}
+        </td>
+        <td>
+            {% for fishing_trough in fishing.fishingtrough_set.all %}
+            <p>
+                <strong>Производитель :</strong>
+                {{fishing_trough.trough.trough_manufacturer}}
+            </p>
+            <p>
+                <strong>Модель :</strong>
+                {{fishing_trough.trough.model_trough.model_trough_name}}
+            </p>
+            {% if fishing_trough.trough.model_trough.model_trough_plastic %}
+            <p><strong>Материал: </strong>Пластик</p>
+            {% endif %}
 
-<p><strong>Снасть: </strong></p>
-{% for fishing_tackle in fishing.fishingtackle_set.all %}
-<p>
-    <strong>Производитель: </strong>
-    {{fishing_tackle.tackle.tackle_manufacturer}}
-</p>
-<p><strong>Модель: </strong>{{fishing_tackle.tackle.tackle_name}}</p>
-<p><strong>Длина: </strong>{{fishing_tackle.tackle.tackle_length}}</p>
-<p>
-    <strong>Тест удилища: </strong>
-    {{fishing_tackle.tackle.tackle_casting_weight}}
-    <a href="{% url 'fishing:fishing_tackle_select' fishing.id fishing_tackle.id %}" class="btn">Изменить снасть</a>
-    <a href="{% url 'fishing:fishing_tackle_remove' fishing.id fishing_tackle.id %}" class="btn">Убрать снасть</a>
-</p>
-{% endfor %}
+            {% if fishing_trough.trough.model_trough.model_trough_lugs %}
+            <p><strong>Грунтозацепы: </strong>да</p>
+            {% endif %}
+            <a href="{% url 'fishing:fishing_trough_select' fishing.id fishing_trough.id %}" class="btn">Изменить кормушку</a>
+            <a href="{% url 'fishing:fishing_trough_remove' fishing.id fishing_trough.id %}" class="btn">Убрать кормушку</a>
+            {% endfor %}
+        </td>
+        <td>
+            {% for fishing_leash in fishing.fishingleash_set.all %}
+            <p><strong>Поводочный материал: </strong>{{fishing_leash.leash.leash_material}}</p>
+            <p><strong>Диаметр поводка: </strong>{{fishing_leash.leash.leash_diameter}}</p>
+            <p><strong>Длина поводка: </strong>{{fishing_leash.leash.leash_length}}</p>
+            <a href="{% url 'fishing:fishing_leash_select' fishing.id fishing_leash.id %}" class="btn">Изменить поводок</a>
+            <a href="{% url 'fishing:fishing_leash_remove' fishing.id fishing_leash.id %}" class="btn">Убрать поводок</a>
+            {% endfor %}
+        </td>
+        <td>
+            {% for fishing_crochet in fishing.fishingcrochet_set.all %}
+            <p><strong>Производитель: </strong> {{ fishing_crochet.crochet.crochet_manufacturer }}</p>
+            <p><strong>Модель: </strong>{{ fishing_crochet.crochet.crochet_model }}</p>
+            <p><strong>Размер: </strong>{{ fishing_crochet.crochet.crochet_size }}</p>
+            <a href="{% url 'fishing:fishing_crochet_select' fishing.id fishing_crochet.id %}" class="btn">Изменить крючок</a>
+            <a href="{% url 'fishing:fishing_crochet_remove' fishing.id fishing_crochet.id %}" class="btn">Убрать крючок</a>
+            {% endfor %}
+        </td>
+    </tr>
+    <tr>
+        <td><a href="{% url 'fishing:fishing_tackle_select' fishing.id 0 %}" class="btn">Добавить снасть</a></td>
+        <td><a href="{% url 'fishing:fishing_montage_select' fishing.id 0 %}" class="btn">Указать монтаж</a></td>
+        <td><a href="{% url 'fishing:fishing_trough_select' fishing.id 0 %}" class="btn">Указать кормушку</a></td>
+        <td><a href="{% url 'fishing:fishing_leash_select' fishing.id 0 %}" class="btn">Указать поводок</a></td>
+        <td><a href="{% url 'fishing:fishing_crochet_select' fishing.id 0 %}" class="btn">Указать крючок</a></td>
+    </tr>
 
-<a href="{% url 'fishing:fishing_tackle_select' fishing.id 0 %}" class="btn">Добавить снасть</a>
-
-<p><strong>Монтаж: </strong>{{ fishing.fishing_montage }}</p>
-<p><strong>Кормушка: </strong></p>
-<p>
-    <strong>Производитель :</strong>
-    {{fishing.fishing_trough.fishing_trough_manufacturer}}
-</p>
-<p>
-    <strong>Модель :</strong>
-    {{fishing.fishing_trough.model_trough.model_trough_name}}
-</p>
-{% if fishing.fishing_trough.model_trough.model_trough_plastic %}
-<p><strong>Материал: </strong>Пластик</p>
-{% endif %} {% if fishing.fishing_trough.model_trough.model_trough_lugs %}
-<p><strong>Грунтозацепы: </strong>да</p>
-{% endif %}
+</table>
 
 <p><strong>Прикормочная смесь: </strong></p>
 {% for lure in fishing.fishing_lure.lure_set.all %}
@@ -131,30 +176,12 @@
 <p><strong>Производитель: </strong>{{ fishing.aroma.aroma_manufacturer }}</p>
 <p><strong>Название: </strong>{{ fishing.aroma.aroma_name }}</p>
 
-<p><strong>Поводок:</strong></p>
-<p>
-    <strong>Поводочный материал: </strong>
-    {{fishing.fishing_leash.fishing_leash_material}}
-</p>
-<p>
-    <strong>Диаметр поводка: </strong>
-    {{fishing.fishing_leash.fishing_leash_diameter}}
-</p>
-<p>
-    <strong>Длина поводка: </strong>
-    {{fishing.fishing_leash.fishing_leash_length}}
-</p>
-<p><strong>Крючок:</strong></p>
-<p>
-    <strong>Производитель: </strong> {{ fishing.crochet.crochet_manufacturer }}
-</p>
-<p><strong>Модель: </strong>{{ fishing.crochet.crochet_model }}</p>
-<p><strong>Размер: </strong>{{ fishing.crochet.crochet_size }}</p>
 <p><strong>Наживка: </strong></p>
 
 {% if fishing.nozzle.bait %}
 <p><strong>Наживка: </strong>{{ fishing.nozzle.nozzle_name }}</p>
-{% endif %} {% if fishing.nozzle.bait != True %}
+{% endif %}
+{% if fishing.nozzle.bait != True %}
 <p><strong>Производитель: </strong>{{ fishing.nozzle.nozzle_manufacturer }}</p>
 <p><strong>Насадка: </strong>{{ fishing.nozzle.nozzle_name }}</p>
 <p><strong>Диаметр насадки: </strong>{{ fishing.nozzle.nozzel_diameter }}</p>
@@ -238,8 +265,8 @@
 </p>
 {% endfor %}
 <p>
-    <a href=" {% url 'fishing:lure_add' fishing_lure.id %}" class="btn">Добавить прикорм</a>
-    <a href=" {% url 'fishing:aroma_add' fishing_lure.id %}" class="btn">Добавить арому</a>
+    <a href="{% url 'fishing:lure_add' fishing_lure.id %}" class="btn">Добавить прикорм</a>
+    <a href="{% url 'fishing:aroma_add' fishing_lure.id %}" class="btn">Добавить арому</a>
     <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}

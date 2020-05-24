@@ -291,21 +291,21 @@ urlpatterns = [
          name='tackle_remove'),
     # Монтажи
     # Список монтажей
-    path('fishingmontage/',
-         views.fishing_montage_list,
-         name='fishing_montage'),
+    path('montage/',
+         views.montage_list,
+         name='montage'),
     # Добавить монтаж
-    path('fishingmontage/add/',
-         views.fishing_montage_add,
-         name='fishing_montage_add'),
+    path('montage/add/',
+         views.montage_add,
+         name='montage_add'),
     # Изменить монтаж
-    path('fishingmontage/<int:fishing_montage_id>/renewal/',
-         views.fishing_montage_renewal,
-         name='fishing_montage_renewal'),
+    path('montage/<int:montage_id>/renewal/',
+         views.montage_renewal,
+         name='montage_renewal'),
     # Удалить монтаж
-    path('fishingmontage/<int:fishing_montage_id>/remove/',
-         views.fishing_montage_remove,
-         name='fishing_montage_remove'),
+    path('montage/<int:montage_id>/remove/',
+         views.montage_remove,
+         name='montage_remove'),
     # Названия моделей кормушек
     # Список названий моделей кормушек
     path('modeltroughname/',
@@ -342,21 +342,21 @@ urlpatterns = [
          name='model_trough_remove'),
     # Кормушки
     # Список кормушек
-    path('fishingtrough/',
-         views.fishing_trough_list,
-         name='fishing_trough'),
+    path('trough/',
+         views.trough_list,
+         name='trough'),
     # Добавление кормушки
-    path('fishingtrough/add/',
-         views.fishing_trough_add,
-         name='fishing_trough_add'),
+    path('trough/add/',
+         views.trough_add,
+         name='trough_add'),
     # Редактирование кормушки
-    path('fishingtrough/<int:fishing_trough_id>/renewal/',
-         views.fishing_trough_renewal,
-         name='fishing_trough_renewal'),
+    path('trough/<int:trough_id>/renewal/',
+         views.trough_renewal,
+         name='trough_renewal'),
     # Удаление кормушки
-    path('fishingtrough/<int:fishing_trough_id>/remove/',
-         views.fishing_trough_remove,
-         name='fishing_trough_remove'),
+    path('trough/<int:trough_id>/remove/',
+         views.trough_remove,
+         name='trough_remove'),
     # Состояние наживки
     # Список состояний наживки
     path('nozzlestate/',
@@ -495,21 +495,21 @@ urlpatterns = [
          name='crochet_remove'),
     # Поводки
     # Список поводков
-    path('fishingleash/',
-         views.fishing_leash_list,
-         name='fishing_leash'),
+    path('leash/',
+         views.leash_list,
+         name='leash'),
     # Добавление поводка
-    path('fishingleash/add/',
-         views.fishing_leash_add,
-         name='fishing_leash_add'),
+    path('leash/add/',
+         views.leash_add,
+         name='leash_add'),
     # Редактирование поводка
-    path('fishingleash/<int:fishing_leash_id>/renewal/',
-         views.fishing_leash_renewal,
-         name='fishing_leash_renewal'),
+    path('leash/<int:leash_id>/renewal/',
+         views.leash_renewal,
+         name='leash_renewal'),
     # Удаление поводка
-    path('fishingleash/<int:fishing_leash_id>/remove/',
-         views.fishing_leash_remove,
-         name='fishing_leash_remove'),
+    path('leash/<int:leash_id>/remove/',
+         views.leash_remove,
+         name='leash_remove'),
     # Результат рыбалки
     # Добавление результата рыбалки
     path('fishing/<int:fishing_id>/fishingresult/add/',
@@ -558,12 +558,60 @@ urlpatterns = [
     path('fishing/<int:fishing_id>/fishingtackle/select/<int:fishing_tackle_id>/',
          views.fishing_tackle_select,
          name='fishing_tackle_select'),
-    # Изменить снасть из рыбалки
-    path('fishing/<int:fishing_id>/fishingtackle/<int:fishing_tackle_id>/renewal/',
-         views.fishing_tackle_renewal,
-         name='fishing_tackle_renewal'),
     # Удалить снасть в рыбалке
     path('fishing/<int:fishing_id>/fishingtackle/<int:fishing_tackle_id>/remove/',
          views.fishing_tackle_remove,
          name='fishing_tackle_remove'),
+    # Монтаж использованный в рыбалке
+    # Добавить/изменить мотаж в использованный в рыбалке
+    path('fishing/<int:fishing_id>/fishingmontage/<int:montage_id>/add/<int:fishing_montage_id>/',
+         views.fishing_montage_add,
+         name='fishing_montage_add'),
+    # Удалить монтаж использованнй в рыбалке
+    path('fishing/<int:fishing_id>/fishingmontage/<int:fishing_montage_id>/remove/',
+         views.fishing_montage_remove,
+         name='fishing_montage_remove'),
+    # Выбрать монтаж использованный в рыбалке
+    path('fishing/<int:fishing_id>/fishingmontage/select/<int:fishing_montage_id>/',
+         views.fishing_montage_select,
+         name='fishing_montage_select'),
+    #Кормушки использованные в рыбалке
+    #Добавить кормушку использованную в рыбалке
+    path('fishing/<int:fishing_id>/fishingtrough/<int:trough_id>/add/<int:fishing_trough_id>/',
+         views.fishing_trough_add,
+         name='fishing_trough_add'),
+    #Удалить кормушку использованную в рыбалке
+    path('fishing/<int:fishing_id>/fishingtrough/<int:fishing_trough_id>/remove/',
+         views.fishing_trough_remove,
+         name='fishing_trough_remove'),
+    #Выбрать кормушку использованную в рыбалке
+    path('fishing/<int:fishing_id>/fishingtrough/select/<int:fishing_trough_id>/',
+         views.fishing_trough_select,
+         name='fishing_trough_select'),
+    #Поводки использованные в рыбалке
+    #Добавление поводка использованного в рыбалке
+    path('fishing/<int:fishing_id>/fishingleash/<int:leash_id>/add/<int:fishing_leash_id>/',
+         views.fishing_leash_add,
+         name='fishing_leash_add'),
+    #Удаление поводка использованного в рыбалке
+    path('fishing/<int:fishing_id>/fishingleash/<int:fishing_leash_id>/remove/',
+         views.fishing_leash_remove,
+         name='fishing_leash_remove'),
+    #Выбор поводка использованного в рыбалке
+    path('fishing/<int:fishing_id>/fishingleash/select/<int:fishing_leash_id>/',
+         views.fishing_leash_select,
+         name='fishing_leash_select'),
+    #Крючки использованные в рыбалке
+    #Добавить крючок в рыбалку
+    path('fishing/<int:fishing_id>/fishingcrochet/<int:crochet_id>/add/<int:fishing_crochet_id>/',
+         views.fishing_crochet_add,
+         name='fishing_crochet_add'),
+    #Удалть крючек из рыбалки
+    path('fishing/<int:fishing_id>/fishingcrochet/<int:fishing_crochet_id>/remove/',
+         views.fishing_crochet_remove,
+         name='fishing_crochet_remove'),
+    #Изменить крючок в рыбалке
+    path('fishing/<int:fishing_id>/fishingcrochet/select/<int:fishing_crochet_id>/',
+         views.fishing_crochet_select,
+         name='fishing_crochet_select'),
 ]

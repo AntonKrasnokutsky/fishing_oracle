@@ -18,11 +18,11 @@ from .forms import PaceForm
 from .models import District, Water, Place, FishingPoint, BottomMap, Point, Priming
 from .forms import DistrictForm, WaterForm, PlaceForm, FishingPointForm, BottomMapForm, PointForm, PrimingForm
 
-from .models import Tackle, FishingMontage, ModelTroughName, ModelTrough
-from .forms import TackleForm, FishingMontageForm, ModelTroughNameForm, ModelTroughForm
+from .models import Tackle, Montage, ModelTroughName, ModelTrough
+from .forms import TackleForm, MontageForm, ModelTroughNameForm, ModelTroughForm
 
-from .models import FishingTrough
-from .forms import FishingTroughForm
+from .models import Trough, FishingTrough
+from .forms import TroughForm
 
 from .models import NozzleState, Nozzle, Lure, LureBase, FishingLure
 from .forms import NozzleStateForm, NozzleForm, LureForm, LureBaseForm, FishingLureForm
@@ -30,13 +30,13 @@ from .forms import NozzleStateForm, NozzleForm, LureForm, LureBaseForm, FishingL
 from .models import AromaBase, Aroma
 from .forms import AromaBaseForm, AromaForm
 
-from .models import Crochet, FishingLeash
-from .forms import CrochetForm, FishingLeashForm
+from .models import Crochet, Leash, FishingLeash, FishingCrochet
+from .forms import CrochetForm, LeashForm
 
 from .models import Fishing, FishingResult, FishTrophy, FishingTackle
 from .forms import FishingForm, FishingResultForm, FishTrophyForm
 
-from .models import PlaceFishing
+from .models import PlaceFishing, FishingMontage
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -810,67 +810,75 @@ def fishing_renewal(request, fishing_id):
 
 
 @login_required
-def fishing_leash_add(request):
-    num_visits = visits(request)
-    if request.method == 'POST':
-        fishing_leash = FishingLeash()
-        form = FishingLeashForm(request.POST)
-        if form.is_valid():
-            fishing_leash = form.save(commit=False)
-            fishing_leash.owner = request.user
-            fishing_leash.save()
-        return redirect('fishing:fishing_leash')
+def fishing_crochet_add(request, fishing_id, crochet_id, fishing_crochet_id):
+    crochet=get_object_or_404(Crochet, pk=crochet_id)
+    if fishing_crochet_id != 0:
+        fishing_crochet=get_object_or_404(FishingCrochet, pk=fishing_crochet_id)
+        fishing_crochet.crochet=crochet
+        fishing_crochet.save()
     else:
-        form = FishingLeashForm()
-        return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
+        fishing=get_object_or_404(Fishing, pk=fishing_id)
+        fishing_crochet=FishingCrochet()
+        fishing_crochet.owner=request.user
+        fishing_crochet.fishing=fishing
+        fishing_crochet.crochet=crochet
+        fishing_crochet.save()
+    return redirect('fishing:fishing_details', fishing_id)
 
 
 @login_required
-def fishing_leash_list(request):
-    num_visits = visits(request)
-    if request.user.is_staff:
-        fishing_leash_list = FishingLeash.objects.all()
-    else:
-        fishing_leash_list = FishingLeash.objects.filter(owner=request.user)
+def fishing_crochet_remove(request, fishing_id, fishing_crochet_id):
+    fishing_crochet=get_object_or_404(FishingCrochet, pk=fishing_crochet_id)
+    if fishing_crochet.owner==request.user:
+        fishing_crochet.delete()
+    return redirect('fishing:fishing_details', fishing_id)
+
+@login_required
+def fishing_crochet_select(request, fishing_id, fishing_crochet_id):
+    num_visits=visits(request)
+    crochet_list=Crochet.objects.filter(owner=request.user)
     return render(request,
-                  template_list_path,
-                  {'fishing_leash_list': fishing_leash_list,
-                   'num_visits': num_visits})
-
-
-@login_required
-def fishing_leash_remove(request, fishing_leash_id):
-    fishing_leash = get_object_or_404(FishingLeash, pk=fishing_leash_id)
-    if fishing_leash.owner == request.user:
-        fishing_leash.delete()
-    return redirect('fishing:fishing_leash')
-
+                  template_select_path,
+                  {'crochet_list':crochet_list,
+                   'fishing_id':fishing_id,
+                   'fishing_crochet_id':fishing_crochet_id,
+                   'num_visits':num_visits})
 
 @login_required
-def fishing_leash_renewal(request, fishing_leash_id):
-    num_visits = visits(request)
-    fishing_leash = get_object_or_404(FishingLeash, pk=fishing_leash_id)
-    if fishing_leash.owner == request.user:
-        if request.method == 'POST':
-            form = FishingLeashForm(request.POST, instance=fishing_leash)
-            if form.is_valid():
-                fishing_leash = form.save(commit=False)
-                fishing_leash.owner = request.user
-                fishing_leash.save()
-            return redirect('fishing:fishing_leash')
-        else:
-            form = FishingLeashForm(initial={'fishing_leash_material': fishing_leash.fishing_leash_material,
-                                             'fishing_leash_diameter': fishing_leash.fishing_leash_diameter,
-                                             'fishing_leash_length': fishing_leash.fishing_leash_length})
-            return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
+def fishing_leash_add(request, fishing_id, leash_id, fishing_leash_id):
+    leash=get_object_or_404(Leash, pk=leash_id)
+    if fishing_leash_id != 0:
+        fishing_leash=get_object_or_404(FishingLeash, pk=fishing_leash_id)
+        fishing_leash.leash=leash
+        fishing_leash.save()
     else:
-        return redirect('fishing:fishing_leash')
+        fishing=get_object_or_404(Fishing, pk=fishing_id)
+        fishing_leash=FishingLeash()
+        fishing_leash.owner=request.user
+        fishing_leash.fishing=fishing
+        fishing_leash.leash=leash
+        fishing_leash.save()
+    return redirect('fishing:fishing_details', fishing_id)
+
+
+@login_required
+def fishing_leash_remove(request, fishing_id, fishing_leash_id):
+    fishing_leash=get_object_or_404(FishingLeash, pk=fishing_leash_id)
+    if fishing_leash.owner==request.user:
+        fishing_leash.delete()
+    return redirect('fishing:fishing_details', fishing_id)
+
+
+@login_required
+def fishing_leash_select(request, fishing_id, fishing_leash_id):
+    num_visits=visits(request)
+    leash_list=Leash.objects.filter(owner=request.user)
+    return render(request,
+                  template_select_path,
+                  {'leash_list':leash_list,
+                   'fishing_id':fishing_id,
+                   'fishing_leash_id':fishing_leash_id,
+                   'num_visits':num_visits})
 
 
 @login_required
@@ -961,67 +969,41 @@ def fishing_lure_renewal(request, fishing_lure_id):
 
 
 @login_required
-def fishing_montage_add(request):
-    num_visits = visits(request)
-    fishing_montage = FishingMontage()
-    if request.method == 'POST':
-        form = FishingMontageForm(request.POST)
-        if form.is_valid():
-            fishing_montage.owner = request.user
-            fishing_montage.fishing_montage_name = form.cleaned_data['fishing_montage_name']
-            fishing_montage.fishing_montage_sliding = form.cleaned_data['fishing_montage_sliding']
-            fishing_montage.save()
-            return redirect('fishing:fishing_montage')
+def fishing_montage_add(request, fishing_id, montage_id, fishing_montage_id):
+    fishing = get_object_or_404(Fishing, pk=fishing_id)
+    montage = get_object_or_404(Montage, pk=montage_id)
+    if fishing_montage_id != 0:
+        fishing_montage = get_object_or_404(FishingMontage, pk=fishing_montage_id)
+        fishing_montage.fishing = fishing
+        fishing_montage.montage = montage
+        fishing_montage.save()
     else:
-        form = FishingMontageForm()
-        return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
+        fishing_montage = FishingMontage()
+        fishing_montage.owner = request.user
+        fishing_montage.fishing = fishing
+        fishing_montage.montage = montage
+        fishing_montage.save()
+    return redirect('fishing:fishing_details', fishing_id)
 
 
 @login_required
-def fishing_montage_list(request):
-    num_visits = visits(request)
-    if request.user.is_staff:
-        fishing_montage_list = FishingMontage.objects.all()
-    else:
-        fishing_montage_list = FishingMontage.objects.filter(
-            owner=request.user)
-    return render(request,
-                  template_list_path,
-                  {'fishing_montage_list': fishing_montage_list,
-                   'num_visits': num_visits})
-
-
-@login_required
-def fishing_montage_remove(request, fishing_montage_id):
+def fishing_montage_remove(request, fishing_id, fishing_montage_id):
     fishing_montage = get_object_or_404(FishingMontage, pk=fishing_montage_id)
     if fishing_montage.owner == request.user:
         fishing_montage.delete()
-    return redirect('fishing:fishing_montage')
+    return redirect('fishing:fishing_details', fishing_id)
 
 
 @login_required
-def fishing_montage_renewal(request, fishing_montage_id):
+def fishing_montage_select(request, fishing_id, fishing_montage_id):
     num_visits = visits(request)
-    fishing_montage = get_object_or_404(FishingMontage, pk=fishing_montage_id)
-    if request.method == 'POST':
-        form = FishingMontageForm(request.POST)
-        if form.is_valid():
-            fishing_montage.fishing_montage_name = form.cleaned_data['fishing_montage_name']
-            fishing_montage.fishing_montage_sliding = form.cleaned_data['fishing_montage_sliding']
-            fishing_montage.save()
-            return redirect('fishing:fishing_montage')
-    else:
-        form = FishingMontageForm(
-            initial={'fishing_montage_name': fishing_montage.fishing_montage_name,
-                     'fishing_montage_sliding': fishing_montage.fishing_montage_sliding}
-        )
-        return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
+    montage_list = Montage.objects.filter(owner=request.user)
+    return render(request,
+                  template_select_path,
+                  {'montage_list': montage_list,
+                   'fishing_id': fishing_id,
+                   'fishing_montage_id': fishing_montage_id,
+                   'num_visits': num_visits})
 
 
 @login_required
@@ -1212,11 +1194,6 @@ def fishing_tackle_remove(request, fishing_id, fishing_tackle_id):
 
 
 @login_required
-def fishing_tackle_renewal(request, fishing_id, fishing_tackle_id):
-    pass
-
-
-@login_required
 def fishing_tackle_select(request, fishing_id, fishing_tackle_id):
     num_visits = visits(request)
     tackle_list = Tackle.objects.filter(owner=request.user)
@@ -1229,30 +1206,53 @@ def fishing_tackle_select(request, fishing_id, fishing_tackle_id):
 
 
 @login_required
-def fishing_trough_add(request):
+def fishing_trough_add(request, fishing_id, trough_id, fishing_trough_id):
+    fishing=get_object_or_404(Fishing, pk=fishing_id)
+    trough=get_object_or_404(Trough, pk=trough_id)
+    if fishing_trough_id != 0:
+        fishing_trough=get_object_or_404(FishingTrough, pk=fishing_trough_id)
+        fishing_trough.trough=trough
+        fishing_trough.save()
+    else:
+        fishing_trough=FishingTrough()
+        fishing_trough.owner=request.user
+        fishing_trough.fishing=fishing
+        fishing_trough.trough=trough
+        fishing_trough.save()
+    return redirect('fishing:fishing_details', fishing_id)
+
+@login_required
+def fishing_trough_remove(request, fishing_id, fishing_trough_id):
+    fishing_trough=get_object_or_404(FishingTrough, pk=fishing_trough_id)
+    if fishing_trough.owner == request.user:
+        fishing_trough.delete()
+    return redirect('fishing:fishing_details', fishing_id)
+
+@login_required
+def fishing_trough_select(request, fishing_id, fishing_trough_id):
+    num_visits=visits(request)
+    trough_list=Trough.objects.filter(owner=request.user)
+    return render(request,
+                  template_select_path,
+                  {'trough_list':trough_list,
+                   'fishing_id':fishing_id,
+                   'fishing_trough_id':fishing_trough_id,
+                   'num_visits':num_visits,})
+
+
+@login_required
+def leash_add(request):
     num_visits = visits(request)
     if request.method == 'POST':
-        fishing_trough = FishingTrough()
-        form = FishingTroughForm(request.POST)
+        leash = FishingLeash()
+        form = LeashForm(request.POST)
         if form.is_valid():
-            fishing_trough.owner = request.user
-            fishing_trough.fishing_trough_manufacturer = form.cleaned_data[
-                'fishing_trough_manufacturer']
-            model_trough_select = form.cleaned_data['model_trough']
-            model_trough_name = ModelTroughName.objects.filter(
-                model_trough_name=model_trough_select)
-            model_trough = ModelTrough.objects.filter(
-                model_trough_name=model_trough_name[0])
-            fishing_trough.model_trough = model_trough[0]
-            feed_capacity_select = form.cleaned_data['feed_capacity']
-            feed_capacity = FeedCapacity.objects.filter(
-                feed_capacity_name=feed_capacity_select)
-            fishing_trough.feed_capacity = feed_capacity[0]
-            fishing_trough.fishing_trough_weight = form.cleaned_data['fishing_trough_weight']
-            fishing_trough.save()
-        return redirect('fishing:fishing_trough')
+            leash = form.save(commit=False)
+            leash.owner = request.user
+            leash.save()
+        return redirect('fishing:leash')
     else:
-        form = FishingTroughForm()
+        form = LeashForm()
         return render(request,
                       template_renewal_add_path,
                       {'form': form,
@@ -1260,62 +1260,46 @@ def fishing_trough_add(request):
 
 
 @login_required
-def fishing_trough_list(request):
+def leash_list(request):
     num_visits = visits(request)
     if request.user.is_staff:
-        fishing_trough_list = FishingTrough.objects.all()
+        leash_list = Leash.objects.all()
     else:
-        fishing_trough_list = FishingTrough.objects.filter(owner=request.user)
+        leash_list = Leash.objects.filter(owner=request.user)
     return render(request,
                   template_list_path,
-                  {'fishing_trough_list': fishing_trough_list,
+                  {'leash_list': leash_list,
                    'num_visits': num_visits})
 
 
 @login_required
-def fishing_trough_remove(request, fishing_trough_id):
-    fishing_trough = get_object_or_404(FishingTrough, pk=fishing_trough_id)
-    if fishing_trough.owner == request.user:
-        fishing_trough.delete()
-    return redirect('fishing:fishing_trough')
+def leash_remove(request, leash_id):
+    leash = get_object_or_404(Leash, pk=leash_id)
+    if leash.owner == request.user:
+        leash.delete()
+    return redirect('fishing:leash')
 
 
 @login_required
-def fishing_trough_renewal(request, fishing_trough_id):
+def leash_renewal(request, leash_id):
     num_visits = visits(request)
-    fishing_trough = get_object_or_404(FishingTrough, pk=fishing_trough_id)
-    if fishing_trough.owner == request.user:
+    leash = get_object_or_404(Leash, pk=leash_id)
+    if leash.owner == request.user:
         if request.method == 'POST':
-            form = FishingTroughForm(request.POST)
+            form = LeashForm(request.POST, instance=leash)
             if form.is_valid():
-                fishing_trough.fishing_trough_manufacturer = form.cleaned_data[
-                    'fishing_trough_manufacturer']
-                model_trough_select = form.cleaned_data['model_trough']
-                model_trough_name = ModelTroughName.objects.filter(
-                    model_trough_name=model_trough_select)
-                model_trough = ModelTrough.objects.filter(
-                    model_trough_name=model_trough_name[0])
-                fishing_trough.model_trough = model_trough[0]
-                feed_capacity_select = form.cleaned_data['feed_capacity']
-                feed_capacity = FeedCapacity.objects.filter(
-                    feed_capacity_name=feed_capacity_select)
-                fishing_trough.feed_capacity = feed_capacity[0]
-                fishing_trough.fishing_trough_weight = form.cleaned_data['fishing_trough_weight']
-                fishing_trough.save()
-            return redirect('fishing:fishing_trough')
+                leash = form.save(commit=False)
+                leash.owner = request.user
+                leash.save()
+            return redirect('fishing:leash')
         else:
-            form = FishingTroughForm(
-                initial={'fishing_trough_manufacturer': fishing_trough.fishing_trough_manufacturer,
-                         'model_trough': fishing_trough.model_trough,
-                         'feed_capacity': fishing_trough.feed_capacity,
-                         'fishing_trough_weight': fishing_trough.fishing_trough_weight}
-            )
+            form = LeashForm(instance=leash)
             return render(request,
                           template_renewal_add_path,
                           {'form': form,
                            'num_visits': num_visits})
     else:
-        return redirect('fishing:fishing_trough')
+        return redirect('fishing:leash')
 
 
 @login_required
@@ -1561,6 +1545,69 @@ def model_trough_name_renewal(request, model_trough_name_id):
                       template_renewal_add_path,
                       {'form': form,
                        'num_visits': num_visits})
+
+
+@login_required
+def montage_add(request):
+    num_visits = visits(request)
+    if request.method == 'POST':
+        montage = Montage()
+        form = MontageForm(request.POST)
+        if form.is_valid():
+            montage = form.save(commit=False)
+            montage.owner = request.user
+            montage.save()
+            return redirect('fishing:montage')
+    else:
+        form = MontageForm()
+        return render(request,
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
+
+
+@login_required
+def montage_list(request):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        montage_list = Montage.objects.all()
+    else:
+        montage_list = Montage.objects.filter(
+            owner=request.user)
+    return render(request,
+                  template_list_path,
+                  {'montage_list': montage_list,
+                   'num_visits': num_visits})
+
+
+@login_required
+def montage_remove(request, montage_id):
+    montage = get_object_or_404(Montage, pk=montage_id)
+    if montage.owner == request.user:
+        montage.delete()
+    return redirect('fishing:montage')
+
+
+@login_required
+def montage_renewal(request, montage_id):
+    num_visits = visits(request)
+    montage = get_object_or_404(Montage, pk=montage_id)
+    if montage.owner == request.user:
+        if request.method == 'POST':
+            form = MontageForm(request.POST, instance=montage)
+            if form.is_valid():
+                montage = form.save(commit=False)
+                montage.owner = request.user
+                montage.save()
+                return redirect('fishing:montage')
+        else:
+            form = MontageForm(instance=montage)
+            return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:montage')
 
 
 @login_required
@@ -2088,6 +2135,68 @@ def tackle_renewal(request, tackle_id):
                            'num_visits': num_visits})
     else:
         return redirect('fishing:tackle')
+
+
+@login_required
+def trough_add(request):
+    num_visits = visits(request)
+    if request.method == 'POST':
+        trough = Trough()
+        form = TroughForm(request.POST)
+        if form.is_valid():
+            trough=form.save(commit=False)
+            trough.owner = request.user
+            trough.save()
+        return redirect('fishing:trough')
+    else:
+        form = TroughForm()
+        return render(request,
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
+
+
+@login_required
+def trough_list(request):
+    num_visits = visits(request)
+    if request.user.is_staff:
+        trough_list = Trough.objects.all()
+    else:
+        trough_list = Trough.objects.filter(owner=request.user)
+    return render(request,
+                  template_list_path,
+                  {'trough_list': trough_list,
+                   'num_visits': num_visits})
+
+
+@login_required
+def trough_remove(request, trough_id):
+    trough = get_object_or_404(Trough, pk=trough_id)
+    if trough.owner == request.user:
+        trough.delete()
+    return redirect('fishing:trough')
+
+
+@login_required
+def trough_renewal(request, trough_id):
+    num_visits = visits(request)
+    trough = get_object_or_404(Trough, pk=trough_id)
+    if trough.owner == request.user:
+        if request.method == 'POST':
+            form = TroughForm(request.POST, instance=trough)
+            if form.is_valid():
+                trough=form.save(commit=False)
+                trough.owner=request.user
+                trough.save()
+            return redirect('fishing:trough')
+        else:
+            form = TroughForm(instance=trough)
+            return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
+    else:
+        return redirect('fishing:trough')
 
 
 @staff_member_required

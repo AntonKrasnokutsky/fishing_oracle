@@ -256,92 +256,76 @@ class Fishing(models.Model):  # Рыбалки
     # Место проведения рыбалки
     # PlaceFishing
     # Погода
-    weather = models.ForeignKey(
-        'Weather',
-        on_delete=models.PROTECT,
-        verbose_name="Погода")
+    #weather
     # Снасть
     # fishing_tackle
     # Монтаж
-    fishing_montage = models.ForeignKey(
-        'FishingMontage',
-        on_delete=models.PROTECT,
-        verbose_name="Монтаж")
+    #fishing_montage
     # Используемая кормушка
-    fishing_trough = models.ForeignKey(
-        'FishingTrough',
-        on_delete=models.PROTECT,
-        verbose_name="Кормушка")
+    #fishing_trough
     # Прикормочная смесь
-    fishing_lure = models.ForeignKey(
-        'FishingLure',
-        on_delete=models.PROTECT,
-        verbose_name="Прикормочная смесь")
+    #fishing_lure
     # Арома
-    aroma = models.ForeignKey(
-        'Aroma',
-        on_delete=models.PROTECT,
-        verbose_name="Арома")
+    # В прикормочной смеси
     # Поводок
-    fishing_leash = models.ForeignKey(
-        'FishingLeash',
-        on_delete=models.PROTECT,
-        verbose_name='Поводок')
+    #fishing_leash
     # Крючек
-    crochet = models.ForeignKey(
-        'Crochet',
-        on_delete=models.PROTECT,
-        verbose_name="Крючек")
+    #crochet
     # Наживка/насадка
-    nozzle = models.ForeignKey(
-        'Nozzle',
-        on_delete=models.PROTECT,
-        verbose_name="Наживка/насадка")
+    #nozzle
     # Темп
-    pace = models.ForeignKey(
-        'Pace',
-        on_delete=models.PROTECT,
-        verbose_name="Темп")
+    #pace
     # Результат рыбалки
     # Трофей
 
     def __str__(self):
         return str(self.date) + ' ' + str(self.time)
 
+class FishingCrochet(models.Model): #Крючки использованные в рыбалке
+    """
+    Содержит информациб о крючках использованных в рыбалке
+    """
+    class Meta:
+        verbose_name=''
+        verbose_name_plural=''
+        ordering=['crochet']
+    #Владелец записи
+    owner=models.ForeignKey(CustomUser,
+                            models.SET_NULL,
+                            blank=True,
+                            null=True,
+                            verbose_name='Владелец записи')
+    #Привязка к рыбалке
+    fishing=models.ForeignKey('Fishing',
+                              on_delete=models.PROTECT,
+                              verbose_name='Рыбалка')
+    #Привязка крючка
+    crochet=models.ForeignKey('Crochet',
+                              on_delete=models.PROTECT,
+                              verbose_name='Крючок')
 
-class FishingLeash(models.Model):  # Поводки
+
+class FishingLeash(models.Model):  # Поводки использованные в рыбалке
     """
     Содержит информацию о поводках
     """
     class Meta:
-        verbose_name = "Поводок"
-        verbose_name_plural = "Поводки"
-        ordering = ['fishing_leash_material', 'fishing_leash_diameter',
-                    'fishing_leash_length', ]
+        verbose_name = "Поводок использованный в рыбалке"
+        verbose_name_plural = "Поводки использованные в рыбалке"
+        ordering = ['fishing', 'leash',]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
-        verbose_name="Владелец записи"
-    )
-    # Поводочный материал
-    fishing_leash_material = models.CharField(
-        max_length=20,
-        verbose_name="Поводочный материал")
-    # Диаметр поводочного материала
-    fishing_leash_diameter = models.DecimalField(
-        max_digits=4,
-        decimal_places=2,
-        default=0,
-        verbose_name="Диамет поводочного материла")
-    # Длина поводка
-    fishing_leash_length = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Длина поводка")
-
-    def __str__(self):
-        return (self.fishing_leash_material + ' ' + str(self.fishing_leash_diameter) +
-                ' ' + str(self.fishing_leash_length) + ' см.')
+        verbose_name="Владелец записи")
+    # Рыбалка
+    fishing = models.ForeignKey('Fishing',
+                                on_delete=models.PROTECT,
+                                verbose_name='Рыбалка')
+    # Поводок
+    leash = models.ForeignKey('Leash',
+                              on_delete=models.PROTECT,
+                              verbose_name='Поводок')
 
 
 class FishingLure(models.Model):  # Прикормочный состав
@@ -373,32 +357,28 @@ class FishingLure(models.Model):  # Прикормочный состав
         verbose_name="Состояние наживки")
 
 
-class FishingMontage(models.Model):  # Монтажи
+class FishingMontage(models.Model):  # Монтажи в рыбалке
     """
     Содержит в себе варианты монтажей с вариантом выбора
     скользящего
     """
     class Meta:
-        verbose_name = "Монтаж"
-        verbose_name_plural = "Монтажи"
-        ordering = ['fishing_montage_name', ]
+        verbose_name = "Монтаж на рыбалке"
+        verbose_name_plural = "Монтажи на рыбалке"
+        ordering = ['fishing', 'montage',]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
-    # Вариант монтажа
-    fishing_montage_name = models.CharField(
-        max_length=15,
-        verbose_name="Монтаж")
-    # Скользащий да или нет
-    fishing_montage_sliding = models.BooleanField(
-        default=False,
-        verbose_name="Скользящий монтаж")
-
-    def __str__(self):
-        return (self.fishing_montage_name + ' ' +
-                ('скользящий' if self.fishing_montage_sliding else ''))
+    # Привязка к рыбалке
+    fishing = models.ForeignKey('Fishing',
+                                on_delete=models.PROTECT,
+                                verbose_name='Рыбалка')
+    # Привязка монтажа
+    montage = models.ForeignKey('Montage',
+                                on_delete=models.PROTECT,
+                                verbose_name="Монтаж")
 
 
 class FishingPoint(models.Model):  # Точки ловли
@@ -507,44 +487,28 @@ class FishingTackle(models.Model):  # Снасть использованная 
                                verbose_name='Снасть')
 
 
-class FishingTrough(models.Model):  # Кормушки
+class FishingTrough(models.Model):  # Кормушки использованные в рыбалке
     """
-    Содержит информацию о кормушках
+    Содержит информацию о кормушках исользованных в рыбалке
     """
     class Meta:
         verbose_name = "Рыболовная кормушка"
         verbose_name_plural = "Рыболовные кормушки"
-        ordering = ['fishing_trough_manufacturer', 'model_trough',
-                    'fishing_trough_weight', 'feed_capacity', ]
+        ordering = ['fishing', 'trough',]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
-    # Производитель кормушки
-    fishing_trough_manufacturer = models.CharField(
-        max_length=50,
-        blank=True,
-        verbose_name="Поизводитель")
-    # Связь с таблицей модели кормушки
-    model_trough = models.ForeignKey(
-        'ModelTrough',
+    # Привязка к рыбалке
+    fishing = models.ForeignKey('Fishing',
+                                on_delete=models.PROTECT,
+                                verbose_name='Рыбалка')
+    # Привязка к кормушке
+    trough = models.ForeignKey(
+        'Trough',
         on_delete=models.PROTECT,
-        verbose_name="Модель кормушки")
-    # Связь с таблицей кормоемкости
-    feed_capacity = models.ForeignKey(
-        'FeedCapacity',
-        on_delete=models.PROTECT,
-        verbose_name="Кормоёмкость")
-    # Вес кормушки
-    fishing_trough_weight = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Вес кормушки")
-
-    def __str__(self):
-        return (self.fishing_trough_manufacturer + ': ' + str(self.feed_capacity) +
-                ' ' + str(self.model_trough) + ' ' +
-                str(self.fishing_trough_weight) + 'гр.')
+        verbose_name="Кормушка")
 
 
 class FishTrophy(models.Model):  # Трофей рыбалки
@@ -581,6 +545,41 @@ class FishTrophy(models.Model):  # Трофей рыбалки
 
     def __str__(self):
         return 'Трофей: ' + str(self.fish) + ' ' + str(self.fish_trophy_weight) + 'кг.'
+
+
+class Leash(models.Model):  # Поводки
+    """
+    Содержит информацию о поводках
+    """
+    class Meta:
+        verbose_name = "Поводок"
+        verbose_name_plural = "Поводки"
+        ordering = ['leash_material', 'leash_diameter',
+                    'leash_length', ]
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи"
+    )
+    # Поводочный материал
+    leash_material = models.CharField(
+        max_length=20,
+        verbose_name="Поводочный материал")
+    # Диаметр поводочного материала
+    leash_diameter = models.DecimalField(
+        max_digits=4,
+        decimal_places=2,
+        default=0,
+        verbose_name="Диамет поводочного материла")
+    # Длина поводка
+    leash_length = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Длина поводка")
+
+    def __str__(self):
+        return (self.leash_material + ' ' + str(self.leash_diameter) +
+                ' ' + str(self.leash_length) + ' см.')
 
 
 class Lure(models.Model):  # Смесь прикорма
@@ -698,6 +697,33 @@ class ModelTroughName(models.Model):  # Название моделей корм
     def __str__(self):
         return self.model_trough_name
 
+
+class Montage(models.Model):  # Монтажи
+    """
+    Содержит в себе варианты монтажей с вариантом выбора
+    скользящего
+    """
+    class Meta:
+        verbose_name = "Монтаж"
+        verbose_name_plural = "Монтажи"
+        ordering = ['montage_name', ]
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи")
+    # Вариант монтажа
+    montage_name = models.CharField(
+        max_length=15,
+        verbose_name="Монтаж")
+    # Скользащий да или нет
+    montage_sliding = models.BooleanField(
+        default=False,
+        verbose_name="Скользящий монтаж")
+
+    def __str__(self):
+        return (self.montage_name + ' ' +
+                ('скользящий' if self.montage_sliding else ''))
 
 class Nozzle(models.Model):  # Насдаки и наживки
     """
@@ -1016,6 +1042,46 @@ class Tackle(models.Model):  # Снасти
         return (self.tackle_manufacturer + ' ' + self.tackle_name +
                 ' ' + str(self.tackle_length) + ' ' +
                 str(self.tackle_casting_weight))
+
+
+class Trough(models.Model):  # Кормушки
+    """
+    Содержит информацию о кормушках
+    """
+    class Meta:
+        verbose_name = "Рыболовная кормушка"
+        verbose_name_plural = "Рыболовные кормушки"
+        ordering = ['trough_manufacturer', 'model_trough',
+                    'trough_weight', 'feed_capacity', ]
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи")
+    # Производитель кормушки
+    trough_manufacturer = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name="Поизводитель")
+    # Связь с таблицей модели кормушки
+    model_trough = models.ForeignKey(
+        'ModelTrough',
+        on_delete=models.PROTECT,
+        verbose_name="Модель кормушки")
+    # Связь с таблицей кормоемкости
+    feed_capacity = models.ForeignKey(
+        'FeedCapacity',
+        on_delete=models.PROTECT,
+        verbose_name="Кормоёмкость")
+    # Вес кормушки
+    trough_weight = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Вес кормушки")
+
+    def __str__(self):
+        return (self.trough_manufacturer + ': ' + str(self.feed_capacity) +
+                ' ' + str(self.model_trough) + ' ' +
+                str(self.trough_weight) + 'гр.')
 
 
 class Water(models.Model):  # Водоемы

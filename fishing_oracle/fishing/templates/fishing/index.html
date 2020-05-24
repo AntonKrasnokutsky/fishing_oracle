@@ -5,17 +5,17 @@
     <li><a href="{% url 'fishing:feed_capacity' %}">Кормоёмкость</a></li>
     <li><a href="{% url 'fishing:pace' %}">Темп</a></li>
     <li><a href="{% url 'fishing:tackle' %}">Снасти</a></li>
-    <li><a href="{% url 'fishing:fishing_montage' %}">Монтажи</a></li>
+    <li><a href="{% url 'fishing:montage' %}">Монтажи</a></li>
     <li><a href="{% url 'fishing:model_trough_name' %}">Название моделей кормушек</a></li>
     <li><a href="{% url 'fishing:model_trough' %}">Врианты моделей кормушек</a></li>
-    <li><a href="{% url 'fishing:fishing_trough' %}">Кормушки</a></li>
+    <li><a href="{% url 'fishing:trough' %}">Кормушки</a></li>
     <li><a href="{% url 'fishing:nozzle_state' %}">Состояния наживки</a></li>
     <li><a href="{% url 'fishing:nozzle' %}">Наживка</a></li>
     <li><a href="{% url 'fishing:fishing_lure' %}">Прикормочные смеси</a></li>
     <li><a href="{% url 'fishing:lure_base' %}">Прикормы</a></li>
     <li><a href="{% url 'fishing:aroma_base' %}">Аромы</a></li>
     <li><a href="{% url 'fishing:crochet' %}">Крючки</a></li>
-    <li><a href="{% url 'fishing:fishing_leash' %}">Поводки</a></li>
+    <li><a href="{% url 'fishing:leash' %}">Поводки</a></li>
     {% endif %}
     <li><a href="{% url 'fishing:fish' %}">Рыба</a></li>
     {% if user.is_staff %}

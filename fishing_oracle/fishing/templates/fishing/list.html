@@ -204,29 +204,6 @@
 <a onclick="back()" class="btn">Назад</a>
 {% endif %}
 
-{% if fishing_leash_list != None %}
-<!-- Поводки -->
-{% if fishing_leash_list %}
-<ul>
-  <li>
-    {% for fishing_leash in fishing_leash_list %}
-    {{fishing_leash}}
-    {% if fishing_leash.owner == user %}
-    <a href="{% url 'fishing:fishing_leash_renewal' fishing_leash.id %}" class="btn">Редактировать</a>
-    <a href="{% url 'fishing:fishing_leash_remove' fishing_leash.id %}" class="btn">Удалить</a>
-    {% endif %}
-    {% endfor %}
-  </li>
-</ul>
-{% else %}
-<p>Поводков еще не добавлено</p>
-{% endif %}
-<p>
-  <a href="{% url 'fishing:fishing_leash_add' %}" class="btn">Добавить</a>
-  <a onclick="back()" class="btn">Назад</a>
-</p>
-{% endif %}
-
 
 {% if fishing_lure_list != None %}
 <!-- Прикормочные смеси -->
@@ -250,30 +227,6 @@
 {% endif %}
 <p>
   <a href="{% url 'fishing:fishing_lure_add' %}" class="btn">Добавить</a>
-  <a onclick="back()" class="btn">Назад</a>
-</p>
-{% endif %}
-
-{% if fishing_montage_list != None %}
-<!-- Монтажи -->
-{% if fishing_montage_list %}
-<ul>
-  {% for fishing_montage in fishing_montage_list %}
-  <li>
-    {{fishing_montage}}
-    {% if user.is_staff %}
-    {{ fishing_montage.owner }}
-    {% endif %}
-    <a href="{% url 'fishing:fishing_montage_renewal' fishing_montage.id %}" class="btn">Редактировать</a>
-    <a href="{% url 'fishing:fishing_montage_remove' fishing_montage.id%}" class="btn">Удалить</a>
-  </li>
-  {% endfor %}
-</ul>
-{% else %}
-<p>Ни одного мотажа ещё не добавлено</p>
-{% endif %}
-<p>
-  <a href="{% url 'fishing:fishing_montage_add' %}" class="btn">Добавить</a>
   <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}
@@ -329,28 +282,26 @@
 </p>
 {% endif %}
 
-{% if fishing_trough_list != None %}
-<!-- Кормушки -->
-{% if fishing_trough_list %}
+
+{% if leash_list != None %}
+<!-- Поводки -->
+{% if leash_list %}
 <ul>
-  {% for fishing_trough in fishing_trough_list %}
   <li>
-    {{fishing_trough}}
-    {% if user.is_staff %}
-    {{ fishing_trough.owner }}
+    {% for leash in leash_list %}
+    {{leash}}
+    {% if leash.owner == user %}
+    <a href="{% url 'fishing:leash_renewal' leash.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:leash_remove' leash.id %}" class="btn">Удалить</a>
     {% endif %}
-    {% if fishing_trough.owner == user %}
-    <a href="{% url 'fishing:fishing_trough_renewal' fishing_trough.id %}" class="btn">Редактировать</a>
-    <a href="{% url 'fishing:fishing_trough_remove' fishing_trough.id %}" class="btn">Удалить</a>
-    {% endif %}
+    {% endfor %}
   </li>
-  {% endfor %}
 </ul>
 {% else %}
-<p>Вариантов кормушек не добавлено</p>
+<p>Поводков еще не добавлено</p>
 {% endif %}
 <p>
-  <a href="{% url 'fishing:fishing_trough_add' %}" class="btn">Добавить</a>
+  <a href="{% url 'fishing:leash_add' %}" class="btn">Добавить</a>
   <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}
@@ -433,10 +384,34 @@
   {% endfor %}
 </ul>
 {% else %}
-<p>База рыб пуста</p>
+<p>Модули кормушек не добавлены</p>
 {% endif %}
 <p>
   <a href="{% url 'fishing:model_trough_name_add' %}" class="btn">Добавить</a>
+  <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endif %}
+
+{% if montage_list != None %}
+<!-- Монтажи -->
+{% if montage_list %}
+<ul>
+  {% for montage in montage_list %}
+  <li>
+    {{montage}}
+    {% if user.is_staff %}
+    {{ montage.owner }}
+    {% endif %}
+    <a href="{% url 'fishing:montage_renewal' montage.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:montage_remove' montage.id%}" class="btn">Удалить</a>
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Ни одного мотажа ещё не добавлено</p>
+{% endif %}
+<p>
+  <a href="{% url 'fishing:montage_add' %}" class="btn">Добавить</a>
   <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}
@@ -592,6 +567,32 @@
   {% if user.is_staff %}
   <a href="{% url 'fishing:priming_add' %}" class="btn">Добавить</a>
   {% endif %}
+  <a onclick="back()" class="btn">Назад</a>
+</p>
+{% endif %}
+
+{% if trough_list != None %}
+<!-- Кормушки -->
+{% if trough_list %}
+<ul>
+  {% for trough in trough_list %}
+  <li>
+    {{trough}}
+    {% if user.is_staff %}
+    {{ trough.owner }}
+    {% endif %}
+    {% if trough.owner == user %}
+    <a href="{% url 'fishing:trough_renewal' trough.id %}" class="btn">Редактировать</a>
+    <a href="{% url 'fishing:trough_remove' trough.id %}" class="btn">Удалить</a>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% else %}
+<p>Вариантов кормушек не добавлено</p>
+{% endif %}
+<p>
+  <a href="{% url 'fishing:trough_add' %}" class="btn">Добавить</a>
   <a onclick="back()" class="btn">Назад</a>
 </p>
 {% endif %}
