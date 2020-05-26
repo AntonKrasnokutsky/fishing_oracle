@@ -303,6 +303,9 @@ class FishingCrochet(models.Model): #Крючки использованные �
     crochet=models.ForeignKey('Crochet',
                               on_delete=models.PROTECT,
                               verbose_name='Крючок')
+    
+    def __str__(self):
+        return str(self.crochet)
 
 
 class FishingLeash(models.Model):  # Поводки использованные в рыбалке
@@ -380,6 +383,31 @@ class FishingMontage(models.Model):  # Монтажи в рыбалке
                                 on_delete=models.PROTECT,
                                 verbose_name="Монтаж")
 
+class FishingNozzle(models.Model):
+    """
+    Содержит связи наживок и их состояний с рыбалкой
+    """
+    class Meta:
+        verbose_name='Наживка использованная в рыбалке'
+        verbose_name_plural='Наживки использованная в рыбалке'
+        ordering=['id',]
+    #Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи")
+    #Связь с рыбалкой
+    fishing= models.ForeignKey('Fishing',
+                                on_delete=models.PROTECT,
+                                verbose_name='Рыбалка')
+    #Свзять с наживкой
+    nozzle= models.ForeignKey('Nozzle',
+                                on_delete=models.PROTECT,
+                                verbose_name='Наживка')
+    #Связь с состоянием наживки
+    nozzle_state= models.ForeignKey('NozzleState',
+                                on_delete=models.PROTECT,
+                                verbose_name='Состояние наживки')
 
 class FishingPoint(models.Model):  # Точки ловли
     """

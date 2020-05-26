@@ -1,5 +1,8 @@
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponse, Http404
+from django.views import View
+from django.views.generic import ListView
+from django.views.generic.edit import DeleteView
 
 from .models import Fishing
 
@@ -38,7 +41,11 @@ from .forms import FishingForm, FishingResultForm, FishTrophyForm
 
 from .models import PlaceFishing, FishingMontage
 
+from .models import FishingNozzle
+
+
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.contrib.admin.views.decorators import staff_member_required
 
 # Переменные
@@ -809,40 +816,55 @@ def fishing_renewal(request, fishing_id):
         return redirect('fishing:fishing')
 
 
-@login_required
-def fishing_crochet_add(request, fishing_id, crochet_id, fishing_crochet_id):
-    crochet=get_object_or_404(Crochet, pk=crochet_id)
-    if fishing_crochet_id != 0:
-        fishing_crochet=get_object_or_404(FishingCrochet, pk=fishing_crochet_id)
-        fishing_crochet.crochet=crochet
-        fishing_crochet.save()
-    else:
-        fishing=get_object_or_404(Fishing, pk=fishing_id)
-        fishing_crochet=FishingCrochet()
-        fishing_crochet.owner=request.user
-        fishing_crochet.fishing=fishing
-        fishing_crochet.crochet=crochet
-        fishing_crochet.save()
-    return redirect('fishing:fishing_details', fishing_id)
-
-
-@login_required
-def fishing_crochet_remove(request, fishing_id, fishing_crochet_id):
-    fishing_crochet=get_object_or_404(FishingCrochet, pk=fishing_crochet_id)
-    if fishing_crochet.owner==request.user:
-        fishing_crochet.delete()
-    return redirect('fishing:fishing_details', fishing_id)
-
-@login_required
-def fishing_crochet_select(request, fishing_id, fishing_crochet_id):
-    num_visits=visits(request)
-    crochet_list=Crochet.objects.filter(owner=request.user)
-    return render(request,
+class FishingCrochetDelete(View):
+    model=FishingCrochet
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(FishingCrochetDelete, self).dispatch(*args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        fishing_crochet=get_object_or_404(self.model, pk=kwargs['fishing_crochet_id'])
+        if fishing_crochet.owner==request.user:
+            fishing_crochet.delete()
+        return redirect('fishing:fishing_details', kwargs['fishing_id'])
+    
+    
+    
+class FishingCrochetViews(View):
+    model = FishingCrochet
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(FishingCrochetViews, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        num_visits=visits(request)
+        crochet_list=Crochet.objects.filter(owner=request.user)
+        return render(request,
                   template_select_path,
                   {'crochet_list':crochet_list,
-                   'fishing_id':fishing_id,
-                   'fishing_crochet_id':fishing_crochet_id,
+                   'fishing_id':kwargs['fishing_id'],
+                   'fishing_crochet_id':kwargs['fishing_crochet_id'],
                    'num_visits':num_visits})
+    
+    def post(self, request, *args, **kwargs):
+        crochet=get_object_or_404(Crochet, pk=kwargs['crochet_id'])
+        if kwargs['fishing_crochet_id'] != 0:
+            fishing_crochet=get_object_or_404(self.model, pk=kwargs['fishing_crochet_id'])
+            if fishing_crochet.owner == request.user:
+                fishing_crochet.crochet=crochet
+                fishing_crochet.save()
+        else:
+            fishing=get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+            if fishing.owner == request.user:
+                fishing_crochet=self.model()
+                fishing_crochet.owner=request.user
+                fishing_crochet.fishing=fishing
+                fishing_crochet.crochet=crochet
+                fishing_crochet.save()
+        return redirect('fishing:fishing_details', kwargs['fishing_id'])
+
 
 @login_required
 def fishing_leash_add(request, fishing_id, leash_id, fishing_leash_id):
@@ -1005,6 +1027,16 @@ def fishing_montage_select(request, fishing_id, fishing_montage_id):
                    'fishing_montage_id': fishing_montage_id,
                    'num_visits': num_visits})
 
+
+@login_required
+class FishingNozzleViews(View):
+    model_class = FishingNozzle
+    
+    def get(self, request, *args, **kwargs):
+        pass
+    
+    def post(self, request, *args, **kwargs):
+        pass
 
 @login_required
 def fishing_point_list(request, district_id, water_id, place_id):

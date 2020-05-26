@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from .views import FishingCrochetViews
 
 app_name = 'fishing'
 urlpatterns = [
@@ -604,14 +605,14 @@ urlpatterns = [
     #Крючки использованные в рыбалке
     #Добавить крючок в рыбалку
     path('fishing/<int:fishing_id>/fishingcrochet/<int:crochet_id>/add/<int:fishing_crochet_id>/',
-         views.fishing_crochet_add,
+         FishingCrochetViews.as_view(),
          name='fishing_crochet_add'),
     #Удалть крючек из рыбалки
     path('fishing/<int:fishing_id>/fishingcrochet/<int:fishing_crochet_id>/remove/',
-         views.fishing_crochet_remove,
+         views.FishingCrochetDelete.as_view(),
          name='fishing_crochet_remove'),
-    #Изменить крючок в рыбалке
+    #Выбрать крючок в рыбалке
     path('fishing/<int:fishing_id>/fishingcrochet/select/<int:fishing_crochet_id>/',
-         views.fishing_crochet_select,
+         FishingCrochetViews.as_view(),
          name='fishing_crochet_select'),
 ]

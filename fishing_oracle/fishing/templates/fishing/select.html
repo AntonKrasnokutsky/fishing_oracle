@@ -6,9 +6,12 @@
 <!-- Крючки для рыбалки -->
 <ul>
     {% for crochet in crochet_list %}
-    <li>
-        {{crochet}}<a href="{% url 'fishing:fishing_crochet_add' fishing_id crochet.id fishing_crochet_id %}" class="btn">Выбрать</a>
-    </li>
+    <form action="{% url 'fishing:fishing_crochet_add' fishing_id crochet.id fishing_crochet_id %}" method="post">
+        {% csrf_token %}
+        <p>{{crochet}}
+            <button class="btn">Выбрать</button>
+        </p>
+    </form>
     {% endfor %}
 </ul>
 {% else %}
@@ -16,7 +19,7 @@
 {% endif %}
 <p>
     {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
-    <a onclick="back()" class="btn">Назад</a>
+    <button onclick="back()" class="btn">Назад</button>
 </p>
 {% endif %}
 
@@ -35,7 +38,7 @@
 {% endif %}
 <p>
     {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
-    <a onclick="back()" class="btn">Назад</a>
+    <button onclick="back()" class="btn">Назад</button>
 </p>
 {% endif %}
 
@@ -54,7 +57,7 @@
 {% endif %}
 <p>
     {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
-    <a onclick="back()" class="btn">Назад</a>
+    <button onclick="back()" class="btn">Назад</button>
 </p>
 {% endif %}
 
@@ -73,7 +76,7 @@
 {% endif %}
 <p>
     {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
-    <a onclick="back()" class="btn">Назад</a>
+    <button onclick="back()" class="btn">Назад</button>
 </p>
 {% endif %}
 
@@ -92,7 +95,7 @@
 {% endif %}
 <p>
     {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
-    <a onclick="back()" class="btn">Назад</a>
+    <button onclick="back()" class="btn">Назад</button>
 </p>
 {% endif %}
 
@@ -111,7 +114,7 @@
 {% endif %}
 <p>
     {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
-    <a onclick="back()" class="btn">Назад</a>
+    <button onclick="back()" class="btn">Назад</button>
 </p>
 {% endif %}
 

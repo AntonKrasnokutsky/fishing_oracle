@@ -148,8 +148,14 @@
             <p><strong>Производитель: </strong> {{ fishing_crochet.crochet.crochet_manufacturer }}</p>
             <p><strong>Модель: </strong>{{ fishing_crochet.crochet.crochet_model }}</p>
             <p><strong>Размер: </strong>{{ fishing_crochet.crochet.crochet_size }}</p>
-            <a href="{% url 'fishing:fishing_crochet_select' fishing.id fishing_crochet.id %}" class="btn">Изменить крючок</a>
-            <a href="{% url 'fishing:fishing_crochet_remove' fishing.id fishing_crochet.id %}" class="btn">Убрать крючок</a>
+            <form action="{% url 'fishing:fishing_crochet_select' fishing.id fishing_crochet.id %}" method="GET">
+                {% csrf_token %}
+                <button class="btn">Изменить крючок</button>
+            </form>
+            <form action="{% url 'fishing:fishing_crochet_remove' fishing.id fishing_crochet.id %}" method="POST">
+                {% csrf_token %}
+                <button class="btn">Убрать крючок</button>
+            </form>
             {% endfor %}
         </td>
     </tr>
@@ -158,7 +164,12 @@
         <td><a href="{% url 'fishing:fishing_montage_select' fishing.id 0 %}" class="btn">Указать монтаж</a></td>
         <td><a href="{% url 'fishing:fishing_trough_select' fishing.id 0 %}" class="btn">Указать кормушку</a></td>
         <td><a href="{% url 'fishing:fishing_leash_select' fishing.id 0 %}" class="btn">Указать поводок</a></td>
-        <td><a href="{% url 'fishing:fishing_crochet_select' fishing.id 0 %}" class="btn">Указать крючок</a></td>
+        <td>
+            <form action="{% url 'fishing:fishing_crochet_select' fishing.id 0 %}" method="GET">
+                {% csrf_token %}
+                <button class="btn">Указать крючок</button>
+            </form>
+        </td>
     </tr>
 
 </table>
