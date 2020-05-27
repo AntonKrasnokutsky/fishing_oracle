@@ -1,6 +1,5 @@
 from django.urls import path
 from . import views
-from .views import FishingCrochetViews
 
 app_name = 'fishing'
 urlpatterns = [
@@ -605,14 +604,40 @@ urlpatterns = [
     #Крючки использованные в рыбалке
     #Добавить крючок в рыбалку
     path('fishing/<int:fishing_id>/fishingcrochet/<int:crochet_id>/add/<int:fishing_crochet_id>/',
-         FishingCrochetViews.as_view(),
+         views.FishingCrochetViews.as_view(),
          name='fishing_crochet_add'),
-    #Удалть крючек из рыбалки
+    #Удалить крючек из рыбалки
     path('fishing/<int:fishing_id>/fishingcrochet/<int:fishing_crochet_id>/remove/',
          views.FishingCrochetDelete.as_view(),
          name='fishing_crochet_remove'),
     #Выбрать крючок в рыбалке
     path('fishing/<int:fishing_id>/fishingcrochet/select/<int:fishing_crochet_id>/',
-         FishingCrochetViews.as_view(),
+         views.FishingCrochetViews.as_view(),
          name='fishing_crochet_select'),
+    #Насадки/наживки использованные в рыбалке\
+    #Добавить наживку в рыбалку
+    path('fishing/<int:fishing_id>/fishingnozzle/<int:nozzle_id>/add/<int:fishing_nozzle_id>/',
+         views.FishingNozzleViews.as_view(),
+         name='fishing_nozzle_add'),
+    #Удалить наживку/насадку из рыбалки
+    path('fishing/<int:fishing_id>/fishingnozzle/<int:fishing_nozzle_id>/remove/',
+         views.FishingNozzleDelete.as_view(),
+         name='fishing_nozzle_remove'),
+    #Выбрать насадку/наживку для рыбалки
+    path('fishing/<int:fishing_id>/fishingnozzle/select/<int:fishing_nozzle_id>/',
+         views.FishingNozzleViews.as_view(),
+         name='fishing_nozzle_select'),
+    #Темп рыбалки
+    #Добаввить темп рыбалки
+    path('fishing/<int:fishing_id>/fishingpace/<int:pace_id>/add/<int:fishing_pace_id>/',
+         views.FishingPaceViews.as_view(),
+         name='fishing_pace_add'),
+    #Убрать темп рыбалки
+    path('fishing/<int:fishing_id>/fishingpace/<int:fishing_pace_id>/remove/',
+         views.FishingPaceDelete.as_view(),
+         name='fishing_pace_remove'),
+    #Выбрать темп рыбалки
+    path('fishing/<int:fishing_id>/fishingpace/select/<int:fishing_pace_id>/',
+         views.FishingPaceViews.as_view(),
+         name='fishing_pace_select'),
 ]

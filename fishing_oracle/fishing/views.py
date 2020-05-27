@@ -41,7 +41,7 @@ from .forms import FishingForm, FishingResultForm, FishTrophyForm
 
 from .models import PlaceFishing, FishingMontage
 
-from .models import FishingNozzle
+from .models import FishingNozzle, FishingPace
 
 
 from django.contrib.auth.decorators import login_required
@@ -1028,15 +1028,104 @@ def fishing_montage_select(request, fishing_id, fishing_montage_id):
                    'num_visits': num_visits})
 
 
-@login_required
-class FishingNozzleViews(View):
-    model_class = FishingNozzle
+class FishingNozzleDelete(View):
+    model=FishingNozzle
     
-    def get(self, request, *args, **kwargs):
-        pass
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(FishingNozzleDelete, self).dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
-        pass
+        fishing_nozzle=get_object_or_404(self.model, pk=kwargs['fishing_nozzle_id'])
+        if fishing_nozzle.owner==request.user:
+            fishing_nozzle.delete()
+        return redirect('fishing:fishing_details', kwargs['fishing_id'])
+
+
+class FishingNozzleViews(View):
+    model_base = Nozzle
+    model = FishingNozzle
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(FishingNozzleViews, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        num_visits=visits(request)
+        nozzle_list=self.model_base.objects.filter(owner=request.user)
+        return render(request,
+                  template_select_path,
+                  {'nozzle_list':nozzle_list,
+                   'fishing_id':kwargs['fishing_id'],
+                   'fishing_nozzle_id':kwargs['fishing_nozzle_id'],
+                   'num_visits':num_visits})
+    
+    def post(self, request, *args, **kwargs):
+        nozzle=get_object_or_404(self.model_base, pk=kwargs['nozzle_id'])
+        if kwargs['fishing_nozzle_id'] != 0:
+            fishing_nozzle=get_object_or_404(self.model, pk=kwargs['fishing_crochet_id'])
+            if fishing_nozzle.owner == request.user:
+                fishing_nozzle.nozzle=nozzle
+                fishing_nozzle.save()
+        else:
+            fishing=get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+            if fishing.owner == request.user:
+                fishing_nozzle=self.model()
+                fishing_nozzle.owner=request.user
+                fishing_nozzle.fishing=fishing
+                fishing_nozzle.nozzle=nozzle
+                fishing_nozzle.save()
+        return redirect('fishing:fishing_details', kwargs['fishing_id'])
+
+class FishingPaceDelete(View):
+    model=FishingPace
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(FishingPaceDelete, self).dispatch(*args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        fishing_pace=get_object_or_404(self.model, pk=kwargs['fishing_pace_id'])
+        if fishing_pace.owner==request.user:
+            fishing_pace.delete()
+        return redirect('fishing:fishing_details', kwargs['fishing_id'])
+
+
+class FishingPaceViews(View):
+    model_base = Pace
+    model = FishingPace
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(FishingPaceViews, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        num_visits=visits(request)
+        pace_list=self.model_base.objects.all()
+        return render(request,
+                  template_select_path,
+                  {'pace_list':pace_list,
+                   'fishing_id':kwargs['fishing_id'],
+                   'fishing_pace_id':kwargs['fishing_pace_id'],
+                   'num_visits':num_visits})
+    
+    def post(self, request, *args, **kwargs):
+        pace=get_object_or_404(self.model_base, pk=kwargs['pace_id'])
+        if kwargs['fishing_pace_id'] != 0:
+            fishing_pace=get_object_or_404(self.model, pk=kwargs['fishing_pace_id'])
+            if fishing_pace.owner == request.user:
+                fishing_pace.pace=pace
+                fishing_pace.save()
+        else:
+            fishing=get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+            if fishing.owner == request.user:
+                fishing_pace=self.model()
+                fishing_pace.owner=request.user
+                fishing_pace.fishing=fishing
+                fishing_pace.pace=pace
+                fishing_pace.save()
+        return redirect('fishing:fishing_details', kwargs['fishing_id'])
+
 
 @login_required
 def fishing_point_list(request, district_id, water_id, place_id):

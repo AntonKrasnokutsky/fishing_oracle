@@ -405,9 +405,28 @@ class FishingNozzle(models.Model):
                                 on_delete=models.PROTECT,
                                 verbose_name='Наживка')
     #Связь с состоянием наживки
-    nozzle_state= models.ForeignKey('NozzleState',
+    #nozzle_state= models.ForeignKey('NozzleState',
+    #                            on_delete=models.PROTECT,
+    #                            verbose_name='Состояние наживки')
+
+class FishingPace(models.Model):
+    class Meta:
+        verbose_name='Темп рыбалки'
+        verbose_name_plural='Темп рыбалки'
+    #Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи")
+    #Связь с рыбалкой
+    fishing= models.ForeignKey('Fishing',
                                 on_delete=models.PROTECT,
-                                verbose_name='Состояние наживки')
+                                verbose_name='Рыбалка')
+    #Связь с темпом
+    pace = models.ForeignKey('Pace',
+                             on_delete=models.PROTECT,
+                             verbose_name='Темп')
+
 
 class FishingPoint(models.Model):  # Точки ловли
     """
@@ -486,7 +505,7 @@ class FishingResult(models.Model):  # Результат рыбалки
     # Масса улова по выбранной рыбе
     fish_weight = models.DecimalField(
         max_digits=6,
-        decimal_places=1,
+        decimal_places=3,
         blank=True,
         verbose_name="Вес улова")
 

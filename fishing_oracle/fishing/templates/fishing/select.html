@@ -61,6 +61,50 @@
 </p>
 {% endif %}
 
+{% if nozzle_list != None %}
+{% if nozzle_list %}
+<!-- Наживки использованные в рыбалке -->
+<ul>
+    {% for nozzle in nozzle_list %}
+    <form action="{% url 'fishing:fishing_nozzle_add' fishing_id nozzle.id fishing_nozzle_id%}" method="post">
+        {% csrf_token %}
+        <p>{{nozzle}}
+            <button class="btn">Выбрать</button>
+        </p>
+    </form>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Наживок еще не добавлено</p>
+{% endif %}
+<p>
+    {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
+    <button onclick="back()" class="btn">Назад</button>
+</p>
+{% endif %}
+
+{% if pace_list != None %}
+{% if pace_list %}
+<!-- Темп рыбалки -->
+<ul>
+    {% for pace in pace_list %}
+    <form action="{% url 'fishing:fishing_pace_add' fishing_id pace.id fishing_pace_id %}" method="post">
+        {% csrf_token %}
+        <p>{{pace}}
+            <button class="btn">Выбрать</button>
+        </p>
+    </form>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Вариантов темпа еще не добавлено</p>
+{% endif %}
+<p>
+    {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
+    <button onclick="back()" class="btn">Назад</button>
+</p>
+{% endif %}
+
 {% if place_list != None %}
 {% if place_list %}
 <!-- Место рыбалки -->
