@@ -42,6 +42,34 @@
 </p>
 {% endif %}
 
+{% if lure_mix_list != None %}
+{% if lure_mix_list %}
+<!-- Прикормочные смеси -->
+<ul>
+    {% for lure_mix in lure_mix_list %}
+    <form action="{% url 'fishing:fishing_lure_add' fishing_id lure_mix.id fishing_lure_id %}" method="post">
+        {% csrf_token %}
+        <p>{{lure_mix}}
+            <button class="btn">Выбрать</button>
+        </p>
+    </form>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Прикормочных смесей не добавлено</p>
+{% endif %}
+<p>
+    {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
+    <button onclick="back()" class="btn">Назад</button>
+<form action="{% url 'fishing:lure_mix_in_fishing_lure' fishing_id fishing_lure_id %}" method="get">
+    {% csrf_token %}
+    <p>
+        <button class="btn">Добавить месь</button>
+    </p>
+</form>
+</p>
+{% endif %}
+
 {% if montage_list != None %}
 {% if montage_list %}
 <!-- Монтаж использованный в рыбалке -->
@@ -155,6 +183,28 @@
 </ul>
 {% else %}
 <p>Кормушек еще не добавлено</p>
+{% endif %}
+<p>
+    {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
+    <button onclick="back()" class="btn">Назад</button>
+</p>
+{% endif %}
+
+{% if weather_list != None %}
+{% if weather_list %}
+<!-- Погода на рыбалке -->
+<ul>
+    {% for weather in weather_list %}
+    <form action="{% url 'fishing:fishing_weather_add' fishing_id weather.id fishing_weather_id %}" method="post">
+        {% csrf_token %}
+        <p>{{weather}}
+            <button class="btn">Выбрать</button>
+        </p>
+    </form>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Погода еще не добавлена</p>
 {% endif %}
 <p>
     {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}

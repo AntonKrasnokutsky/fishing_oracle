@@ -19,6 +19,7 @@ from .models import FeedCapacity
 from .models import FishingLure
 from .models import Lure
 from .models import LureBase
+from .models import LureMix
 from .models import Nozzle
 from .models import NozzleState
 from .models import Aroma
@@ -51,6 +52,7 @@ admin.site.register(FeedCapacity)
 admin.site.register(FishingLure)
 admin.site.register(Lure)
 admin.site.register(LureBase)
+admin.site.register(LureMix)
 admin.site.register(Nozzle)
 admin.site.register(NozzleState)
 admin.site.register(Aroma)

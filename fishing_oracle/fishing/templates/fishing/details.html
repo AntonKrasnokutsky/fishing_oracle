@@ -74,15 +74,31 @@
     <a href="{% url 'fishing:place_fishing_select' fishing.id %}" class="btn">Указать место</a></p>
 {% endif %}
 <p><strong>Погода во время рыбалки:</strong></p>
-<p><strong>Облачность: </strong>{{ fishing.weather.overcast }}</p>
-<p><strong>Осадки: </strong>{{ fishing.weather.weather_phenomena}}</p>
-<p>
-    <strong>Температруа воздуха: </strong>{{fishing.weather.weather_temperature}}
-</p>
-<p><strong>Давление: </strong>{{ fishing.weather.pressure}}</p>
-<p><strong>Направление ветра: </strong>{{ fishing.weather.direction_wind}}</p>
-<p><strong>Скорость ветра: </strong>{{ fishing.weather.wind_speed}}</p>
-<p><strong>Лунный день: </strong>{{ fishing.weather.lunar_day}}</p>
+{% if fishing.fishingweather_set.get %}
+<form action="{% url 'fishing:fishing_weather_select' fishing.id fishing.fishingweather_set.get.id %}" method="GET">
+    {% csrf_token %}
+    <p><strong>Облачность: </strong>{{ fishing.fishingweather_set.get.weather.overcast }}</p>
+    <p><strong>Осадки: </strong>{{ fishing.fishingweather_set.get.weather.weather_phenomena}}</p>
+    <p>
+        <strong>Температруа воздуха: </strong>{{fishing.fishingweather_set.get.weather.weather_temperature}}
+    </p>
+    <p><strong>Давление: </strong>{{ fishing.fishingweather_set.get.weather.pressure}}</p>
+    <p><strong>Направление ветра: </strong>{{ fishing.fishingweather_set.get.weather.direction_wind}}</p>
+    <p><strong>Скорость ветра: </strong>{{ fishing.fishingweather_set.get.weather.wind_speed}}</p>
+    <p><strong>Лунный день: </strong>{{ fishing.fishingweather_set.get.weather.lunar_day}}</p>
+    <button class="btn">Изменить погоду</button>
+</form>
+<form action="{% url 'fishing:fishing_weather_remove' fishing.id fishing.fishingweather_set.get.id %}" method="POST">
+    {% csrf_token %}
+    <button class="btn">Убрать погоду</button>
+</form>
+{% else %}
+<form action="{% url 'fishing:fishing_weather_select' fishing.id 0 %}" method="GET">
+    {% csrf_token %}
+    <button class="btn">Указать погоду</button>
+</form>
+{% endif %}
+
 <table>
     <tr>
         <th>Снасть:</th>
@@ -201,18 +217,45 @@
 
 </table>
 
-<p><strong>Прикормочная смесь: </strong></p>
-{% for lure in fishing.fishing_lure.lure_set.all %}
+<p><strong>Прикормочная смесь: </strong> {{ fishing.fishinglure_set.get.lure_mix }}</p>
+{% if fishing.fishinglure_set.get %}
+
+<p><strong>Прикормы:</strong></p>
+{% for lure in fishing.fishinglure_set.get.luremix_set.get.lure_set.all %}
 <p><strong>Прикорм {{ forloop.counter }}</strong></p>
-<p><strong>Производитель: </strong>{{ lure.lure_manufacturer }}</p>
-<p><strong>Название: </strong>{{ lure.lure_name }}</p>
+<p><strong>Производитель: </strong>{{ lure.lure_base.lure_manufacturer }}</p>
+<p><strong>Название: </strong>{{ lure.lure_base.lure_name }}</p>
+<p><strong>Доля прикорма: </strong>{{ lure.lure_weight }}</p>
 {% endfor %}
-<p><strong>Добавки в корм:</strong></p>
-<p><strong>Мясо: </strong>{{fishing.fishing_lure.nozzle}}</p>
-<p><strong>Состояние мяса: </strong>{{fishing.fishing_lure.nozzle_state}}</p>
-<p><strong>Арома: </strong></p>
-<p><strong>Производитель: </strong>{{ fishing.aroma.aroma_manufacturer }}</p>
-<p><strong>Название: </strong>{{ fishing.aroma.aroma_name }}</p>
+<p><strong>Аромы:</strong></p>
+{% for aroma in fishing.fishinglure_set.get.luremix_set.get.aroma_set.all %}
+<p><strong>Арома {{ forloop.counter }}</strong></p>
+<p><strong>Производитель: </strong>{{ aroma.aroma_base.aroma_manufacturer }}</p>
+<p><strong>Название: </strong>{{ aroma.aroma_base.aroma_name }}</p>
+<p><strong>Объем аромы: </strong>{{ aroma.aroma_volume }}</p>
+{% endfor %}
+
+<p><strong>Добавки в состав:</strong></p>
+{% for nozzle in fishing.fishinglure_set.get.luremix_set.get.nozzlelure_set.all %}
+<p><strong>Наживка/насадка: {{ forloop.counter }}</strong></p>
+<p><strong>Название: </strong>{{ nozzle.nozzle.nozzle_name }}</p>
+<p><strong>Состояние: </strong>{{ nozzle.nozzle_state.state }}</p>
+{% endfor %}
+
+<form action="{% url 'fishing:fishing_lure_select' fishing.id fishing.fishinglure_set.get.id %}" method="GET">
+    {% csrf_token %}
+    <button class="btn">Изменить прикормочную смесь</button>
+</form>
+<form action="{% url 'fishing:fishing_lure_remove' fishing.id fishing.fishinglure_set.get.id %}" method="POST">
+    {% csrf_token %}
+    <button class="btn">Убрать прикормочную смесь</button>
+</form>
+{% else %}
+<form action="{% url 'fishing:fishing_lure_select' fishing.id 0 %}" method="GET">
+    {% csrf_token %}
+    <button class="btn">Указать прикормочную смесь</button>
+</form>
+{% endif %}
 
 {% for fishing_pace in fishing.fishingpace_set.all %}
 <p><strong>Темп: </strong>{{ fishing_pace.pace }}</p>

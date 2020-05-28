@@ -9,7 +9,7 @@ from .models import Trough
 from .models import BottomMap, Point
 from .models import Weather, Overcast, WeatherPhenomena
 from .models import NozzleState, Nozzle
-from .models import Lure, LureBase, FishingLure
+from .models import Lure, LureBase, LureMix
 from .models import AromaBase, Aroma
 from .models import Crochet, Leash
 from .models import Fishing, FishingResult, FishTrophy
@@ -68,10 +68,10 @@ class FishingForm(forms.ModelForm):
         fields = ['date', 'time', ]
 
 
-class FishingLureForm(forms.ModelForm):
+class LureMixForm(forms.ModelForm):
     class Meta:
-        model = FishingLure
-        fields = ('nozzle', 'nozzle_state',)
+        model = LureMix
+        fields = ('lure_mix_name',)
 
 
 class MontageForm(forms.ModelForm):

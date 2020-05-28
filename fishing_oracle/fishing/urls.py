@@ -640,4 +640,34 @@ urlpatterns = [
     path('fishing/<int:fishing_id>/fishingpace/select/<int:fishing_pace_id>/',
          views.FishingPaceViews.as_view(),
          name='fishing_pace_select'),
+    #Погода на рыбалке
+    #Добавить погоду на рыбалке
+    path('fishing/<int:fishing_id>/fishingweather/<int:weather_id>/add/<int:fishing_weather_id>/',
+         views.FishingWeatherViews.as_view(),
+         name='fishing_weather_add'),
+    #Удалить погоду на рыбалке
+    path('fishing/<int:fishing_id>/fishingweather/<int:fishing_weather_id>/remove/',
+         views.FishingWeatherDelete.as_view(),
+         name='fishing_weather_remove'),
+    #Выбрать погоду на рыбалке
+    path('fishing/<int:fishing_id>/fishingweather/select/<int:fishing_weather_id>/',
+         views.FishingWeatherViews.as_view(),
+         name='fishing_weather_select'),
+    #Прикормочная смесь для рыбалки
+    #Добавить прикормочную смесь
+    path('fishing/<int:fishing_id>/fishinglure/<int:lure_mix_id>/add/<int:fishing_lure_id>/',
+         views.FishingLureViews.as_view(),
+         name='fishing_lure_add'),
+    #Удалить прикормочную смесь
+    path('fishing/<int:fishing_id>/fishinglure/<int:fishing_lure_id>/remove/',
+         views.FishingLureDelete.as_view(),
+         name='fishing_lure_remove'),
+    #Выбрать прикормочную смесь
+    path('fishing/<int:fishing_id>/fishinglure/select/<int:fishing_lure_id>/',
+         views.FishingLureViews.as_view(),
+         name='fishing_lure_select'),
+    #Новая прикормочная смесь из выбора смеси
+    path('fishing/<int:fishing_id>/fishinglure/add/<int:fishing_lure_id>/',
+         views.LureMixNewAddInFishingLure.as_view(),
+         name='lure_mix_in_fishing_lure'),
 ]
