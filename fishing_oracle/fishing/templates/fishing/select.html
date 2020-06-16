@@ -42,6 +42,27 @@
 </p>
 {% endif %}
 
+{% if lure_base_list != None %}
+{% if lure_base_list %}
+<!-- Прикорм для смеси -->
+<ul>
+    {% for lure_base in lure_base_list %}
+    <form action="{% url 'fishing:lure_in_lure_mix_select' fishing_id lure_mix_id lure_base.id %}" method="GET">
+        <p>{{lure_base}}
+            <button class="btn">Выбрать</button>
+        </p>
+    </form>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Прикормочных смесей не добавлено</p>
+{% endif %}
+<p>
+    {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
+    <button onclick="back()" class="btn">Назад</button>
+</p>
+{% endif %}
+
 {% if lure_mix_list != None %}
 {% if lure_mix_list %}
 <!-- Прикормочные смеси -->

@@ -111,7 +111,7 @@ class LeashForm(forms.ModelForm):
 class LureForm(forms.ModelForm):
     class Meta:
         model = Lure
-        fields = ['lure_base', 'lure_weight', ]
+        fields = ['lure_weight', ]
 
 
 class LureBaseForm(forms.ModelForm):

@@ -1655,6 +1655,24 @@ class LureInLureMixDelete(View):
             lure.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
+class LureInLureMixSelect(View):
+    model=LureBase
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LureInLureMixSelect, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        num_visits=visits(request)
+        lure_base_list = LureBase.objects.filter(owner=request.user)
+        return render(request,
+                          template_select_path,
+                          {'lure_base_list': lure_base_list,
+                           'fishing_id':kwargs['fishing_id'],
+                           'lure_mix_id':kwargs['lure_mix_id'],
+                           'num_visits': num_visits})
+
+
 class LureInLureMixViews(View):
     model=Lure
     form=LureForm
@@ -1676,9 +1694,11 @@ class LureInLureMixViews(View):
         form = self.form(request.POST)
         if form.is_valid():
             lure_mix=get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
+            lure_base=get_object_or_404(LureBase, pk=kwargs['lure_base_id'])
             entry = form.save(commit=False)
             entry.owner = request.user
-            entry.lure_mix=lure_mix
+            entry.lure_mix = lure_mix
+            entry.lure_base = lure_base
             print(entry)
             entry.save()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])

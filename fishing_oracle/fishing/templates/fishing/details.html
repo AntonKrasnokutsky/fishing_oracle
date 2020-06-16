@@ -231,7 +231,7 @@
     <button class="btn">Удалить прикорм</button>
 </form>
 {% endfor %}
-<form action="{% url 'fishing:lure_in_lure_mix_select' fishing.id fishing.fishinglure_set.get.lure_mix.id %}" method="GET">
+<form action="{% url 'fishing:lure_in_lure_mix' fishing.id fishing.fishinglure_set.get.lure_mix.id %}" method="GET">
     {% csrf_token %}
     <button class="btn">Добавить прикорм</button>
 </form>
