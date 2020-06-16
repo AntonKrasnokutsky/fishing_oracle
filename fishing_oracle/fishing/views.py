@@ -1656,12 +1656,12 @@ class LureInLureMixDelete(View):
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 class LureInLureMixViews(View):
-    model=LureMix
-    form=LureMixForm
+    model=Lure
+    form=LureForm
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(LureMixNewAddInFishingLure, self).dispatch(*args, **kwargs)
+        return super(LureInLureMixViews, self).dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
         num_visits=visits(request)
@@ -1669,29 +1669,18 @@ class LureInLureMixViews(View):
         return render(request,
                           template_renewal_add_path,
                           {'form': form,
-                           'fishing_id':kwargs['fishing_id'],
-                           'fishing_lure_id':kwargs['fishing_lure_id'],
                            'num_visits': num_visits})
 
     def post(self, request, *args, **kwargs):
         entry = self.model()
         form = self.form(request.POST)
         if form.is_valid():
+            lure_mix=get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
             entry = form.save(commit=False)
             entry.owner = request.user
+            entry.lure_mix=lure_mix
+            print(entry)
             entry.save()
-            if kwargs['fishing_lure_id'] != 0:
-                fishing_lure=get_object_or_404(FishingLure, pk=kwargs['fishing_lure_id'])
-                fishing_lure=FishingLure()
-                fishing_lure.lure_mix=entry
-                fishing_lure.save()
-            else:
-                fishing=get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-                fishing_lure=FishingLure()
-                fishing_lure.owner=request.user
-                fishing_lure.fishing=fishing
-                fishing_lure.lure_mix=entry
-                fishing_lure.save()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 

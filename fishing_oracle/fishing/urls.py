@@ -676,7 +676,7 @@ urlpatterns = [
          views.LureInLureMixViews.as_view(),
          name='lure_in_lure_mix_select'),
     #Удалить прикорм из микса
-    path('fishing/<int:fishing_id>/lure/<int:lure_id>/',
+    path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/lure/<int:lure_id>/remove/',
          views.LureInLureMixDelete.as_view(),
          name='lure_in_lure_mix_remove'),
     #Изменить прикорм в миксе

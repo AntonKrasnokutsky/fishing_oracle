@@ -221,12 +221,20 @@
 {% if fishing.fishinglure_set.get %}
 
 <p><strong>Прикормы:</strong></p>
-{% for lure in fishing.fishinglure_set.get.luremix_set.get.lure_set.all %}
+{% for lure in fishing.fishinglure_set.get.lure_mix.lure_set.all %}
 <p><strong>Прикорм {{ forloop.counter }}</strong></p>
 <p><strong>Производитель: </strong>{{ lure.lure_base.lure_manufacturer }}</p>
 <p><strong>Название: </strong>{{ lure.lure_base.lure_name }}</p>
 <p><strong>Доля прикорма: </strong>{{ lure.lure_weight }}</p>
+<form action="{% url 'fishing:lure_in_lure_mix_remove' fishing.id fishing.fishinglure_set.get.lure_mix.id lure.id %}" method="POST">
+    {% csrf_token %}
+    <button class="btn">Удалить прикорм</button>
+</form>
 {% endfor %}
+<form action="{% url 'fishing:lure_in_lure_mix_select' fishing.id fishing.fishinglure_set.get.lure_mix.id %}" method="GET">
+    {% csrf_token %}
+    <button class="btn">Добавить прикорм</button>
+</form>
 <p><strong>Аромы:</strong></p>
 {% for aroma in fishing.fishinglure_set.get.luremix_set.get.aroma_set.all %}
 <p><strong>Арома {{ forloop.counter }}</strong></p>
