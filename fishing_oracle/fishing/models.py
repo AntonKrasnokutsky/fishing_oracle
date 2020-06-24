@@ -402,7 +402,7 @@ class FishingNozzle(models.Model): # Наживки\насадки исполь�
                                 on_delete=models.PROTECT,
                                 verbose_name='Рыбалка')
     #Свзять с наживкой
-    nozzle= models.ForeignKey('Nozzle',
+    nozzle_base = models.ForeignKey('NozzleBase',
                                 on_delete=models.PROTECT,
                                 verbose_name='Наживка')
     #Связь с состоянием наживки
@@ -814,7 +814,7 @@ class Montage(models.Model):  # Монтажи
 
 
 
-class Nozzle(models.Model):  # Насдаки и наживки
+class NozzleBase(models.Model):  # Насдаки и наживки
     """
     Сожердит информацию о наживках/насадках
     При bait=True наживка (поле nozzle_manufacturer
@@ -869,7 +869,7 @@ class NozzleLure(models.Model): #Наживки\насадки в прикорм
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     #Наживка/насадка
-    nozzle=models.ForeignKey('Nozzle',
+    nozzle_base=models.ForeignKey('NozzleBase',
                              on_delete=models.PROTECT,
                              verbose_name='Насадка/наживка')
     #Состояние

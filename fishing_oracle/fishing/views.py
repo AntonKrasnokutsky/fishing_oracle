@@ -27,8 +27,8 @@ from .forms import TackleForm, MontageForm, ModelTroughNameForm, ModelTroughForm
 from .models import Trough, FishingTrough
 from .forms import TroughForm
 
-from .models import NozzleState, Nozzle, Lure, LureBase, LureMix
-from .forms import NozzleStateForm, NozzleForm, LureForm, LureBaseForm, LureMixForm
+from .models import NozzleState, NozzleBase, Lure, LureBase, LureMix
+from .forms import NozzleStateForm, NozzleBaseForm, LureForm, LureBaseForm, LureMixForm
 
 from .models import AromaBase, Aroma
 from .forms import AromaBaseForm, AromaForm
@@ -190,6 +190,65 @@ def aroma_base_renewal(request, aroma_base_id):
                            'num_visits': num_visits})
     else:
         return redirect('fishing:aroma_base')
+
+class AromaInLureMixDelete(View):
+    model=Aroma
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AromaInLureMixDelete, self).dispatch(*args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        aroma=get_object_or_404(self.model, pk=kwargs['aroma_id'])
+        if aroma.owner==request.user:
+            aroma.delete()
+        return redirect('fishing:fishing_details', kwargs['fishing_id'])
+
+class AromaInLureMixSelect(View):
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AromaInLureMixSelect, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        num_visits=visits(request)
+        aroma_base_list = AromaBase.objects.filter(owner=request.user)
+        return render(request,
+                          template_select_path,
+                          {'aroma_base_list': aroma_base_list,
+                           'fishing_id':kwargs['fishing_id'],
+                           'lure_mix_id':kwargs['lure_mix_id'],
+                           'num_visits': num_visits})
+
+
+class AromaInLureMixViews(View):
+    model=Aroma
+    form=AromaForm
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AromaInLureMixViews, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        num_visits=visits(request)
+        form = self.form()
+        return render(request,
+                          template_renewal_add_path,
+                          {'form': form,
+                           'num_visits': num_visits})
+
+    def post(self, request, *args, **kwargs):
+        entry = self.model()
+        form = self.form(request.POST)
+        if form.is_valid():
+            lure_mix=get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
+            aroma_base=get_object_or_404(AromaBase, pk=kwargs['aroma_base_id'])
+            entry = form.save(commit=False)
+            entry.owner = request.user
+            entry.lure_mix = lure_mix
+            entry.aroma_base = aroma_base
+            entry.save()
+        return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 
 @login_required
@@ -911,14 +970,8 @@ def fishing_lure_add(request):
         fishing_lure = LureMix()
         form = LureMixForm(request.POST)
         if form.is_valid():
+            fishing_lure = form.save(commit=False)
             fishing_lure.owner = request.user
-            nozzle_select = form.cleaned_data['nozzle']
-            nozzle = Nozzle.objects.filter(nozzle_name=nozzle_select)
-            fishing_lure.nozzle = nozzle[0]
-            nozzle_state_select = form.cleaned_data['nozzle_state']
-            nozzle_state = NozzleState.objects.filter(
-                state=nozzle_state_select)
-            fishing_lure.nozzle_state = nozzle_state[0]
             fishing_lure.save()
             return redirect('fishing:fishing_lure')
     else:
@@ -968,21 +1021,14 @@ def fishing_lure_renewal(request, fishing_lure_id):
     fishing_lure = get_object_or_404(LureMix, pk=fishing_lure_id)
     if fishing_lure.owner == request.user:
         if request.method == 'POST':
-            form = LureMixForm(request.POST)
+            form = LureMixForm(request.POST, instance=fishing_lure)
             if form.is_valid():
-                nozzle_select = form.cleaned_data['nozzle']
-                nozzle = Nozzle.objects.filter(nozzle_name=nozzle_select)
-                fishing_lure.nozzle = nozzle
-                nozzle_state_select = form.cleaned_data['nozzle_state']
-                nozzle_state = NozzleState.objects.filter(
-                    state=nozzle_state_select)
-                fishing_lure.nozzle_state = nozzle_state
+                fishing_lure = form.save(commit = False)
+                fishing_lure.owner = request.user
                 fishing_lure.save()
                 return redirect('fishing:fishnig_lure')
         else:
-            form = LureMixForm(initial={'nozzle': fishing_lure.nozzle,
-                                            'npzzle_state': fishing_lure.nozzle_state,
-                                            'num_visits': num_visits})
+            form = LureMixForm(instance=fishing_lure)
             return render(request,
                           template_renewal_add_path,
                           {'form': form,
@@ -1044,7 +1090,7 @@ class FishingNozzleDelete(View):
 
 
 class FishingNozzleViews(View):
-    model_base = Nozzle
+    model_base = NozzleBase
     model = FishingNozzle
     
     @method_decorator(login_required)
@@ -1066,7 +1112,7 @@ class FishingNozzleViews(View):
         if kwargs['fishing_nozzle_id'] != 0:
             fishing_nozzle=get_object_or_404(self.model, pk=kwargs['fishing_crochet_id'])
             if fishing_nozzle.owner == request.user:
-                fishing_nozzle.nozzle=nozzle
+                fishing_nozzle.nozzle_base = nozzle
                 fishing_nozzle.save()
         else:
             fishing=get_object_or_404(Fishing, pk=kwargs['fishing_id'])
@@ -1074,7 +1120,7 @@ class FishingNozzleViews(View):
                 fishing_nozzle=self.model()
                 fishing_nozzle.owner=request.user
                 fishing_nozzle.fishing=fishing
-                fishing_nozzle.nozzle=nozzle
+                fishing_nozzle.nozzle_base=nozzle
                 fishing_nozzle.save()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -1699,7 +1745,6 @@ class LureInLureMixViews(View):
             entry.owner = request.user
             entry.lure_mix = lure_mix
             entry.lure_base = lure_base
-            print(entry)
             entry.save()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -1951,7 +1996,7 @@ def montage_renewal(request, montage_id):
 def nozzle_add(request):
     num_visits = visits(request)
     if request.method == "POST":
-        nozzle = Nozzle()
+        nozzle = NozzleBase()
         form = NozzleForm(request.POST)
         if form.is_valid():
             nozzle.owner = request.user
@@ -1973,7 +2018,7 @@ def nozzle_add(request):
 @login_required
 def nozzle_details(request, nozzle_id):
     num_visits = visits(request)
-    nozzle = get_object_or_404(Nozzle, pk=nozzle_id)
+    nozzle = get_object_or_404(NozzleBase, pk=nozzle_id)
     if nozzle.owner == request.user or request.user.is_staff:
         return render(request,
                       template_details_path,
@@ -1987,9 +2032,9 @@ def nozzle_details(request, nozzle_id):
 def nozzle_list(request):
     num_visits = visits(request)
     if request.user.is_staff:
-        nozzle_list = Nozzle.objects.all()
+        nozzle_list = NozzleBase.objects.all()
     else:
-        nozzle_list = Nozzle.objects.filter(owner=request.user)
+        nozzle_list = NozzleBase.objects.filter(owner=request.user)
     return render(request,
                   template_list_path,
                   {'nozzle_list': nozzle_list,
@@ -1998,7 +2043,7 @@ def nozzle_list(request):
 
 @login_required
 def nozzle_remove(request, nozzle_id):
-    nozzle = get_object_or_404(Nozzle, pk=nozzle_id)
+    nozzle = get_object_or_404(NozzleBase, pk=nozzle_id)
     if nozzle.owner == request.user:
         nozzle.delete()
     return redirect('fishing:nozzle')
@@ -2007,7 +2052,7 @@ def nozzle_remove(request, nozzle_id):
 @login_required
 def nozzle_renewal(request, nozzle_id):
     num_visits = visits(request)
-    nozzle = get_object_or_404(Nozzle, pk=nozzle_id)
+    nozzle = get_object_or_404(NozzleBase, pk=nozzle_id)
     if nozzle.owner == request.user:
         if request.method == "POST":
             form = NozzleForm(request.POST)
@@ -2091,6 +2136,65 @@ def nozzle_state_renewal(request, nozzle_state_id):
                            'num_visits': num_visits})
     else:
         return redirect('fishing:nozzle_state')
+
+# class NozzleInLureMixDelete(View):
+#     model=Nozzle
+    
+#     @method_decorator(login_required)
+#     def dispatch(self, *args, **kwargs):
+#         return super(NozzleInLureMixDelete, self).dispatch(*args, **kwargs)
+    
+#     def post(self, request, *args, **kwargs):
+#         nozzle=get_object_or_404(self.model, pk=kwargs['nozzle_base_id'])
+#         if nozzle.owner==request.user:
+#             nozzle.delete()
+#         return redirect('fishing:fishing_details', kwargs['fishing_id'])
+
+# class NozzleInLureMixSelect(View):
+    
+#     @method_decorator(login_required)
+#     def dispatch(self, *args, **kwargs):
+#         return super(NozzleInLureMixSelect, self).dispatch(*args, **kwargs)
+    
+#     def get(self, request, *args, **kwargs):
+#         num_visits=visits(request)
+#         nozzle_base_list = NozzleBase.objects.filter(owner=request.user)
+#         return render(request,
+#                           template_select_path,
+#                           {'nozzle_base_list': nozzle_base_list,
+#                            'fishing_id':kwargs['fishing_id'],
+#                            'lure_mix_id':kwargs['lure_mix_id'],
+#                            'num_visits': num_visits})
+
+
+# class NozzleInLureMixViews(View):
+#     model=Nozzle
+#     form=NozzleForm
+    
+#     @method_decorator(login_required)
+#     def dispatch(self, *args, **kwargs):
+#         return super(NozzleInLureMixViews, self).dispatch(*args, **kwargs)
+    
+#     def get(self, request, *args, **kwargs):
+#         num_visits=visits(request)
+#         form = self.form()
+#         return render(request,
+#                           template_renewal_add_path,
+#                           {'form': form,
+#                            'num_visits': num_visits})
+
+#     def post(self, request, *args, **kwargs):
+#         entry = self.model()
+#         form = self.form(request.POST)
+#         if form.is_valid():
+#             lure_mix=get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
+#             nozzle_base=get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
+#             entry = form.save(commit=False)
+#             entry.owner = request.user
+#             entry.lure_mix = lure_mix
+#             entry.nozzle_base = nozzle_base
+#             entry.save()
+#         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 
 @staff_member_required

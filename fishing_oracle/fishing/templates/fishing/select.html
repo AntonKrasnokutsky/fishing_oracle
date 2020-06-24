@@ -1,6 +1,26 @@
 {% extends 'fishing/base.html' %}
 {% block content %}
 
+{% if aroma_base_list != None %}
+{% if aroma_base_list %}
+<!-- Арома для смеси -->
+<ul>
+    {% for aroma_base in aroma_base_list %}
+    <form action="{% url 'fishing:aroma_in_lure_mix_select' fishing_id lure_mix_id aroma_base.id %}" method="GET">
+        <p>{{aroma_base}}
+            <button class="btn">Выбрать</button>
+        </p>
+    </form>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Аром не добавлено</p>
+{% endif %}
+<p>
+    <button onclick="back()" class="btn">Назад</button>
+</p>
+{% endif %}
+
 {% if crochet_list != None %}
 {% if crochet_list %}
 <!-- Крючки для рыбалки -->

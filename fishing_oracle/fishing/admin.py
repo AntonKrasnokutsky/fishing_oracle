@@ -20,7 +20,7 @@ from .models import FishingLure
 from .models import Lure
 from .models import LureBase
 from .models import LureMix
-from .models import Nozzle
+from .models import NozzleBase
 from .models import NozzleState
 from .models import Aroma
 from .models import AromaBase
@@ -53,7 +53,7 @@ admin.site.register(FishingLure)
 admin.site.register(Lure)
 admin.site.register(LureBase)
 admin.site.register(LureMix)
-admin.site.register(Nozzle)
+admin.site.register(NozzleBase)
 admin.site.register(NozzleState)
 admin.site.register(Aroma)
 admin.site.register(AromaBase)

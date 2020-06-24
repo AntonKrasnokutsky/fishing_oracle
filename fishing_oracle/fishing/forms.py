@@ -8,7 +8,7 @@ from .models import Tackle, Montage, ModelTroughName, ModelTrough
 from .models import Trough
 from .models import BottomMap, Point
 from .models import Weather, Overcast, WeatherPhenomena
-from .models import NozzleState, Nozzle
+from .models import NozzleState, NozzleBase
 from .models import Lure, LureBase, LureMix
 from .models import AromaBase, Aroma
 from .models import Crochet, Leash
@@ -19,7 +19,7 @@ from django import forms
 class AromaForm(forms.ModelForm):
     class Meta:
         model = Aroma
-        fields = ['aroma_base', 'aroma_volume', ]
+        fields = ['aroma_volume', ]
 
 
 class AromaBaseForm(forms.ModelForm):
@@ -133,9 +133,9 @@ class ModelTroughNameForm(forms.ModelForm):
         fields = ('model_trough_name',)
 
 
-class NozzleForm(forms.ModelForm):
+class NozzleBaseForm(forms.ModelForm):
     class Meta:
-        model = Nozzle
+        model = NozzleBase
         fields = ('bait', 'nozzle_manufacturer',
                   'nozzle_name', 'nozzle_diameter',
                   'nozzle_type')

@@ -236,12 +236,20 @@
     <button class="btn">Добавить прикорм</button>
 </form>
 <p><strong>Аромы:</strong></p>
-{% for aroma in fishing.fishinglure_set.get.luremix_set.get.aroma_set.all %}
+{% for aroma in fishing.fishinglure_set.get.lure_mix.aroma_set.all %}
 <p><strong>Арома {{ forloop.counter }}</strong></p>
 <p><strong>Производитель: </strong>{{ aroma.aroma_base.aroma_manufacturer }}</p>
 <p><strong>Название: </strong>{{ aroma.aroma_base.aroma_name }}</p>
-<p><strong>Объем аромы: </strong>{{ aroma.aroma_volume }}</p>
+<p><strong>Объем аромы: </strong>{{ aroma.aroma_volume }} л.</p>
+<form action="{% url 'fishing:aroma_in_lure_mix_remove' fishing.id fishing.fishinglure_set.get.lure_mix.id aroma.id %}" method="POST">
+    {% csrf_token %}
+    <button class="btn">Удалить арому</button>
+</form>
 {% endfor %}
+<form action="{% url 'fishing:aroma_in_lure_mix' fishing.id fishing.fishinglure_set.get.lure_mix.id %}" method="GET">
+    {% csrf_token %}
+    <button class="btn">Добавить арому</button>
+</form>
 
 <p><strong>Добавки в состав:</strong></p>
 {% for nozzle in fishing.fishinglure_set.get.luremix_set.get.nozzlelure_set.all %}
@@ -292,6 +300,7 @@
     <a href="{% url 'fishing:fishing_result_remove' fishing.id fishing_result.id %}" class="btn">Удалить</a>
 </p>
 {% endfor %}
+<a href="{% url 'fishing:fishing_result_add' fishing.id %}" class="btn">Добвить результат</a>
 
 <p><strong>Трофеи:</strong></p>
 {% for fish_trophy in fishing.fishtrophy_set.all %}
@@ -302,12 +311,8 @@
     <a href="{% url 'fishing:fish_trophy_remove' fishing.id fish_trophy.id %}" class="btn">Удалить</a>
 </p>
 {% endfor %}
-{% if fishing.owner == user %}
-<a href="{% url 'fishing:fishing_result_add' fishing.id %}" class="btn">Добвить результат</a>
 <a href="{% url 'fishing:fish_trophy_add' fishing.id %}" class="btn">Добвить трофей</a>
-<a onclick="back()" class="btn">Назад</a>
-{% endif %}
-<a onclick="back()" class="btn">Назад</a>
+<p><a onclick="back()" class="btn">Назад</a></p>
 {% endif %}
 
 

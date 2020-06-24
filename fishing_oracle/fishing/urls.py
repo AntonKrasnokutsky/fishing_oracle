@@ -679,10 +679,21 @@ urlpatterns = [
     path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/lure/<int:lure_id>/remove/',
          views.LureInLureMixDelete.as_view(),
          name='lure_in_lure_mix_remove'),
-    #Изменить прикорм в миксе
-    
     #Список прикормов для микса
     path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/lure/',
          views.LureInLureMixSelect.as_view(),
          name='lure_in_lure_mix'),
+    #Арома в миксе
+    # Добавить арому в микс
+    path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/aroma/<int:aroma_base_id>/select/',
+         views.AromaInLureMixViews.as_view(),
+         name='aroma_in_lure_mix_select'),
+    #Удалить арому из микса
+    path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/aroma/<int:aroma_id>/remove/',
+         views.AromaInLureMixDelete.as_view(),
+         name='aroma_in_lure_mix_remove'),
+    #Список арому для микса
+    path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/aroma/',
+         views.AromaInLureMixSelect.as_view(),
+         name='aroma_in_lure_mix'),
 ]
