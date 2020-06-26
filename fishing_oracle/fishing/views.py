@@ -1997,7 +1997,7 @@ def nozzle_add(request):
     num_visits = visits(request)
     if request.method == "POST":
         nozzle = NozzleBase()
-        form = NozzleForm(request.POST)
+        form = NozzleBaseForm(request.POST)
         if form.is_valid():
             nozzle.owner = request.user
             nozzle.bait = form.cleaned_data['bait']
@@ -2008,7 +2008,7 @@ def nozzle_add(request):
             nozzle.save()
         return redirect('fishing:nozzle')
     else:
-        form = NozzleForm()
+        form = NozzleBaseForm()
         return render(request,
                       template_renewal_add_path,
                       {'form': form,
