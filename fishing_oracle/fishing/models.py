@@ -398,7 +398,7 @@ class FishingNozzle(models.Model): # Наживки\насадки исполь�
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     #Связь с рыбалкой
-    fishing= models.ForeignKey('Fishing',
+    fishing = models.ForeignKey('Fishing',
                                 on_delete=models.PROTECT,
                                 verbose_name='Рыбалка')
     #Свзять с наживкой
@@ -812,6 +812,28 @@ class Montage(models.Model):  # Монтажи
         return (self.montage_name + ' ' +
                 ('скользящий' if self.montage_sliding else ''))
 
+class Nozzle(models.Model): # Добавки в прикормочную смесь
+    class Meta:
+        verbose_name = "Добавка в прикормочную смесь"
+        verbose_name_plural = "Добавки в прикормочную смесь"
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи")
+    #Наживка/насадка
+    nozzle_base=models.ForeignKey('NozzleBase',
+                             on_delete=models.PROTECT,
+                             verbose_name='Насадка/наживка')
+    #Состояние
+    nozzle_state=models.ForeignKey('NozzleState',
+                                   on_delete=models.PROTECT,
+                                   verbose_name='Состояние наживки/насадки')
+    # Связь с прикормочной смесью
+    lure_mix = models.ForeignKey(
+        'LureMix',
+        on_delete=models.PROTECT,
+        verbose_name="Прикормочная смесь")
 
 
 class NozzleBase(models.Model):  # Насдаки и наживки

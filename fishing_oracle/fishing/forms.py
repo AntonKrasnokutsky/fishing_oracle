@@ -8,7 +8,7 @@ from .models import Tackle, Montage, ModelTroughName, ModelTrough
 from .models import Trough
 from .models import BottomMap, Point
 from .models import Weather, Overcast, WeatherPhenomena
-from .models import NozzleState, NozzleBase
+from .models import Nozzle, NozzleState, NozzleBase
 from .models import Lure, LureBase, LureMix
 from .models import AromaBase, Aroma
 from .models import Crochet, Leash
@@ -132,6 +132,11 @@ class ModelTroughNameForm(forms.ModelForm):
         model = ModelTroughName
         fields = ('model_trough_name',)
 
+
+class NozzleForm(forms.ModelForm):
+    class Meta:
+        model = Nozzle
+        fields = ['nozzle_state',]
 
 class NozzleBaseForm(forms.ModelForm):
     class Meta:

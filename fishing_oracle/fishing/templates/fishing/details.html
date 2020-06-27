@@ -252,11 +252,16 @@
 </form>
 
 <p><strong>Добавки в состав:</strong></p>
-{% for nozzle in fishing.fishinglure_set.get.luremix_set.get.nozzlelure_set.all %}
+{% for nozzle in fishing.fishinglure_set.get.lure_mix.nozzle_set.all %}
 <p><strong>Наживка/насадка: {{ forloop.counter }}</strong></p>
-<p><strong>Название: </strong>{{ nozzle.nozzle.nozzle_name }}</p>
+<p><strong>Название: </strong>{{ nozzle.nozzle_base.nozzle_name }}</p>
 <p><strong>Состояние: </strong>{{ nozzle.nozzle_state.state }}</p>
 {% endfor %}
+
+<form action="{% url 'fishing:nozzle_in_lure_mix' fishing.id fishing.fishinglure_set.get.lure_mix.id %}" method="GET">
+    {% csrf_token %}
+    <button class="btn">Добавить компонент</button>
+</form>
 
 <form action="{% url 'fishing:fishing_lure_select' fishing.id fishing.fishinglure_set.get.id %}" method="GET">
     {% csrf_token %}

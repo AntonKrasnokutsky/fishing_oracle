@@ -696,4 +696,17 @@ urlpatterns = [
     path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/aroma/',
          views.AromaInLureMixSelect.as_view(),
          name='aroma_in_lure_mix'),
+    # Добавки в миксе
+    # Добавить добавки в микс
+    path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/nozzle/<int:nozzle_base_id>/select/',
+         views.NozzleInLureMixViews.as_view(),
+         name='nozzle_in_lure_mix_select'),
+    #Удалить добавки из микса
+    path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/nozzle/<int:nozzle_id>/remove/',
+         views.NozzleInLureMixDelete.as_view(),
+         name='nozzle_in_lure_mix_remove'),
+    #Список добавки для микса
+    path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/nozzle/',
+         views.NozzleInLureMixSelect.as_view(),
+         name='nozzle_in_lure_mix'),
 ]

@@ -152,6 +152,28 @@
 </p>
 {% endif %}
 
+{% if nozzle_base_list != None %}
+{% if nozzle_base_list %}
+<!-- Наживки использованные в прикормочную смесь -->
+<ul>
+    {% for nozzle in nozzle_base_list %}
+    <form action="{% url 'fishing:nozzle_in_lure_mix_select' fishing_id lure_mix_id nozzle.id %}" method="get">
+        {% csrf_token %}
+        <p>{{nozzle}}
+            <button class="btn">Выбрать</button>
+        </p>
+    </form>
+    {% endfor %}
+</ul>
+{% else %}
+<p>Наживок насадок еще не добавлено</p>
+{% endif %}
+<p>
+    {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
+    <button onclick="back()" class="btn">Назад</button>
+</p>
+{% endif %}
+
 {% if pace_list != None %}
 {% if pace_list %}
 <!-- Темп рыбалки -->
