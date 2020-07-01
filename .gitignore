@@ -1,5 +1,6 @@
  
 .venv/
+env/
 fishing_oracle/settings.py
 **/__pycache__/
 **/migrations/
