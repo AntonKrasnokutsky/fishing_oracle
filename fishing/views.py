@@ -688,7 +688,7 @@ def fish_details(request, fish_id):
     fish = get_object_or_404(Fish, pk=fish_id)
     num_visits = visits(request)
     return render(request,
-                  'fishing/fish_details.html',
+                  template_details_path,
                   {'fish': fish,
                    'num_visits': num_visits})
 

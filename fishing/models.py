@@ -726,7 +726,7 @@ class LureMix(models.Model): #Смеси прикромов
         verbose_name="Владелец записи")
     # Название состава
     lure_mix_name=models.CharField(max_length=100,
-                                   verbose_name='Названи состава')
+                                   verbose_name='Название состава')
     
     def __str__(self):
         return self.lure_mix_name
