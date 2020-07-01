@@ -2168,15 +2168,15 @@ class NozzleInLureMixSelect(View):
 
 
 class NozzleInLureMixViews(View):
-    model=Nozzle
-    form=NozzleForm
+    model = Nozzle
+    form = NozzleForm
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(NozzleInLureMixViews, self).dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
-        num_visits=visits(request)
+        num_visits = visits(request)
         form = self.form()
         return render(request,
                           template_renewal_add_path,
