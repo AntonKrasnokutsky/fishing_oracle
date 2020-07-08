@@ -78,6 +78,7 @@
       <a href="/">Домой</a>
       {% if user.is_authenticated %}
       <a href="{% url 'fishing:fishing' %}">Рыбалки</a>
+      <a href="{% url 'blog:post_list' %}" target="_blank">Блог</a>
       {% endif %}
       <a href="{% url 'fishing:fish' %}">Рыба</a>
       {% if user.is_authenticated %}
@@ -99,6 +100,7 @@
 <footer>
   <div class="footer">
     <p>Вы просматривали эту страницу {{ num_visits }} раз.</p>
+
   </div>
 </footer>
 
