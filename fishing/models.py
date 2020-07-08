@@ -11,22 +11,22 @@ class Aroma(models.Model):  # Аромы в прикормочной смеси
         verbose_name = 'Арома в прикормочной смеси'
         verbose_name_plural = 'Аромы в прикормочной смеси'
         ordering = ['lure_mix', 'aroma_base', 'aroma_volume', ]
-    #Владелец записи
+    # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
-    #Прикормочный состав
+    # Прикормочный состав
     lure_mix = models.ForeignKey(
         'LureMix',
         on_delete=models.PROTECT,
         verbose_name="Прикормочная смесь")
-    #Арома
+    # Арома
     aroma_base = models.ForeignKey(
         'AromaBase',
         on_delete=models.PROTECT,
         verbose_name="Арома базовая")
-    #Объем аромы
+    # Объем аромы
     aroma_volume = models.DecimalField(
         max_digits=4,
         decimal_places=2,
@@ -263,54 +263,55 @@ class Fishing(models.Model):  # Рыбалки
     # Место проведения рыбалки
     # PlaceFishing
     # Погода
-    #weather
+    # weather
     # Снасть
     # fishing_tackle
     # Монтаж
-    #fishing_montage
+    # fishing_montage
     # Используемая кормушка
-    #fishing_trough
+    # fishing_trough
     # Прикормочная смесь
-    #fishing_lure
+    # fishing_lure
     # Арома
     # В прикормочной смеси
     # Поводок
-    #fishing_leash
+    # fishing_leash
     # Крючек
-    #crochet
+    # crochet
     # Наживка/насадка
-    #nozzle
+    # nozzle
     # Темп
-    #pace
+    # pace
     # Результат рыбалки
     # Трофей
 
     def __str__(self):
         return str(self.date) + ' ' + str(self.time)
 
-class FishingCrochet(models.Model): #Крючки использованные в рыбалке
+
+class FishingCrochet(models.Model):  # Крючки использованные в рыбалке
     """
     Содержит информациб о крючках использованных в рыбалке
     """
     class Meta:
-        verbose_name=''
-        verbose_name_plural=''
-        ordering=['crochet']
-    #Владелец записи
-    owner=models.ForeignKey(CustomUser,
-                            models.SET_NULL,
-                            blank=True,
-                            null=True,
-                            verbose_name='Владелец записи')
-    #Привязка к рыбалке
-    fishing=models.ForeignKey('Fishing',
-                              on_delete=models.PROTECT,
-                              verbose_name='Рыбалка')
-    #Привязка крючка
-    crochet=models.ForeignKey('Crochet',
-                              on_delete=models.PROTECT,
-                              verbose_name='Крючок')
-    
+        verbose_name = ''
+        verbose_name_plural = ''
+        ordering = ['crochet']
+    # Владелец записи
+    owner = models.ForeignKey(CustomUser,
+                              models.SET_NULL,
+                              blank=True,
+                              null=True,
+                              verbose_name='Владелец записи')
+    # Привязка к рыбалке
+    fishing = models.ForeignKey('Fishing',
+                                on_delete=models.PROTECT,
+                                verbose_name='Рыбалка')
+    # Привязка крючка
+    crochet = models.ForeignKey('Crochet',
+                                on_delete=models.PROTECT,
+                                verbose_name='Крючок')
+
     def __str__(self):
         return str(self.crochet)
 
@@ -322,7 +323,7 @@ class FishingLeash(models.Model):  # Поводки использованные
     class Meta:
         verbose_name = "Поводок использованный в рыбалке"
         verbose_name_plural = "Поводки использованные в рыбалке"
-        ordering = ['fishing', 'leash',]
+        ordering = ['fishing', 'leash', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
@@ -352,13 +353,13 @@ class FishingLure(models.Model):  # Прикормочный состав для
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # Привязка к рыбалке
-    fishing=models.ForeignKey('Fishing',
-                              on_delete=models.PROTECT,
-                              verbose_name='Рыбалка')
+    fishing = models.ForeignKey('Fishing',
+                                on_delete=models.PROTECT,
+                                verbose_name='Рыбалка')
     # Привязка к смеси
-    lure_mix=models.ForeignKey('LureMix',
-                               on_delete=models.PROTECT,
-                               verbose_name='Прикормочная смесь')
+    lure_mix = models.ForeignKey('LureMix',
+                                 on_delete=models.PROTECT,
+                                 verbose_name='Прикормочная смесь')
 
 
 class FishingMontage(models.Model):  # Монтажи в рыбалке
@@ -369,7 +370,7 @@ class FishingMontage(models.Model):  # Монтажи в рыбалке
     class Meta:
         verbose_name = "Монтаж на рыбалке"
         verbose_name_plural = "Монтажи на рыбалке"
-        ordering = ['fishing', 'montage',]
+        ordering = ['fishing', 'montage', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
@@ -384,46 +385,48 @@ class FishingMontage(models.Model):  # Монтажи в рыбалке
                                 on_delete=models.PROTECT,
                                 verbose_name="Монтаж")
 
-class FishingNozzle(models.Model): # Наживки\насадки использованные в рыбалке
+
+class FishingNozzle(models.Model):  # Наживки\насадки использованные в рыбалке
     """
     Содержит связи наживок и их состояний с рыбалкой
     """
     class Meta:
-        verbose_name='Наживка использованная в рыбалке'
-        verbose_name_plural='Наживки использованная в рыбалке'
-        ordering=['id',]
-    #Владелец записи
+        verbose_name = 'Наживка использованная в рыбалке'
+        verbose_name_plural = 'Наживки использованная в рыбалке'
+        ordering = ['id', ]
+    # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
-    #Связь с рыбалкой
+    # Связь с рыбалкой
     fishing = models.ForeignKey('Fishing',
                                 on_delete=models.PROTECT,
                                 verbose_name='Рыбалка')
-    #Свзять с наживкой
+    # Свзять с наживкой
     nozzle_base = models.ForeignKey('NozzleBase',
-                                on_delete=models.PROTECT,
-                                verbose_name='Наживка')
-    #Связь с состоянием наживки
-    #nozzle_state= models.ForeignKey('NozzleState',
+                                    on_delete=models.PROTECT,
+                                    verbose_name='Наживка')
+    # Связь с состоянием наживки
+    # nozzle_state= models.ForeignKey('NozzleState',
     #                            on_delete=models.PROTECT,
     #                            verbose_name='Состояние наживки')
 
-class FishingPace(models.Model): # Темп рыбалки
+
+class FishingPace(models.Model):  # Темп рыбалки
     class Meta:
-        verbose_name='Темп рыбалки'
-        verbose_name_plural='Темп рыбалки'
-    #Владелец записи
+        verbose_name = 'Темп рыбалки'
+        verbose_name_plural = 'Темп рыбалки'
+    # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
-    #Связь с рыбалкой
-    fishing= models.ForeignKey('Fishing',
+    # Связь с рыбалкой
+    fishing = models.ForeignKey('Fishing',
                                 on_delete=models.PROTECT,
                                 verbose_name='Рыбалка')
-    #Связь с темпом
+    # Связь с темпом
     pace = models.ForeignKey('Pace',
                              on_delete=models.PROTECT,
                              verbose_name='Темп')
@@ -542,7 +545,7 @@ class FishingTrough(models.Model):  # Кормушки использованн�
     class Meta:
         verbose_name = "Рыболовная кормушка"
         verbose_name_plural = "Рыболовные кормушки"
-        ordering = ['fishing', 'trough',]
+        ordering = ['fishing', 'trough', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
@@ -558,26 +561,28 @@ class FishingTrough(models.Model):  # Кормушки использованн�
         on_delete=models.PROTECT,
         verbose_name="Кормушка")
 
-class FishingWeather(models.Model): #Погода во время рыбалки
+
+class FishingWeather(models.Model):  # Погода во время рыбалки
     """
     Содержит информацию о погоде во время рыбалки
     """
     class Meta:
-        verbose_name=''
-        verbose_name_plural=''
+        verbose_name = ''
+        verbose_name_plural = ''
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # Связь с рыбалкой
-    fishing=models.ForeignKey('Fishing',
-                              on_delete=models.PROTECT,
-                              verbose_name='Рыбалка')
+    fishing = models.ForeignKey('Fishing',
+                                on_delete=models.PROTECT,
+                                verbose_name='Рыбалка')
     # Связь с записью погоды
-    weather=models.ForeignKey('Weather',
-                              on_delete=models.PROTECT,
-                              verbose_name='Погода')
+    weather = models.ForeignKey('Weather',
+                                on_delete=models.PROTECT,
+                                verbose_name='Погода')
+
 
 class FishTrophy(models.Model):  # Трофей рыбалки
     """
@@ -711,25 +716,27 @@ class LureBase(models.Model):  # Прикорм
     def __str__(self):
         return self.lure_manufacturer + ' ' + self.lure_name
 
-class LureMix(models.Model): #Смеси прикромов
+
+class LureMix(models.Model):  # Смеси прикромов
     """
     Содержит прикормочный состав
     """
     class Meta:
-        verbose_name='Прикормочная смесь'
-        verbose_name_plural='Прикормочные смеси'
-        ordering=['lure_mix_name',]
+        verbose_name = 'Прикормочная смесь'
+        verbose_name_plural = 'Прикормочные смеси'
+        ordering = ['lure_mix_name', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # Название состава
-    lure_mix_name=models.CharField(max_length=100,
-                                   verbose_name='Название состава')
-    
+    lure_mix_name = models.CharField(max_length=100,
+                                     verbose_name='Название состава')
+
     def __str__(self):
         return self.lure_mix_name
+
 
 class ModelTrough(models.Model):  # Модели кормушек
     """
@@ -812,7 +819,8 @@ class Montage(models.Model):  # Монтажи
         return (self.montage_name + ' ' +
                 ('скользящий' if self.montage_sliding else ''))
 
-class Nozzle(models.Model): # Добавки в прикормочную смесь
+
+class Nozzle(models.Model):  # Добавки в прикормочную смесь
     class Meta:
         verbose_name = "Добавка в прикормочную смесь"
         verbose_name_plural = "Добавки в прикормочную смесь"
@@ -821,14 +829,14 @@ class Nozzle(models.Model): # Добавки в прикормочную сме�
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
-    #Наживка/насадка
-    nozzle_base=models.ForeignKey('NozzleBase',
-                             on_delete=models.PROTECT,
-                             verbose_name='Насадка/наживка')
-    #Состояние
-    nozzle_state=models.ForeignKey('NozzleState',
-                                   on_delete=models.PROTECT,
-                                   verbose_name='Состояние наживки/насадки')
+    # Наживка/насадка
+    nozzle_base = models.ForeignKey('NozzleBase',
+                                    on_delete=models.PROTECT,
+                                    verbose_name='Насадка/наживка')
+    # Состояние
+    nozzle_state = models.ForeignKey('NozzleState',
+                                     on_delete=models.PROTECT,
+                                     verbose_name='Состояние наживки/насадки')
     # Связь с прикормочной смесью
     lure_mix = models.ForeignKey(
         'LureMix',
@@ -871,33 +879,36 @@ class NozzleBase(models.Model):  # Насдаки и наживки
         blank=True,
         verbose_name="Диаметр насадки")
     # тип насадки (Плавающий, тонущий, пылящий и т.д.)
-    nozzle_type = models.CharField(
-        max_length=20,
+    nozzle_type = models.ForeignKey(
+        'NozzleType',
+        on_delete=models.PROTECT,
         blank=True,
-        verbose_name="Тип насадки")
+        verbose_name='Тип насадки')
 
     def __str__(self):
         return self.nozzle_name
 
-class NozzleLure(models.Model): #Наживки\насадки в прикормочном составе
+
+class NozzleLure(models.Model):  # Наживки\насадки в прикормочном составе
     """
     """
     class Meta:
-        verbose_name=''
-        verbose_name_plural=''
+        verbose_name = ''
+        verbose_name_plural = ''
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
-    #Наживка/насадка
-    nozzle_base=models.ForeignKey('NozzleBase',
-                             on_delete=models.PROTECT,
-                             verbose_name='Насадка/наживка')
-    #Состояние
-    nozzle_state=models.ForeignKey('NozzleState',
-                                   on_delete=models.PROTECT,
-                                   verbose_name='Состояние наживки/насадки')
+    # Наживка/насадка
+    nozzle_base = models.ForeignKey('NozzleBase',
+                                    on_delete=models.PROTECT,
+                                    verbose_name='Насадка/наживка')
+    # Состояние
+    nozzle_state = models.ForeignKey('NozzleState',
+                                     on_delete=models.PROTECT,
+                                     verbose_name='Состояние наживки/насадки')
+
 
 class NozzleState(models.Model):  # Состояние наживки
     """
@@ -920,6 +931,24 @@ class NozzleState(models.Model):  # Состояние наживки
 
     def __str__(self):
         return self.state
+
+
+class NozzleType(models.Model):
+    """
+    Содержит варианты типов насадки
+    """
+    class Meta:
+        verbose_name = 'Тип насадки'
+        verbose_name_plural = 'Типы насадки'
+        ordering = ['nozzle_type']
+
+    # Тип насадки
+    nozzle_type = models.CharField(
+        max_length=40,
+        verbose_name='Тип насадки')
+
+    def __str__(self):
+        return self.nozzle_type
 
 
 class Overcast(models.Model):  # Облачность
