@@ -766,7 +766,7 @@ class ModelTrough(models.Model):  # Модели кормушек
         verbose_name="грунтозацепы")
 
     def __str__(self):
-        return str(self.model_trough_name)
+        return str(self.model_trough_name) + str(' пластик' if self.model_trough_plastic else ' металл') + str(' с грунтозацепами' if self.model_trough_lugs else '')
 
 
 class ModelTroughName(models.Model):  # Название моделей кормушек

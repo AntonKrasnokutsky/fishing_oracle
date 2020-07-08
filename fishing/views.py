@@ -50,7 +50,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 # Переменные
 template_renewal_add_path = 'fishing/renewal_add.html'
-template_renewal_add_class_path  = 'fishing/edit.html'
+template_renewal_add_class_path = 'fishing/edit.html'
 template_list_path = 'fishing/list.html'
 template_details_path = 'fishing/details.html'
 template_select_path = 'fishing/select.html'
@@ -191,58 +191,61 @@ def aroma_base_renewal(request, aroma_base_id):
     else:
         return redirect('fishing:aroma_base')
 
+
 class AromaInLureMixDelete(View):
-    model=Aroma
-    
+    model = Aroma
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(AromaInLureMixDelete, self).dispatch(*args, **kwargs)
-    
+
     def post(self, request, *args, **kwargs):
-        aroma=get_object_or_404(self.model, pk=kwargs['aroma_id'])
-        if aroma.owner==request.user:
+        aroma = get_object_or_404(self.model, pk=kwargs['aroma_id'])
+        if aroma.owner == request.user:
             aroma.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
+
 class AromaInLureMixSelect(View):
-    
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(AromaInLureMixSelect, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
-        num_visits=visits(request)
+        num_visits = visits(request)
         aroma_base_list = AromaBase.objects.filter(owner=request.user)
         return render(request,
-                          template_select_path,
-                          {'aroma_base_list': aroma_base_list,
-                           'fishing_id':kwargs['fishing_id'],
-                           'lure_mix_id':kwargs['lure_mix_id'],
-                           'num_visits': num_visits})
+                      template_select_path,
+                      {'aroma_base_list': aroma_base_list,
+                       'fishing_id': kwargs['fishing_id'],
+                       'lure_mix_id': kwargs['lure_mix_id'],
+                       'num_visits': num_visits})
 
 
 class AromaInLureMixViews(View):
-    model=Aroma
-    form=AromaForm
-    
+    model = Aroma
+    form = AromaForm
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(AromaInLureMixViews, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
-        num_visits=visits(request)
+        num_visits = visits(request)
         form = self.form()
         return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
 
     def post(self, request, *args, **kwargs):
         entry = self.model()
         form = self.form(request.POST)
         if form.is_valid():
-            lure_mix=get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-            aroma_base=get_object_or_404(AromaBase, pk=kwargs['aroma_base_id'])
+            lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
+            aroma_base = get_object_or_404(
+                AromaBase, pk=kwargs['aroma_base_id'])
             entry = form.save(commit=False)
             entry.owner = request.user
             entry.lure_mix = lure_mix
@@ -877,90 +880,91 @@ def fishing_renewal(request, fishing_id):
 
 
 class FishingCrochetDelete(View):
-    model=FishingCrochet
-    
+    model = FishingCrochet
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(FishingCrochetDelete, self).dispatch(*args, **kwargs)
-    
+
     def post(self, request, *args, **kwargs):
-        fishing_crochet=get_object_or_404(self.model, pk=kwargs['fishing_crochet_id'])
-        if fishing_crochet.owner==request.user:
+        fishing_crochet = get_object_or_404(
+            self.model, pk=kwargs['fishing_crochet_id'])
+        if fishing_crochet.owner == request.user:
             fishing_crochet.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
-    
-    
-    
+
+
 class FishingCrochetViews(View):
     model = FishingCrochet
-    
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(FishingCrochetViews, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
-        num_visits=visits(request)
-        crochet_list=Crochet.objects.filter(owner=request.user)
+        num_visits = visits(request)
+        crochet_list = Crochet.objects.filter(owner=request.user)
         return render(request,
-                  template_select_path,
-                  {'crochet_list':crochet_list,
-                   'fishing_id':kwargs['fishing_id'],
-                   'fishing_crochet_id':kwargs['fishing_crochet_id'],
-                   'num_visits':num_visits})
-    
+                      template_select_path,
+                      {'crochet_list': crochet_list,
+                       'fishing_id': kwargs['fishing_id'],
+                       'fishing_crochet_id': kwargs['fishing_crochet_id'],
+                       'num_visits': num_visits})
+
     def post(self, request, *args, **kwargs):
-        crochet=get_object_or_404(Crochet, pk=kwargs['crochet_id'])
+        crochet = get_object_or_404(Crochet, pk=kwargs['crochet_id'])
         if kwargs['fishing_crochet_id'] != 0:
-            fishing_crochet=get_object_or_404(self.model, pk=kwargs['fishing_crochet_id'])
+            fishing_crochet = get_object_or_404(
+                self.model, pk=kwargs['fishing_crochet_id'])
             if fishing_crochet.owner == request.user:
-                fishing_crochet.crochet=crochet
+                fishing_crochet.crochet = crochet
                 fishing_crochet.save()
         else:
-            fishing=get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+            fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
             if fishing.owner == request.user:
-                fishing_crochet=self.model()
-                fishing_crochet.owner=request.user
-                fishing_crochet.fishing=fishing
-                fishing_crochet.crochet=crochet
+                fishing_crochet = self.model()
+                fishing_crochet.owner = request.user
+                fishing_crochet.fishing = fishing
+                fishing_crochet.crochet = crochet
                 fishing_crochet.save()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 
 @login_required
 def fishing_leash_add(request, fishing_id, leash_id, fishing_leash_id):
-    leash=get_object_or_404(Leash, pk=leash_id)
+    leash = get_object_or_404(Leash, pk=leash_id)
     if fishing_leash_id != 0:
-        fishing_leash=get_object_or_404(FishingLeash, pk=fishing_leash_id)
-        fishing_leash.leash=leash
+        fishing_leash = get_object_or_404(FishingLeash, pk=fishing_leash_id)
+        fishing_leash.leash = leash
         fishing_leash.save()
     else:
-        fishing=get_object_or_404(Fishing, pk=fishing_id)
-        fishing_leash=FishingLeash()
-        fishing_leash.owner=request.user
-        fishing_leash.fishing=fishing
-        fishing_leash.leash=leash
+        fishing = get_object_or_404(Fishing, pk=fishing_id)
+        fishing_leash = FishingLeash()
+        fishing_leash.owner = request.user
+        fishing_leash.fishing = fishing
+        fishing_leash.leash = leash
         fishing_leash.save()
     return redirect('fishing:fishing_details', fishing_id)
 
 
 @login_required
 def fishing_leash_remove(request, fishing_id, fishing_leash_id):
-    fishing_leash=get_object_or_404(FishingLeash, pk=fishing_leash_id)
-    if fishing_leash.owner==request.user:
+    fishing_leash = get_object_or_404(FishingLeash, pk=fishing_leash_id)
+    if fishing_leash.owner == request.user:
         fishing_leash.delete()
     return redirect('fishing:fishing_details', fishing_id)
 
 
 @login_required
 def fishing_leash_select(request, fishing_id, fishing_leash_id):
-    num_visits=visits(request)
-    leash_list=Leash.objects.filter(owner=request.user)
+    num_visits = visits(request)
+    leash_list = Leash.objects.filter(owner=request.user)
     return render(request,
                   template_select_path,
-                  {'leash_list':leash_list,
-                   'fishing_id':fishing_id,
-                   'fishing_leash_id':fishing_leash_id,
-                   'num_visits':num_visits})
+                  {'leash_list': leash_list,
+                   'fishing_id': fishing_id,
+                   'fishing_leash_id': fishing_leash_id,
+                   'num_visits': num_visits})
 
 
 @login_required
@@ -1023,7 +1027,7 @@ def fishing_lure_renewal(request, fishing_lure_id):
         if request.method == 'POST':
             form = LureMixForm(request.POST, instance=fishing_lure)
             if form.is_valid():
-                fishing_lure = form.save(commit = False)
+                fishing_lure = form.save(commit=False)
                 fishing_lure.owner = request.user
                 fishing_lure.save()
                 return redirect('fishing:fishnig_lure')
@@ -1042,7 +1046,8 @@ def fishing_montage_add(request, fishing_id, montage_id, fishing_montage_id):
     fishing = get_object_or_404(Fishing, pk=fishing_id)
     montage = get_object_or_404(Montage, pk=montage_id)
     if fishing_montage_id != 0:
-        fishing_montage = get_object_or_404(FishingMontage, pk=fishing_montage_id)
+        fishing_montage = get_object_or_404(
+            FishingMontage, pk=fishing_montage_id)
         fishing_montage.fishing = fishing
         fishing_montage.montage = montage
         fishing_montage.save()
@@ -1076,15 +1081,16 @@ def fishing_montage_select(request, fishing_id, fishing_montage_id):
 
 
 class FishingNozzleDelete(View):
-    model=FishingNozzle
-    
+    model = FishingNozzle
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(FishingNozzleDelete, self).dispatch(*args, **kwargs)
-    
+
     def post(self, request, *args, **kwargs):
-        fishing_nozzle=get_object_or_404(self.model, pk=kwargs['fishing_nozzle_id'])
-        if fishing_nozzle.owner==request.user:
+        fishing_nozzle = get_object_or_404(
+            self.model, pk=kwargs['fishing_nozzle_id'])
+        if fishing_nozzle.owner == request.user:
             fishing_nozzle.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -1092,48 +1098,51 @@ class FishingNozzleDelete(View):
 class FishingNozzleViews(View):
     model_base = NozzleBase
     model = FishingNozzle
-    
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(FishingNozzleViews, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
-        num_visits=visits(request)
-        nozzle_list=self.model_base.objects.filter(owner=request.user)
+        num_visits = visits(request)
+        nozzle_list = self.model_base.objects.filter(owner=request.user)
         return render(request,
-                  template_select_path,
-                  {'nozzle_list':nozzle_list,
-                   'fishing_id':kwargs['fishing_id'],
-                   'fishing_nozzle_id':kwargs['fishing_nozzle_id'],
-                   'num_visits':num_visits})
-    
+                      template_select_path,
+                      {'nozzle_list': nozzle_list,
+                       'fishing_id': kwargs['fishing_id'],
+                       'fishing_nozzle_id': kwargs['fishing_nozzle_id'],
+                       'num_visits': num_visits})
+
     def post(self, request, *args, **kwargs):
-        nozzle=get_object_or_404(self.model_base, pk=kwargs['nozzle_id'])
+        nozzle = get_object_or_404(self.model_base, pk=kwargs['nozzle_id'])
         if kwargs['fishing_nozzle_id'] != 0:
-            fishing_nozzle=get_object_or_404(self.model, pk=kwargs['fishing_crochet_id'])
+            fishing_nozzle = get_object_or_404(
+                self.model, pk=kwargs['fishing_crochet_id'])
             if fishing_nozzle.owner == request.user:
                 fishing_nozzle.nozzle_base = nozzle
                 fishing_nozzle.save()
         else:
-            fishing=get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+            fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
             if fishing.owner == request.user:
-                fishing_nozzle=self.model()
-                fishing_nozzle.owner=request.user
-                fishing_nozzle.fishing=fishing
-                fishing_nozzle.nozzle_base=nozzle
+                fishing_nozzle = self.model()
+                fishing_nozzle.owner = request.user
+                fishing_nozzle.fishing = fishing
+                fishing_nozzle.nozzle_base = nozzle
                 fishing_nozzle.save()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
+
 class FishingPaceDelete(View):
-    model=FishingPace
-    
+    model = FishingPace
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(FishingPaceDelete, self).dispatch(*args, **kwargs)
-    
+
     def post(self, request, *args, **kwargs):
-        fishing_pace=get_object_or_404(self.model, pk=kwargs['fishing_pace_id'])
-        if fishing_pace.owner==request.user:
+        fishing_pace = get_object_or_404(
+            self.model, pk=kwargs['fishing_pace_id'])
+        if fishing_pace.owner == request.user:
             fishing_pace.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -1141,35 +1150,36 @@ class FishingPaceDelete(View):
 class FishingPaceViews(View):
     model_base = Pace
     model = FishingPace
-    
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(FishingPaceViews, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
-        num_visits=visits(request)
-        pace_list=self.model_base.objects.all()
+        num_visits = visits(request)
+        pace_list = self.model_base.objects.all()
         return render(request,
-                  template_select_path,
-                  {'pace_list':pace_list,
-                   'fishing_id':kwargs['fishing_id'],
-                   'fishing_pace_id':kwargs['fishing_pace_id'],
-                   'num_visits':num_visits})
-    
+                      template_select_path,
+                      {'pace_list': pace_list,
+                       'fishing_id': kwargs['fishing_id'],
+                       'fishing_pace_id': kwargs['fishing_pace_id'],
+                       'num_visits': num_visits})
+
     def post(self, request, *args, **kwargs):
-        pace=get_object_or_404(self.model_base, pk=kwargs['pace_id'])
+        pace = get_object_or_404(self.model_base, pk=kwargs['pace_id'])
         if kwargs['fishing_pace_id'] != 0:
-            fishing_pace=get_object_or_404(self.model, pk=kwargs['fishing_pace_id'])
+            fishing_pace = get_object_or_404(
+                self.model, pk=kwargs['fishing_pace_id'])
             if fishing_pace.owner == request.user:
-                fishing_pace.pace=pace
+                fishing_pace.pace = pace
                 fishing_pace.save()
         else:
-            fishing=get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+            fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
             if fishing.owner == request.user:
-                fishing_pace=self.model()
-                fishing_pace.owner=request.user
-                fishing_pace.fishing=fishing
-                fishing_pace.pace=pace
+                fishing_pace = self.model()
+                fishing_pace.owner = request.user
+                fishing_pace.fishing = fishing
+                fishing_pace.pace = pace
                 fishing_pace.save()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -1375,99 +1385,104 @@ def fishing_tackle_select(request, fishing_id, fishing_tackle_id):
 
 @login_required
 def fishing_trough_add(request, fishing_id, trough_id, fishing_trough_id):
-    fishing=get_object_or_404(Fishing, pk=fishing_id)
-    trough=get_object_or_404(Trough, pk=trough_id)
+    fishing = get_object_or_404(Fishing, pk=fishing_id)
+    trough = get_object_or_404(Trough, pk=trough_id)
     if fishing_trough_id != 0:
-        fishing_trough=get_object_or_404(FishingTrough, pk=fishing_trough_id)
-        fishing_trough.trough=trough
+        fishing_trough = get_object_or_404(FishingTrough, pk=fishing_trough_id)
+        fishing_trough.trough = trough
         fishing_trough.save()
     else:
-        fishing_trough=FishingTrough()
-        fishing_trough.owner=request.user
-        fishing_trough.fishing=fishing
-        fishing_trough.trough=trough
+        fishing_trough = FishingTrough()
+        fishing_trough.owner = request.user
+        fishing_trough.fishing = fishing
+        fishing_trough.trough = trough
         fishing_trough.save()
     return redirect('fishing:fishing_details', fishing_id)
 
+
 @login_required
 def fishing_trough_remove(request, fishing_id, fishing_trough_id):
-    fishing_trough=get_object_or_404(FishingTrough, pk=fishing_trough_id)
+    fishing_trough = get_object_or_404(FishingTrough, pk=fishing_trough_id)
     if fishing_trough.owner == request.user:
         fishing_trough.delete()
     return redirect('fishing:fishing_details', fishing_id)
 
+
 @login_required
 def fishing_trough_select(request, fishing_id, fishing_trough_id):
-    num_visits=visits(request)
-    trough_list=Trough.objects.filter(owner=request.user)
+    num_visits = visits(request)
+    trough_list = Trough.objects.filter(owner=request.user)
     return render(request,
                   template_select_path,
-                  {'trough_list':trough_list,
-                   'fishing_id':fishing_id,
-                   'fishing_trough_id':fishing_trough_id,
-                   'num_visits':num_visits,})
+                  {'trough_list': trough_list,
+                   'fishing_id': fishing_id,
+                   'fishing_trough_id': fishing_trough_id,
+                   'num_visits': num_visits, })
 
 
 class FishingLureDelete(View):
-    model=FishingLure
-    
+    model = FishingLure
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(FishingLureDelete, self).dispatch(*args, **kwargs)
-    
+
     def post(self, request, *args, **kwargs):
-        fishing_lure=get_object_or_404(self.model, pk=kwargs['fishing_lure_id'])
-        if fishing_lure.owner==request.user:
+        fishing_lure = get_object_or_404(
+            self.model, pk=kwargs['fishing_lure_id'])
+        if fishing_lure.owner == request.user:
             fishing_lure.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
+
 
 class FishingLureViews(View):
     model_base = LureMix
     model = FishingLure
-    
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(FishingLureViews, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
-        num_visits=visits(request)
-        lure_mix_list=self.model_base.objects.all()
+        num_visits = visits(request)
+        lure_mix_list = self.model_base.objects.all()
         return render(request,
-                  template_select_path,
-                  {'lure_mix_list':lure_mix_list,
-                   'fishing_id':kwargs['fishing_id'],
-                   'fishing_lure_id':kwargs['fishing_lure_id'],
-                   'num_visits':num_visits})
-    
+                      template_select_path,
+                      {'lure_mix_list': lure_mix_list,
+                       'fishing_id': kwargs['fishing_id'],
+                       'fishing_lure_id': kwargs['fishing_lure_id'],
+                       'num_visits': num_visits})
+
     def post(self, request, *args, **kwargs):
-        lure_mix=get_object_or_404(self.model_base, pk=kwargs['lure_mix_id'])
+        lure_mix = get_object_or_404(self.model_base, pk=kwargs['lure_mix_id'])
         if kwargs['fishing_lure_id'] != 0:
-            fishing_lure=get_object_or_404(self.model, pk=kwargs['fishing_lure_id'])
+            fishing_lure = get_object_or_404(
+                self.model, pk=kwargs['fishing_lure_id'])
             if fishing_lure.owner == request.user:
-                fishing_lure.lure_mix=lure_mix
+                fishing_lure.lure_mix = lure_mix
                 fishing_lure.save()
         else:
-            fishing=get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+            fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
             if fishing.owner == request.user:
-                fishing_lure=self.model()
-                fishing_lure.owner=request.user
-                fishing_lure.fishing=fishing
-                fishing_lure.lure_mix=lure_mix
+                fishing_lure = self.model()
+                fishing_lure.owner = request.user
+                fishing_lure.fishing = fishing
+                fishing_lure.lure_mix = lure_mix
                 fishing_lure.save()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 
-
 class FishingWeatherDelete(View):
-    model=FishingWeather
-    
+    model = FishingWeather
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(FishingWeatherDelete, self).dispatch(*args, **kwargs)
-    
+
     def post(self, request, *args, **kwargs):
-        fishing_weather=get_object_or_404(self.model, pk=kwargs['fishing_weather_id'])
-        if fishing_weather.owner==request.user:
+        fishing_weather = get_object_or_404(
+            self.model, pk=kwargs['fishing_weather_id'])
+        if fishing_weather.owner == request.user:
             fishing_weather.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -1475,35 +1490,36 @@ class FishingWeatherDelete(View):
 class FishingWeatherViews(View):
     model_base = Weather
     model = FishingWeather
-    
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(FishingWeatherViews, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
-        num_visits=visits(request)
-        weather_list=self.model_base.objects.all()
+        num_visits = visits(request)
+        weather_list = self.model_base.objects.all()
         return render(request,
-                  template_select_path,
-                  {'weather_list':weather_list,
-                   'fishing_id':kwargs['fishing_id'],
-                   'fishing_weather_id':kwargs['fishing_weather_id'],
-                   'num_visits':num_visits})
-    
+                      template_select_path,
+                      {'weather_list': weather_list,
+                       'fishing_id': kwargs['fishing_id'],
+                       'fishing_weather_id': kwargs['fishing_weather_id'],
+                       'num_visits': num_visits})
+
     def post(self, request, *args, **kwargs):
-        weather=get_object_or_404(self.model_base, pk=kwargs['weather_id'])
+        weather = get_object_or_404(self.model_base, pk=kwargs['weather_id'])
         if kwargs['fishing_weather_id'] != 0:
-            fishing_weather=get_object_or_404(self.model, pk=kwargs['fishing_weather_id'])
+            fishing_weather = get_object_or_404(
+                self.model, pk=kwargs['fishing_weather_id'])
             if fishing_weather.owner == request.user:
-                fishing_weather.weather=weather
+                fishing_weather.weather = weather
                 fishing_weather.save()
         else:
-            fishing=get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+            fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
             if fishing.owner == request.user:
-                fishing_weather=self.model()
-                fishing_weather.owner=request.user
-                fishing_weather.fishing=fishing
-                fishing_weather.weather=weather
+                fishing_weather = self.model()
+                fishing_weather.owner = request.user
+                fishing_weather.fishing = fishing
+                fishing_weather.weather = weather
                 fishing_weather.save()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -1689,58 +1705,59 @@ def lure_base_renewal(request, lure_base_id):
 
 
 class LureInLureMixDelete(View):
-    model=Lure
-    
+    model = Lure
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(LureInLureMixDelete, self).dispatch(*args, **kwargs)
-    
+
     def post(self, request, *args, **kwargs):
-        lure=get_object_or_404(self.model, pk=kwargs['lure_id'])
-        if lure.owner==request.user:
+        lure = get_object_or_404(self.model, pk=kwargs['lure_id'])
+        if lure.owner == request.user:
             lure.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
+
 class LureInLureMixSelect(View):
-    model=LureBase
-    
+    model = LureBase
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(LureInLureMixSelect, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
-        num_visits=visits(request)
+        num_visits = visits(request)
         lure_base_list = LureBase.objects.filter(owner=request.user)
         return render(request,
-                          template_select_path,
-                          {'lure_base_list': lure_base_list,
-                           'fishing_id':kwargs['fishing_id'],
-                           'lure_mix_id':kwargs['lure_mix_id'],
-                           'num_visits': num_visits})
+                      template_select_path,
+                      {'lure_base_list': lure_base_list,
+                       'fishing_id': kwargs['fishing_id'],
+                       'lure_mix_id': kwargs['lure_mix_id'],
+                       'num_visits': num_visits})
 
 
 class LureInLureMixViews(View):
-    model=Lure
-    form=LureForm
-    
+    model = Lure
+    form = LureForm
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(LureInLureMixViews, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
-        num_visits=visits(request)
+        num_visits = visits(request)
         form = self.form()
         return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
 
     def post(self, request, *args, **kwargs):
         entry = self.model()
         form = self.form(request.POST)
         if form.is_valid():
-            lure_mix=get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-            lure_base=get_object_or_404(LureBase, pk=kwargs['lure_base_id'])
+            lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
+            lure_base = get_object_or_404(LureBase, pk=kwargs['lure_base_id'])
             entry = form.save(commit=False)
             entry.owner = request.user
             entry.lure_mix = lure_mix
@@ -1750,35 +1767,36 @@ class LureInLureMixViews(View):
 
 
 class LureMixDelete(View):
-    model=LureMix
-    
+    model = LureMix
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(LureMixDelete, self).dispatch(*args, **kwargs)
-    
+
     def post(self, request, *args, **kwargs):
-        lure_mix=get_object_or_404(self.model, pk=kwargs['lure_mix_id'])
-        if lure_mix.owner==request.user:
+        lure_mix = get_object_or_404(self.model, pk=kwargs['lure_mix_id'])
+        if lure_mix.owner == request.user:
             lure_mix.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
+
 class LureMixNewAddInFishingLure(View):
-    model=LureMix
-    form=LureMixForm
-    
+    model = LureMix
+    form = LureMixForm
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(LureMixNewAddInFishingLure, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
-        num_visits=visits(request)
+        num_visits = visits(request)
         form = self.form()
         return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'fishing_id':kwargs['fishing_id'],
-                           'fishing_lure_id':kwargs['fishing_lure_id'],
-                           'num_visits': num_visits})
+                      template_renewal_add_path,
+                      {'form': form,
+                       'fishing_id': kwargs['fishing_id'],
+                       'fishing_lure_id': kwargs['fishing_lure_id'],
+                       'num_visits': num_visits})
 
     def post(self, request, *args, **kwargs):
         entry = self.model()
@@ -1788,16 +1806,17 @@ class LureMixNewAddInFishingLure(View):
             entry.owner = request.user
             entry.save()
             if kwargs['fishing_lure_id'] != 0:
-                fishing_lure=get_object_or_404(FishingLure, pk=kwargs['fishing_lure_id'])
-                fishing_lure=FishingLure()
-                fishing_lure.lure_mix=entry
+                fishing_lure = get_object_or_404(
+                    FishingLure, pk=kwargs['fishing_lure_id'])
+                fishing_lure = FishingLure()
+                fishing_lure.lure_mix = entry
                 fishing_lure.save()
             else:
-                fishing=get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-                fishing_lure=FishingLure()
-                fishing_lure.owner=request.user
-                fishing_lure.fishing=fishing
-                fishing_lure.lure_mix=entry
+                fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+                fishing_lure = FishingLure()
+                fishing_lure.owner = request.user
+                fishing_lure.fishing = fishing
+                fishing_lure.lure_mix = entry
                 fishing_lure.save()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -1809,10 +1828,11 @@ def model_trough_add(request):
         model_trough = ModelTrough()
         form = ModelTroughForm(request.POST)
         if form.is_valid():
+            model_trough = form.save(commit=False)
             model_trough.owner = request.user
-            model_trough.model_trough_name = form.cleaned_data['model_trough_name']
-            model_trough.model_trough_plastic = form.cleaned_data['model_trough_plastic']
-            model_trough.model_trough_lugs = form.cleaned_data['model_trough_lugs']
+            # model_trough.model_trough_name = form.cleaned_data['model_trough_name']
+            # model_trough.model_trough_plastic = form.cleaned_data['model_trough_plastic']
+            # model_trough.model_trough_lugs = form.cleaned_data['model_trough_lugs']
             model_trough.save()
             return redirect('fishing:model_trough')
     else:
@@ -2137,58 +2157,61 @@ def nozzle_state_renewal(request, nozzle_state_id):
     else:
         return redirect('fishing:nozzle_state')
 
+
 class NozzleInLureMixDelete(View):
-    model=Nozzle
-    
+    model = Nozzle
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(NozzleInLureMixDelete, self).dispatch(*args, **kwargs)
-    
+
     def post(self, request, *args, **kwargs):
-        nozzle=get_object_or_404(self.model, pk=kwargs['nozzle_id'])
-        if nozzle.owner==request.user:
+        nozzle = get_object_or_404(self.model, pk=kwargs['nozzle_id'])
+        if nozzle.owner == request.user:
             nozzle.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
+
 class NozzleInLureMixSelect(View):
-    
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(NozzleInLureMixSelect, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
-        num_visits=visits(request)
+        num_visits = visits(request)
         nozzle_base_list = NozzleBase.objects.filter(owner=request.user)
         return render(request,
-                          template_select_path,
-                          {'nozzle_base_list': nozzle_base_list,
-                           'fishing_id':kwargs['fishing_id'],
-                           'lure_mix_id':kwargs['lure_mix_id'],
-                           'num_visits': num_visits})
+                      template_select_path,
+                      {'nozzle_base_list': nozzle_base_list,
+                       'fishing_id': kwargs['fishing_id'],
+                       'lure_mix_id': kwargs['lure_mix_id'],
+                       'num_visits': num_visits})
 
 
 class NozzleInLureMixViews(View):
     model = Nozzle
     form = NozzleForm
-    
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(NozzleInLureMixViews, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         num_visits = visits(request)
         form = self.form()
         return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
 
     def post(self, request, *args, **kwargs):
         entry = self.model()
         form = self.form(request.POST)
         if form.is_valid():
-            lure_mix=get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-            nozzle_base=get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
+            lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
+            nozzle_base = get_object_or_404(
+                NozzleBase, pk=kwargs['nozzle_base_id'])
             entry = form.save(commit=False)
             entry.owner = request.user
             entry.lure_mix = lure_mix
@@ -2585,7 +2608,7 @@ def trough_add(request):
         trough = Trough()
         form = TroughForm(request.POST)
         if form.is_valid():
-            trough=form.save(commit=False)
+            trough = form.save(commit=False)
             trough.owner = request.user
             trough.save()
         return redirect('fishing:trough')
@@ -2626,8 +2649,8 @@ def trough_renewal(request, trough_id):
         if request.method == 'POST':
             form = TroughForm(request.POST, instance=trough)
             if form.is_valid():
-                trough=form.save(commit=False)
-                trough.owner=request.user
+                trough = form.save(commit=False)
+                trough.owner = request.user
                 trough.save()
             return redirect('fishing:trough')
         else:
