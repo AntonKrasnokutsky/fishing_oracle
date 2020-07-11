@@ -4,7 +4,7 @@ from .models import Priming
 from .models import FeedCapacity
 from .models import Pace
 from .models import FishingPoint
-from .models import Tackle, Montage, ModelTroughName, ModelTrough
+from .models import Tackle, Montage  # , ModelTroughName, ModelTrough
 from .models import Trough
 from .models import BottomMap, Point
 from .models import Weather, Overcast, WeatherPhenomena
@@ -120,23 +120,24 @@ class LureBaseForm(forms.ModelForm):
         fields = ('lure_manufacturer', 'lure_name',)
 
 
-class ModelTroughForm(forms.ModelForm):
-    class Meta:
-        model = ModelTrough
-        fields = ('model_trough_name', 'model_trough_plastic',
-                  'model_trough_lugs',)
+# class ModelTroughForm(forms.ModelForm):
+#     class Meta:
+#         model = ModelTrough
+#         fields = ('model_trough_name', 'model_trough_plastic',
+#                   'model_trough_lugs',)
 
 
-class ModelTroughNameForm(forms.ModelForm):
-    class Meta:
-        model = ModelTroughName
-        fields = ('model_trough_name',)
+# class ModelTroughNameForm(forms.ModelForm):
+#     class Meta:
+#         model = ModelTroughName
+#         fields = ('model_trough_name',)
 
 
 class NozzleForm(forms.ModelForm):
     class Meta:
         model = Nozzle
-        fields = ['nozzle_state',]
+        fields = ['nozzle_state', ]
+
 
 class NozzleBaseForm(forms.ModelForm):
     class Meta:
@@ -196,7 +197,8 @@ class TackleForm(forms.ModelForm):
 class TroughForm(forms.ModelForm):
     class Meta:
         model = Trough
-        fields = ('trough_manufacturer', 'model_trough',
+        fields = ('trough_manufacturer', 'model_trough_name',
+                  'model_trough_plastic', 'model_trough_lugs',
                   'feed_capacity', 'trough_weight',)
 
 

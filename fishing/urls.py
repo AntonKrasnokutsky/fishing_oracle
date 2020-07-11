@@ -308,38 +308,38 @@ urlpatterns = [
          name='montage_remove'),
     # Названия моделей кормушек
     # Список названий моделей кормушек
-    path('modeltroughname/',
-         views.model_trough_name_list,
-         name='model_trough_name'),
+    #     path('modeltroughname/',
+    #          views.model_trough_name_list,
+    #          name='model_trough_name'),
     # Добавление названия модели кормушек
-    path('modeltroughname/add/',
-         views.model_trough_name_add,
-         name='model_trough_name_add'),
+    #     path('modeltroughname/add/',
+    #          views.model_trough_name_add,
+    #          name='model_trough_name_add'),
     # Редактирование названия модели кормушек
-    path('modeltroughname/<int:model_trough_name_id>/renewal/',
-         views.model_trough_name_renewal,
-         name='model_trough_name_renewal'),
+    #     path('modeltroughname/<int:model_trough_name_id>/renewal/',
+    #          views.model_trough_name_renewal,
+    #          name='model_trough_name_renewal'),
     # Удаление названия моделей кормушек
-    path('modeltroughname/<int:model_trough_name_id>/remove/',
-         views.model_trough_name_remove,
-         name='model_trough_name_remove'),
+    #     path('modeltroughname/<int:model_trough_name_id>/remove/',
+    #          views.model_trough_name_remove,
+    #          name='model_trough_name_remove'),
     # Комбинации моделей кормушек
     # Список комбинаций моделей кормушек
-    path('modeltrough/',
-         views.model_trough_list,
-         name='model_trough'),
+    #     path('modeltrough/',
+    #          views.model_trough_list,
+    #          name='model_trough'),
     # Добавлении комбинации модели кормушек
-    path('modeltrough/add/',
-         views.model_trough_add,
-         name='model_trough_add'),
+    #     path('modeltrough/add/',
+    #          views.model_trough_add,
+    #          name='model_trough_add'),
     # Редактирование комбинация моделей кормушек
-    path('modeltrough/<int:model_trough_id>/renewal/',
-         views.model_trough_renewal,
-         name='model_trough_renewal'),
+    #     path('modeltrough/<int:model_trough_id>/renewal/',
+    #          views.model_trough_renewal,
+    #          name='model_trough_renewal'),
     # Удаление комбинаций моделей кормушек
-    path('modeltrough/<int:model_trough_id>/remove/',
-         views.model_trough_remove,
-         name='model_trough_remove'),
+    #     path('modeltrough/<int:model_trough_id>/remove/',
+    #          views.model_trough_remove,
+    #          name='model_trough_remove'),
     # Кормушки
     # Список кормушек
     path('trough/',
@@ -575,124 +575,124 @@ urlpatterns = [
     path('fishing/<int:fishing_id>/fishingmontage/select/<int:fishing_montage_id>/',
          views.fishing_montage_select,
          name='fishing_montage_select'),
-    #Кормушки использованные в рыбалке
-    #Добавить кормушку использованную в рыбалке
+    # Кормушки использованные в рыбалке
+    # Добавить кормушку использованную в рыбалке
     path('fishing/<int:fishing_id>/fishingtrough/<int:trough_id>/add/<int:fishing_trough_id>/',
          views.fishing_trough_add,
          name='fishing_trough_add'),
-    #Удалить кормушку использованную в рыбалке
+    # Удалить кормушку использованную в рыбалке
     path('fishing/<int:fishing_id>/fishingtrough/<int:fishing_trough_id>/remove/',
          views.fishing_trough_remove,
          name='fishing_trough_remove'),
-    #Выбрать кормушку использованную в рыбалке
+    # Выбрать кормушку использованную в рыбалке
     path('fishing/<int:fishing_id>/fishingtrough/select/<int:fishing_trough_id>/',
          views.fishing_trough_select,
          name='fishing_trough_select'),
-    #Поводки использованные в рыбалке
-    #Добавление поводка использованного в рыбалке
+    # Поводки использованные в рыбалке
+    # Добавление поводка использованного в рыбалке
     path('fishing/<int:fishing_id>/fishingleash/<int:leash_id>/add/<int:fishing_leash_id>/',
          views.fishing_leash_add,
          name='fishing_leash_add'),
-    #Удаление поводка использованного в рыбалке
+    # Удаление поводка использованного в рыбалке
     path('fishing/<int:fishing_id>/fishingleash/<int:fishing_leash_id>/remove/',
          views.fishing_leash_remove,
          name='fishing_leash_remove'),
-    #Выбор поводка использованного в рыбалке
+    # Выбор поводка использованного в рыбалке
     path('fishing/<int:fishing_id>/fishingleash/select/<int:fishing_leash_id>/',
          views.fishing_leash_select,
          name='fishing_leash_select'),
-    #Крючки использованные в рыбалке
-    #Добавить крючок в рыбалку
+    # Крючки использованные в рыбалке
+    # Добавить крючок в рыбалку
     path('fishing/<int:fishing_id>/fishingcrochet/<int:crochet_id>/add/<int:fishing_crochet_id>/',
          views.FishingCrochetViews.as_view(),
          name='fishing_crochet_add'),
-    #Удалить крючек из рыбалки
+    # Удалить крючек из рыбалки
     path('fishing/<int:fishing_id>/fishingcrochet/<int:fishing_crochet_id>/remove/',
          views.FishingCrochetDelete.as_view(),
          name='fishing_crochet_remove'),
-    #Выбрать крючок в рыбалке
+    # Выбрать крючок в рыбалке
     path('fishing/<int:fishing_id>/fishingcrochet/select/<int:fishing_crochet_id>/',
          views.FishingCrochetViews.as_view(),
          name='fishing_crochet_select'),
-    #Насадки/наживки использованные в рыбалке\
-    #Добавить наживку в рыбалку
+    # Насадки/наживки использованные в рыбалке\
+    # Добавить наживку в рыбалку
     path('fishing/<int:fishing_id>/fishingnozzle/<int:nozzle_id>/add/<int:fishing_nozzle_id>/',
          views.FishingNozzleViews.as_view(),
          name='fishing_nozzle_add'),
-    #Удалить наживку/насадку из рыбалки
+    # Удалить наживку/насадку из рыбалки
     path('fishing/<int:fishing_id>/fishingnozzle/<int:fishing_nozzle_id>/remove/',
          views.FishingNozzleDelete.as_view(),
          name='fishing_nozzle_remove'),
-    #Выбрать насадку/наживку для рыбалки
+    # Выбрать насадку/наживку для рыбалки
     path('fishing/<int:fishing_id>/fishingnozzle/select/<int:fishing_nozzle_id>/',
          views.FishingNozzleViews.as_view(),
          name='fishing_nozzle_select'),
-    #Темп рыбалки
-    #Добаввить темп рыбалки
+    # Темп рыбалки
+    # Добаввить темп рыбалки
     path('fishing/<int:fishing_id>/fishingpace/<int:pace_id>/add/<int:fishing_pace_id>/',
          views.FishingPaceViews.as_view(),
          name='fishing_pace_add'),
-    #Убрать темп рыбалки
+    # Убрать темп рыбалки
     path('fishing/<int:fishing_id>/fishingpace/<int:fishing_pace_id>/remove/',
          views.FishingPaceDelete.as_view(),
          name='fishing_pace_remove'),
-    #Выбрать темп рыбалки
+    # Выбрать темп рыбалки
     path('fishing/<int:fishing_id>/fishingpace/select/<int:fishing_pace_id>/',
          views.FishingPaceViews.as_view(),
          name='fishing_pace_select'),
-    #Погода на рыбалке
-    #Добавить погоду на рыбалке
+    # Погода на рыбалке
+    # Добавить погоду на рыбалке
     path('fishing/<int:fishing_id>/fishingweather/<int:weather_id>/add/<int:fishing_weather_id>/',
          views.FishingWeatherViews.as_view(),
          name='fishing_weather_add'),
-    #Удалить погоду на рыбалке
+    # Удалить погоду на рыбалке
     path('fishing/<int:fishing_id>/fishingweather/<int:fishing_weather_id>/remove/',
          views.FishingWeatherDelete.as_view(),
          name='fishing_weather_remove'),
-    #Выбрать погоду на рыбалке
+    # Выбрать погоду на рыбалке
     path('fishing/<int:fishing_id>/fishingweather/select/<int:fishing_weather_id>/',
          views.FishingWeatherViews.as_view(),
          name='fishing_weather_select'),
-    #Прикормочная смесь для рыбалки
-    #Добавить прикормочную смесь
+    # Прикормочная смесь для рыбалки
+    # Добавить прикормочную смесь
     path('fishing/<int:fishing_id>/fishinglure/<int:lure_mix_id>/add/<int:fishing_lure_id>/',
          views.FishingLureViews.as_view(),
          name='fishing_lure_add'),
-    #Удалить прикормочную смесь
+    # Удалить прикормочную смесь
     path('fishing/<int:fishing_id>/fishinglure/<int:fishing_lure_id>/remove/',
          views.FishingLureDelete.as_view(),
          name='fishing_lure_remove'),
-    #Выбрать прикормочную смесь
+    # Выбрать прикормочную смесь
     path('fishing/<int:fishing_id>/fishinglure/select/<int:fishing_lure_id>/',
          views.FishingLureViews.as_view(),
          name='fishing_lure_select'),
-    #Новая прикормочная смесь из выбора смеси
+    # Новая прикормочная смесь из выбора смеси
     path('fishing/<int:fishing_id>/fishinglure/add/<int:fishing_lure_id>/',
          views.LureMixNewAddInFishingLure.as_view(),
          name='lure_mix_in_fishing_lure'),
-    #Прикорм в миксе
+    # Прикорм в миксе
     # Добавить прикорм в микс
     path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/lure/<int:lure_base_id>/select/',
          views.LureInLureMixViews.as_view(),
          name='lure_in_lure_mix_select'),
-    #Удалить прикорм из микса
+    # Удалить прикорм из микса
     path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/lure/<int:lure_id>/remove/',
          views.LureInLureMixDelete.as_view(),
          name='lure_in_lure_mix_remove'),
-    #Список прикормов для микса
+    # Список прикормов для микса
     path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/lure/',
          views.LureInLureMixSelect.as_view(),
          name='lure_in_lure_mix'),
-    #Арома в миксе
+    # Арома в миксе
     # Добавить арому в микс
     path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/aroma/<int:aroma_base_id>/select/',
          views.AromaInLureMixViews.as_view(),
          name='aroma_in_lure_mix_select'),
-    #Удалить арому из микса
+    # Удалить арому из микса
     path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/aroma/<int:aroma_id>/remove/',
          views.AromaInLureMixDelete.as_view(),
          name='aroma_in_lure_mix_remove'),
-    #Список арому для микса
+    # Список арому для микса
     path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/aroma/',
          views.AromaInLureMixSelect.as_view(),
          name='aroma_in_lure_mix'),
@@ -701,11 +701,11 @@ urlpatterns = [
     path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/nozzle/<int:nozzle_base_id>/select/',
          views.NozzleInLureMixViews.as_view(),
          name='nozzle_in_lure_mix_select'),
-    #Удалить добавки из микса
+    # Удалить добавки из микса
     path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/nozzle/<int:nozzle_id>/remove/',
          views.NozzleInLureMixDelete.as_view(),
          name='nozzle_in_lure_mix_remove'),
-    #Список добавки для микса
+    # Список добавки для микса
     path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/nozzle/',
          views.NozzleInLureMixSelect.as_view(),
          name='nozzle_in_lure_mix'),
