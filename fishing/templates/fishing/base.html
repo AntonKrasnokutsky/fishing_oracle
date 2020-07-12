@@ -1,92 +1,13 @@
+{% load static %}
+
+{% include "fishing/bootstrap.html" %}
+
 <html>
-<style>
-  .btn {
-    display: inline-block;
-    /* Строчно-блочный элемент */
-    background: #8C959D;
-    /* Серый цвет фона */
-    color: #fff;
-    /* Белый цвет текста */
-    padding: 1px 1.5px;
-    /* Поля вокруг текста */
-    text-decoration: none;
-    /* Убираем подчёркивание */
-    border-radius: 3px;
-    /* Скругляем уголки */
-    cursor: pointer;
-  }
-
-  .footer {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    background-color: red;
-    color: white;
-    text-align: center;
-  }
-
-  .navbar {
-    overflow: hidden;
-    background-color: #333;
-    position: fixed;
-    top: 0;
-    width: 100%;
-  }
-
-  .navbar a {
-    float: left;
-    display: block;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-  }
-
-  .navbar p {
-    float: left;
-    display: block;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-  }
-
-  .navbar a:hover {
-    background: #ddd;
-    color: black;
-  }
-
-  .main {
-    margin-top: 60;
-    margin-bottom: 60;
-  }
-</style>
-
-<script type="text/javascript">
-  function back() {
-    window.history.back();
-  }
-</script>
+  <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
 <head>
   <title>Fishing oracle</title>
 </head>
-
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript" >
-  (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-  m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-  (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-  ym(65474584, "init", {
-       clickmap:true,
-       trackLinks:true,
-       accurateTrackBounce:true
-  });
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/65474584" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
 
 <div>
   <div class="navbar">
@@ -107,6 +28,7 @@
 </div>
 
 <body>
+  {% include "fishing/scripts.html" %}
   <section class="main">
     <div>
       {% block content %} {% endblock %}

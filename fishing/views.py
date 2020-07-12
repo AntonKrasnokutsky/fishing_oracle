@@ -21,8 +21,7 @@ from .forms import PaceForm
 from .models import District, Water, Place, FishingPoint, BottomMap, Point, Priming
 from .forms import DistrictForm, WaterForm, PlaceForm, FishingPointForm, BottomMapForm, PointForm, PrimingForm
 
-from .models import Tackle, Montage  # , ModelTroughName, ModelTrough
-# , ModelTroughNameForm, ModelTroughForm
+from .models import Tackle, Montage
 from .forms import TackleForm, MontageForm
 
 from .models import Trough, FishingTrough
@@ -51,6 +50,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 # Переменные
 template_renewal_add_path = 'fishing/renewal_add.html'
+template_renewal_add_fishing_path = 'fishing/fishing_add.html'
 template_renewal_add_class_path = 'fishing/edit.html'
 template_list_path = 'fishing/list.html'
 template_details_path = 'fishing/details.html'
@@ -791,27 +791,35 @@ def fish_trophy_renewal(request, fishing_id, fish_trophy_id):
     return redirect('fishing:fishing_details', fishing_id)
 
 
-@login_required
-def fishing_add(request):
-    """
-    Добавление рыбалки
-    """
-    num_visits = visits(request)
-    if request.method == 'POST':
-        fishing = Fishing()
-        form = FishingForm(request.POST)
-        if form.is_valid():
-            fishing = form.save(commit=False)
-            fishing.owner = request.user
-            fishing.save()
-        return redirect('fishing:fishing_details', fishing.id)
-    else:
-        form = FishingForm()
+class FishingViews(View):
+    model = Fishing
+    form = FishingForm
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(FishingViews, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        num_visits = visits(request)
+        form = self.form()
         return render(request,
-                      template_renewal_add_path,
+                      template_renewal_add_fishing_path,
                       {'form': form,
+                       'renewal_add_model': "Добавление рыбалки",
                        'num_visits': num_visits})
 
+    def post(self, request, *args, **kwargs):
+        entry = self.model()
+        form = self.form(request.POST)
+        if form.is_valid():
+            entry.date = form.cleaned_data['date']
+            entry.time = form.cleaned_data['time']
+            entry.owner = request.user
+            entry.save()
+        else:
+            print(form.errors)
+        return redirect('fishing:fishing_details', entry.id)
+    
 
 @login_required
 def fishing_details(request, fishing_id):
@@ -1822,136 +1830,6 @@ class LureMixNewAddInFishingLure(View):
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 
-# @login_required
-# def model_trough_add(request):
-#     num_visits = visits(request)
-#     if request.method == 'POST':
-#         model_trough = ModelTrough()
-#         form = ModelTroughForm(request.POST)
-#         if form.is_valid():
-#             model_trough = form.save(commit=False)
-#             model_trough.owner = request.user
-#             # model_trough.model_trough_name = form.cleaned_data['model_trough_name']
-#             # model_trough.model_trough_plastic = form.cleaned_data['model_trough_plastic']
-#             # model_trough.model_trough_lugs = form.cleaned_data['model_trough_lugs']
-#             model_trough.save()
-#             return redirect('fishing:model_trough')
-#     else:
-#         form = ModelTroughForm()
-#         return render(request,
-#                       template_renewal_add_path,
-#                       {'form': form,
-#                        'num_visits': num_visits})
-
-
-# @login_required
-# def model_trough_list(request):
-#     num_visits = visits(request)
-#     if request.user.is_staff:
-#         model_trough_list = ModelTrough.objects.all()
-#     else:
-#         model_trough_list = ModelTrough.objects.filter(owner=request.user)
-#     return render(request,
-#                   template_list_path,
-#                   {'model_trough_list': model_trough_list,
-#                    'num_visits': num_visits})
-
-
-# @login_required
-# def model_trough_remove(request, model_trough_id):
-#     model_trough = get_object_or_404(ModelTrough, pk=model_trough_id)
-#     if model_trough.owner == request.user:
-#         model_trough.delete()
-#     return redirect('fishing:model_trough')
-
-
-# @login_required
-# def model_trough_renewal(request, model_trough_id):
-#     num_visits = visits(request)
-#     model_trough = get_object_or_404(ModelTrough, pk=model_trough_id)
-#     if request.method == 'POST':
-#         form = ModelTroughForm(request.POST)
-#         if form.is_valid():
-#             model_trough.model_trough_name = form.cleaned_data['model_trough_name']
-#             model_trough.model_trough_plastic = form.cleaned_data['model_trough_plastic']
-#             model_trough.model_trough_lugs = form.cleaned_data['model_trough_lugs']
-#             model_trough.save()
-#             return redirect('fishing:model_trough')
-#     else:
-#         form = ModelTroughForm(
-#             initial={'model_trough_name': model_trough.model_trough_name,
-#                      'model_trough_plastic': model_trough.model_trough_plastic,
-#                      'model_trough_lugs': model_trough.model_trough_lugs, })
-#         return render(request,
-#                       template_renewal_add_path,
-#                       {'form': form,
-#                        'num_visits': num_visits})
-
-
-# @login_required
-# def model_trough_name_add(request):
-#     num_visits = visits(request)
-#     if request.method == 'POST':
-#         model_trough_name = ModelTroughName()
-#         form = ModelTroughNameForm(request.POST)
-#         if form.is_valid():
-#             model_trough_name = form.save(commit=False)
-#             model_trough_name.owner = request.user
-#             model_trough_name.save()
-#             return redirect('fishing:model_trough_name')
-#         else:
-#             print(form.errors)
-#     else:
-#         form = ModelTroughNameForm()
-#         return render(request,
-#                       template_renewal_add_path,
-#                       {'form': form,
-#                        'num_visits': num_visits})
-
-
-# @login_required
-# def model_trough_name_list(request):
-#     num_visits = visits(request)
-#     if request.user.is_staff:
-#         model_trough_name_list = ModelTroughName.objects.all()
-#     else:
-#         model_trough_name_list = ModelTroughName.objects.filter(
-#             owner=request.user)
-#     return render(request,
-#                   template_list_path,
-#                   {'model_trough_name_list': model_trough_name_list,
-#                    'num_visits': num_visits})
-
-
-# @login_required
-# def model_trough_name_remove(request, model_trough_name_id):
-#     model_trough_name = get_object_or_404(
-#         ModelTroughName, pk=model_trough_name_id)
-#     if model_trough_name.owner == request.user:
-#         model_trough_name.delete()
-#     return redirect('fishing:model_trough_name')
-
-
-# @login_required
-# def model_trough_name_renewal(request, model_trough_name_id):
-#     num_visits = visits(request)
-#     model_trough_name = get_object_or_404(
-#         ModelTroughName, pk=model_trough_name_id)
-#     if request.method == 'POST':
-#         form = ModelTroughNameForm(request.POST)
-#         if form.is_valid():
-#             model_trough_name.model_trough_name = form.cleaned_data['model_trough_name']
-#             model_trough_name.save()
-#             return redirect('fishing:model_trough_name')
-#     else:
-#         form = ModelTroughNameForm(
-#             initial={'model_trough_name': model_trough_name.model_trough_name, })
-#         return render(request,
-#                       template_renewal_add_path,
-#                       {'form': form,
-#                        'num_visits': num_visits})
-
-
 @login_required
 def montage_add(request):
     num_visits = visits(request)
@@ -2666,7 +2544,8 @@ def trough_renewal(request, trough_id):
         return redirect('fishing:trough')
 
 
-@staff_member_required
+#@staff_member_required
+@login_required
 def water_add(request, district_id):
     num_visits = visits(request)
     water = Water()

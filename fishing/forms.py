@@ -4,7 +4,7 @@ from .models import Priming
 from .models import FeedCapacity
 from .models import Pace
 from .models import FishingPoint
-from .models import Tackle, Montage  # , ModelTroughName, ModelTrough
+from .models import Tackle, Montage
 from .models import Trough
 from .models import BottomMap, Point
 from .models import Weather, Overcast, WeatherPhenomena
@@ -62,10 +62,21 @@ class FishForm(forms.ModelForm):
     #renewal_name_of_fish = forms.CharField(max_length=20, label='Рыба')
 
 
-class FishingForm(forms.ModelForm):
-    class Meta:
-        model = Fishing
-        fields = ['date', 'time', ]
+class FishingForm(forms.Form):
+    date = forms.DateField(
+        input_formats=['%d.%m.%Y'],
+        widget=forms.DateInput(attrs={
+            'class': 'form-control datetimepicker-input',
+            'data-target': '#datetimepicker1'
+        })
+    )
+    time = forms.TimeField(
+        input_formats=['%H:%M'],
+        widget=forms.TimeInput(attrs={
+            'class': 'form-control datetimepicker-input',
+            'data-target': '#datetimepicker2'
+        })
+    )
 
 
 class LureMixForm(forms.ModelForm):
@@ -118,19 +129,6 @@ class LureBaseForm(forms.ModelForm):
     class Meta:
         model = LureBase
         fields = ('lure_manufacturer', 'lure_name',)
-
-
-# class ModelTroughForm(forms.ModelForm):
-#     class Meta:
-#         model = ModelTrough
-#         fields = ('model_trough_name', 'model_trough_plastic',
-#                   'model_trough_lugs',)
-
-
-# class ModelTroughNameForm(forms.ModelForm):
-#     class Meta:
-#         model = ModelTroughName
-#         fields = ('model_trough_name',)
 
 
 class NozzleForm(forms.ModelForm):

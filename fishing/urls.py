@@ -18,7 +18,7 @@ urlpatterns = [
          name='fishing_details'),
     # Добавление рыбалки
     path('fishing/add/',
-         views.fishing_add,
+         views.FishingViews.as_view(),
          name='fishing_add'),
     # Редактирование
     path('fishing/<int:fishing_id>/renewal/',
@@ -306,40 +306,6 @@ urlpatterns = [
     path('montage/<int:montage_id>/remove/',
          views.montage_remove,
          name='montage_remove'),
-    # Названия моделей кормушек
-    # Список названий моделей кормушек
-    #     path('modeltroughname/',
-    #          views.model_trough_name_list,
-    #          name='model_trough_name'),
-    # Добавление названия модели кормушек
-    #     path('modeltroughname/add/',
-    #          views.model_trough_name_add,
-    #          name='model_trough_name_add'),
-    # Редактирование названия модели кормушек
-    #     path('modeltroughname/<int:model_trough_name_id>/renewal/',
-    #          views.model_trough_name_renewal,
-    #          name='model_trough_name_renewal'),
-    # Удаление названия моделей кормушек
-    #     path('modeltroughname/<int:model_trough_name_id>/remove/',
-    #          views.model_trough_name_remove,
-    #          name='model_trough_name_remove'),
-    # Комбинации моделей кормушек
-    # Список комбинаций моделей кормушек
-    #     path('modeltrough/',
-    #          views.model_trough_list,
-    #          name='model_trough'),
-    # Добавлении комбинации модели кормушек
-    #     path('modeltrough/add/',
-    #          views.model_trough_add,
-    #          name='model_trough_add'),
-    # Редактирование комбинация моделей кормушек
-    #     path('modeltrough/<int:model_trough_id>/renewal/',
-    #          views.model_trough_renewal,
-    #          name='model_trough_renewal'),
-    # Удаление комбинаций моделей кормушек
-    #     path('modeltrough/<int:model_trough_id>/remove/',
-    #          views.model_trough_remove,
-    #          name='model_trough_remove'),
     # Кормушки
     # Список кормушек
     path('trough/',

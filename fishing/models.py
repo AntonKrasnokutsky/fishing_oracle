@@ -738,59 +738,6 @@ class LureMix(models.Model):  # Смеси прикромов
         return self.lure_mix_name
 
 
-# class ModelTrough(models.Model):  # Модели кормушек
-#     """
-#     Содержит комбинации моделей кормушек
-#     """
-#     class Meta:
-#         verbose_name = "Модель кормушки"
-#         verbose_name_plural = "Модели кормушек"
-#         ordering = ['model_trough_name', ]
-#     # Владелец записи
-#     owner = models.ForeignKey(
-#         CustomUser,
-#         on_delete=models.PROTECT,
-#         verbose_name="Владелец записи")
-#     # Связь со списком моделей
-#     model_trough_name = models.ForeignKey(
-#         'ModelTroughName',
-#         on_delete=models.PROTECT,
-#         verbose_name="Модель кормушки")
-#     # Метка пластиковй кормушки
-#     model_trough_plastic = models.BooleanField(
-#         default=False,
-#         verbose_name="Пластик")
-#     # Метка наличия грунтозацепов
-#     model_trough_lugs = models.BooleanField(
-#         default=False,
-#         verbose_name="грунтозацепы")
-
-#     def __str__(self):
-#         return str(self.model_trough_name) + str(' пластик' if self.model_trough_plastic else ' металл') + str(' с грунтозацепами' if self.model_trough_lugs else '')
-
-
-# class ModelTroughName(models.Model):  # Название моделей кормушек
-#     """
-#     Содержит варианты моделей кормкшек
-#     """
-#     class Meta:
-#         verbose_name = "Название модели кормушки"
-#         verbose_name_plural = "Названия моделей кормушек"
-#         ordering = ['model_trough_name', ]
-#     # Владелец записи
-#     owner = models.ForeignKey(
-#         CustomUser,
-#         on_delete=models.PROTECT,
-#         verbose_name="Владелец записи")
-#     # Название модели кормушки
-#     model_trough_name = models.CharField(
-#         max_length=20,
-#         verbose_name="Модель кормушки")
-
-#     def __str__(self):
-#         return self.model_trough_name
-
-
 class Montage(models.Model):  # Монтажи
     """
     Содержит в себе варианты монтажей с вариантом выбора
