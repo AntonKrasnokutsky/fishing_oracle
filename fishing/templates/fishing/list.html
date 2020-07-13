@@ -102,7 +102,7 @@
 <p>Список крючков пуст</p>
 {% endif %}
 <p>
-  {% if user.is_staff %}
+  {% if user.is_authenticated %}
   <a href="{% url 'fishing:crochet_add' %}" class="btn">Добавить</a>
   {% endif %}
   <a onclick="back()" class="btn">Назад</a>
