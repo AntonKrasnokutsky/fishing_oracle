@@ -828,7 +828,8 @@ class NozzleBase(models.Model):  # Насдаки и наживки
     nozzle_type = models.ForeignKey(
         'NozzleType',
         on_delete=models.PROTECT,
-        blank=True,
+        blank = True,
+        null = True,
         verbose_name='Тип насадки')
 
     def __str__(self):

@@ -1900,12 +1900,8 @@ def nozzle_add(request):
         nozzle = NozzleBase()
         form = NozzleBaseForm(request.POST)
         if form.is_valid():
+            nozzle = form.save(commit = False)
             nozzle.owner = request.user
-            nozzle.bait = form.cleaned_data['bait']
-            nozzle.nozzle_manufacturer = form.cleaned_data['nozzle_manufacturer']
-            nozzle.nozzle_name = form.cleaned_data['nozzle_name']
-            nozzle.nozzle_diameter = form.cleaned_data['nozzle_diameter']
-            nozzle.nozzle_type = form.cleaned_data['nozzle_type']
             nozzle.save()
         return redirect('fishing:nozzle')
     else:
