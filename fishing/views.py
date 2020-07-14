@@ -1952,21 +1952,14 @@ def nozzle_renewal(request, nozzle_id):
     nozzle = get_object_or_404(NozzleBase, pk=nozzle_id)
     if nozzle.owner == request.user:
         if request.method == "POST":
-            form = NozzleForm(request.POST)
+            form = NozzleBaseForm(request.POST, instance=nozzle)
             if form.is_valid():
-                nozzle.bait = form.cleaned_data['bait']
-                nozzle.nozzle_manufacturer = form.cleaned_data['nozzle_manufacturer']
-                nozzle.nozzle_name = form.cleaned_data['nozzle_name']
-                nozzle.nozzle_diameter = form.cleaned_data['nozzle_diameter']
-                nozzle.nozzle_type = form.cleaned_data['nozzle_type']
+                nozzle = form.save(commit = False)
+                nozzle.owner = request.user
                 nozzle.save()
             return redirect('fishing:nozzle')
         else:
-            form = NozzleForm(initial={'bait': nozzle.bait,
-                                       'nozzle_manufacturer': nozzle.nozzle_manufacturer,
-                                       'nozzle_name': nozzle.nozzle_name,
-                                       'nozzle_diameter': nozzle.nozzle_diameter,
-                                       'nozzle_type': nozzle.nozzle_type, })
+            form = NozzleBaseForm(instance=nozzle)
             return render(request,
                           template_renewal_add_path,
                           {'form': form,
