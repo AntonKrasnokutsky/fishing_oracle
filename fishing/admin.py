@@ -13,8 +13,6 @@ from .models import WeatherPhenomena
 from .models import FishingTackle
 from .models import FishingMontage
 from .models import FishingTrough
-# from .models import ModelTrough
-# from .models import ModelTroughName
 from .models import FeedCapacity
 from .models import FishingLure
 from .models import Lure
@@ -48,8 +46,6 @@ admin.site.register(WeatherPhenomena)
 admin.site.register(FishingTackle)
 admin.site.register(FishingMontage)
 admin.site.register(FishingTrough)
-# admin.site.register(ModelTrough)
-# admin.site.register(ModelTroughName)
 admin.site.register(FeedCapacity)
 admin.site.register(FishingLure)
 admin.site.register(Lure)

@@ -1126,7 +1126,7 @@ class FishingNozzleViews(View):
         nozzle = get_object_or_404(self.model_base, pk=kwargs['nozzle_id'])
         if kwargs['fishing_nozzle_id'] != 0:
             fishing_nozzle = get_object_or_404(
-                self.model, pk=kwargs['fishing_crochet_id'])
+                self.model, pk=kwargs['fishing_nozzle_id'])
             if fishing_nozzle.owner == request.user:
                 fishing_nozzle.nozzle_base = nozzle
                 fishing_nozzle.save()
