@@ -1138,7 +1138,8 @@ class Tackle(models.Model):  # Снасти
         max_digits=3,
         decimal_places=1,
         default=0,
-        verbose_name="Длина (м)")
+        verbose_name="Длина (м)",
+        validators = [MinValueValidator(0.0), MaxValueValidator(99.9)])
     tackle_casting_weight = models.PositiveIntegerField(
         default=0,
         blank=True,

@@ -2419,6 +2419,12 @@ def tackle_add(request):
             tackle = form.save(commit=False)
             tackle.owner = request.user
             tackle.save()
+        else:
+            form = TackleForm(request.POST)
+            return render(request,
+                      template_renewal_add_path,
+                      {'form': form,
+                       'num_visits': num_visits})
         return redirect('fishing:tackle')
     else:
         form = TackleForm()
