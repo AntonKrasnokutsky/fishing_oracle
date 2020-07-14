@@ -10,8 +10,9 @@
     {% if user.is_authenticated %}
         <a href="{% url 'blog:post_edit' post.pk %}">Изменить</a>
     {% endif %}
-    <h1>{{ post.title }}</h1>
-    <p>{{ post.text|linebreaksbr }}</p>
+    <h1><strong>Тема: </strong>{{ post.title }}</h1>
+    <p><strong>Описание: </strong> {{ post.text|linebreaksbr }}</p>
+    <p><strong>Ссылка: </strong> {{ post.adress }}</p>
 </div>
-<a onclick="back()" class="btn">Назад</a>
+<a href="{% url 'blog:post_list' %}" class="btn">Назад</a>
 {% endblock %}
