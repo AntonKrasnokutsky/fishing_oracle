@@ -89,7 +89,6 @@
 <ul>
     {% for lure_mix in lure_mix_list %}
     <form action="{% url 'fishing:fishing_lure_add' fishing_id lure_mix.id fishing_lure_id %}" method="post">
-        {% csrf_token %}
         <p>{{lure_mix}}
             <button class="btn">Выбрать</button>
         </p>
@@ -100,12 +99,10 @@
 <p>Прикормочных смесей не добавлено</p>
 {% endif %}
 <p>
-    {#<a href="{% url 'fishing:place_add' %}" class="btn">Добавить</a>#}
     <button onclick="back()" class="btn">Назад</button>
 <form action="{% url 'fishing:lure_mix_in_fishing_lure' fishing_id fishing_lure_id %}" method="get">
-    {% csrf_token %}
     <p>
-        <button class="btn">Добавить месь</button>
+        <button class="btn">Добавить смесь</button>
     </p>
 </form>
 </p>
