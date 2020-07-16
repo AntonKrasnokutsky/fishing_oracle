@@ -94,12 +94,12 @@
 
 <table>
     <tr>
-        <th>Снасть:</th>
-        <th>Монтаж:</th>
-        <th>Кормушка:</th>
-        <th>Поводок:</th>
-        <th>Крючок:</th>
-        <th>Наживка:</th>
+        <th>Снасти:</th>
+        <th>Монтажи:</th>
+        <th>Кормушки:</th>
+        <th>Поводки:</th>
+        <th>Крючоки:</th>
+        <th>Наживки:</th>
     </tr>
     <tr>
         <td>
@@ -166,13 +166,13 @@
         </td>
         <td>
             {% for fishing_nozzle in fishing.fishingnozzle_set.all %}
-            {% if fishing_nozzle.nozzle.bait %}
-            <p><strong>Наживка: </strong>{{ fishing_nozzle.nozzle.nozzle_name }}</p>
+            {% if fishing_nozzle.nozzle_base.bait %}
+            <p><strong>Наживка: </strong>{{ fishing_nozzle.nozzle_base.nozzle_name }}</p>
             {% else %}
-            <p><strong>Производитель: </strong>{{ fishing_nozzle.nozzle.nozzle_manufacturer }}</p>
-            <p><strong>Насадка: </strong>{{ fishing_nozzle.nozzle.nozzle_name }}</p>
-            <p><strong>Диаметр насадки: </strong>{{ fishing_nozzle.nozzle.nozzel_diameter }}</p>
-            <p><strong>Тип насадки: </strong>{{ fishing_nozzle.nozzle.nozzel_type }}</p>
+            <p><strong>Производитель: </strong>{{ fishing_nozzle.nozzle_base.nozzle_manufacturer }}</p>
+            <p><strong>Насадка: </strong>{{ fishing_nozzle.nozzle_base.nozzle_name }}</p>
+            <p><strong>Диаметр насадки: </strong>{{ fishing_nozzle.nozzle_base.nozzel_diameter }}</p>
+            <p><strong>Тип насадки: </strong>{{ fishing_nozzle.nozzle_base.nozzel_type }}</p>
             {% endif %}
             <form action="{% url 'fishing:fishing_nozzle_select' fishing.id fishing_nozzle.id %}" method="GET">
                 {% csrf_token %}
