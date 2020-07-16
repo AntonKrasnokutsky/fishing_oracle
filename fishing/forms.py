@@ -15,6 +15,9 @@ from .models import Crochet, Leash
 from .models import Fishing, FishingResult, FishTrophy
 from django import forms
 
+# widgets = {
+#             'name': forms.TextInput(attrs={'placeholder': 'от 0 до 99.9 кг'}),
+#         }
 
 class AromaForm(forms.ModelForm):
     class Meta:
@@ -123,6 +126,7 @@ class LureForm(forms.ModelForm):
     class Meta:
         model = Lure
         fields = ['lure_weight', ]
+
 
 
 class LureBaseForm(forms.ModelForm):

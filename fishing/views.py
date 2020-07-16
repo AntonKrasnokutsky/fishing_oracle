@@ -1772,6 +1772,11 @@ class LureInLureMixViews(View):
             entry.lure_mix = lure_mix
             entry.lure_base = lure_base
             entry.save()
+        else:
+            form = self.form(request.POST)
+            return render(request,
+                      template_renewal_add_path,
+                      {'form': form})
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 

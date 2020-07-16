@@ -682,7 +682,9 @@ class Lure(models.Model):  # Смесь прикорма
     lure_weight = models.DecimalField(
         max_digits=5,
         decimal_places=2,
-        verbose_name="Вес прикорма")
+        verbose_name="Вес прикорма, кг.",   
+        help_text = "от 0 до 99.9 кг",
+        validators = [MinValueValidator(0.0), MaxValueValidator(99.9)])
 
     def __str__(self):
         return str(self.lure_base)
