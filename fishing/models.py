@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from datetime import datetime
 from users.models import CustomUser
 
 
@@ -284,9 +285,20 @@ class Fishing(models.Model):  # Рыбалки
     # pace
     # Результат рыбалки
     # Трофей
+    #
+    planned = models.BooleanField(default=False)
 
     def __str__(self):
         return str(self.date) + ' ' + str(self.time)
+    def set_planned(self):
+        """
+        Поверяет дату проведения рыбалки и текущую дату,
+        с выставлением статуса "Запланировано"
+        """
+        if self.date > datetime.now().date():
+            self.planned = True
+        else:
+            self.planned = False
 
 
 class FishingCrochet(models.Model):  # Крючки использованные в рыбалке

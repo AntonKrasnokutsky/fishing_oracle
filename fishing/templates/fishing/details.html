@@ -51,7 +51,11 @@
 
 {% if fishing != None %}
 <!-- Рыбалка -->
-<p><strong>Дата проведения рыбалки:</strong> {{ fishing.date }}</p>
+<p><strong>Дата проведения рыбалки:</strong> {{ fishing.date }} 
+{% if fishing.planned %}
+(запланировано)
+{% endif %}
+</p>
 <p><strong>Время начала рыбалки:</strong> {{ fishing.time }}</p>
 <p><strong>Место проведения рыбалки:</strong></p>
 

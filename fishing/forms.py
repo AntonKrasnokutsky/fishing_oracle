@@ -65,7 +65,7 @@ class FishForm(forms.ModelForm):
     #renewal_name_of_fish = forms.CharField(max_length=20, label='Рыба')
 
 
-class FishingForm(forms.Form):
+class FishingForm(forms.ModelForm):
     date = forms.DateField(
         input_formats=['%d.%m.%Y'],
         widget=forms.DateInput(attrs={
@@ -80,6 +80,10 @@ class FishingForm(forms.Form):
             'data-target': '#datetimepicker2'
         })
     )
+    
+    class Meta:
+        model = Fishing
+        fields = ['date', 'time', ]
 
 
 class LureMixForm(forms.ModelForm):

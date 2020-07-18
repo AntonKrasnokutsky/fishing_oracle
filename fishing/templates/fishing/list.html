@@ -191,7 +191,11 @@
 <ul>
   {% for fishing in fishing_list %}
   <li>
-    <a href="{% url 'fishing:fishing_details' fishing.id %}">{{fishing.date}}</a>
+    <a href="{% url 'fishing:fishing_details' fishing.id %}">{{fishing.date}} 
+      {% if fishing.planned %}
+      (запланировано)
+      {% endif %}
+    </a>
     <a href="{% url 'fishing:fishing_renewal' fishing.id %}" class="btn">Редактировать</a>
     <a href="{% url 'fishing:fishing_remove' fishing.id %}" class="btn">Удалить</a>
   </li>

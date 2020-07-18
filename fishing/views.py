@@ -728,9 +728,9 @@ def fish_renewal(request, fish_id):
             fish.save()
         return redirect('fishing:fish')
     else:
-        form = FishForm(
-            initial={'name_of_fish': fish.name_of_fish,
-                     'fish_description': fish.fish_description, })
+        form = FishForm(instance=fish)
+            # initial={'name_of_fish': fish.name_of_fish,
+            #          'fish_description': fish.fish_description, })
     return render(request, template_renewal_add_path,
                   {'form': form,
                    'fish': fish,
@@ -815,6 +815,8 @@ class FishingViews(View):
             entry.date = form.cleaned_data['date']
             entry.time = form.cleaned_data['time']
             entry.owner = request.user
+            entry.set_planned()
+            print (entry.planned)
             entry.save()
         else:
             print(form.errors)
@@ -872,16 +874,24 @@ def fishing_renewal(request, fishing_id):
     fishing = get_object_or_404(Fishing, pk=fishing_id)
     if fishing.owner == request.user:
         if request.method == 'POST':
-            form = FishingForm(request.POST, instance=fishing)
+            form = FishingForm(request.POST)
             if form.is_valid():
-                fishing = form.save(commit=False)
-                fishing.owner = request.user
+                fishing.date = form.cleaned_data['date']
+                fishing.time = form.cleaned_data['time']
+                fishing.set_planned()
                 fishing.save()
+            else:
+                form = FishingForm(request.POST)
+                return render(request,
+                        template_renewal_add_fishing_path,
+                        {'form': form,
+                        'num_visits': num_visits})
             return redirect('fishing:fishing_details', fishing.id)
         else:
-            form = FishingForm(instance=fishing)
+            form = FishingForm(initial={'date': fishing.date,
+                                        'time': fishing.time})
             return render(request,
-                          template_renewal_add_path,
+                          template_renewal_add_fishing_path,
                           {'form': form,
                            'num_visits': num_visits})
     else:
