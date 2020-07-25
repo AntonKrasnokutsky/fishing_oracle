@@ -905,7 +905,7 @@ class FishingCrochetDelete(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingCrochetDelete, self).dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         fishing_crochet = get_object_or_404(
             self.model, pk=kwargs['fishing_crochet_id'])
         if fishing_crochet.owner == request.user:
@@ -927,6 +927,7 @@ class FishingCrochetViews(View):
                       template_select_path,
                       {'crochet_list': crochet_list,
                        'fishing_id': kwargs['fishing_id'],
+                       'fishing_tackle_id': kwargs['fishing_tackle_id'],
                        'fishing_crochet_id': kwargs['fishing_crochet_id'],
                        'num_visits': num_visits})
 
@@ -939,28 +940,28 @@ class FishingCrochetViews(View):
                 fishing_crochet.crochet = crochet
                 fishing_crochet.save()
         else:
-            fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-            if fishing.owner == request.user:
+            fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+            if fishing_tackle.owner == request.user:
                 fishing_crochet = self.model()
                 fishing_crochet.owner = request.user
-                fishing_crochet.fishing = fishing
+                fishing_crochet.fishing_tackle = fishing_tackle
                 fishing_crochet.crochet = crochet
                 fishing_crochet.save()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 
 @login_required
-def fishing_leash_add(request, fishing_id, leash_id, fishing_leash_id):
+def fishing_leash_add(request, fishing_id, fishing_tackle_id, leash_id, fishing_leash_id):
     leash = get_object_or_404(Leash, pk=leash_id)
     if fishing_leash_id != 0:
         fishing_leash = get_object_or_404(FishingLeash, pk=fishing_leash_id)
         fishing_leash.leash = leash
         fishing_leash.save()
     else:
-        fishing = get_object_or_404(Fishing, pk=fishing_id)
+        fishing_tackle = get_object_or_404(FishingTackle, pk=fishing_tackle_id)
         fishing_leash = FishingLeash()
         fishing_leash.owner = request.user
-        fishing_leash.fishing = fishing
+        fishing_leash.fishing_tackle = fishing_tackle
         fishing_leash.leash = leash
         fishing_leash.save()
     return redirect('fishing:fishing_details', fishing_id)
@@ -975,13 +976,14 @@ def fishing_leash_remove(request, fishing_id, fishing_leash_id):
 
 
 @login_required
-def fishing_leash_select(request, fishing_id, fishing_leash_id):
+def fishing_leash_select(request, fishing_id, fishing_tackle_id, fishing_leash_id):
     num_visits = visits(request)
     leash_list = Leash.objects.filter(owner=request.user)
     return render(request,
                   template_select_path,
                   {'leash_list': leash_list,
                    'fishing_id': fishing_id,
+                   'fishing_tackle_id':fishing_tackle_id,
                    'fishing_leash_id': fishing_leash_id,
                    'num_visits': num_visits})
 
@@ -1061,19 +1063,18 @@ def fishing_lure_renewal(request, fishing_lure_id):
 
 
 @login_required
-def fishing_montage_add(request, fishing_id, montage_id, fishing_montage_id):
-    fishing = get_object_or_404(Fishing, pk=fishing_id)
+def fishing_montage_add(request, fishing_id, fishing_tackle_id, montage_id, fishing_montage_id):
+    fishing_tackle = get_object_or_404(FishingTackle, pk=fishing_tackle_id)
     montage = get_object_or_404(Montage, pk=montage_id)
     if fishing_montage_id != 0:
         fishing_montage = get_object_or_404(
             FishingMontage, pk=fishing_montage_id)
-        fishing_montage.fishing = fishing
         fishing_montage.montage = montage
         fishing_montage.save()
     else:
         fishing_montage = FishingMontage()
         fishing_montage.owner = request.user
-        fishing_montage.fishing = fishing
+        fishing_montage.fishing_tackle = fishing_tackle
         fishing_montage.montage = montage
         fishing_montage.save()
     return redirect('fishing:fishing_details', fishing_id)
@@ -1088,13 +1089,14 @@ def fishing_montage_remove(request, fishing_id, fishing_montage_id):
 
 
 @login_required
-def fishing_montage_select(request, fishing_id, fishing_montage_id):
+def fishing_montage_select(request, fishing_id, fishing_tackle_id, fishing_montage_id):
     num_visits = visits(request)
     montage_list = Montage.objects.filter(owner=request.user)
     return render(request,
                   template_select_path,
                   {'montage_list': montage_list,
                    'fishing_id': fishing_id,
+                   'fishing_tackle_id': fishing_tackle_id,
                    'fishing_montage_id': fishing_montage_id,
                    'num_visits': num_visits})
 
@@ -1106,7 +1108,7 @@ class FishingNozzleDelete(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingNozzleDelete, self).dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         fishing_nozzle = get_object_or_404(
             self.model, pk=kwargs['fishing_nozzle_id'])
         if fishing_nozzle.owner == request.user:
@@ -1129,23 +1131,23 @@ class FishingNozzleViews(View):
                       template_select_path,
                       {'nozzle_list': nozzle_list,
                        'fishing_id': kwargs['fishing_id'],
+                       'fishing_tackle_id': kwargs['fishing_tackle_id'],
                        'fishing_nozzle_id': kwargs['fishing_nozzle_id'],
                        'num_visits': num_visits})
 
     def post(self, request, *args, **kwargs):
         nozzle = get_object_or_404(self.model_base, pk=kwargs['nozzle_id'])
         if kwargs['fishing_nozzle_id'] != 0:
-            fishing_nozzle = get_object_or_404(
-                self.model, pk=kwargs['fishing_nozzle_id'])
+            fishing_nozzle = get_object_or_404(self.model, pk=kwargs['fishing_nozzle_id'])
             if fishing_nozzle.owner == request.user:
                 fishing_nozzle.nozzle_base = nozzle
                 fishing_nozzle.save()
         else:
-            fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-            if fishing.owner == request.user:
+            fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+            if fishing_tackle.owner == request.user:
                 fishing_nozzle = self.model()
                 fishing_nozzle.owner = request.user
-                fishing_nozzle.fishing = fishing
+                fishing_nozzle.fishing_tackle = fishing_tackle
                 fishing_nozzle.nozzle_base = nozzle
                 fishing_nozzle.save()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
@@ -1403,8 +1405,8 @@ def fishing_tackle_select(request, fishing_id, fishing_tackle_id):
 
 
 @login_required
-def fishing_trough_add(request, fishing_id, trough_id, fishing_trough_id):
-    fishing = get_object_or_404(Fishing, pk=fishing_id)
+def fishing_trough_add(request, fishing_id, fishing_tackle_id, trough_id, fishing_trough_id):
+    fishing_tackle = get_object_or_404(FishingTackle, pk=fishing_tackle_id)
     trough = get_object_or_404(Trough, pk=trough_id)
     if fishing_trough_id != 0:
         fishing_trough = get_object_or_404(FishingTrough, pk=fishing_trough_id)
@@ -1413,7 +1415,7 @@ def fishing_trough_add(request, fishing_id, trough_id, fishing_trough_id):
     else:
         fishing_trough = FishingTrough()
         fishing_trough.owner = request.user
-        fishing_trough.fishing = fishing
+        fishing_trough.fishing_tackle = fishing_tackle
         fishing_trough.trough = trough
         fishing_trough.save()
     return redirect('fishing:fishing_details', fishing_id)
@@ -1428,13 +1430,14 @@ def fishing_trough_remove(request, fishing_id, fishing_trough_id):
 
 
 @login_required
-def fishing_trough_select(request, fishing_id, fishing_trough_id):
+def fishing_trough_select(request, fishing_id, fishing_tackle_id, fishing_trough_id):
     num_visits = visits(request)
     trough_list = Trough.objects.filter(owner=request.user)
     return render(request,
                   template_select_path,
                   {'trough_list': trough_list,
                    'fishing_id': fishing_id,
+                   'fishing_tackle_id':fishing_tackle_id,
                    'fishing_trough_id': fishing_trough_id,
                    'num_visits': num_visits, })
 

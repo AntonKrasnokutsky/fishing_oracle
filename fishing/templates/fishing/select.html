@@ -26,7 +26,7 @@
 <!-- Крючки для рыбалки -->
 <ul>
     {% for crochet in crochet_list %}
-    <form action="{% url 'fishing:fishing_crochet_add' fishing_id crochet.id fishing_crochet_id %}" method="post">
+    <form action="{% url 'fishing:fishing_crochet_add' fishing_id fishing_tackle_id crochet.id fishing_crochet_id %}" method="post">
         {% csrf_token %}
         <p>{{crochet}}
             <button class="btn">Выбрать</button>
@@ -49,7 +49,7 @@
 <ul>
     {% for leash in leash_list %}
     <li>
-        {{leash}}<a href="{% url 'fishing:fishing_leash_add' fishing_id leash.id fishing_leash_id %}" class="btn">Выбрать</a>
+        {{leash}}<a href="{% url 'fishing:fishing_leash_add' fishing_id fishing_tackle_id leash.id fishing_leash_id %}" class="btn">Выбрать</a>
     </li>
     {% endfor %}
 </ul>
@@ -114,7 +114,7 @@
 <ul>
     {% for montage in montage_list %}
     <li>
-        {{montage}}<a href="{% url 'fishing:fishing_montage_add' fishing_id montage.id fishing_montage_id%}" class="btn">Выбрать</a>
+        {{montage}}<a href="{% url 'fishing:fishing_montage_add' fishing_id fishing_tackle_id montage.id fishing_montage_id%}" class="btn">Выбрать</a>
     </li>
     {% endfor %}
 </ul>
@@ -132,7 +132,7 @@
 <!-- Наживки использованные в рыбалке -->
 <ul>
     {% for nozzle in nozzle_list %}
-    <form action="{% url 'fishing:fishing_nozzle_add' fishing_id nozzle.id fishing_nozzle_id%}" method="post">
+    <form action="{% url 'fishing:fishing_nozzle_add' fishing_id fishing_tackle_id nozzle.id fishing_nozzle_id%}" method="post">
         {% csrf_token %}
         <p>{{nozzle}}
             <button class="btn">Выбрать</button>
@@ -237,7 +237,7 @@
 <ul>
     {% for trough in trough_list %}
     <li>
-        {{trough}}<a href="{% url 'fishing:fishing_trough_add' fishing_id trough.id fishing_trough_id %}" class="btn">Выбрать</a>
+        {{trough}}<a href="{% url 'fishing:fishing_trough_add' fishing_id fishing_tackle_id trough.id fishing_trough_id %}" class="btn">Выбрать</a>
     </li>
     {% endfor %}
 </ul>

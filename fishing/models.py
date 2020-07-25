@@ -290,6 +290,7 @@ class Fishing(models.Model):  # Рыбалки
 
     def __str__(self):
         return str(self.date) + ' ' + str(self.time)
+
     def set_planned(self):
         """
         Поверяет дату проведения рыбалки и текущую дату,
@@ -316,9 +317,11 @@ class FishingCrochet(models.Model):  # Крючки использованные
                               null=True,
                               verbose_name='Владелец записи')
     # Привязка к рыбалке
-    fishing = models.ForeignKey('Fishing',
-                                on_delete=models.PROTECT,
-                                verbose_name='Рыбалка')
+    fishing_tackle = models.ForeignKey('FishingTackle',
+                                       on_delete=models.PROTECT,
+                                       blank=True,
+                                       null=True,
+                                       verbose_name='Рыбалка')
     # Привязка крючка
     crochet = models.ForeignKey('Crochet',
                                 on_delete=models.PROTECT,
@@ -335,16 +338,18 @@ class FishingLeash(models.Model):  # Поводки использованные
     class Meta:
         verbose_name = "Поводок использованный в рыбалке"
         verbose_name_plural = "Поводки использованные в рыбалке"
-        ordering = ['fishing', 'leash', ]
+        ordering = ['fishing_tackle', 'leash', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # Рыбалка
-    fishing = models.ForeignKey('Fishing',
-                                on_delete=models.PROTECT,
-                                verbose_name='Рыбалка')
+    fishing_tackle = models.ForeignKey('FishingTackle',
+                                       on_delete=models.PROTECT,
+                                       blank=True,
+                                       null=True,
+                                       verbose_name='Рыбалка')
     # Поводок
     leash = models.ForeignKey('Leash',
                               on_delete=models.PROTECT,
@@ -382,16 +387,18 @@ class FishingMontage(models.Model):  # Монтажи в рыбалке
     class Meta:
         verbose_name = "Монтаж на рыбалке"
         verbose_name_plural = "Монтажи на рыбалке"
-        ordering = ['fishing', 'montage', ]
+        ordering = ['fishing_tackle', 'montage', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # Привязка к рыбалке
-    fishing = models.ForeignKey('Fishing',
-                                on_delete=models.PROTECT,
-                                verbose_name='Рыбалка')
+    fishing_tackle = models.ForeignKey('FishingTackle',
+                                       on_delete=models.PROTECT,
+                                       blank=True,
+                                       null=True,
+                                       verbose_name='Снасть')
     # Привязка монтажа
     montage = models.ForeignKey('Montage',
                                 on_delete=models.PROTECT,
@@ -412,9 +419,11 @@ class FishingNozzle(models.Model):  # Наживки\насадки исполь
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # Связь с рыбалкой
-    fishing = models.ForeignKey('Fishing',
-                                on_delete=models.PROTECT,
-                                verbose_name='Рыбалка')
+    fishing_tackle = models.ForeignKey('FishingTackle',
+                                       on_delete=models.PROTECT,
+                                       blank=True,
+                                       null=True,
+                                       verbose_name='Снасть')
     # Свзять с наживкой
     nozzle_base = models.ForeignKey('NozzleBase',
                                     on_delete=models.PROTECT,
@@ -534,7 +543,6 @@ class FishingTackle(models.Model):  # Снасть использованная 
     class Meta:
         verbose_name = ''
         verbose_name_plural = ''
-        ordering = ['tackle', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
@@ -557,16 +565,18 @@ class FishingTrough(models.Model):  # Кормушки использованн�
     class Meta:
         verbose_name = "Рыболовная кормушка"
         verbose_name_plural = "Рыболовные кормушки"
-        ordering = ['fishing', 'trough', ]
+        ordering = ['fishing_tackle', 'trough', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # Привязка к рыбалке
-    fishing = models.ForeignKey('Fishing',
-                                on_delete=models.PROTECT,
-                                verbose_name='Рыбалка')
+    fishing_tackle = models.ForeignKey('FishingTackle',
+                                       on_delete=models.PROTECT,
+                                       blank=True,
+                                       null=True,
+                                       verbose_name='Снасть')
     # Привязка к кормушке
     trough = models.ForeignKey(
         'Trough',
@@ -694,9 +704,9 @@ class Lure(models.Model):  # Смесь прикорма
     lure_weight = models.DecimalField(
         max_digits=5,
         decimal_places=2,
-        verbose_name="Вес прикорма, кг.",   
-        help_text = "от 0 до 99.9 кг",
-        validators = [MinValueValidator(0.0), MaxValueValidator(99.9)])
+        verbose_name="Вес прикорма, кг.",
+        help_text="от 0 до 99.9 кг",
+        validators=[MinValueValidator(0.0), MaxValueValidator(99.9)])
 
     def __str__(self):
         return str(self.lure_base)
@@ -842,8 +852,8 @@ class NozzleBase(models.Model):  # Насдаки и наживки
     nozzle_type = models.ForeignKey(
         'NozzleType',
         on_delete=models.PROTECT,
-        blank = True,
-        null = True,
+        blank=True,
+        null=True,
         verbose_name='Тип насадки')
 
     def __str__(self):
@@ -1153,7 +1163,7 @@ class Tackle(models.Model):  # Снасти
         decimal_places=1,
         default=0,
         verbose_name="Длина (м)",
-        validators = [MinValueValidator(0.0), MaxValueValidator(99.9)])
+        validators=[MinValueValidator(0.0), MaxValueValidator(99.9)])
     tackle_casting_weight = models.PositiveIntegerField(
         default=0,
         blank=True,
