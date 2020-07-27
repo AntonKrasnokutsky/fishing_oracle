@@ -104,6 +104,7 @@
         <th>Поводки:</th>
         <th>Крючоки:</th>
         <th>Наживки:</th>
+        <th>Темп:</th>
     </tr>
     {% for fishing_tackle in fishing.fishingtackle_set.all %}
     <tr>
@@ -163,6 +164,9 @@
             {% endif %}
             {% endif %}
         </td>
+        <td>
+            <p>{{ fishing_tackle.fishingpace_set.get.pace }}</p>
+        </td>
     </tr>
     <tr>
         <td>
@@ -209,6 +213,14 @@
             <a href="{% url 'fishing:fishing_nozzle_select' fishing.id fishing_tackle.id 0 %}" class="btn">Указать наживку/насадку</a>
             {% endif %}
         </td>
+        <td>
+            {% if fishing_tackle.fishingpace_set.get %}
+            <a href="{% url 'fishing:fishing_pace_select' fishing.id fishing_tackle.id fishing_tackle.fishingpace_set.get.id %}" class="btn">Изменить темп</a>
+            <a href="{% url 'fishing:fishing_pace_remove' fishing.id fishing_tackle.fishingpace_set.get.id %}" class="btn">Убрать темп</a>
+            {% else %}
+            <a href="{% url 'fishing:fishing_pace_select' fishing.id fishing_tackle.id 0 %}" class="btn">Указать темп</a>
+            {% endif %}
+        </td>
     </tr>
     {% endfor %}
 
@@ -218,12 +230,9 @@
         <td></td>
         <td></td>
         <td></td>
-        <td>
-            
-        </td>
-        <td>
-
-        </td>
+        <td></td>
+        <td></td>
+        <td></td>
     </tr>
 
 </table>
@@ -288,22 +297,6 @@
     <button class="btn">Указать прикормочную смесь</button>
 </form>
 {% endif %}
-
-{% for fishing_pace in fishing.fishingpace_set.all %}
-<p><strong>Темп: </strong>{{ fishing_pace.pace }}</p>
-<form action="{% url 'fishing:fishing_pace_select' fishing.id fishing_pace.id %}" method="GET">
-    {% csrf_token %}
-    <button class="btn">Изменить темп</button>
-</form>
-<form action="{% url 'fishing:fishing_pace_remove' fishing.id fishing_pace.id %}" method="POST">
-    {% csrf_token %}
-    <button class="btn">Убрать темп</button>
-</form>
-{% endfor %}
-<form action="{% url 'fishing:fishing_pace_select' fishing.id 0 %}" method="GET">
-    {% csrf_token %}
-    <button class="btn">Указать темп</button>
-</form>
 
 
 <p><strong>Улов:</strong></p>

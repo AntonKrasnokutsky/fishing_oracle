@@ -176,7 +176,7 @@
 <!-- Темп рыбалки -->
 <ul>
     {% for pace in pace_list %}
-    <form action="{% url 'fishing:fishing_pace_add' fishing_id pace.id fishing_pace_id %}" method="post">
+    <form action="{% url 'fishing:fishing_pace_add' fishing_id fishing_tackle_id pace.id fishing_pace_id %}" method="post">
         {% csrf_token %}
         <p>{{pace}}
             <button class="btn">Выбрать</button>

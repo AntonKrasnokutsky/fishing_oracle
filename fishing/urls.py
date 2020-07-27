@@ -595,7 +595,7 @@ urlpatterns = [
          name='fishing_nozzle_select'),
     # Темп рыбалки
     # Добаввить темп рыбалки
-    path('fishing/<int:fishing_id>/fishingpace/<int:pace_id>/add/<int:fishing_pace_id>/',
+    path('fishing/<int:fishing_id>/fishingpace/<int:fishing_tackle_id><int:pace_id>/add/<int:fishing_pace_id>/',
          views.FishingPaceViews.as_view(),
          name='fishing_pace_add'),
     # Убрать темп рыбалки
@@ -603,7 +603,7 @@ urlpatterns = [
          views.FishingPaceDelete.as_view(),
          name='fishing_pace_remove'),
     # Выбрать темп рыбалки
-    path('fishing/<int:fishing_id>/fishingpace/select/<int:fishing_pace_id>/',
+    path('fishing/<int:fishing_id>/fishingpace/select/<int:fishing_tackle_id><int:fishing_pace_id>/',
          views.FishingPaceViews.as_view(),
          name='fishing_pace_select'),
     # Погода на рыбалке

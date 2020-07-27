@@ -444,9 +444,11 @@ class FishingPace(models.Model):  # Темп рыбалки
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # Связь с рыбалкой
-    fishing = models.ForeignKey('Fishing',
-                                on_delete=models.PROTECT,
-                                verbose_name='Рыбалка')
+    fishing_tackle = models.ForeignKey('FishingTackle',
+                                       on_delete=models.PROTECT,
+                                       blank=True,
+                                       null=True,
+                                       verbose_name='Снасть')
     # Связь с темпом
     pace = models.ForeignKey('Pace',
                              on_delete=models.PROTECT,

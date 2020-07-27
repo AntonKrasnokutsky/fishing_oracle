@@ -1160,7 +1160,7 @@ class FishingPaceDelete(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingPaceDelete, self).dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         fishing_pace = get_object_or_404(
             self.model, pk=kwargs['fishing_pace_id'])
         if fishing_pace.owner == request.user:
@@ -1183,6 +1183,7 @@ class FishingPaceViews(View):
                       template_select_path,
                       {'pace_list': pace_list,
                        'fishing_id': kwargs['fishing_id'],
+                       'fishing_tackle_id': kwargs['fishing_tackle_id'],
                        'fishing_pace_id': kwargs['fishing_pace_id'],
                        'num_visits': num_visits})
 
@@ -1195,11 +1196,11 @@ class FishingPaceViews(View):
                 fishing_pace.pace = pace
                 fishing_pace.save()
         else:
-            fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-            if fishing.owner == request.user:
+            fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+            if fishing_tackle.owner == request.user:
                 fishing_pace = self.model()
                 fishing_pace.owner = request.user
-                fishing_pace.fishing = fishing
+                fishing_pace.fishing_tackle = fishing_tackle
                 fishing_pace.pace = pace
                 fishing_pace.save()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
