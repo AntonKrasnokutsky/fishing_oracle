@@ -77,16 +77,11 @@ WSGI_APPLICATION = 'fishing_oracle.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.mysql',
-        # 'OPTIONS': {
-        #     'sql_mode': 'STRICT_TRANS_TABLES',
-        # },
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'h9d1v8',
-        'USER': 'h7dhr',
-        'PASSWORD': 'h6iHjLc4',
-        'HOST': 'localhost',
-        # 'PORT': '',
+        'NAME': os.environ['DBNAME'],
+        'USER': os.environ['DBUSER'],
+        'PASSWORD': os.environ['DBPASS'],
+        'HOST': os.environ['DBSERV'],
     }
 }
 

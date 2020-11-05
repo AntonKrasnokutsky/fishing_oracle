@@ -69,20 +69,20 @@ urlpatterns = [
     # Блок грунта
     # Список вариантов грунта
     path('primings/',
-         views.priming_list,
+         views.PrimingList.as_view(),
          name='primings'),
     # Добавление грунта
     path('primings/add/',
-         views.priming_add,
+         views.PrimingAdd.as_view(),
          name='priming_add'),
     # Редактирование грунта
     path('primings/<int:priming_id>/renewal/',
-         views.priming_renewal,
-         name='priming_renewal'),
+         views.PrimingEdit.as_view(),
+         name='priming_edit'),
     # Удаление грунта
     path('primings/<int:priming_id>/remove',
-         views.priming_remove,
-         name='priming_remove'),
+         views.PrimingDelete.as_view(),
+         name='priming_delete'),
     # Блок погоды
     # Погода
     path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/weather/',

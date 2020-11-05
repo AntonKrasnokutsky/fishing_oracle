@@ -1124,14 +1124,14 @@ class Priming(models.Model):  # Грунт
     Возможно отказаться от таблицы, т.к. варианты можно выбить из списка
     """
     class Meta:
-        verbose_name = "Покрытие дна"
-        verbose_name_plural = "Покрытие дна"
+        verbose_name = "Вариант дна"
+        verbose_name_plural = "Варианты дна"
         ordering = ['priming_name']
     # Наименование покрытия дна
     priming_name = models.CharField(
         max_length=50,
         unique=True,
-        verbose_name="Грунт")
+        verbose_name="Покрытие")
 
     def __str__(self):
         return self.priming_name

@@ -2054,7 +2054,7 @@ class NozzleInLureMixDelete(View):
     def dispatch(self, *args, **kwargs):
         return super(NozzleInLureMixDelete, self).dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         nozzle = get_object_or_404(self.model, pk=kwargs['nozzle_id'])
         if nozzle.owner == request.user:
             nozzle.delete()
@@ -2359,73 +2359,101 @@ def place_fishing_select(request, fishing_id):
                    'num_visits': num_visits})
 
 
-@staff_member_required
-def priming_add(request):
+class PrimingAdd(View):
     """
-    Добавление вида грунта
+    Добавление варианта покрытия дна
     """
-    num_visits = visits(request)
-    priming = Priming()
-    if request.method == 'POST':
+    template = 'fishing/priming/renewal_add.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PrimingAdd, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
         form = PrimingForm(request.POST)
+        priming = Priming()
         if form.is_valid():
-            priming.priming_name = form.cleaned_data[
-                'priming_name']
+            priming = form.save(commit=False)
             priming.save()
-        return redirect('fishing:primings')
-    else:
+            return redirect('fishing:primings')
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form,
+                           'priming': priming})
+    
+    def get(self, request, *args, **kwargs):
+        priming = Priming()
         form = PrimingForm()
-        return render(
-            request,
-            template_renewal_add_path,
-            {'form': form,
-             'priming': priming,
-             'num_visits': num_visits})
-
-
-@login_required
-def priming_list(request):
-    """
-    Список видов грунта
-    """
-    primings_list = Priming.objects.all()
-    num_visits = visits(request)
-    return render(request,
-                  template_list_path,
-                  {'primings_list': primings_list,
-                   'num_visits': num_visits})
-
-
-@staff_member_required
-def priming_remove(request, priming_id):
-    """
-    Удаление грунта
-    """
-    priming = get_object_or_404(Priming, pk=priming_id)
-    priming.delete()
-    return redirect('fishing:primings')
-
-
-@staff_member_required
-def priming_renewal(request, priming_id):
-    """
-    Редактирование грунта
-    """
-    num_visits = visits(request)
-    priming = get_object_or_404(Priming, pk=priming_id)
-    if request.method == 'POST':
-        form = PrimingForm(request.POST)
-        if form.is_valid():
-            priming.priming_name = form.cleaned_data['priming_name']
-            priming.save()
-        return redirect('fishing:primings')
-    else:
-        form = PrimingForm(
-            initial={'priming_name': priming.priming_name, })
-        return render(request, template_renewal_add_path,
+        return render(request,
+                      self.template,
                       {'form': form,
-                       'priming': priming,
-                       'num_visits': num_visits})
+                       'priming': priming})
+
+
+class PrimingList(View):
+    """
+    Возвращает список варинатов покрытия дна
+    """
+    
+    template = 'fishing/priming/list.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PrimingList, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        primings_list = Priming.objects.all()
+        return render(request,
+                      self.template,
+                      {'primings_list': primings_list})
+
+
+class PrimingDelete(View):
+    """
+    Удаление варианта покрытия дна
+    """ 
+        
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PrimingDelete, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        priming = get_object_or_404(Priming, pk=kwargs['priming_id'])
+        priming.delete()
+        return redirect('fishing:primings')
+
+
+class PrimingEdit(View):
+    """
+    Изменение варианта покрытия дна
+    """
+    template = 'fishing/priming/renewal_add.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PrimingEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        priming = get_object_or_404(Priming, pk=kwargs['priming_id'])
+        form = PrimingForm(request.POST, instance=priming)
+        if form.is_valid():
+            priming = form.save(commit=False)
+            priming.save()
+            return redirect('fishing:primings')
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form,
+                           'priming': priming})
+    
+    def get(self, request, *args, **kwargs):
+        priming = get_object_or_404(Priming, pk=kwargs['priming_id'])
+        form = PrimingForm(instance=priming)
+        return render(request,
+                      self.template,
+                      {'form': form,
+                       'priming': priming})
 
 
 @login_required
