@@ -1273,7 +1273,7 @@ class Weather(models.Model):  # Погода
                                  on_delete=models.PROTECT,
                                  verbose_name="Облачность")
     # Связь с таблицей "Явления погоды"
-    weather_phenomena = models.ForeignKey('WeatherPhenomena',
+    conditions = models.ForeignKey('Conditions',
                                           on_delete=models.PROTECT,
                                           verbose_name="Явления погоды")
     # Температура воздуха
@@ -1305,7 +1305,7 @@ class Weather(models.Model):  # Погода
         return str(self.date)
 
 
-class WeatherPhenomena(models.Model):  # Явления погоды
+class Conditions(models.Model):  # Явления погоды
     """
     Явления погоды, возможно несколько записей
     для одного выезда
@@ -1313,13 +1313,13 @@ class WeatherPhenomena(models.Model):  # Явления погоды
     class Meta:
         verbose_name = "Погодное явление"
         verbose_name_plural = "Погодные явления"
-        ordering = ["weather_phenomena_name"]
+        ordering = ["conditions_name"]
 
     # Погодные явления
-    weather_phenomena_name = models.CharField(
+    conditions_name = models.CharField(
         max_length=20,
         unique=True,
-        verbose_name="Погодные явления")
+        verbose_name="Погодное явление")
 
     def __str__(self):
-        return self.weather_phenomena_name
+        return self.conditions_name

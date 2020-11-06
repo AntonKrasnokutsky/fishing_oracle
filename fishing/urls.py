@@ -123,21 +123,21 @@ urlpatterns = [
          name='overcast_remove'),
     # Погодные явления
     # Список погодных явления
-    path('weather/phenomena/',
-         views.weather_phenomenas_list,
-         name='weatherphenomena'),
+    path('weather/condition/',
+         views.ConditionsList.as_view(),
+         name='conditions'),
     # Добавление погодного явления
-    path('weather/phenomena/add/',
-         views.weather_phenomenas_add,
-         name="weatherphenomena_add"),
+    path('weather/conditions/add/',
+         views.ConditionsAdd.as_view(),
+         name="conditions_add"),
     # Редактирование погодного явления
-    path('weather/phenomena/<int:phenomena_id>/renewal/',
-         views.weather_phenomenas_renewal,
-         name='weatherphenomena_renewal'),
+    path('weather/conditions/<int:conditions_id>/renewal/',
+         views.ConditionsEdit.as_view(),
+         name='conditions_edit'),
     # Удаление погодного явления
-    path('weather/phenomena/<int:phenomena_id>/remove/',
-         views.weather_phenomenas_remove,
-         name='weatherphenomena_remove'),
+    path('weather/conditions/<int:conditions_id>/remove/',
+         views.ConditionsDelete.as_view(),
+         name='conditions_delete'),
     # Блок кормушек
     # Кормоемкость
     # Списк вариантов кормоемкости

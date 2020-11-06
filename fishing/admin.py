@@ -9,7 +9,7 @@ from .models import FishingPoint
 from .models import Priming
 from .models import Weather
 from .models import Overcast
-from .models import WeatherPhenomena
+from .models import Conditions
 from .models import FishingTackle
 from .models import FishingMontage
 from .models import FishingTrough
@@ -42,7 +42,7 @@ admin.site.register(FishingPoint)
 admin.site.register(Priming)
 admin.site.register(Weather)
 admin.site.register(Overcast)
-admin.site.register(WeatherPhenomena)
+admin.site.register(Conditions)
 admin.site.register(FishingTackle)
 admin.site.register(FishingMontage)
 admin.site.register(FishingTrough)

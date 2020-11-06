@@ -7,7 +7,7 @@ from .models import FishingPoint
 from .models import Tackle, Montage
 from .models import Trough
 from .models import BottomMap, Point
-from .models import Weather, Overcast, WeatherPhenomena
+from .models import Weather, Overcast, Conditions
 from .models import Nozzle, NozzleState, NozzleBase
 from .models import Lure, LureBase, LureMix
 from .models import AromaBase, Aroma
@@ -217,13 +217,13 @@ class WaterForm(forms.ModelForm):
 class WeatherForm(forms.ModelForm):
     class Meta:
         model = Weather
-        fields = ['date', 'overcast', 'weather_phenomena',
+        fields = ['date', 'overcast', 'conditions',
                   'weather_temperature', 'pressure',
                   'direction_wind', 'wind_speed',
                   'lunar_day']
 
 
-class WeatherPhenomenaForm(forms.ModelForm):
+class ConditionsForm(forms.ModelForm):
     class Meta:
-        model = WeatherPhenomena
-        fields = ('weather_phenomena_name',)
+        model = Conditions
+        fields = ('conditions_name',)

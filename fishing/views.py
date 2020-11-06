@@ -9,8 +9,8 @@ from .models import Fishing
 from .models import Fish
 from .forms import FishForm
 
-from .models import Weather, Overcast, WeatherPhenomena
-from .forms import WeatherForm, OvercastForm, WeatherPhenomenaForm
+from .models import Weather, Overcast, Conditions
+from .forms import WeatherForm, OvercastForm, ConditionsForm
 
 from .models import FeedCapacity
 from .forms import FeedCapacityForm
@@ -2765,35 +2765,6 @@ def weather_renewal(request, district_id, water_id, place_id, weather_id):
 
 
 @staff_member_required
-def weather_phenomenas_add(request):
-    num_visits = visits(request)
-    weather_phenomena = WeatherPhenomena()
-    if request.method == 'POST':
-        form = WeatherPhenomenaForm(request.POST)
-        if form.is_valid():
-            weather_phenomena.weather_phenomena_name = form.cleaned_data[
-                'weather_phenomena_name']
-            weather_phenomena.save()
-        return redirect('fishing:weatherphenomena')
-    else:
-        form = WeatherPhenomenaForm()
-        return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'weather_penomena': weather_phenomena,
-                       'num_visits': num_visits})
-
-
-@login_required
-def weather_phenomenas_list(request):
-    num_visits = visits(request)
-    weather_phenomena_list = WeatherPhenomena.objects.all()
-    return render(request, template_list_path,
-                  {'weather_phenomena_list': weather_phenomena_list,
-                   'num_visits': num_visits})
-
-
-@staff_member_required
 def weather_phenomenas_remove(request, phenomena_id):
     """
     Удаление явления
@@ -2826,3 +2797,99 @@ def weather_phenomenas_renewal(request, phenomena_id):
                       {'form': form,
                        'phenomena': weather_phenomena,
                        'num_visits': num_visits})
+
+class ConditionsAdd(View):
+    """
+    Добавление варианта погодного явления
+    """
+    template = 'fishing/conditions/renewal_add.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ConditionsAdd, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        form = ConditionsForm(request.POST)
+        conditions = Conditions()
+        if form.is_valid():
+            conditions = form.save(commit=False)
+            conditions.save()
+            return redirect('fishing:conditions')
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form,
+                           'conditions': conditions})
+    
+    def get(self, request, *args, **kwargs):
+        conditions = Conditions()
+        form = ConditionsForm()
+        return render(request,
+                      self.template,
+                      {'form': form,
+                       'conditions': conditions})
+
+
+class ConditionsList(View):
+    """
+    Возвращает список варинатов погодных явлений
+    """
+    
+    template = 'fishing/conditions/list.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ConditionsList, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        conditions_list = Conditions.objects.all()
+        return render(request,
+                      self.template,
+                      {'conditions_list': conditions_list})
+
+
+class ConditionsDelete(View):
+    """
+    Удаление варианта погодного явления
+    """ 
+        
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ConditionsDelete, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        conditions = get_object_or_404(Conditions, pk=kwargs['conditions_id'])
+        conditions.delete()
+        return redirect('fishing:conditions')
+
+
+class ConditionsEdit(View):
+    """
+    Изменение варианта погодного явления
+    """
+    template = 'fishing/conditions/renewal_add.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(ConditionsEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        conditions = get_object_or_404(Conditions, pk=kwargs['conditions_id'])
+        form = ConditionsForm(request.POST, instance=conditions)
+        if form.is_valid():
+            conditions = form.save(commit=False)
+            conditions.save()
+            return redirect('fishing:conditions')
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form,
+                           'conditions': conditions})
+    
+    def get(self, request, *args, **kwargs):
+        conditions = get_object_or_404(Conditions, pk=kwargs['conditions_id'])
+        form = ConditionsForm(instance=conditions)
+        return render(request,
+                      self.template,
+                      {'form': form,
+                       'conditions': conditions})
