@@ -2109,7 +2109,6 @@ class NozzleInLureMixViews(View):
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 
-
 class OvercastAdd(View):
     """
     Добавление варианта облачности
@@ -2207,56 +2206,102 @@ class OvercastEdit(View):
                        'overcast': overcast})
 
 
-@staff_member_required
-def overcast_renewal(request, overcast_id):
+class PaceAdd(View):
     """
-    Редактирование облачности
+    Добавление варианта темпа
     """
-    num_visits = visits(request)
-    overcast = get_object_or_404(Overcast, pk=overcast_id)
-    if request.method == 'POST':
-        form = OvercastForm(request.POST, instance=overcast)
-        if form.is_valid():
-            overcast.overcast_name = form.cleaned_data['overcast_name']
-            overcast.save()
-        return redirect('fishing:overcast')
-    else:
-        form = OvercastForm(
-            initial={'overcast_name': overcast.overcast_name, })
-        return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'overcast': overcast,
-                       'num_visits': num_visits})
+    template = 'fishing/pace/renewal_add.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PaceAdd, self).dispatch(*args, **kwargs)
 
-
-@staff_member_required
-def pace_add(request):
-    num_visits = visits(request)
-    pace = Pace()
-    if request.method == 'POST':
+    def post(self, request, *args, **kwargs):
         form = PaceForm(request.POST)
+        pace = Pace()
         if form.is_valid():
-            pace.pace_interval = form.cleaned_data['pace_interval']
+            pace = form.save(commit=False)
             pace.save()
-        return redirect('fishing:pace')
-    else:
+            return redirect('fishing:pace')
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form,
+                           'pace': pace})
+    
+    def get(self, request, *args, **kwargs):
+        pace = Pace()
         form = PaceForm()
         return render(request,
-                      template_renewal_add_path,
+                      self.template,
                       {'form': form,
-                       'pace': pace,
-                       'num_visits': num_visits})
+                       'pace': pace})
 
 
-@login_required
-def pace_list(request):
-    num_visits = visits(request)
-    pace_list = Pace.objects.all()
-    return render(request,
-                  template_list_path,
-                  {'pace_list': pace_list,
-                   'num_visits': num_visits})
+class PaceList(View):
+    """
+    Возвращает список варинатов темпа ловли
+    """
+    
+    template = 'fishing/pace/list.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PaceList, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        pace_list = Pace.objects.all()
+        return render(request,
+                      self.template,
+                      {'pace_list': pace_list})
+
+
+class PaceDelete(View):
+    """
+    Удаление варианта темпа ловли
+    """ 
+        
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PaceDelete, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        pace = get_object_or_404(Pace, pk=kwargs['pace_id'])
+        pace.delete()
+        return redirect('fishing:pace')
+
+
+class PaceEdit(View):
+    """
+    Изменение варианта темпа ловли
+    """
+    template = 'fishing/pace/renewal_add.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PaceEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        pace = get_object_or_404(Pace, pk=kwargs['pace_id'])
+        form = PaceForm(request.POST, instance=pace)
+        if form.is_valid():
+            pace = form.save(commit=False)
+            pace.save()
+            return redirect('fishing:pace')
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form,
+                           'pace': pace})
+    
+    def get(self, request, *args, **kwargs):
+        pace = get_object_or_404(Pace, pk=kwargs['pace_id'])
+        form = PaceForm(instance=pace)
+        return render(request,
+                      self.template,
+                      {'form': form,
+                       'pace': pace})
+
 
 
 @staff_member_required

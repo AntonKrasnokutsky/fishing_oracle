@@ -159,19 +159,20 @@ urlpatterns = [
     # Темп
     # Список вариантов таблицы Темп
     path('pace/',
-         views.pace_list,
+         views.PaceList.as_view(),
          name='pace'),
     # Добавление варианта темпа
     path('pace/add/',
-         views.pace_add, name='pace_add'),
+         views.PaceAdd.as_view(),
+         name='pace_add'),
     # Редактирование варианта темпа
-    path('pace/<int:pace_id>/renewal',
-         views.pace_renewal,
-         name='pace_renewal'),
+    path('pace/<int:pace_id>/edit',
+         views.PaceEdit.as_view(),
+         name='pace_edit'),
     # Удаление варианта темпа
-    path('pace/<int:pace_int>/remove/',
-         views.pace_remove,
-         name='pace_remove'),
+    path('pace/<int:pace_id>/delete/',
+         views.PaceDelete.as_view(),
+         name='pace_delete'),
     # Водоемы
     # Список водоемов
     path('districts/<int:district_id>/water/',

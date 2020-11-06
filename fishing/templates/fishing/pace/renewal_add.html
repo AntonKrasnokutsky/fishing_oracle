@@ -1,0 +1,23 @@
+{% extends 'fishing/base.html' %}
+{% if pace %}
+<p>Редактирование варианта темпа ловли</p>
+{% else %}
+<p>Добавление варианта темпа ловли</p>
+{% endif %}
+{% block content %}
+<form action="" method="post" style="text-align: center; width: 70%; margin: auto;">
+  {% csrf_token %}
+  <table style="text-align: center; margin: auto;">
+    <tr>
+      <td colspan="2" class="text-danger">{{ form.pace_interval.errors }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.pace_interval.label_tag }}</td>
+      <td>{{ form.pace_interval }}</td>
+    </tr>
+  </table>
+  <br />
+  <button class="btn btn-secondary" role="button">Сохранить</button>
+  <a href="{% url 'fishing:pace' %}" class="btn btn-secondary" role="button">Назад</a>
+</form>
+{% endblock %}
