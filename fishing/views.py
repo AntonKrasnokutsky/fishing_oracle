@@ -2109,45 +2109,102 @@ class NozzleInLureMixViews(View):
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 
-@staff_member_required
-def overcast_add(request):
-    num_visits = visits(request)
-    overcast = Overcast()
-    if request.method == 'POST':
+
+class OvercastAdd(View):
+    """
+    Добавление варианта облачности
+    """
+    template = 'fishing/overcast/renewal_add.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(OvercastAdd, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
         form = OvercastForm(request.POST)
+        overcast = Overcast()
         if form.is_valid():
-            overcast.overcast_name = form.cleaned_data[
-                'overcast_name']
+            overcast = form.save(commit=False)
             overcast.save()
-        return redirect('fishing:overcast')
-    else:
+            return redirect('fishing:overcast')
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form,
+                           'overcast': overcast})
+    
+    def get(self, request, *args, **kwargs):
+        overcast = Overcast()
         form = OvercastForm()
-        return render(
-            request,
-            template_renewal_add_path,
-            {'form': form,
-             'overcast': overcast,
-             'num_visits': num_visits})
+        return render(request,
+                      self.template,
+                      {'form': form,
+                       'overcast': overcast})
 
 
-@login_required
-def overcast_list(request):
-    overcasts_list = Overcast.objects.all()
-    num_visits = visits(request)
-    return render(request,
-                  template_list_path,
-                  {'overcasts_list': overcasts_list,
-                   'num_visits': num_visits})
-
-
-@staff_member_required
-def overcast_remove(request, overcast_id):
+class OvercastList(View):
     """
-    Удаление облачности
+    Возвращает список варинатов облачности
     """
-    overcast = get_object_or_404(Overcast, pk=overcast_id)
-    overcast.delete()
-    return redirect('fishing:overcast')
+    
+    template = 'fishing/overcast/list.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(OvercastList, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        overcast_list = Overcast.objects.all()
+        return render(request,
+                      self.template,
+                      {'overcast_list': overcast_list})
+
+
+class OvercastDelete(View):
+    """
+    Удаление варианта облачности
+    """ 
+        
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(OvercastDelete, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        overcast = get_object_or_404(Overcast, pk=kwargs['overcast_id'])
+        overcast.delete()
+        return redirect('fishing:overcast')
+
+
+class OvercastEdit(View):
+    """
+    Изменение варианта облачности
+    """
+    template = 'fishing/overcast/renewal_add.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(OvercastEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        overcast = get_object_or_404(Overcast, pk=kwargs['overcast_id'])
+        form = OvercastForm(request.POST, instance=overcast)
+        if form.is_valid():
+            overcast = form.save(commit=False)
+            overcast.save()
+            return redirect('fishing:overcast')
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form,
+                           'overcast': overcast})
+    
+    def get(self, request, *args, **kwargs):
+        overcast = get_object_or_404(Overcast, pk=kwargs['overcast_id'])
+        form = OvercastForm(instance=overcast)
+        return render(request,
+                      self.template,
+                      {'form': form,
+                       'overcast': overcast})
 
 
 @staff_member_required

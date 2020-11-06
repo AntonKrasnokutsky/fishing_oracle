@@ -76,11 +76,11 @@ urlpatterns = [
          views.PrimingAdd.as_view(),
          name='priming_add'),
     # Редактирование грунта
-    path('primings/<int:priming_id>/renewal/',
+    path('primings/<int:priming_id>/edit/',
          views.PrimingEdit.as_view(),
          name='priming_edit'),
     # Удаление грунта
-    path('primings/<int:priming_id>/remove',
+    path('primings/<int:priming_id>/delete/',
          views.PrimingDelete.as_view(),
          name='priming_delete'),
     # Блок погоды
@@ -106,21 +106,21 @@ urlpatterns = [
          name='weather_remove'),
     # Облачность
     # Список вариантов облачности
-    path('weather/overcast/',
-         views.overcast_list,
+    path('overcast/',
+         views.OvercastList.as_view(),
          name='overcast'),
     # Добавдение варианта облачности
-    path('weather/overcast/add/',
-         views.overcast_add,
+    path('overcast/add/',
+         views.OvercastAdd.as_view(),
          name='overcast_add'),
     # Редактирование варианта облачности
-    path('weather/overcast/<int:overcast_id>/renewal/',
-         views.overcast_renewal,
-         name='overcast_renewal'),
+    path('overcast/<int:overcast_id>/edit/',
+         views.OvercastEdit.as_view(),
+         name='overcast_edit'),
     # Удаление варианта облачности
-    path('weather/overcast/<int:overcast_id>/remove/',
-         views.overcast_remove,
-         name='overcast_remove'),
+    path('overcast/<int:overcast_id>/delete/',
+         views.OvercastDelete.as_view(),
+         name='overcast_delete'),
     # Погодные явления
     # Список погодных явления
     path('weather/condition/',
@@ -131,11 +131,11 @@ urlpatterns = [
          views.ConditionsAdd.as_view(),
          name="conditions_add"),
     # Редактирование погодного явления
-    path('weather/conditions/<int:conditions_id>/renewal/',
+    path('weather/conditions/<int:conditions_id>/edit/',
          views.ConditionsEdit.as_view(),
          name='conditions_edit'),
     # Удаление погодного явления
-    path('weather/conditions/<int:conditions_id>/remove/',
+    path('weather/conditions/<int:conditions_id>/delete/',
          views.ConditionsDelete.as_view(),
          name='conditions_delete'),
     # Блок кормушек

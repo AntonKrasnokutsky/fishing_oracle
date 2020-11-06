@@ -935,7 +935,7 @@ class Overcast(models.Model):  # Облачность
     # Вариант облачности
     overcast_name = models.CharField(
         max_length=30,
-        verbose_name="Классификация облачности",
+        verbose_name="Вариант облачности",
         unique=True)
 
     def __str__(self):
