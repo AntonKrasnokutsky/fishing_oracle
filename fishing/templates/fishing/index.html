@@ -15,10 +15,10 @@
     <li><a href="{% url 'fishing:leash' %}">Поводки</a></li>
     <li><a href="{% url 'fishing:districts' %}">Районы</a></li>
     {% endif %}
-    <li><a href="{% url 'fishing:fish' %}">Рыба</a></li>
+    <li><a href="{% url 'fishing:fish_list' %}">Рыба</a></li>
     {% if user.is_staff %}
     <p>Заполняется администратором</p>
-    <li><a href="{% url 'fishing:fish' %}">Рыба</a></li>
+    <li><a href="{% url 'fishing:fish_list' %}">Рыба</a></li>
     <li><a href="{% url 'fishing:feed_capacity' %}">Кормоёмкость</a></li>
     <li><a href="{% url 'fishing:pace' %}">Темп</a></li>
     <li><a href="{% url 'fishing:districts' %}"><span style="color: red;">Районы</span></a></li>

@@ -31,24 +31,24 @@ urlpatterns = [
     # Блок рыб
     # Справочник рыб
     path('fish/',
-         views.fish_list,
-         name='fish'),
+         views.FishList.as_view(),
+         name='fish_list'),
     # Описание рыбы
     path('fish/<int:fish_id>/',
-         views.fish_details,
+         views.FishDetails.as_view(),
          name='fish_details'),
     # Редактирование названия рыбы и описания
     path('fish/<int:fish_id>/renewal/',
-         views.fish_renewal,
-         name="fish_renewal"),
+         views.FishEdit.as_view(),
+         name="fish_edit"),
     # Добавление рыбы
     path('fish/add/',
-         views.fish_add,
+         views.FishAdd.as_view(),
          name='fish_add'),
     # Удаление рыбы
     path('fish/<int:fish_id>/remove/',
-         views.fish_remove,
-         name='fish_remove'),
+         views.FishDelete.as_view(),
+         name='fish_delete'),
     # Блок Районов
     # Список районов
     path('districts/',

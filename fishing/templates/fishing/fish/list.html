@@ -1,0 +1,40 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+
+{% if fish_list != None %}
+<!-- Рыбы -->
+{% if fish_list %}
+<table class="table table-hover" style="width: 70%; margin: auto;">
+  {% for fish in fish_list %}
+  <tr >
+    <td style="text-align: center; border: 0;">
+    {% if fish.fish_description %}
+      <a href="{% url 'fishing:fish_details' fish.id %}">{{fish.name_of_fish}}</a>
+    {% else %}
+      {{fish.name_of_fish}}
+    {% endif %}
+    </td>
+    {% if user.is_staff %}
+    <td style="text-align: center; width: 10%; border: 0;">
+    <a href="{% url 'fishing:fish_edit' fish.id %}" class="btn btn-secondary" role="button">Редактировать</a>
+    </td>
+    <td style="text-align: center; width: 6%; border: 0;">
+    <a href="{% url 'fishing:fish_delete' fish.id %}" class="btn btn-secondary" role="button">Удалить</a>
+    </td>
+    {% endif %}
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p style="width: 70%; margin: auto;">Ни одной рыбы ещё не добавлено</p>
+{% endif %}
+<br/>
+<p style="text-align: center;">
+  {% if user.is_staff %}
+  <a href="{% url 'fishing:fish_add' %}" class="btn btn-secondary" role="button">Добавить</a>
+  {% endif %}
+  <a href="{% url 'fishing:index' %}" class="btn btn-secondary" role="button">Назад</a>
+</p>
+{% endif %}
+
+{% endblock %}

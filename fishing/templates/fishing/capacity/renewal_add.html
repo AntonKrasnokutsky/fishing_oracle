@@ -1,10 +1,18 @@
 {% extends 'fishing/base.html' %}
+{% block content %}
+<style>
+  p {
+    text-align: center;
+    font-size: 140%;
+    font-style: oblique;
+  }
+</style>
 {% if capacity %}
 <p>Редактирование варианта кормоёмкости</p>
 {% else %}
 <p>Добавление варианта кормоёмкости</p>
 {% endif %}
-{% block content %}
+<br />
 <form action="" method="post" style="text-align: center; width: 70%; margin: auto;">
   {% csrf_token %}
   <table style="text-align: center; margin: auto;">

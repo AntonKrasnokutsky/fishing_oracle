@@ -628,16 +628,13 @@ class CapacityAdd(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form,
-                           'capacity': capacity})
+                          {'form': form})
     
     def get(self, request, *args, **kwargs):
-        capacity = FeedCapacity()
         form = FeedCapacityForm()
         return render(request,
                       self.template,
-                      {'form': form,
-                       'capacity': capacity})
+                      {'form': form})
 
 
 class CapacityList(View):
@@ -705,45 +702,109 @@ class CapacityEdit(View):
                        'capacity': capacity})
 
 
-@staff_member_required
-def feed_capacity_renewal(request, feed_capacity_id):
-    num_visits = visits(request)
-    feed_capacity = get_object_or_404(FeedCapacity, pk=feed_capacity_id)
-    if request.method == 'POST':
-        form = FeedCapacityForm(request.POST, instance=feed_capacity)
-        if form.is_valid():
-            feed_capacity.feed_capacity_name = form.cleaned_data[
-                'feed_capacity_name']
-            feed_capacity.save()
-        return redirect('fishing:feed_capacity')
-    else:
-        form = FeedCapacityForm(
-            initial={'feed_capacity_name': feed_capacity.feed_capacity_name, })
-        return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'feed_capacity': feed_capacity,
-                       'num_visits': num_visits})
+class FishAdd(View):
+    """
+    Добавление рыб
+    """
+    template = 'fishing/fish/renewal_add.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(FishAdd, self).dispatch(*args, **kwargs)
 
-
-@staff_member_required
-def fish_add(request):
-    fish = Fish()
-    num_visits = visits(request)
-    if request.method == 'POST':
+    def post(self, request, *args, **kwargs):
         form = FishForm(request.POST)
+        fish = Fish()
         if form.is_valid():
-            fish.name_of_fish = form.cleaned_data['name_of_fish']
-            fish.fish_description = form.cleaned_data['fish_description']
+            fish = form.save(commit=False)
             fish.save()
-        return redirect('fishing:fish')
-    else:
+            return redirect('fishing:fish_list')
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form,
+                           'fish': fish})
+    
+    def get(self, request, *args, **kwargs):
         form = FishForm()
-    return render(request, template_renewal_add_path,
-                  {'form': form,
-                   'fish': fish,
-                   'num_visits': num_visits})
+        return render(request,
+                      self.template,
+                      {'form': form})
 
+
+class FishList(View):
+    """
+    Возвращает список рыб
+    """
+    
+    template = 'fishing/fish/list.html'
+        
+    def get(self, request, *args, **kwargs):
+        fish_list = Fish.objects.all()
+        return render(request,
+                      self.template,
+                      {'fish_list': fish_list})
+
+
+class FishDelete(View):
+    """
+    Удаление рыбы
+    """ 
+        
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(FishDelete, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        fish = get_object_or_404(Fish, pk=kwargs['fish_id'])
+        fish.delete()
+        return redirect('fishing:fish_list')
+
+
+class FishEdit(View):
+    """
+    Изменение рыбы
+    """
+    template = 'fishing/fish/renewal_add.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(FishEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        fish = get_object_or_404(Fish, pk=kwargs['fish_id'])
+        form = FishForm(request.POST, instance=fish)
+        if form.is_valid():
+            fish = form.save(commit=False)
+            fish.save()
+            return redirect('fishing:fish_list')
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form,
+                           'fish': fish})
+    
+    def get(self, request, *args, **kwargs):
+        fish = get_object_or_404(Fish, pk=kwargs['fish_id'])
+        form = FishForm(instance=fish)
+        return render(request,
+                      self.template,
+                      {'form': form,
+                       'fish': fish})
+
+
+class FishDetails(View):
+    """
+    Возвращает подробную нинформацию о рыбе
+    """
+    
+    template = 'fishing/fish/details.html'
+        
+    def get(self, request, *args, **kwargs):
+        fish_details = get_object_or_404(Fish, pk=kwargs['fish_id'])
+        return render(request,
+                      self.template,
+                      {'fish': fish_details})
 
 def fish_details(request, fish_id):
     """
@@ -754,46 +815,6 @@ def fish_details(request, fish_id):
     return render(request,
                   template_details_path,
                   {'fish': fish,
-                   'num_visits': num_visits})
-
-
-def fish_list(request):
-    """
-    Список рыб
-    """
-    fishs_list = Fish.objects.all()
-    num_visits = visits(request)
-    return render(request,
-                  template_list_path,
-                  {'fish_list': fishs_list,
-                   'num_visits': num_visits})
-
-
-@staff_member_required
-def fish_remove(request, fish_id):
-    fish = get_object_or_404(Fish, pk=fish_id)
-    fish.delete()
-    return redirect('fishing:fish')
-
-
-@staff_member_required
-def fish_renewal(request, fish_id):
-    fish = get_object_or_404(Fish, pk=fish_id)
-    num_visits = visits(request)
-    if request.method == 'POST':
-        form = FishForm(request.POST, instance=fish)
-        if form.is_valid():
-            fish.name_of_fish = form.cleaned_data['name_of_fish']
-            fish.fish_description = form.cleaned_data['fish_description']
-            fish.save()
-        return redirect('fishing:fish')
-    else:
-        form = FishForm(instance=fish)
-            # initial={'name_of_fish': fish.name_of_fish,
-            #          'fish_description': fish.fish_description, })
-    return render(request, template_renewal_add_path,
-                  {'form': form,
-                   'fish': fish,
                    'num_visits': num_visits})
 
 
@@ -2189,16 +2210,13 @@ class OvercastAdd(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form,
-                           'overcast': overcast})
+                          {'form': form})
     
     def get(self, request, *args, **kwargs):
-        overcast = Overcast()
         form = OvercastForm()
         return render(request,
                       self.template,
-                      {'form': form,
-                       'overcast': overcast})
+                      {'form': form})
 
 
 class OvercastList(View):
@@ -2286,16 +2304,13 @@ class PaceAdd(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form,
-                           'pace': pace})
+                          {'form': form})
     
     def get(self, request, *args, **kwargs):
-        pace = Pace()
         form = PaceForm()
         return render(request,
                       self.template,
-                      {'form': form,
-                       'pace': pace})
+                      {'form': form})
 
 
 class PaceList(View):
@@ -2514,16 +2529,13 @@ class PrimingAdd(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form,
-                           'priming': priming})
+                          {'form': form})
     
     def get(self, request, *args, **kwargs):
-        priming = Priming()
         form = PrimingForm()
         return render(request,
                       self.template,
-                      {'form': form,
-                       'priming': priming})
+                      {'form': form})
 
 
 class PrimingList(View):
@@ -2953,16 +2965,13 @@ class ConditionsAdd(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form,
-                           'conditions': conditions})
+                          {'form': form})
     
     def get(self, request, *args, **kwargs):
-        conditions = Conditions()
         form = ConditionsForm()
         return render(request,
                       self.template,
-                      {'form': form,
-                       'conditions': conditions})
+                      {'form': form})
 
 
 class ConditionsList(View):

@@ -1,0 +1,38 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+<style>
+  p {
+    text-align: center;
+    font-size: 140%;
+    font-style: oblique;
+  }
+</style>
+{% if fish %}
+<p>Редактирование рыбы</p>
+{% else %}
+<p>Добавление рыбы</p>
+{% endif %}
+<br/>
+<form action="" method="post" style="text-align: center; width: 70%; margin: auto;">
+  {% csrf_token %}
+  <table style="text-align: center; margin: auto;">
+    <tr>
+      <td colspan="2" class="text-danger">{{ form.name_of_fish.errors }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.name_of_fish.label_tag }}</td>
+      <td>{{ form.name_of_fish }}</td>
+    </tr>
+    <tr>
+      <td colspan="2" class="text-danger">{{ form.fish_description.errors }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.fish_description.label_tag }}</td>
+      <td>{{ form.fish_description }}</td>
+    </tr>
+  </table>
+  <br />
+  <button class="btn btn-secondary" role="button">Сохранить</button>
+  <a href="{% url 'fishing:fish_list' %}" class="btn btn-secondary" role="button">Назад</a>
+</form>
+{% endblock %}
