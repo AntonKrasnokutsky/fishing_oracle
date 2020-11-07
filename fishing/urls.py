@@ -142,20 +142,20 @@ urlpatterns = [
     # Кормоемкость
     # Списк вариантов кормоемкости
     path('capacity/',
-         views.feed_capacity_list,
+         views.CapacityList.as_view(),
          name='feed_capacity'),
     # Добавление варианта кормоемкости
     path('capacity/add/',
-         views.feed_capacity_add,
+         views.CapacityAdd.as_view(),
          name='feed_capacity_add'),
     # Редактирование варианта кормоемскости
-    path('capacity/<int:feed_capacity_id>/renewal/',
-         views.feed_capacity_renewal,
-         name='feed_capacity_renewal'),
+    path('capacity/<int:capacity_id>/renewal/',
+         views.CapacityEdit.as_view(),
+         name='feed_capacity_edit'),
     # Удаление варианта кормоемкости
-    path('capacity/<int:feed_capacity_id>/remove/',
-         views.feed_capacity_remove,
-         name='feed_capacity_remove'),
+    path('capacity/<int:capacity_id>/remove/',
+         views.CapacityDelete.as_view(),
+         name='feed_capacity_delete'),
     # Темп
     # Список вариантов таблицы Темп
     path('pace/',

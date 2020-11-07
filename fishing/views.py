@@ -608,41 +608,101 @@ def district_renewal(request, district_id):
                        'num_visits': num_visits})
 
 
-@staff_member_required
-def feed_capacity_add(request):
-    num_visits = visits(request)
-    feed_capacity = FeedCapacity()
-    if request.method == 'POST':
+class CapacityAdd(View):
+    """
+    Добавление варианта темпа
+    """
+    template = 'fishing/capacity/renewal_add.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CapacityAdd, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
         form = FeedCapacityForm(request.POST)
+        capacity = FeedCapacity()
         if form.is_valid():
-            feed_capacity.feed_capacity_name = form.cleaned_data[
-                'feed_capacity_name']
-            feed_capacity.save()
-        return redirect('fishing:feed_capacity')
-    else:
+            capacity = form.save(commit=False)
+            capacity.save()
+            return redirect('fishing:feed_capacity')
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form,
+                           'capacity': capacity})
+    
+    def get(self, request, *args, **kwargs):
+        capacity = FeedCapacity()
         form = FeedCapacityForm()
         return render(request,
-                      template_renewal_add_path,
+                      self.template,
                       {'form': form,
-                       'feed_capacity': feed_capacity,
-                       'num_visits': num_visits})
+                       'capacity': capacity})
 
 
-@login_required
-def feed_capacity_list(request):
-    num_visits = visits(request)
-    feed_capacity_list = FeedCapacity.objects.all()
-    return render(request,
-                  template_list_path,
-                  {'feed_capacity_list': feed_capacity_list,
-                   'nem_visits': num_visits})
+class CapacityList(View):
+    """
+    Возвращает список варинатов кормоемкости
+    """
+    
+    template = 'fishing/capacity/list.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CapacityList, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        capacity_list = FeedCapacity.objects.all()
+        return render(request,
+                      self.template,
+                      {'capacity_list': capacity_list})
 
 
-@staff_member_required
-def feed_capacity_remove(request, feed_capacity_id):
-    feed_capacity = get_object_or_404(FeedCapacity, pk=feed_capacity_id)
-    feed_capacity.delete()
-    return redirect('fishing:feed_capacity')
+class CapacityDelete(View):
+    """
+    Удаление варианта кормоёмкости
+    """ 
+        
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CapacityDelete, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        capacity = get_object_or_404(FeedCapacity, pk=kwargs['capacity_id'])
+        capacity.delete()
+        return redirect('fishing:feed_capacity')
+
+
+class CapacityEdit(View):
+    """
+    Изменение варианта кормоёмкости
+    """
+    template = 'fishing/capacity/renewal_add.html'
+    
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CapacityEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        capacity = get_object_or_404(FeedCapacity, pk=kwargs['capacity_id'])
+        form = FeedCapacityForm(request.POST, instance=capacity)
+        if form.is_valid():
+            capacity = form.save(commit=False)
+            capacity.save()
+            return redirect('fishing:feed_capacity')
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form,
+                           'capacity': capacity})
+    
+    def get(self, request, *args, **kwargs):
+        capacity = get_object_or_404(FeedCapacity, pk=kwargs['capacity_id'])
+        form = FeedCapacityForm(instance=capacity)
+        return render(request,
+                      self.template,
+                      {'form': form,
+                       'capacity': capacity})
 
 
 @staff_member_required
@@ -2301,33 +2361,6 @@ class PaceEdit(View):
                       self.template,
                       {'form': form,
                        'pace': pace})
-
-
-
-@staff_member_required
-def pace_remove(request, pace_id):
-    pace = get_object_or_404(Pace, pk=pace_id)
-    pace.delete()
-    return redirect('fishing:pace')
-
-
-@staff_member_required
-def pace_renewal(request, pace_id):
-    num_visits = visits(request)
-    pace = get_object_or_404(Pace, pk=pace_id)
-    if request.method == 'POST':
-        form = PaceForm(request.POST, instance=pace)
-        if form.is_valid():
-            pace.pace_interval = form.cleaned_data['pace_interval']
-            pace.save()
-        return redirect('fishing:pace')
-    else:
-        form = PaceForm(initial={'pace_interval': pace.pace_interval, })
-        return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'pace': pace,
-                       'num_visits': num_visits})
 
 
 @login_required

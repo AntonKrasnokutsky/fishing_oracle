@@ -1,0 +1,23 @@
+{% extends 'fishing/base.html' %}
+{% if capacity %}
+<p>Редактирование варианта кормоёмкости</p>
+{% else %}
+<p>Добавление варианта кормоёмкости</p>
+{% endif %}
+{% block content %}
+<form action="" method="post" style="text-align: center; width: 70%; margin: auto;">
+  {% csrf_token %}
+  <table style="text-align: center; margin: auto;">
+    <tr>
+      <td colspan="2" class="text-danger">{{ form.feed_capacity_name.errors }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.feed_capacity_name.label_tag }}</td>
+      <td>{{ form.feed_capacity_name }}</td>
+    </tr>
+  </table>
+  <br />
+  <button class="btn btn-secondary" role="button">Сохранить</button>
+  <a href="{% url 'fishing:feed_capacity' %}" class="btn btn-secondary" role="button">Назад</a>
+</form>
+{% endblock %}
