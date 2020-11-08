@@ -23,6 +23,7 @@ from .models import NozzleState
 from .models import Aroma
 from .models import AromaBase
 from .models import FishingLeash
+from .models import Leash
 from .models import Crochet
 from .models import Pace
 from .models import FishingResult
@@ -56,6 +57,7 @@ admin.site.register(NozzleState)
 admin.site.register(Aroma)
 admin.site.register(AromaBase)
 admin.site.register(FishingLeash)
+admin.site.register(Leash)
 admin.site.register(Crochet)
 admin.site.register(Pace)
 admin.site.register(FishingResult)

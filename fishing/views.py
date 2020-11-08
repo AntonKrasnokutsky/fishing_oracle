@@ -57,6 +57,10 @@ template_details_path = 'fishing/details.html'
 template_select_path = 'fishing/select.html'
 
 class Settings(View):
+    """
+    Страница администратора
+    """
+    
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(Settings, self).dispatch(*args, **kwargs)
@@ -1635,65 +1639,119 @@ class FishingWeatherViews(View):
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 
-@login_required
-def leash_add(request):
-    num_visits = visits(request)
-    if request.method == 'POST':
-        leash = FishingLeash()
+class LeashAdd(View):
+    """
+    Добавление поводка
+    """
+    template = 'fishing/leash/renewal_add.html'
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LeashAdd, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
         form = LeashForm(request.POST)
+        leash = Leash()
         if form.is_valid():
             leash = form.save(commit=False)
             leash.owner = request.user
-            leash.save()
-        return redirect('fishing:leash')
-    else:
+            if leash.leash_unique():
+                leash.save()
+                return redirect('fishing:leash')
+            else:
+                return render(request,
+                          self.template,
+                          {'form': form,
+                           'errors': 'Такой поводок уже есть в базе'})
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form})
+    
+    def get(self, request, *args, **kwargs):
         form = LeashForm()
         return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
+                      self.template,
+                      {'form': form})
 
 
-@login_required
-def leash_list(request):
-    num_visits = visits(request)
-    if request.user.is_staff:
-        leash_list = Leash.objects.all()
-    else:
-        leash_list = Leash.objects.filter(owner=request.user)
-    return render(request,
-                  template_list_path,
-                  {'leash_list': leash_list,
-                   'num_visits': num_visits})
+class LeashList(View):
+    """
+    Возвращает список поводков
+    """
+    
+    template = 'fishing/leash/list.html'
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LeashList, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        if request.user.is_staff:
+            leash_list = Leash.objects.all()
+        else:
+            leash_list = Leash.objects.filter(owner=request.user)
+        return render(request,
+                    self.template,
+                    {'leash_list': leash_list})
 
 
-@login_required
-def leash_remove(request, leash_id):
-    leash = get_object_or_404(Leash, pk=leash_id)
-    if leash.owner == request.user:
-        leash.delete()
-    return redirect('fishing:leash')
+class LeashDelete(View):
+    """
+    Удаление поводка
+    """ 
+        
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LeashDelete, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        leash = get_object_or_404(Leash, pk=kwargs['leash_id'])
+        if leash.owner == request.user:
+            leash.delete()
+        return redirect('fishing:leash')
 
 
-@login_required
-def leash_renewal(request, leash_id):
-    num_visits = visits(request)
-    leash = get_object_or_404(Leash, pk=leash_id)
-    if leash.owner == request.user:
-        if request.method == 'POST':
+class LeashEdit(View):
+    """
+    Изменение поводка
+    """
+    template = 'fishing/leash/renewal_add.html'
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LeashEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        leash = get_object_or_404(Leash, pk=kwargs['leash_id'])
+        if leash.owner == request.user:
             form = LeashForm(request.POST, instance=leash)
             if form.is_valid():
                 leash = form.save(commit=False)
                 leash.owner = request.user
-                leash.save()
-            return redirect('fishing:leash')
-        else:
+                if leash.leash_unique():
+                    leash.save()
+                    return redirect('fishing:leash')
+                else:
+                    return render(request,
+                          self.template,
+                          {'form': form,
+                           'leash': leash,
+                           'errors': 'Такой поводок уже есть в базе'})
+            else:
+                return render(request,
+                            self.template,
+                            {'form': form,
+                            'conditions': conditions})
+    
+    def get(self, request, *args, **kwargs):
+        leash = get_object_or_404(Leash, pk=kwargs['leash_id'])
+        if leash.owner == request.user:
             form = LeashForm(instance=leash)
             return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
-    else:
+                        self.template,
+                        {'form': form,
+                        'leash': leash})
         return redirect('fishing:leash')
 
 

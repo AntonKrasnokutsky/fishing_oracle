@@ -662,13 +662,13 @@ class Leash(models.Model):  # Поводки
     # Поводочный материал
     leash_material = models.CharField(
         max_length=20,
-        verbose_name="Поводочный материал")
+        verbose_name="Материал поводка")
     # Диаметр поводочного материала
     leash_diameter = models.DecimalField(
         max_digits=4,
         decimal_places=2,
         default=0,
-        verbose_name="Диамет поводочного материла")
+        verbose_name="Диаметр поводка")
     # Длина поводка
     leash_length = models.PositiveIntegerField(
         default=0,
@@ -678,6 +678,15 @@ class Leash(models.Model):  # Поводки
         return (self.leash_material + ' ' + str(self.leash_diameter) +
                 ' ' + str(self.leash_length) + ' см.')
 
+    def leash_unique(self):
+        leash_owner_list = Leash.objects.filter(owner=self.owner)
+        for leash in leash_owner_list:
+            if leash.id != self.id:
+                if leash.leash_material == self.leash_material:
+                    if leash.leash_diameter == self.leash_diameter:
+                        if leash.leash_length == self.leash_length:
+                            return False
+        return True
 
 class Lure(models.Model):  # Смесь прикорма
     """

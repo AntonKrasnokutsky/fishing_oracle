@@ -467,20 +467,20 @@ urlpatterns = [
     # Поводки
     # Список поводков
     path('leash/',
-         views.leash_list,
+         views.LeashList.as_view(),
          name='leash'),
     # Добавление поводка
     path('leash/add/',
-         views.leash_add,
+         views.LeashAdd.as_view(),
          name='leash_add'),
     # Редактирование поводка
     path('leash/<int:leash_id>/renewal/',
-         views.leash_renewal,
-         name='leash_renewal'),
+         views.LeashEdit.as_view(),
+         name='leash_edit'),
     # Удаление поводка
-    path('leash/<int:leash_id>/remove/',
-         views.leash_remove,
-         name='leash_remove'),
+    path('leash/<int:leash_id>/delete/',
+         views.LeashDelete.as_view(),
+         name='leash_delete'),
     # Результат рыбалки
     # Добавление результата рыбалки
     path('fishing/<int:fishing_id>/fishingresult/add/',

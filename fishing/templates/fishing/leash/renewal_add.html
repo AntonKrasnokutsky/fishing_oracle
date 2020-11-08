@@ -1,0 +1,48 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+<style>
+  p {
+    text-align: center;
+    font-size: 140%;
+    font-style: oblique;
+  }
+</style>
+{% if leash %}
+<p>Редактирование поводка</p>
+{% else %}
+<p>Добавление поводка</p>
+{% endif %}
+<br />
+<form action="" method="post" style="text-align: center; margin: auto;">
+  {% csrf_token %}
+  <table style="text-align: left; margin: auto;">
+    <tr>
+      <td colspan="2" class="text-danger">{{ errors }}</td>
+    </tr>
+    <tr>
+      <td colspan="2" class="text-danger">{{ form.leash_material.errors }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.leash_material.label_tag }}</td>
+      <td>{{ form.leash_material }}</td>
+    </tr>
+    <tr>
+      <td colspan="2" class="text-danger">{{ form.leash_diameter.errors }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.leash_diameter.label_tag }}</td>
+      <td>{{ form.leash_diameter }}</td>
+    </tr>
+    <tr>
+      <td colspan="2" class="text-danger">{{ form.leash_length.errors }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.leash_length.label_tag }}</td>
+      <td>{{ form.leash_length }}</td>
+    </tr>
+  </table>
+  <br />
+  <button class="btn btn-secondary" role="button">Сохранить</button>
+  <a href="{% url 'fishing:leash' %}" class="btn btn-secondary" role="button">Назад</a>
+</form>
+{% endblock %}
