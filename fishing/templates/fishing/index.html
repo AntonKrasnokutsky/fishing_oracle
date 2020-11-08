@@ -1,30 +1,23 @@
 {% extends 'fishing/base.html' %} {% block content %}
-<ul>
-    {% if user.is_authenticated %}
-    <li><a href="{% url 'fishing:fishing' %}">Рыбалки</a></li>
-    <li><a href="{% url 'fishing:tackle' %}">Снасти</a></li>
-    <li><a href="{% url 'fishing:montage' %}">Монтажи</a></li>
+<style>
+    p {
+        font-size: 120%;
+    }
+</style>
 
-    <li><a href="{% url 'fishing:trough' %}">Кормушки</a></li>
-    <li><a href="{% url 'fishing:nozzle_state' %}">Состояния наживки</a></li>
-    <li><a href="{% url 'fishing:nozzle' %}">Наживка</a></li>
-    <li><a href="{% url 'fishing:fishing_lure' %}">Прикормочные смеси</a></li>
-    <li><a href="{% url 'fishing:lure_base' %}">Прикормы</a></li>
-    <li><a href="{% url 'fishing:aroma_base' %}">Аромы</a></li>
-    <li><a href="{% url 'fishing:crochet' %}">Крючки</a></li>
-    <li><a href="{% url 'fishing:leash' %}">Поводки</a></li>
-    <li><a href="{% url 'fishing:districts' %}">Районы</a></li>
-    {% endif %}
-    <li><a href="{% url 'fishing:fish_list' %}">Рыба</a></li>
-    {% if user.is_staff %}
-    <p>Заполняется администратором</p>
-    <li><a href="{% url 'fishing:fish_list' %}">Рыба</a></li>
-    <li><a href="{% url 'fishing:feed_capacity' %}">Кормоёмкость</a></li>
-    <li><a href="{% url 'fishing:pace' %}">Темп</a></li>
-    <li><a href="{% url 'fishing:districts' %}"><span style="color: red;">Районы</span></a></li>
-    <li><a href="{% url 'fishing:overcast' %}">Облачность</a></li>
-    <li><a href="{% url 'fishing:conditions' %}">Погодные явления</a></li>
-    <li><a href="{% url 'fishing:primings' %}">Грунт</a></li>
-    {% endif %}
-</ul>
+{% if user.is_authenticated %}
+<p><a href="{% url 'fishing:fishing' %}">Рыбалки</a></p>
+<p><a href="{% url 'fishing:tackle' %}">Снасти</a></p>
+<p><a href="{% url 'fishing:montage' %}">Монтажи</a></p>
+<p><a href="{% url 'fishing:trough' %}">Кормушки</a></p>
+<p><a href="{% url 'fishing:nozzle_state' %}">Состояния наживки</a></p>
+<p><a href="{% url 'fishing:nozzle' %}">Наживка</a></p>
+<p><a href="{% url 'fishing:fishing_lure' %}">Прикормочные смеси</a></p>
+<p><a href="{% url 'fishing:lure_base' %}">Прикормы</a></p>
+<p><a href="{% url 'fishing:aroma_base' %}">Аромы</a></p>
+<p><a href="{% url 'fishing:crochet' %}">Крючки</a></p>
+<p><a href="{% url 'fishing:leash' %}">Поводки</a></p>
+<p><a href="{% url 'fishing:districts' %}">Районы</a></p>
+{% endif %}
+<p><a href="{% url 'fishing:fish_list' %}">Рыба</a></p>
 {% endblock %}

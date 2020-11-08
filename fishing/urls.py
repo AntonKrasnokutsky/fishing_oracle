@@ -3,6 +3,10 @@ from . import views
 
 app_name = 'fishing'
 urlpatterns = [
+    # Настройки сайта
+    path('settings/',
+         views.Settings.as_view(),
+         name='settings'),
     # Главная страница
     path('',
          views.index,

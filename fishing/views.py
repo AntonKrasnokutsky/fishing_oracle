@@ -56,6 +56,13 @@ template_list_path = 'fishing/list.html'
 template_details_path = 'fishing/details.html'
 template_select_path = 'fishing/select.html'
 
+class Settings(View):
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(Settings, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return render(request, 'fishing/settings.html')
 
 def visits(request, inc=0):
     """

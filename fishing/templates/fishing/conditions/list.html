@@ -4,7 +4,7 @@
 {% if conditions_list != None %}
 <!-- Погодные явления -->
 {% if conditions_list %}
-<table class="table table-hover" style="width: 70%; margin: auto;">
+<table class="table table-hover" style="margin: auto;">
   {% for conditions in conditions_list %}
   <tr >
     <td style="text-align: center; border: 0;">
@@ -22,7 +22,7 @@
   {% endfor %}
 </table>
 {% else %}
-<p style="width: 70%; margin: auto;">Варианты погодных явлений еще не добавлены</p>
+<p style="margin: auto;">Варианты погодных явлений еще не добавлены</p>
 {% endif %}
 <br/>
 <p style="text-align: center;">
