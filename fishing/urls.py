@@ -450,20 +450,20 @@ urlpatterns = [
     # Крючки
     # Список крючков
     path('crochet/',
-         views.crochet_list,
+         views.CrochetList.as_view(),
          name='crochet'),
     # Добавление крючка
     path('crochet/add/',
-         views.crochet_add,
+         views.CrochetAdd.as_view(),
          name='crochet_add'),
     # Редактирование крючка
     path('crochet/<int:crochet_id>/renewal/',
-         views.crochet_renewal,
-         name='crochet_renewal'),
+         views.CrochetEdit.as_view(),
+         name='crochet_edit'),
     # Удаление крючка
     path('crochet/<int:crochet_id>/remove/',
-         views.crochet_remove,
-         name='crochet_remove'),
+         views.CrochetDelete.as_view(),
+         name='crochet_delete'),
     # Поводки
     # Список поводков
     path('leash/',

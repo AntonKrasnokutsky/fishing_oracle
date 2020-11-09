@@ -527,66 +527,122 @@ def bottom_map_point_renewal(request, district_id, water_id, place_id, bottom_ma
         return redirect('fishing:water', district_id)
 
 
-@login_required
-def crochet_add(request):
-    num_visits = visits(request)
-    if request.method == 'POST':
-        crochet = Crochet()
+class CrochetAdd(View):
+    """
+    Добавление крючка
+    """
+    template = 'fishing/crochet/renewal_add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CrochetAdd, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
         form = CrochetForm(request.POST)
+        crochet = Crochet()
         if form.is_valid():
             crochet = form.save(commit=False)
             crochet.owner = request.user
-            crochet.save()
-        return redirect('fishing:crochet')
-    else:
+            if crochet.unique():
+                crochet.first_upper()
+                crochet.save()
+                return redirect('fishing:crochet')
+            else:
+                return render(request,
+                              self.template,
+                              {'form': form,
+                               'errors': 'Такой крючок уже добавлен'})
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form})
+
+    def get(self, request, *args, **kwargs):
         form = CrochetForm()
         return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
+                      self.template,
+                      {'form': form})
 
 
-@login_required
-def crochet_list(request):
-    num_visits = visits(request)
-    if request.user.is_staff:
-        crochet_list = Crochet.objects.all()
-    else:
-        crochet_list = Crochet.objects.filter(owner=request.user)
-    return render(request,
-                  template_list_path,
-                  {'crochet_list': crochet_list,
-                   'num_visits': num_visits})
+class CrochetList(View):
+    """
+    Возвращает список крючков
+    """
+
+    template = 'fishing/crochet/list.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CrochetList, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_staff:
+            crochet_list = Crochet.objects.all()
+        else:
+            crochet_list = Crochet.objects.filter(owner=request.user)
+        return render(request,
+                    self.template,
+                    {'crochet_list': crochet_list})
 
 
-@login_required
-def crochet_remove(request, crochet_id):
-    crochet = get_object_or_404(Crochet, pk=crochet_id)
-    if crochet.owner == request.user:
-        crochet.delete()
-    return redirect('fishing:crochet')
+class CrochetDelete(View):
+    """
+    Удаление крючка
+    """
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CrochetDelete, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        crochet = get_object_or_404(Crochet, pk=kwargs['crochet_id'])
+        if crochet.owner == request.user:
+            crochet.delete()
+        return redirect('fishing:crochet')
 
 
-@login_required
-def crochet_renewal(request, crochet_id):
-    num_visits = visits(request)
-    crochet = get_object_or_404(Crochet, pk=crochet_id)
-    if crochet.owner == request.user:
-        if request.method == 'POST':
+class CrochetEdit(View):
+    """
+    Изменение крючка
+    """
+    template = 'fishing/crochet/renewal_add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CrochetEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        crochet = get_object_or_404(Crochet, pk=kwargs['crochet_id'])
+        if crochet.owner == request.user:
             form = CrochetForm(request.POST, instance=crochet)
             if form.is_valid():
                 crochet = form.save(commit=False)
                 crochet.owner = request.user
-                crochet.save()
-            return redirect('fishing:crochet')
-        else:
-            form = CrochetForm(initial={'crochet_manufacturer': crochet.crochet_manufacturer,
-                                        'crochet_model': crochet.crochet_model,
-                                        'crochet_size': crochet.crochet_size})
+                if crochet.unique():
+                    crochet.first_upper()
+                    crochet.save()
+                    return redirect('fishing:crochet')
+                else:
+                    return render(request,
+                                self.template,
+                                {'form': form,
+                                 'crochet': crochet,
+                                'errors': 'Такой крючок уже добавлен'})
+            else:
+                return render(request,
+                            self.template,
+                            {'form': form,
+                            'crochet': crochet})
+
+    def get(self, request, *args, **kwargs):
+        crochet = get_object_or_404(Crochet, pk=kwargs['crochet_id'])
+        if crochet.owner == request.user:
+            form = CrochetForm(instance=crochet)
             return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
+                        self.template,
+                        {'form': form,
+                        'crochet': crochet})
+        return redirect('fishing:crochet')
 
 
 @staff_member_required
@@ -1766,14 +1822,23 @@ class LeashEdit(View):
             if form.is_valid():
                 leash = form.save(commit=False)
                 leash.owner = request.user
-                leash.first_upper()
-                leash.save()
-                return redirect('fishing:leash')
+                if leash.unique():
+                    leash.first_upper()
+                    leash.save()
+                    return redirect('fishing:leash')
+                else:
+                    return render(request,
+                                self.template,
+                                {'form': form,
+                                 'leash': leash,
+                                'errors': 'Такой поводок уже добавлен'})
             else:
                 return render(request,
                             self.template,
                             {'form': form,
-                            'conditions': conditions})
+                            'leash': leash})
+        else:
+            return redirect('fishing:leash')
 
     def get(self, request, *args, **kwargs):
         leash = get_object_or_404(Leash, pk=kwargs['leash_id'])

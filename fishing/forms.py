@@ -43,8 +43,29 @@ class BottomMapForm(forms.ModelForm):
 class CrochetForm(forms.ModelForm):
     class Meta:
         model = Crochet
-        fields = ['crochet_manufacturer', 'crochet_model', 'crochet_size', ]
+        fields = ['manufacturer', 'model', 'size', ]
 
+    def clean(self):
+        manufacturer = self.cleaned_data.get('manufacturer')
+        model = self.cleaned_data.get('model')
+        size = self.cleaned_data.get('size')
+        
+        manufacturer = re.sub(r'\s+', ' ', manufacturer)
+        model = re.sub(r'\s+', ' ', model)
+        
+        msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        msg2 = 'Название модели не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        for no_valid_char in no_valid_char_list:
+            if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
+                self.add_error('manufacturer', msg1)
+                break
+            if model.startswith(no_valid_char) or model.endswith(no_valid_char):
+                self.add_error('model', msg2)
+                break
+        return self.cleaned_data
 
 class DistrictForm(forms.ModelForm):
     class Meta:
@@ -181,7 +202,7 @@ class LeashForm(forms.ModelForm):
                 self.add_error('material', msg)
                 break
         return self.cleaned_data
-    
+
 
 class LureForm(forms.ModelForm):
     class Meta:

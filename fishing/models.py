@@ -160,29 +160,49 @@ class Crochet(models.Model):  # Крючки
     class Meta:
         verbose_name = "Крючок"
         verbose_name_plural = "Крючки"
-        ordering = ['crochet_manufacturer', 'crochet_model', 'crochet_size', ]
+        ordering = ['manufacturer', 'model', 'size', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # Производитель
-    crochet_manufacturer = models.CharField(
+    manufacturer = models.CharField(
         max_length=20,
         blank=True,
         verbose_name="Производитель крючка")
     # модель
-    crochet_model = models.CharField(
+    model = models.CharField(
         max_length=20,
         blank=True,
         verbose_name="Модель крючка")
     # размер
-    crochet_size = models.PositiveIntegerField(
+    size = models.PositiveIntegerField(
         default=0,
         verbose_name="Размер крючка")
 
     def __str__(self):
-        return self.crochet_manufacturer + ' ' + self.crochet_model + ' ' + str(self.crochet_size)
+        return 'Крючок ' + self.manufacturer + ' ' + self.model + ' размер ' + str(self.size)
+
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        self.manufacturer = str(self.manufacturer[0].upper()) + self.manufacturer[1:]
+        self.manufacturer = re.sub(r'\s+', ' ', self.manufacturer)
+    
+    def unique(self):
+        """
+        Проверка записи на уникальность для пользователя
+        """
+        crochet_list = Crochet.objects.filter(owner=self.owner)
+        for crochet in crochet_list:
+            if crochet.id != self.id:
+                if (crochet.manufacturer.lower() == self.manufacturer.lower() and
+                    crochet.model.lower() == self.model.lower() and crochet.size == self.size):
+                    return False
+        else:
+            return True
 
 
 class District(models.Model):  # Районы
@@ -254,7 +274,7 @@ class Fish(models.Model):  # Рыбы
         """
         self.name = str(self.name[0].upper()) + self.name[1:]
         self.name = re.sub(r'\s+', ' ', self.name)
-        self.description = re.sub(r'\s+', ' ', self.description)
+        #self.description = re.sub(r'\s+', ' ', self.description)
 
 
 class Fishing(models.Model):  # Рыбалки
