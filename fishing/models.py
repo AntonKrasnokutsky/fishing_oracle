@@ -1,7 +1,9 @@
 from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.validators import MinValueValidator
+from django.core.validators import MaxValueValidator
 from datetime import datetime
 from users.models import CustomUser
+import re
 
 
 class Aroma(models.Model):  # Аромы в прикормочной смеси
@@ -651,8 +653,7 @@ class Leash(models.Model):  # Поводки
     class Meta:
         verbose_name = "Поводок"
         verbose_name_plural = "Поводки"
-        ordering = ['leash_material', 'leash_diameter',
-                    'leash_length', ]
+        ordering = ['material', 'diameter', 'length', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
@@ -660,33 +661,24 @@ class Leash(models.Model):  # Поводки
         verbose_name="Владелец записи"
     )
     # Поводочный материал
-    leash_material = models.CharField(
+    material = models.CharField(
         max_length=20,
         verbose_name="Материал поводка")
     # Диаметр поводочного материала
-    leash_diameter = models.DecimalField(
+    diameter = models.DecimalField(
         max_digits=4,
         decimal_places=2,
         default=0,
         verbose_name="Диаметр поводка")
     # Длина поводка
-    leash_length = models.PositiveIntegerField(
+    length = models.PositiveIntegerField(
         default=0,
         verbose_name="Длина поводка")
 
     def __str__(self):
-        return (self.leash_material + ' ' + str(self.leash_diameter) +
-                ' ' + str(self.leash_length) + ' см.')
+        return (self.material + ' ' + str(self.diameter) + ' мм.' +
+                ' ' + str(self.length) + ' см.')
 
-    def leash_unique(self):
-        leash_owner_list = Leash.objects.filter(owner=self.owner)
-        for leash in leash_owner_list:
-            if leash.id != self.id:
-                if leash.leash_material == self.leash_material:
-                    if leash.leash_diameter == self.leash_diameter:
-                        if leash.leash_length == self.leash_length:
-                            return False
-        return True
 
 class Lure(models.Model):  # Смесь прикорма
     """
@@ -1135,16 +1127,22 @@ class Priming(models.Model):  # Грунт
     class Meta:
         verbose_name = "Вариант дна"
         verbose_name_plural = "Варианты дна"
-        ordering = ['priming_name']
+        ordering = ['name']
     # Наименование покрытия дна
-    priming_name = models.CharField(
+    name = models.CharField(
         max_length=50,
         unique=True,
         verbose_name="Покрытие")
 
     def __str__(self):
-        return self.priming_name
-
+        return self.name
+    
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        self.name = str(self.name[0].upper()) + self.name[1:]
+        self.name = re.sub(r'\s+', ' ', self.name)
 
 class Tackle(models.Model):  # Снасти
     """

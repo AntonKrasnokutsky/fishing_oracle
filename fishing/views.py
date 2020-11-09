@@ -1,49 +1,81 @@
-from django.shortcuts import get_object_or_404, render, redirect
-from django.http import HttpResponse, Http404
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render
+from django.shortcuts import redirect
+from django.http import HttpResponse
+from django.http import Http404
 from django.views import View
 from django.views.generic import ListView
 from django.views.generic.edit import DeleteView
 
 from .models import Fishing
-
 from .models import Fish
-from .forms import FishForm
-
-from .models import Weather, Overcast, Conditions
-from .forms import WeatherForm, OvercastForm, ConditionsForm
-
+from .models import Weather
+from .models import Overcast
+from .models import Conditions
 from .models import FeedCapacity
-from .forms import FeedCapacityForm
-
 from .models import Pace
+from .models import District
+from .models import Water
+from .models import Place
+from .models import FishingPoint
+from .models import BottomMap
+from .models import Point
+from .models import Priming
+from .models import Tackle
+from .models import Montage
+from .models import Trough
+from .models import FishingTrough
+from .models import Nozzle
+from .models import NozzleState
+from .models import NozzleBase
+from .models import Lure
+from .models import LureBase
+from .models import LureMix
+from .models import AromaBase
+from .models import Aroma
+from .models import Crochet
+from .models import Leash
+from .models import FishingLeash
+from .models import FishingCrochet
+from .models import Fishing
+from .models import FishingResult
+from .models import FishTrophy
+from .models import FishingTackle
+from .models import PlaceFishing
+from .models import FishingMontage
+from .models import FishingNozzle
+from .models import FishingPace
+from .models import FishingWeather
+from .models import FishingLure
+from .forms import FishForm
+from .forms import WeatherForm
+from .forms import OvercastForm
+from .forms import ConditionsForm
+from .forms import FeedCapacityForm
 from .forms import PaceForm
-
-from .models import District, Water, Place, FishingPoint, BottomMap, Point, Priming
-from .forms import DistrictForm, WaterForm, PlaceForm, FishingPointForm, BottomMapForm, PointForm, PrimingForm
-
-from .models import Tackle, Montage
-from .forms import TackleForm, MontageForm
-
-from .models import Trough, FishingTrough
+from .forms import DistrictForm
+from .forms import WaterForm
+from .forms import PlaceForm
+from .forms import FishingPointForm
+from .forms import BottomMapForm
+from .forms import PointForm
+from .forms import PrimingForm
+from .forms import TackleForm
+from .forms import MontageForm
 from .forms import TroughForm
-
-from .models import Nozzle, NozzleState, NozzleBase, Lure, LureBase, LureMix
-from .forms import NozzleForm, NozzleStateForm, NozzleBaseForm, LureForm, LureBaseForm, LureMixForm
-
-from .models import AromaBase, Aroma
-from .forms import AromaBaseForm, AromaForm
-
-from .models import Crochet, Leash, FishingLeash, FishingCrochet
-from .forms import CrochetForm, LeashForm
-
-from .models import Fishing, FishingResult, FishTrophy, FishingTackle
-from .forms import FishingForm, FishingResultForm, FishTrophyForm
-
-from .models import PlaceFishing, FishingMontage
-
-from .models import FishingNozzle, FishingPace, FishingWeather, FishingLure
-
-
+from .forms import NozzleForm
+from .forms import NozzleStateForm
+from .forms import NozzleBaseForm
+from .forms import LureForm
+from .forms import LureBaseForm
+from .forms import LureMixForm
+from .forms import AromaBaseForm
+from .forms import AromaForm
+from .forms import CrochetForm
+from .forms import LeashForm
+from .forms import FishingForm
+from .forms import FishingResultForm
+from .forms import FishTrophyForm
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.admin.views.decorators import staff_member_required
@@ -60,7 +92,7 @@ class Settings(View):
     """
     Страница администратора
     """
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(Settings, self).dispatch(*args, **kwargs)
@@ -624,7 +656,7 @@ class CapacityAdd(View):
     Добавление варианта темпа
     """
     template = 'fishing/capacity/renewal_add.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(CapacityAdd, self).dispatch(*args, **kwargs)
@@ -640,7 +672,7 @@ class CapacityAdd(View):
             return render(request,
                           self.template,
                           {'form': form})
-    
+
     def get(self, request, *args, **kwargs):
         form = FeedCapacityForm()
         return render(request,
@@ -652,13 +684,13 @@ class CapacityList(View):
     """
     Возвращает список варинатов кормоемкости
     """
-    
+
     template = 'fishing/capacity/list.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(CapacityList, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         capacity_list = FeedCapacity.objects.all()
         return render(request,
@@ -669,12 +701,12 @@ class CapacityList(View):
 class CapacityDelete(View):
     """
     Удаление варианта кормоёмкости
-    """ 
-        
+    """
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(CapacityDelete, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         capacity = get_object_or_404(FeedCapacity, pk=kwargs['capacity_id'])
         capacity.delete()
@@ -686,7 +718,7 @@ class CapacityEdit(View):
     Изменение варианта кормоёмкости
     """
     template = 'fishing/capacity/renewal_add.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(CapacityEdit, self).dispatch(*args, **kwargs)
@@ -703,7 +735,7 @@ class CapacityEdit(View):
                           self.template,
                           {'form': form,
                            'capacity': capacity})
-    
+
     def get(self, request, *args, **kwargs):
         capacity = get_object_or_404(FeedCapacity, pk=kwargs['capacity_id'])
         form = FeedCapacityForm(instance=capacity)
@@ -718,7 +750,7 @@ class FishAdd(View):
     Добавление рыб
     """
     template = 'fishing/fish/renewal_add.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(FishAdd, self).dispatch(*args, **kwargs)
@@ -735,7 +767,7 @@ class FishAdd(View):
                           self.template,
                           {'form': form,
                            'fish': fish})
-    
+
     def get(self, request, *args, **kwargs):
         form = FishForm()
         return render(request,
@@ -747,9 +779,9 @@ class FishList(View):
     """
     Возвращает список рыб
     """
-    
+
     template = 'fishing/fish/list.html'
-        
+
     def get(self, request, *args, **kwargs):
         fish_list = Fish.objects.all()
         return render(request,
@@ -760,12 +792,12 @@ class FishList(View):
 class FishDelete(View):
     """
     Удаление рыбы
-    """ 
-        
+    """
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(FishDelete, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         fish = get_object_or_404(Fish, pk=kwargs['fish_id'])
         fish.delete()
@@ -777,7 +809,7 @@ class FishEdit(View):
     Изменение рыбы
     """
     template = 'fishing/fish/renewal_add.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(FishEdit, self).dispatch(*args, **kwargs)
@@ -794,7 +826,7 @@ class FishEdit(View):
                           self.template,
                           {'form': form,
                            'fish': fish})
-    
+
     def get(self, request, *args, **kwargs):
         fish = get_object_or_404(Fish, pk=kwargs['fish_id'])
         form = FishForm(instance=fish)
@@ -808,9 +840,9 @@ class FishDetails(View):
     """
     Возвращает подробную нинформацию о рыбе
     """
-    
+
     template = 'fishing/fish/details.html'
-        
+
     def get(self, request, *args, **kwargs):
         fish_details = get_object_or_404(Fish, pk=kwargs['fish_id'])
         return render(request,
@@ -913,7 +945,7 @@ class FishingViews(View):
         else:
             print(form.errors)
         return redirect('fishing:fishing_details', entry.id)
-    
+
 
 @login_required
 def fishing_details(request, fishing_id):
@@ -1644,7 +1676,7 @@ class LeashAdd(View):
     Добавление поводка
     """
     template = 'fishing/leash/renewal_add.html'
-    
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(LeashAdd, self).dispatch(*args, **kwargs)
@@ -1655,19 +1687,13 @@ class LeashAdd(View):
         if form.is_valid():
             leash = form.save(commit=False)
             leash.owner = request.user
-            if leash.leash_unique():
-                leash.save()
-                return redirect('fishing:leash')
-            else:
-                return render(request,
-                          self.template,
-                          {'form': form,
-                           'errors': 'Такой поводок уже есть в базе'})
+            leash.save()
+            return redirect('fishing:leash')
         else:
             return render(request,
                           self.template,
                           {'form': form})
-    
+
     def get(self, request, *args, **kwargs):
         form = LeashForm()
         return render(request,
@@ -1679,13 +1705,13 @@ class LeashList(View):
     """
     Возвращает список поводков
     """
-    
+
     template = 'fishing/leash/list.html'
-    
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(LeashList, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         if request.user.is_staff:
             leash_list = Leash.objects.all()
@@ -1699,12 +1725,12 @@ class LeashList(View):
 class LeashDelete(View):
     """
     Удаление поводка
-    """ 
-        
+    """
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(LeashDelete, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         leash = get_object_or_404(Leash, pk=kwargs['leash_id'])
         if leash.owner == request.user:
@@ -1717,7 +1743,7 @@ class LeashEdit(View):
     Изменение поводка
     """
     template = 'fishing/leash/renewal_add.html'
-    
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(LeashEdit, self).dispatch(*args, **kwargs)
@@ -1729,21 +1755,14 @@ class LeashEdit(View):
             if form.is_valid():
                 leash = form.save(commit=False)
                 leash.owner = request.user
-                if leash.leash_unique():
-                    leash.save()
-                    return redirect('fishing:leash')
-                else:
-                    return render(request,
-                          self.template,
-                          {'form': form,
-                           'leash': leash,
-                           'errors': 'Такой поводок уже есть в базе'})
+                leash.save()
+                return redirect('fishing:leash')
             else:
                 return render(request,
                             self.template,
                             {'form': form,
                             'conditions': conditions})
-    
+
     def get(self, request, *args, **kwargs):
         leash = get_object_or_404(Leash, pk=kwargs['leash_id'])
         if leash.owner == request.user:
@@ -2260,7 +2279,7 @@ class OvercastAdd(View):
     Добавление варианта облачности
     """
     template = 'fishing/overcast/renewal_add.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(OvercastAdd, self).dispatch(*args, **kwargs)
@@ -2276,7 +2295,7 @@ class OvercastAdd(View):
             return render(request,
                           self.template,
                           {'form': form})
-    
+
     def get(self, request, *args, **kwargs):
         form = OvercastForm()
         return render(request,
@@ -2288,13 +2307,13 @@ class OvercastList(View):
     """
     Возвращает список варинатов облачности
     """
-    
+
     template = 'fishing/overcast/list.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(OvercastList, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         overcast_list = Overcast.objects.all()
         return render(request,
@@ -2305,12 +2324,12 @@ class OvercastList(View):
 class OvercastDelete(View):
     """
     Удаление варианта облачности
-    """ 
-        
+    """
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(OvercastDelete, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         overcast = get_object_or_404(Overcast, pk=kwargs['overcast_id'])
         overcast.delete()
@@ -2322,7 +2341,7 @@ class OvercastEdit(View):
     Изменение варианта облачности
     """
     template = 'fishing/overcast/renewal_add.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(OvercastEdit, self).dispatch(*args, **kwargs)
@@ -2339,7 +2358,7 @@ class OvercastEdit(View):
                           self.template,
                           {'form': form,
                            'overcast': overcast})
-    
+
     def get(self, request, *args, **kwargs):
         overcast = get_object_or_404(Overcast, pk=kwargs['overcast_id'])
         form = OvercastForm(instance=overcast)
@@ -2354,7 +2373,7 @@ class PaceAdd(View):
     Добавление варианта темпа
     """
     template = 'fishing/pace/renewal_add.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(PaceAdd, self).dispatch(*args, **kwargs)
@@ -2370,7 +2389,7 @@ class PaceAdd(View):
             return render(request,
                           self.template,
                           {'form': form})
-    
+
     def get(self, request, *args, **kwargs):
         form = PaceForm()
         return render(request,
@@ -2382,13 +2401,13 @@ class PaceList(View):
     """
     Возвращает список варинатов темпа ловли
     """
-    
+
     template = 'fishing/pace/list.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(PaceList, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         pace_list = Pace.objects.all()
         return render(request,
@@ -2399,12 +2418,12 @@ class PaceList(View):
 class PaceDelete(View):
     """
     Удаление варианта темпа ловли
-    """ 
-        
+    """
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(PaceDelete, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         pace = get_object_or_404(Pace, pk=kwargs['pace_id'])
         pace.delete()
@@ -2416,7 +2435,7 @@ class PaceEdit(View):
     Изменение варианта темпа ловли
     """
     template = 'fishing/pace/renewal_add.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(PaceEdit, self).dispatch(*args, **kwargs)
@@ -2433,7 +2452,7 @@ class PaceEdit(View):
                           self.template,
                           {'form': form,
                            'pace': pace})
-    
+
     def get(self, request, *args, **kwargs):
         pace = get_object_or_404(Pace, pk=kwargs['pace_id'])
         form = PaceForm(instance=pace)
@@ -2579,7 +2598,7 @@ class PrimingAdd(View):
     Добавление варианта покрытия дна
     """
     template = 'fishing/priming/renewal_add.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(PrimingAdd, self).dispatch(*args, **kwargs)
@@ -2589,13 +2608,14 @@ class PrimingAdd(View):
         priming = Priming()
         if form.is_valid():
             priming = form.save(commit=False)
+            priming.first_upper()
             priming.save()
             return redirect('fishing:primings')
         else:
             return render(request,
                           self.template,
                           {'form': form})
-    
+
     def get(self, request, *args, **kwargs):
         form = PrimingForm()
         return render(request,
@@ -2607,13 +2627,13 @@ class PrimingList(View):
     """
     Возвращает список варинатов покрытия дна
     """
-    
+
     template = 'fishing/priming/list.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(PrimingList, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         primings_list = Priming.objects.all()
         return render(request,
@@ -2624,12 +2644,12 @@ class PrimingList(View):
 class PrimingDelete(View):
     """
     Удаление варианта покрытия дна
-    """ 
-        
+    """
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(PrimingDelete, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         priming = get_object_or_404(Priming, pk=kwargs['priming_id'])
         priming.delete()
@@ -2641,7 +2661,7 @@ class PrimingEdit(View):
     Изменение варианта покрытия дна
     """
     template = 'fishing/priming/renewal_add.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(PrimingEdit, self).dispatch(*args, **kwargs)
@@ -2651,6 +2671,7 @@ class PrimingEdit(View):
         form = PrimingForm(request.POST, instance=priming)
         if form.is_valid():
             priming = form.save(commit=False)
+            priming.first_upper()
             priming.save()
             return redirect('fishing:primings')
         else:
@@ -2658,7 +2679,7 @@ class PrimingEdit(View):
                           self.template,
                           {'form': form,
                            'priming': priming})
-    
+
     def get(self, request, *args, **kwargs):
         priming = get_object_or_404(Priming, pk=kwargs['priming_id'])
         form = PrimingForm(instance=priming)
@@ -3015,7 +3036,7 @@ class ConditionsAdd(View):
     Добавление варианта погодного явления
     """
     template = 'fishing/conditions/renewal_add.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(ConditionsAdd, self).dispatch(*args, **kwargs)
@@ -3031,7 +3052,7 @@ class ConditionsAdd(View):
             return render(request,
                           self.template,
                           {'form': form})
-    
+
     def get(self, request, *args, **kwargs):
         form = ConditionsForm()
         return render(request,
@@ -3043,13 +3064,13 @@ class ConditionsList(View):
     """
     Возвращает список варинатов погодных явлений
     """
-    
+
     template = 'fishing/conditions/list.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(ConditionsList, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         conditions_list = Conditions.objects.all()
         return render(request,
@@ -3060,12 +3081,12 @@ class ConditionsList(View):
 class ConditionsDelete(View):
     """
     Удаление варианта погодного явления
-    """ 
-        
+    """
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(ConditionsDelete, self).dispatch(*args, **kwargs)
-    
+
     def get(self, request, *args, **kwargs):
         conditions = get_object_or_404(Conditions, pk=kwargs['conditions_id'])
         conditions.delete()
@@ -3077,7 +3098,7 @@ class ConditionsEdit(View):
     Изменение варианта погодного явления
     """
     template = 'fishing/conditions/renewal_add.html'
-    
+
     @method_decorator(staff_member_required)
     def dispatch(self, *args, **kwargs):
         return super(ConditionsEdit, self).dispatch(*args, **kwargs)
@@ -3094,7 +3115,7 @@ class ConditionsEdit(View):
                           self.template,
                           {'form': form,
                            'conditions': conditions})
-    
+
     def get(self, request, *args, **kwargs):
         conditions = get_object_or_404(Conditions, pk=kwargs['conditions_id'])
         form = ConditionsForm(instance=conditions)

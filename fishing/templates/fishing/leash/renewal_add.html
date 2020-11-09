@@ -13,32 +13,30 @@
 <p>Добавление поводка</p>
 {% endif %}
 <br />
+<p class="text-danger" style="font-size: 120%;">{{ errors }}</p>
 <form action="" method="post" style="text-align: center; margin: auto;">
   {% csrf_token %}
   <table style="text-align: left; margin: auto;">
     <tr>
-      <td colspan="2" class="text-danger">{{ errors }}</td>
+      <td colspan="2" class="text-danger">{{ form.material.errors }}</td>
     </tr>
     <tr>
-      <td colspan="2" class="text-danger">{{ form.leash_material.errors }}</td>
+      <td>{{ form.material.label_tag }}</td>
+      <td>{{ form.material }}</td>
     </tr>
     <tr>
-      <td>{{ form.leash_material.label_tag }}</td>
-      <td>{{ form.leash_material }}</td>
+      <td colspan="2" class="text-danger">{{ form.diameter.errors }}</td>
     </tr>
     <tr>
-      <td colspan="2" class="text-danger">{{ form.leash_diameter.errors }}</td>
+      <td>{{ form.diameter.label_tag }}</td>
+      <td>{{ form.diameter }} мм.</td>
     </tr>
     <tr>
-      <td>{{ form.leash_diameter.label_tag }}</td>
-      <td>{{ form.leash_diameter }}</td>
+      <td colspan="2" class="text-danger">{{ form.length.errors }}</td>
     </tr>
     <tr>
-      <td colspan="2" class="text-danger">{{ form.leash_length.errors }}</td>
-    </tr>
-    <tr>
-      <td>{{ form.leash_length.label_tag }}</td>
-      <td>{{ form.leash_length }}</td>
+      <td>{{ form.length.label_tag }}</td>
+      <td>{{ form.length }} см.</td>
     </tr>
   </table>
   <br />

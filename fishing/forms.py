@@ -14,6 +14,7 @@ from .models import AromaBase, Aroma
 from .models import Crochet, Leash
 from .models import Fishing, FishingResult, FishTrophy
 from django import forms
+import re
 
 # widgets = {
 #             'name': forms.TextInput(attrs={'placeholder': 'от 0 до 99.9 кг'}),
@@ -122,8 +123,8 @@ class FishTrophyForm(forms.ModelForm):
 class LeashForm(forms.ModelForm):
     class Meta:
         model = Leash
-        fields = ['leash_material',
-                  'leash_diameter', 'leash_length', ]
+        fields = ['material',
+                  'diameter', 'length', ]
 
 
 class LureForm(forms.ModelForm):
@@ -190,7 +191,41 @@ class PointForm(forms.ModelForm):
 class PrimingForm(forms.ModelForm):
     class Meta:
         model = Priming
-        fields = ('priming_name',)
+        fields = ('name',)
+    
+    def clean(self):
+        name = self.cleaned_data.get('name')
+        priming_list = Priming.objects.all()
+        for priming in priming_list:
+            if priming.name.lower() == name.lower():
+                form_saved=self.save(commit=False)
+                if priming.id != form_saved.id:
+                    self.add_error('name', 'Такое покрытие уже добавлено')
+        
+        name = re.sub(r'\s+', ' ', name)
+        if name.startswith('!') or name.endswith('!'):
+            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
+        elif name.startswith('@') or name.endswith('@'):
+            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
+        elif name.startswith('#') or name.endswith('#'):
+            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
+        elif name.startswith('$') or name.endswith('$'):
+            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
+        elif name.startswith('^') or name.endswith('^'):
+            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
+        elif name.startswith('&') or name.endswith('&'):
+            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
+        elif name.startswith('*') or name.endswith('*'):
+            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
+        elif name.startswith('№') or name.endswith('№'):
+            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
+        elif name.startswith(';') or name.endswith(';'):
+            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
+        elif name.startswith(':') or name.endswith(':'):
+            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
+        elif name.startswith('!') or name.endswith('!'):
+            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
+        return self.cleaned_data
 
 
 class TackleForm(forms.ModelForm):
