@@ -12,16 +12,17 @@
 {% else %}
 <p>Добавление варианта темпа ловли</p>
 {% endif %}
-<br />
+
+{% for error in form.interval.errors %}
+  <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
+{% endfor %}
+
 <form action="" method="post" style="text-align: center; margin: auto;">
   {% csrf_token %}
   <table style="text-align: center; margin: auto;">
     <tr>
-      <td colspan="2" class="text-danger">{{ form.pace_interval.errors }}</td>
-    </tr>
-    <tr>
-      <td>{{ form.pace_interval.label_tag }}</td>
-      <td>{{ form.pace_interval }}</td>
+      <td>{{ form.interval.label_tag }}</td>
+      <td>{{ form.interval }}</td>
     </tr>
   </table>
   <br />

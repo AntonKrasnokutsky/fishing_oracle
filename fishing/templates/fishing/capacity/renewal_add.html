@@ -12,16 +12,17 @@
 {% else %}
 <p>Добавление варианта кормоёмкости</p>
 {% endif %}
-<br />
+
+{% for error in form.name.errors %}
+  <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
+{% endfor %}
+
 <form action="" method="post" style="text-align: center; margin: auto;">
   {% csrf_token %}
   <table style="text-align: center; margin: auto;">
     <tr>
-      <td colspan="2" class="text-danger">{{ form.feed_capacity_name.errors }}</td>
-    </tr>
-    <tr>
-      <td>{{ form.feed_capacity_name.label_tag }}</td>
-      <td>{{ form.feed_capacity_name }}</td>
+      <td>{{ form.name.label_tag }}</td>
+      <td>{{ form.name }}</td>
     </tr>
   </table>
   <br />

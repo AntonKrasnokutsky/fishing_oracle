@@ -8,10 +8,10 @@
   {% for fish in fish_list %}
   <tr >
     <td style="text-align: center; border: 0;">
-    {% if fish.fish_description %}
-      <a href="{% url 'fishing:fish_details' fish.id %}">{{fish.name_of_fish}}</a>
+    {% if fish.description %}
+      <a href="{% url 'fishing:fish_details' fish.id %}">{{fish.name}}</a>
     {% else %}
-      {{fish.name_of_fish}}
+      {{fish.name}}
     {% endif %}
     </td>
     {% if user.is_staff %}

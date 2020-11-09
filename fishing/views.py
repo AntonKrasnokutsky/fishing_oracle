@@ -666,6 +666,7 @@ class CapacityAdd(View):
         capacity = FeedCapacity()
         if form.is_valid():
             capacity = form.save(commit=False)
+            capacity.first_upper()
             capacity.save()
             return redirect('fishing:feed_capacity')
         else:
@@ -728,6 +729,7 @@ class CapacityEdit(View):
         form = FeedCapacityForm(request.POST, instance=capacity)
         if form.is_valid():
             capacity = form.save(commit=False)
+            capacity.first_upper()
             capacity.save()
             return redirect('fishing:feed_capacity')
         else:
@@ -760,6 +762,7 @@ class FishAdd(View):
         fish = Fish()
         if form.is_valid():
             fish = form.save(commit=False)
+            fish.first_upper()
             fish.save()
             return redirect('fishing:fish_list')
         else:
@@ -819,6 +822,7 @@ class FishEdit(View):
         form = FishForm(request.POST, instance=fish)
         if form.is_valid():
             fish = form.save(commit=False)
+            fish.first_upper()
             fish.save()
             return redirect('fishing:fish_list')
         else:
@@ -1687,8 +1691,15 @@ class LeashAdd(View):
         if form.is_valid():
             leash = form.save(commit=False)
             leash.owner = request.user
-            leash.save()
-            return redirect('fishing:leash')
+            if leash.unique():
+                leash.first_upper()
+                leash.save()
+                return redirect('fishing:leash')
+            else:
+                return render(request,
+                              self.template,
+                              {'form': form,
+                               'errors': 'Такой поводок уже добавлен'})
         else:
             return render(request,
                           self.template,
@@ -1755,6 +1766,7 @@ class LeashEdit(View):
             if form.is_valid():
                 leash = form.save(commit=False)
                 leash.owner = request.user
+                leash.first_upper()
                 leash.save()
                 return redirect('fishing:leash')
             else:
@@ -2289,6 +2301,7 @@ class OvercastAdd(View):
         overcast = Overcast()
         if form.is_valid():
             overcast = form.save(commit=False)
+            overcast.first_upper()
             overcast.save()
             return redirect('fishing:overcast')
         else:
@@ -2383,6 +2396,7 @@ class PaceAdd(View):
         pace = Pace()
         if form.is_valid():
             pace = form.save(commit=False)
+            pace.first_upper()
             pace.save()
             return redirect('fishing:pace')
         else:
@@ -2445,6 +2459,7 @@ class PaceEdit(View):
         form = PaceForm(request.POST, instance=pace)
         if form.is_valid():
             pace = form.save(commit=False)
+            pace.first_upper()
             pace.save()
             return redirect('fishing:pace')
         else:
@@ -3046,6 +3061,7 @@ class ConditionsAdd(View):
         conditions = Conditions()
         if form.is_valid():
             conditions = form.save(commit=False)
+            conditions.first_upper()
             conditions.save()
             return redirect('fishing:conditions')
         else:
@@ -3108,6 +3124,7 @@ class ConditionsEdit(View):
         form = ConditionsForm(request.POST, instance=conditions)
         if form.is_valid():
             conditions = form.save(commit=False)
+            conditions.first_upper()
             conditions.save()
             return redirect('fishing:conditions')
         else:

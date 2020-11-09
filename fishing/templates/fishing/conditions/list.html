@@ -8,7 +8,7 @@
   {% for conditions in conditions_list %}
   <tr >
     <td style="text-align: center; border: 0;">
-    {{conditions.conditions_name}}
+    {{conditions.name}}
     </td>
     {% if user.is_staff %}
     <td style="text-align: center; width: 10%; border: 0;">
@@ -29,7 +29,7 @@
   {% if user.is_staff %}
   <a href="{% url 'fishing:conditions_add' %}" class="btn btn-secondary" role="button">Добавить</a>
   {% endif %}
-  <a href="{% url 'fishing:index' %}" class="btn btn-secondary" role="button">Назад</a>
+  <a href="{% url 'fishing:settings' %}" class="btn btn-secondary" role="button">Назад</a>
 </p>
 {% endif %}
 

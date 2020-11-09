@@ -14,12 +14,14 @@
 {% endif %}
 <br />
 <p class="text-danger" style="font-size: 120%;">{{ errors }}</p>
+
+{% for error in form.material.errors %}
+  <p class="text-danger" style="font-size: 120%;">{{ error }}</p>
+{% endfor %}
+
 <form action="" method="post" style="text-align: center; margin: auto;">
   {% csrf_token %}
   <table style="text-align: left; margin: auto;">
-    <tr>
-      <td colspan="2" class="text-danger">{{ form.material.errors }}</td>
-    </tr>
     <tr>
       <td>{{ form.material.label_tag }}</td>
       <td>{{ form.material }}</td>

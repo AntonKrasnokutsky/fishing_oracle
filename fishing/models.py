@@ -210,15 +210,22 @@ class FeedCapacity(models.Model):  # Кормоёмкость
     class Meta:
         verbose_name = "Кормоёмкость кормушки"
         verbose_name_plural = "Кормоёмкость кормушек"
-        ordering = ['feed_capacity_name']
+        ordering = ['name']
     # Кормоемкость кормушки
-    feed_capacity_name = models.CharField(
+    name = models.CharField(
         max_length=20,
         verbose_name="Кормоемкость",
         unique=True)
 
     def __str__(self):
-        return self.feed_capacity_name
+        return self.name
+    
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        self.name = str(self.name[0].upper()) + self.name[1:]
+        self.name = re.sub(r'\s+', ' ', self.name)
 
 
 class Fish(models.Model):  # Рыбы
@@ -229,17 +236,25 @@ class Fish(models.Model):  # Рыбы
     class Meta:
         verbose_name = "Рыба"
         verbose_name_plural = "Рыбы"
-        ordering = ['name_of_fish']
+        ordering = ['name']
     # Название рыбы https://gdekluet.ru/directory/fish/
-    name_of_fish = models.CharField(
+    name = models.CharField(
         max_length=20,
         verbose_name="Рыба",
         unique=True)
-    fish_description = models.TextField(blank=True,
+    description = models.TextField(blank=True,
                                         verbose_name="Описание")
 
     def __str__(self):
-        return self.name_of_fish
+        return self.name
+    
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        self.name = str(self.name[0].upper()) + self.name[1:]
+        self.name = re.sub(r'\s+', ' ', self.name)
+        self.description = re.sub(r'\s+', ' ', self.description)
 
 
 class Fishing(models.Model):  # Рыбалки
@@ -667,7 +682,7 @@ class Leash(models.Model):  # Поводки
     # Диаметр поводочного материала
     diameter = models.DecimalField(
         max_digits=4,
-        decimal_places=2,
+        decimal_places=3,
         default=0,
         verbose_name="Диаметр поводка")
     # Длина поводка
@@ -678,6 +693,25 @@ class Leash(models.Model):  # Поводки
     def __str__(self):
         return (self.material + ' ' + str(self.diameter) + ' мм.' +
                 ' ' + str(self.length) + ' см.')
+
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        self.material = str(self.material[0].upper()) + self.material[1:]
+        self.material = re.sub(r'\s+', ' ', self.material)
+
+    def unique(self):
+        """
+        Проверка записи на уникальность для пользователя
+        """
+        leash_list = Leash.objects.filter(owner=self.owner)
+        for leash in leash_list:
+            if leash.id != self.id:
+                if leash.material.lower() == self.material.lower() and leash.diameter == self.diameter and leash.length == self.length:
+                    return False
+        else:
+            return True
 
 
 class Lure(models.Model):  # Смесь прикорма
@@ -932,15 +966,22 @@ class Overcast(models.Model):  # Облачность
     class Meta:
         verbose_name = "Облачность"
         verbose_name_plural = "Облачность"
-        ordering = ["overcast_name"]
+        ordering = ["name"]
     # Вариант облачности
-    overcast_name = models.CharField(
+    name = models.CharField(
         max_length=30,
         verbose_name="Вариант облачности",
         unique=True)
 
     def __str__(self):
-        return self.overcast_name
+        return self.name
+    
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        self.name = str(self.name[0].upper()) + self.name[1:]
+        self.name = re.sub(r'\s+', ' ', self.name)
 
 
 class Pace(models.Model):  # Темп
@@ -950,15 +991,22 @@ class Pace(models.Model):  # Темп
     class Meta:
         verbose_name = "Темп"
         verbose_name_plural = "Темп"
-        ordering = ['pace_interval', ]
+        ordering = ['interval', ]
     # Темп
-    pace_interval = models.CharField(
+    interval = models.CharField(
         max_length=30,
         verbose_name="Темп",
         unique=True)
 
     def __str__(self):
-        return self.pace_interval
+        return self.interval
+    
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        self.interval = str(self.interval[0].upper()) + self.interval[1:]
+        self.interval = re.sub(r'\s+', ' ', self.interval)
 
 
 class Place(models.Model):  # Места
@@ -1320,13 +1368,20 @@ class Conditions(models.Model):  # Явления погоды
     class Meta:
         verbose_name = "Погодное явление"
         verbose_name_plural = "Погодные явления"
-        ordering = ["conditions_name"]
+        ordering = ["name"]
 
     # Погодные явления
-    conditions_name = models.CharField(
+    name = models.CharField(
         max_length=20,
         unique=True,
         verbose_name="Погодное явление")
 
     def __str__(self):
-        return self.conditions_name
+        return self.name
+
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        self.name = str(self.name[0].upper()) + self.name[1:]
+        self.name = re.sub(r'\s+', ' ', self.name)

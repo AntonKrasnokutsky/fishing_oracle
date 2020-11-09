@@ -4,8 +4,8 @@
 {% if fish != None %}
 <!-- Рыба -->
 <div>
-<p style="font-size: 140%; font-style: oblique; text-align: center;"> {{ fish.name_of_fish }}</p>
-<p style="font-size: 120%; text-align: justify; text-indent: 20px;"></style>{{ fish.fish_description|linebreaks }}<p/>
+<p style="font-size: 140%; font-style: oblique; text-align: center;"> {{ fish.name }}</p>
+<p style="font-size: 120%; text-align: justify; text-indent: 20px;"></style>{{ fish.description|linebreaks }}<p/>
 <p style="text-align: center;">
     {% if user.is_staff %}
     <a href="{% url 'fishing:fish_edit' fish.id %}" class="btn btn-secondary" role="button">Редактировать</a>

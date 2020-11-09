@@ -12,10 +12,11 @@
 {% else %}
 <p>Добавление варианта покрытия дна</p>
 {% endif %}
-<br />
+
 {% for error in form.name.errors %}
   <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
 {% endfor %}
+
 <form action="" method="post" style="text-align: center; margin: auto;">
   {% csrf_token %}
   <table style="text-align: center; margin: auto;">

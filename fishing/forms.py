@@ -55,15 +55,54 @@ class DistrictForm(forms.ModelForm):
 class FeedCapacityForm(forms.ModelForm):
     class Meta:
         model = FeedCapacity
-        fields = ('feed_capacity_name',)
+        fields = ('name',)
+    
+    def clean(self):
+        name = self.cleaned_data.get('name')
+        name = re.sub(r'\s+', ' ', name)
+        capacity_list = FeedCapacity.objects.all()
+        for capacity in capacity_list:
+            if capacity.name.lower() == name.lower():
+                form_saved=self.save(commit=False)
+                if capacity.id != form_saved.id:
+                    self.add_error('name', 'Такая кормоёмкость уже добавлена')
+        
+        msg = 'Название кормоёмкости не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        for no_valid_char in no_valid_char_list:
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg)
+                break
+        return self.cleaned_data
 
 
 class FishForm(forms.ModelForm):
 
     class Meta:
         model = Fish
-        fields = ('name_of_fish', 'fish_description', )
-    #renewal_name_of_fish = forms.CharField(max_length=20, label='Рыба')
+        fields = ('name', 'description', )
+    
+    def clean(self):
+        name = self.cleaned_data.get('name')
+        name = re.sub(r'\s+', ' ', name)
+        fish_list = Fish.objects.all()
+        for fish in fish_list:
+            if fish.name.lower() == name.lower():
+                form_saved=self.save(commit=False)
+                if fish.id != form_saved.id:
+                    self.add_error('name', 'Такая рыба уже добавлена')
+        
+        msg = 'Название рыбы не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        for no_valid_char in no_valid_char_list:
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg)
+                break
+        return self.cleaned_data
 
 
 class FishingForm(forms.ModelForm):
@@ -126,12 +165,28 @@ class LeashForm(forms.ModelForm):
         fields = ['material',
                   'diameter', 'length', ]
 
+    def clean(self):
+        material = self.cleaned_data.get('material')
+        diameter = self.cleaned_data.get('diameter')
+        length = self.cleaned_data.get('length')
+        
+        material = re.sub(r'\s+', ' ', material)
+        
+        msg = 'Название поводочного материала не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        for no_valid_char in no_valid_char_list:
+            if material.startswith(no_valid_char) or material.endswith(no_valid_char):
+                self.add_error('material', msg)
+                break
+        return self.cleaned_data
+    
 
 class LureForm(forms.ModelForm):
     class Meta:
         model = Lure
         fields = ['lure_weight', ]
-
 
 
 class LureBaseForm(forms.ModelForm):
@@ -163,13 +218,55 @@ class NozzleStateForm(forms.ModelForm):
 class OvercastForm(forms.ModelForm):
     class Meta:
         model = Overcast
-        fields = ('overcast_name',)
+        fields = ('name',)
+    
+    def clean(self):
+        name = self.cleaned_data.get('name')
+        name = re.sub(r'\s+', ' ', name)
+        overcast_list = Overcast.objects.all()
+        for overcast in overcast_list:
+            if overcast.name.lower() == name.lower():
+                form_saved=self.save(commit=False)
+                if overcast.id != form_saved.id:
+                    self.add_error('name', 'Такая облачность уже добавлена')
+        
+        msg = 'Название облачности не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        for no_valid_char in no_valid_char_list:
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg)
+                break
+        return self.cleaned_data
 
 
 class PaceForm(forms.ModelForm):
     class Meta:
         model = Pace
-        fields = ('pace_interval',)
+        fields = ('interval',)
+    
+    def clean(self):
+        interval = self.cleaned_data.get('interval')
+        interval = re.sub(r'\s+', ' ', interval)
+        pace_list = Pace.objects.all()
+        for pace in pace_list:
+            if pace.interval.lower() == interval.lower():
+                form_saved=self.save(commit=False)
+                if pace.id != form_saved.id:
+                    self.add_error('interval', 'Такой темп уже добавлен')
+        
+        msg = 'Название темпа не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        
+        for no_valid_char in no_valid_char_list:
+            if interval.startswith(no_valid_char) or interval.endswith(no_valid_char):
+                self.add_error('interval', msg)
+                break
+
+        return self.cleaned_data
 
 
 class PlaceForm(forms.ModelForm):
@@ -196,35 +293,21 @@ class PrimingForm(forms.ModelForm):
     def clean(self):
         name = self.cleaned_data.get('name')
         priming_list = Priming.objects.all()
+        name = re.sub(r'\s+', ' ', name)
         for priming in priming_list:
             if priming.name.lower() == name.lower():
                 form_saved=self.save(commit=False)
                 if priming.id != form_saved.id:
                     self.add_error('name', 'Такое покрытие уже добавлено')
         
-        name = re.sub(r'\s+', ' ', name)
-        if name.startswith('!') or name.endswith('!'):
-            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
-        elif name.startswith('@') or name.endswith('@'):
-            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
-        elif name.startswith('#') or name.endswith('#'):
-            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
-        elif name.startswith('$') or name.endswith('$'):
-            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
-        elif name.startswith('^') or name.endswith('^'):
-            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
-        elif name.startswith('&') or name.endswith('&'):
-            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
-        elif name.startswith('*') or name.endswith('*'):
-            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
-        elif name.startswith('№') or name.endswith('№'):
-            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
-        elif name.startswith(';') or name.endswith(';'):
-            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
-        elif name.startswith(':') or name.endswith(':'):
-            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
-        elif name.startswith('!') or name.endswith('!'):
-            self.add_error('name', 'Название покрытия не может начинаться и заканчиваться символом !@№;%:?*#$^')
+        msg = 'Название покрытия не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        for no_valid_char in no_valid_char_list:
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg)
+                break
         return self.cleaned_data
 
 
@@ -261,4 +344,24 @@ class WeatherForm(forms.ModelForm):
 class ConditionsForm(forms.ModelForm):
     class Meta:
         model = Conditions
-        fields = ('conditions_name',)
+        fields = ('name',)
+    
+    def clean(self):
+        name = self.cleaned_data.get('name')
+        name = re.sub(r'\s+', ' ', name)
+        conditions_list = Conditions.objects.all()
+        for condition in conditions_list:
+            if condition.name.lower() == name.lower():
+                form_saved=self.save(commit=False)
+                if condition.id != form_saved.id:
+                    self.add_error('name', 'Такое погодное явление уже добавлена')
+        
+        msg = 'Название погодного явления не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        for no_valid_char in no_valid_char_list:
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg)
+                break
+        return self.cleaned_data
