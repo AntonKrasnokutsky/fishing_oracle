@@ -27,6 +27,7 @@ from .models import Trough
 from .models import FishingTrough
 from .models import Nozzle
 from .models import NozzleState
+from .models import NozzleType
 from .models import NozzleBase
 from .models import Lure
 from .models import LureBase
@@ -65,7 +66,9 @@ from .forms import MontageForm
 from .forms import TroughForm
 from .forms import NozzleForm
 from .forms import NozzleStateForm
+from .forms import NozzleTypeForm
 from .forms import NozzleBaseForm
+from .forms import BaitBaseForm
 from .forms import LureForm
 from .forms import LureBaseForm
 from .forms import LureMixForm
@@ -99,6 +102,7 @@ class Settings(View):
 
     def get(self, request, *args, **kwargs):
         return render(request, 'fishing/settings.html')
+
 
 def visits(request, inc=0):
     """
@@ -171,68 +175,121 @@ def aroma_renewal(request, fishing_lure_id, aroma_id):
                            'num_visits': num_visits})
 
 
-@login_required
-def aroma_base_add(request):
-    num_visits = visits(request)
-    if request.method == 'POST':
-        aroma_base = AromaBase()
+class AromaBaseAdd(View):
+    """
+    Добавление аромы
+    """
+    template = 'fishing/aromabase/renewal_add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AromaBaseAdd, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
         form = AromaBaseForm(request.POST)
+        aroma_base = AromaBase()
         if form.is_valid():
             aroma_base = form.save(commit=False)
             aroma_base.owner = request.user
-            aroma_base.save()
-        return redirect('fishing:aroma_base')
-    else:
+            if aroma_base.unique():
+                aroma_base.first_upper()
+                aroma_base.save()
+                return redirect('fishing:aroma_base')
+            else:
+                return render(request,
+                              self.template,
+                              {'form': form,
+                               'errors': 'Такая арома уже добавлена'})
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form})
+
+    def get(self, request, *args, **kwargs):
         form = AromaBaseForm()
         return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
+                      self.template,
+                      {'form': form})
 
 
-@login_required
-def aroma_base_list(request):
-    num_visits = visits(request)
-    if request.user.is_staff:
-        aroma_base_list = AromaBase.objects.all()
-    else:
-        aroma_base_list = AromaBase.objects.filter(owner=request.user)
-    return render(request,
-                  template_list_path,
-                  {'aroma_base_list': aroma_base_list,
-                   'num_visits': num_visits})
+class AromaBaseList(View):
+    """
+    Возвращает список аром
+    """
+
+    template = 'fishing/aromabase/list.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AromaBaseList, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_staff:
+            aroma_base_list = AromaBase.objects.all()
+        else:
+            aroma_base_list = AromaBase.objects.filter(owner=request.user)
+        return render(request,
+                    self.template,
+                    {'aroma_base_list': aroma_base_list})
 
 
-@login_required
-def aroma_base_remove(request, aroma_base_id):
-    aroma_base = get_object_or_404(AromaBase, pk=aroma_base_id)
-    if aroma_base.owner == request.user:
-        aroma_base.delete()
-    return redirect('fishing:aroma_base')
+class AromaBaseDelete(View):
+    """
+    Удаление аромы
+    """
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AromaBaseDelete, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        aroma = get_object_or_404(AromaBase, pk=kwargs['aroma_base_id'])
+        if aroma.owner == request.user:
+            aroma.delete()
+        return redirect('fishing:aroma_base')
 
 
-@login_required
-def aroma_base_renewal(request, aroma_base_id):
-    num_visits = visits(request)
-    aroma_base = get_object_or_404(AromaBase, pk=aroma_base_id)
-    if aroma_base.owner == request.user:
-        if request.method == 'POST':
+class AromaBaseEdit(View):
+    """
+    Изменение аромы
+    """
+    template = 'fishing/aromabase/renewal_add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AromaBaseEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        aroma_base = get_object_or_404(AromaBase, pk=kwargs['aroma_base_id'])
+        if aroma_base.owner == request.user:
             form = AromaBaseForm(request.POST, instance=aroma_base)
             if form.is_valid():
                 aroma_base = form.save(commit=False)
                 aroma_base.owner = request.user
-                aroma_base.save()
-            return redirect('fishing:aroma_base')
-        else:
-            form = AromaBaseForm(initial={
-                'aroma_manufacturer': aroma_base.aroma_manufacturer,
-                'aroma_name': aroma_base.aroma_name,
-                'num_visits': num_visits})
+                if aroma_base.unique():
+                    aroma_base.first_upper()
+                    aroma_base.save()
+                    return redirect('fishing:aroma_base')
+                else:
+                    return render(request,
+                                self.template,
+                                {'form': form,
+                                 'aroma_base': aroma_base,
+                                'errors': 'Такая арома уже добавлена'})
+            else:
+                return render(request,
+                            self.template,
+                            {'form': form,
+                            'aroma_base': aroma_base})
+
+    def get(self, request, *args, **kwargs):
+        aroma_base = get_object_or_404(AromaBase, pk=kwargs['aroma_base_id'])
+        if aroma_base.owner == request.user:
+            form = AromaBaseForm(instance=aroma_base)
             return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
-    else:
+                        self.template,
+                        {'form': form,
+                        'aroma_base': aroma_base})
         return redirect('fishing:aroma_base')
 
 
@@ -908,17 +965,6 @@ class FishDetails(View):
         return render(request,
                       self.template,
                       {'fish': fish_details})
-
-def fish_details(request, fish_id):
-    """
-    Просмотр описания рыбы
-    """
-    fish = get_object_or_404(Fish, pk=fish_id)
-    num_visits = visits(request)
-    return render(request,
-                  template_details_path,
-                  {'fish': fish,
-                   'num_visits': num_visits})
 
 
 @login_required
@@ -1906,66 +1952,121 @@ def lure_renewal(request, fishing_lure_id, lure_id):
                            'num_visits': num_visits})
 
 
-@login_required
-def lure_base_list(request):
-    num_visits = visits(request)
-    if request.user.is_staff:
-        lure_base_list = LureBase.objects.all()
-    else:
-        lure_base_list = LureBase.objects.filter(owner=request.user)
-    return render(request,
-                  template_list_path,
-                  {'lure_base_list': lure_base_list,
-                   'num_visits': num_visits})
+class LureBaseAdd(View):
+    """
+    Добавление прикорма
+    """
+    template = 'fishing/lurebase/renewal_add.html'
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LureBaseAdd, self).dispatch(*args, **kwargs)
 
-@login_required
-def lure_base_add(request):
-    num_visits = visits(request)
-    if request.method == 'POST':
-        lure_base = LureBase()
+    def post(self, request, *args, **kwargs):
         form = LureBaseForm(request.POST)
+        lure_base = LureBase()
         if form.is_valid():
+            lure_base = form.save(commit=False)
             lure_base.owner = request.user
-            lure_base.lure_manufacturer = form.cleaned_data['lure_manufacturer']
-            lure_base.lure_name = form.cleaned_data['lure_name']
-            lure_base.save()
-            return redirect('fishing:lure_base')
-    else:
-        form = LureBaseForm()
-        return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
-
-
-@login_required
-def lure_base_remove(request, lure_base_id):
-    lure_base = get_object_or_404(LureBase, pk=lure_base_id)
-    if lure_base.owner == request.user:
-        lure_base.delete()
-    return redirect('fishing:lure_base')
-
-
-@login_required
-def lure_base_renewal(request, lure_base_id):
-    num_visits = visits(request)
-    lure_base = get_object_or_404(LureBase, pk=lure_base_id)
-    if lure_base.owner == request.user:
-        if request.method == 'POST':
-            form = LureBaseForm(request.POST)
-            if form.is_valid():
-                lure_base.lure_manufacturer = form.cleaned_data['lure_manufacturer']
-                lure_base.lure_name = form.cleaned_data['lure_name']
+            if lure_base.unique():
+                lure_base.first_upper()
                 lure_base.save()
                 return redirect('fishing:lure_base')
+            else:
+                return render(request,
+                              self.template,
+                              {'form': form,
+                               'errors': 'Такой прикорм уже добавлен'})
         else:
-            form = LureBaseForm()
             return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
-    else:
+                          self.template,
+                          {'form': form})
+
+    def get(self, request, *args, **kwargs):
+        form = LureBaseForm()
+        return render(request,
+                      self.template,
+                      {'form': form})
+
+
+class LureBaseList(View):
+    """
+    Возвращает список прикормов
+    """
+
+    template = 'fishing/lurebase/list.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LureBaseList, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_staff:
+            lure_base_list = LureBase.objects.all()
+        else:
+            lure_base_list = LureBase.objects.filter(owner=request.user)
+        return render(request,
+                    self.template,
+                    {'lure_base_list': lure_base_list})
+
+
+class LureBaseDelete(View):
+    """
+    Удаление прикорма
+    """
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LureBaseDelete, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        lure = get_object_or_404(LureBase, pk=kwargs['lure_base_id'])
+        if lure.owner == request.user:
+            lure.delete()
+        return redirect('fishing:lure_base')
+
+
+class LureBaseEdit(View):
+    """
+    Изменение прикорма
+    """
+    template = 'fishing/lurebase/renewal_add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(LureBaseEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        lure_base = get_object_or_404(LureBase, pk=kwargs['lure_base_id'])
+        if lure_base.owner == request.user:
+            form = LureBaseForm(request.POST, instance=lure_base)
+            if form.is_valid():
+                lure_base = form.save(commit=False)
+                lure_base.owner = request.user
+                if lure_base.unique():
+                    lure_base.first_upper()
+                    lure_base.save()
+                    return redirect('fishing:lure_base')
+                else:
+                    return render(request,
+                                self.template,
+                                {'form': form,
+                                 'lure_base': lure_base,
+                                'errors': 'Такой прикорм уже добавлен'})
+            else:
+                return render(request,
+                            self.template,
+                            {'form': form,
+                            'lure_base': lure_base})
+
+    def get(self, request, *args, **kwargs):
+        lure_base = get_object_or_404(LureBase, pk=kwargs['lure_base_id'])
+        if lure_base.owner == request.user:
+            form = LureBaseForm(instance=lure_base)
+            return render(request,
+                        self.template,
+                        {'form': form,
+                        'lure_base': lure_base})
         return redirect('fishing:lure_base')
 
 
@@ -2154,139 +2255,401 @@ def montage_renewal(request, montage_id):
         return redirect('fishing:montage')
 
 
-@login_required
-def nozzle_add(request):
-    num_visits = visits(request)
-    if request.method == "POST":
-        nozzle = NozzleBase()
+class NozzleBaseAdd(View):
+    """
+    Добавление насадки
+    """
+    template = 'fishing/nozzlebase/renewal_add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(NozzleBaseAdd, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
         form = NozzleBaseForm(request.POST)
+        nozzle_base = NozzleBase()
         if form.is_valid():
-            nozzle = form.save(commit = False)
-            nozzle.owner = request.user
-            nozzle.save()
-        return redirect('fishing:nozzle')
-    else:
+            nozzle_base = form.save(commit=False)
+            nozzle_base.owner = request.user
+            nozzle_base.bait = False
+            if nozzle_base.unique():
+                nozzle_base.first_upper()
+                nozzle_base.save()
+                return redirect('fishing:nozzle_base')
+            else:
+                return render(request,
+                              self.template,
+                              {'form': form,
+                               'errors': 'Такая насадка уже добавлена'})
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form})
+
+    def get(self, request, *args, **kwargs):
         form = NozzleBaseForm()
         return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
+                      self.template,
+                      {'form': form})
 
 
-@login_required
-def nozzle_details(request, nozzle_id):
-    num_visits = visits(request)
-    nozzle = get_object_or_404(NozzleBase, pk=nozzle_id)
-    if nozzle.owner == request.user or request.user.is_staff:
-        return render(request,
-                      template_details_path,
-                      {'nozzle': nozzle,
-                       'num_visits': num_visits})
-    else:
-        return redirect('fishing:nozzle')
+class NozzleBaseList(View):
+    """
+    Возвращает список наживок/насадок
+    """
 
+    template = 'fishing/nozzlebase/list.html'
 
-@login_required
-def nozzle_list(request):
-    num_visits = visits(request)
-    if request.user.is_staff:
-        nozzle_list = NozzleBase.objects.all()
-    else:
-        nozzle_list = NozzleBase.objects.filter(owner=request.user)
-    return render(request,
-                  template_list_path,
-                  {'nozzle_list': nozzle_list,
-                   'num_visits': num_visits})
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(NozzleBaseList, self).dispatch(*args, **kwargs)
 
-
-@login_required
-def nozzle_remove(request, nozzle_id):
-    nozzle = get_object_or_404(NozzleBase, pk=nozzle_id)
-    if nozzle.owner == request.user:
-        nozzle.delete()
-    return redirect('fishing:nozzle')
-
-
-@login_required
-def nozzle_renewal(request, nozzle_id):
-    num_visits = visits(request)
-    nozzle = get_object_or_404(NozzleBase, pk=nozzle_id)
-    if nozzle.owner == request.user:
-        if request.method == "POST":
-            form = NozzleBaseForm(request.POST, instance=nozzle)
-            if form.is_valid():
-                nozzle = form.save(commit = False)
-                nozzle.owner = request.user
-                nozzle.save()
-            return redirect('fishing:nozzle')
+    def get(self, request, *args, **kwargs):
+        if request.user.is_staff:
+            nozzle_base_list = NozzleBase.objects.all()
+            nozzle_state_list = NozzleState.objects.all()
         else:
-            form = NozzleBaseForm(instance=nozzle)
+            nozzle_base_list = NozzleBase.objects.filter(owner=request.user)
+            nozzle_state_list = NozzleState.objects.filter(owner=request.user)
+        return render(request,
+                    self.template,
+                    {'nozzle_base_list': nozzle_base_list,
+                     'nozzle_state_list':nozzle_state_list})
+
+
+class NozzleBaseDelete(View):
+    """
+    Удаление наживки/насадки
+    """
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(NozzleBaseDelete, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        nozzle = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
+        if nozzle.owner == request.user:
+            nozzle.delete()
+        return redirect('fishing:nozzle_base')
+
+
+class NozzleBaseEdit(View):
+    """
+    Изменение насадки
+    """
+    template = 'fishing/nozzlebase/renewal_add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(NozzleBaseEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
+        if nozzle_base.owner == request.user:
+            form = NozzleBaseForm(request.POST, instance=nozzle_base)
+            if form.is_valid():
+                nozzle_base = form.save(commit=False)
+                nozzle_base.owner = request.user
+                if nozzle_base.unique():
+                    nozzle_base.first_upper()
+                    nozzle_base.save()
+                    return redirect('fishing:nozzle_base')
+                else:
+                    return render(request,
+                                self.template,
+                                {'form': form,
+                                 'nozzle_base': nozzle_base,
+                                'errors': 'Такая насадка уже добавлена'})
+            else:
+                return render(request,
+                            self.template,
+                            {'form': form,
+                            'nozle_base': nozzle_base})
+
+    def get(self, request, *args, **kwargs):
+        nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
+        if nozzle_base.owner == request.user:
+            form = NozzleBaseForm(instance=nozzle_base)
             return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
+                        self.template,
+                        {'form': form,
+                        'nozzle_base': nozzle_base})
+        return redirect('fishing:nozzle_base')
 
 
-@login_required
-def nozzle_state_add(request):
-    num_visits = visits(request)
-    if request.method == 'POST':
-        nozzle_state = NozzleState()
-        form = NozzleStateForm(request.POST)
+class BaitBaseAdd(View):
+    """
+    Добавление насадки
+    """
+    template = 'fishing/nozzlebase/bait_edit_add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(BaitBaseAdd, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        form = BaitBaseForm(request.POST)
+        nozzle_base = NozzleBase()
         if form.is_valid():
+            nozzle_base = form.save(commit=False)
+            nozzle_base.owner = request.user
+            nozzle_base.bait = True
+            if nozzle_base.unique():
+                nozzle_base.first_upper()
+                nozzle_base.save()
+                return redirect('fishing:nozzle_base')
+            else:
+                return render(request,
+                              self.template,
+                              {'form': form,
+                               'errors': 'Такая наживка уже добавлена'})
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form})
+
+    def get(self, request, *args, **kwargs):
+        form = BaitBaseForm()
+        return render(request,
+                      self.template,
+                      {'form': form})
+
+
+class BaitBaseEdit(View):
+    """
+    Изменение наживки
+    """
+    template = 'fishing/nozzlebase/bait_edit_add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(BaitBaseEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        bait_base = get_object_or_404(NozzleBase, pk=kwargs['bait_base_id'])
+        if bait_base.owner == request.user:
+            form = BaitBaseForm(request.POST, instance=bait_base)
+            if form.is_valid():
+                bait_base = form.save(commit=False)
+                bait_base.owner = request.user
+                if bait_base.unique():
+                    bait_base.first_upper()
+                    bait_base.save()
+                    return redirect('fishing:nozzle_base')
+                else:
+                    return render(request,
+                                self.template,
+                                {'form': form,
+                                 'bait_base': bait_base,
+                                'errors': 'Такая наживка уже добавлена'})
+            else:
+                return render(request,
+                            self.template,
+                            {'form': form,
+                            'bait_base': bait_base})
+
+    def get(self, request, *args, **kwargs):
+        bait_base = get_object_or_404(NozzleBase, pk=kwargs['bait_base_id'])
+        if bait_base.owner == request.user:
+            form = BaitBaseForm(instance=bait_base)
+            return render(request,
+                        self.template,
+                        {'form': form,
+                        'bait_base': bait_base})
+        return redirect('fishing:nozzle_base')
+
+
+class NozzleStateAdd(View):
+    """
+    Добавление состояния насадки или наживки
+    """
+    template = 'fishing/nozzlestate/edit_add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(NozzleStateAdd, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        form = NozzleStateForm(request.POST)
+        nozzle_state = NozzleState()
+        if form.is_valid():
+            nozzle_state = form.save(commit=False)
             nozzle_state.owner = request.user
-            nozzle_state.state = form.cleaned_data['state']
-            nozzle_state.save()
-            return redirect('fishing:nozzle_state')
-    else:
+            if nozzle_state.unique():
+                nozzle_state.first_upper()
+                nozzle_state.save()
+                return redirect('fishing:nozzle_base')
+            else:
+                return render(request,
+                              self.template,
+                              {'form': form,
+                               'errors': 'Такое состояние уже добавлена'})
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form})
+
+    def get(self, request, *args, **kwargs):
         form = NozzleStateForm()
         return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
+                      self.template,
+                      {'form': form})
 
 
-@login_required
-def nozzle_state_list(request):
-    num_visits = visits(request)
-    if request.user.is_staff:
-        nozzle_state_list = NozzleState.objects.all()
-    else:
-        nozzle_state_list = NozzleState.objects.filter(owner=request.user)
-    return render(request,
-                  template_list_path,
-                  {'nozzle_state_list': nozzle_state_list,
-                   'num_visits': num_visits})
+class NozzleStateEdit(View):
+    """
+    Изменение состояния насадки или наживки
+    """
+    template = 'fishing/nozzlestate/edit_add.html'
 
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(NozzleStateEdit, self).dispatch(*args, **kwargs)
 
-@login_required
-def nozzle_state_remove(request, nozzle_state_id):
-    nozzle_state = get_object_or_404(NozzleState, pk=nozzle_state_id)
-    if nozzle_state.owner == request.user:
-        nozzle_state.delete()
-    return redirect('fishing:nozzle_state')
-
-
-@login_required
-def nozzle_state_renewal(request, nozzle_state_id):
-    num_visits = visits(request)
-    nozzle_state = get_object_or_404(NozzleState, pk=nozzle_state_id)
-    if nozzle_state.owner == request.user:
-        if request.method == 'POST':
-            form = NozzleStateForm(request.POST)
+    def post(self, request, *args, **kwargs):
+        nozzle_state = get_object_or_404(NozzleState, pk=kwargs['nozzle_state_id'])
+        if nozzle_state.owner == request.user:
+            form = NozzleStateForm(request.POST, instance=nozzle_state)
             if form.is_valid():
-                nozzle_state.state = form.cleaned_data['state']
-                nozzle_state.save()
-                return redirect('fishing:nozzle_state')
-        else:
-            form = NozzleStateForm(
-                initial={'state': nozzle_state.state})
+                nozzle_state = form.save(commit=False)
+                nozzle_state.owner = request.user
+                if nozzle_state.unique():
+                    nozzle_state.first_upper()
+                    nozzle_state.save()
+                    return redirect('fishing:nozzle_base')
+                else:
+                    return render(request,
+                                self.template,
+                                {'form': form,
+                                 'nozzle_state': nozzle_state,
+                                'errors': 'Такое сосотояние наживки или насадки уже добавлена'})
+            else:
+                return render(request,
+                            self.template,
+                            {'form': form,
+                            'nozzle_state': nozzle_state})
+
+    def get(self, request, *args, **kwargs):
+        nozzle_state = get_object_or_404(NozzleState, pk=kwargs['nozzle_state_id'])
+        if nozzle_state.owner == request.user:
+            form = NozzleStateForm(instance=nozzle_state)
             return render(request,
-                          template_renewal_add_path,
+                        self.template,
+                        {'form': form,
+                        'nozzle_state': nozzle_state})
+        return redirect('fishing:nozzle_base')
+
+
+class NozzleStateDelete(View):
+    """
+    Удаление состояния наживки/насадки
+    """
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(NozzleStateDelete, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        nozzle_state = get_object_or_404(NozzleState, pk=kwargs['nozzle_state_id'])
+        if nozzle_state.owner == request.user:
+            nozzle_state.delete()
+        return redirect('fishing:nozzle_base')
+
+
+class NozzleTypeAdd(View):
+    """
+    Добавление типа насадки
+    """
+    template = 'fishing/nozzletype/renewal_add.html'
+
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(NozzleTypeAdd, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        form = NozzleTypeForm(request.POST)
+        nozzle_type = NozzleType()
+        if form.is_valid():
+            nozzle_type = form.save(commit=False)
+            nozzle_type.first_upper()
+            nozzle_type.save()
+            return redirect('fishing:nozzle_type')
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form})
+
+    def get(self, request, *args, **kwargs):
+        form = NozzleTypeForm()
+        return render(request,
+                      self.template,
+                      {'form': form})
+
+
+class NozzleTypeList(View):
+    """
+    Возвращает список типов насадок
+    """
+
+    template = 'fishing/nozzletype/list.html'
+
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(NozzleTypeList, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        nozzle_type_list = NozzleType.objects.all()
+        return render(request,
+                      self.template,
+                      {'nozzle_type_list': nozzle_type_list})
+
+
+class NozzleTypeDelete(View):
+    """
+    Удаление типа насадки
+    """
+
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(NozzleTypeDelete, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        nozzle_type = get_object_or_404(NozzleType, pk=kwargs['type_id'])
+        nozzle_type.delete()
+        return redirect('fishing:nozzle_type')
+
+
+class NozzleTypeEdit(View):
+    """
+    Изменение типа насадки
+    """
+    template = 'fishing/nozzletype/renewal_add.html'
+
+    @method_decorator(staff_member_required)
+    def dispatch(self, *args, **kwargs):
+        return super(NozzleTypeEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        nozzle_type = get_object_or_404(NozzleType, pk=kwargs['type_id'])
+        form = NozzleTypeForm(request.POST, instance=nozzle_type)
+        if form.is_valid():
+            nozzle_type = form.save(commit=False)
+            nozzle_type.first_upper()
+            nozzle_type.save()
+            return redirect('fishing:nozzle_type')
+        else:
+            return render(request,
+                          self.template,
                           {'form': form,
-                           'num_visits': num_visits})
-    else:
-        return redirect('fishing:nozzle_state')
+                           'nozzle_type': nozzle_type})
+
+    def get(self, request, *args, **kwargs):
+        nozzle_type = get_object_or_404(NozzleType, pk=kwargs['type_id'])
+        form = NozzleTypeForm(instance=nozzle_type)
+        return render(request,
+                      self.template,
+                      {'form': form,
+                       'nozzle_type': nozzle_type})
 
 
 class NozzleInLureMixDelete(View):
@@ -2899,7 +3262,6 @@ def trough_renewal(request, trough_id):
         return redirect('fishing:trough')
 
 
-#@staff_member_required
 @login_required
 def water_add(request, district_id):
     num_visits = visits(request)
@@ -3076,40 +3438,6 @@ def weather_renewal(request, district_id, water_id, place_id, weather_id):
                        'place': place_id,
                        'num_visits': num_visits})
 
-
-@staff_member_required
-def weather_phenomenas_remove(request, phenomena_id):
-    """
-    Удаление явления
-    """
-    weatherphenomena = get_object_or_404(WeatherPhenomena, pk=phenomena_id)
-    weatherphenomena.delete()
-    return redirect('fishing:weatherphenomena')
-
-
-@staff_member_required
-def weather_phenomenas_renewal(request, phenomena_id):
-    """
-    Редактирование погодного явления
-    """
-    num_visits = visits(request, phenomena_id)
-    weather_phenomena = get_object_or_404(WeatherPhenomena, pk=phenomena_id)
-    if request.method == 'POST':
-        form = WeatherPhenomenaForm(
-            request.POST, instance=weather_phenomena)
-        if form.is_valid():
-            weather_phenomena.weather_phenomena_name = form.cleaned_data[
-                'weather_phenomena_name']
-            weather_phenomena.save()
-        return redirect('fishing:weatherphenomena')
-    else:
-        form = WeatherPhenomenaForm(
-            initial={'weather_phenomena_name': weather_phenomena.weather_phenomena_name, })
-        return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'phenomena': weather_phenomena,
-                       'num_visits': num_visits})
 
 class ConditionsAdd(View):
     """

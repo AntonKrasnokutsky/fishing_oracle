@@ -1,18 +1,33 @@
 from .models import Fish
-from .models import District, Water, Place
+from .models import District
+from .models import Water
+from .models import Place
 from .models import Priming
 from .models import FeedCapacity
 from .models import Pace
 from .models import FishingPoint
-from .models import Tackle, Montage
+from .models import Tackle
+from .models import Montage
 from .models import Trough
-from .models import BottomMap, Point
-from .models import Weather, Overcast, Conditions
-from .models import Nozzle, NozzleState, NozzleBase
-from .models import Lure, LureBase, LureMix
-from .models import AromaBase, Aroma
-from .models import Crochet, Leash
-from .models import Fishing, FishingResult, FishTrophy
+from .models import BottomMap
+from .models import Point
+from .models import Weather
+from .models import Overcast
+from .models import Conditions
+from .models import Nozzle
+from .models import NozzleState
+from .models import NozzleType
+from .models import NozzleBase
+from .models import Lure
+from .models import LureBase
+from .models import LureMix
+from .models import AromaBase
+from .models import Aroma
+from .models import Crochet
+from .models import Leash
+from .models import Fishing
+from .models import FishingResult
+from .models import FishTrophy
 from django import forms
 import re
 
@@ -29,7 +44,28 @@ class AromaForm(forms.ModelForm):
 class AromaBaseForm(forms.ModelForm):
     class Meta:
         model = AromaBase
-        fields = ['aroma_manufacturer', 'aroma_name', ]
+        fields = ['manufacturer', 'name', ]
+
+    def clean(self):
+        manufacturer = self.cleaned_data.get('manufacturer')
+        name = self.cleaned_data.get('name')
+        
+        manufacturer = re.sub(r'\s+', ' ', manufacturer)
+        name = re.sub(r'\s+', ' ', name)
+        
+        msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        msg2 = 'Название аромы не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        for no_valid_char in no_valid_char_list:
+            if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
+                self.add_error('manufacturer', msg1)
+                break
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg2)
+                break
+        return self.cleaned_data
 
 
 class BottomMapForm(forms.ModelForm):
@@ -66,6 +102,7 @@ class CrochetForm(forms.ModelForm):
                 self.add_error('model', msg2)
                 break
         return self.cleaned_data
+
 
 class DistrictForm(forms.ModelForm):
     class Meta:
@@ -213,7 +250,28 @@ class LureForm(forms.ModelForm):
 class LureBaseForm(forms.ModelForm):
     class Meta:
         model = LureBase
-        fields = ('lure_manufacturer', 'lure_name',)
+        fields = ('manufacturer', 'name',)
+
+    def clean(self):
+        manufacturer = self.cleaned_data.get('manufacturer')
+        name = self.cleaned_data.get('name')
+        
+        manufacturer = re.sub(r'\s+', ' ', manufacturer)
+        name = re.sub(r'\s+', ' ', name)
+        
+        msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        msg2 = 'Название прикорма не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        for no_valid_char in no_valid_char_list:
+            if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
+                self.add_error('manufacturer', msg1)
+                break
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg2)
+                break
+        return self.cleaned_data
 
 
 class NozzleForm(forms.ModelForm):
@@ -225,15 +283,100 @@ class NozzleForm(forms.ModelForm):
 class NozzleBaseForm(forms.ModelForm):
     class Meta:
         model = NozzleBase
-        fields = ('bait', 'nozzle_manufacturer',
-                  'nozzle_name', 'nozzle_diameter',
-                  'nozzle_type')
+        fields = ('manufacturer',
+                  'name', 'size',
+                  'ntype')
+
+    def clean(self):
+        manufacturer = self.cleaned_data.get('manufacturer')
+        manufacturer = re.sub(r'\s+', ' ', manufacturer)
+        name = self.cleaned_data.get('name')
+        name = re.sub(r'\s+', ' ', name)
+        
+        msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        for no_valid_char in no_valid_char_list:
+            if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
+                self.add_error('manufacturer', msg1)
+                break
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg2)
+                break
+        return self.cleaned_data
+
+class BaitBaseForm(forms.ModelForm):
+    class Meta:
+        model = NozzleBase
+        fields = ('manufacturer',
+                  'name')
+
+    def clean(self):
+        manufacturer = self.cleaned_data.get('manufacturer')
+        manufacturer = re.sub(r'\s+', ' ', manufacturer)
+        name = self.cleaned_data.get('name')
+        name = re.sub(r'\s+', ' ', name)
+        
+        msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        for no_valid_char in no_valid_char_list:
+            if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
+                self.add_error('manufacturer', msg1)
+                break
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg2)
+                break
+        return self.cleaned_data
 
 
 class NozzleStateForm(forms.ModelForm):
     class Meta:
         model = NozzleState
         fields = ('state',)
+
+    def clean(self):
+        state = self.cleaned_data.get('state')
+        state = re.sub(r'\s+', ' ', state)
+        
+        msg1 = 'Состояние не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        for no_valid_char in no_valid_char_list:
+            if state.startswith(no_valid_char) or state.endswith(no_valid_char):
+                self.add_error('state', msg1)
+                break
+        return self.cleaned_data
+
+class NozzleTypeForm(forms.ModelForm):
+    class Meta:
+        model = NozzleType
+        fields = ('name',)
+
+    def clean(self):
+        name = self.cleaned_data.get('name')
+        nozzle_type_list = NozzleType.objects.all()
+        name = re.sub(r'\s+', ' ', name)
+        for nozzle_type in nozzle_type_list:
+            if nozzle_type.name.lower() == name.lower():
+                form_saved = self.save(commit=False)
+                if nozzle_type.id != form_saved.id:
+                    self.add_error('name', 'Такой тип уже добавлен')
+        
+        msg = 'Название типа насадки не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        for no_valid_char in no_valid_char_list:
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg)
+                break
+        return self.cleaned_data
 
 
 class OvercastForm(forms.ModelForm):

@@ -44,24 +44,46 @@ class AromaBase(models.Model):  # Аромы базовые
     class Meta:
         verbose_name = "Арома базовая"
         verbose_name_plural = "Аромы базовые"
-        ordering = ['aroma_manufacturer', 'aroma_name', ]
+        ordering = ['manufacturer', 'name', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # Название производителя
-    aroma_manufacturer = models.CharField(
+    manufacturer = models.CharField(
         max_length=100,
         blank=True,
         verbose_name="Производтель")
     # Название аромы
-    aroma_name = models.CharField(
+    name = models.CharField(
         max_length=100,
         verbose_name="Название")
 
     def __str__(self):
-        return self.aroma_manufacturer + ' ' + self.aroma_name
+        return self.manufacturer + ' ' + self.name
+
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        self.manufacturer = str(self.manufacturer[0].upper()) + self.manufacturer[1:]
+        self.manufacturer = re.sub(r'\s+', ' ', self.manufacturer)
+        self.name = str(self.name[0].upper()) + self.name[1:]
+        self.name = re.sub(r'\s+', ' ', self.name)
+    
+    def unique(self):
+        """
+        Проверка записи на уникальность для пользователя
+        """
+        aroma_base_list = AromaBase.objects.filter(owner=self.owner)
+        for aroma_base in aroma_base_list:
+            if aroma_base.id != self.id:
+                if (aroma_base.manufacturer.lower() == self.manufacturer.lower() and
+                    aroma_base.name.lower() == self.name.lower()):
+                    return False
+        else:
+            return True
 
 
 class BottomMap(models.Model):  # Карты дна
@@ -777,7 +799,7 @@ class LureBase(models.Model):  # Прикорм
     class Meta:
         verbose_name = "Базовый прикорм"
         verbose_name_plural = "Базовый прикорм"
-        ordering = ['lure_manufacturer', 'lure_name']
+        ordering = ['manufacturer', 'name']
 
     # Владелец записи
     owner = models.ForeignKey(
@@ -785,17 +807,39 @@ class LureBase(models.Model):  # Прикорм
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # Название производителя прикорки
-    lure_manufacturer = models.CharField(
+    manufacturer = models.CharField(
         max_length=100,
         blank=True,
         verbose_name="Производитель")
     # Название прикормки
-    lure_name = models.CharField(
+    name = models.CharField(
         max_length=100,
         verbose_name="Название")
 
     def __str__(self):
-        return self.lure_manufacturer + ' ' + self.lure_name
+        return self.manufacturer + ' ' + self.name
+
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        self.manufacturer = str(self.manufacturer[0].upper()) + self.manufacturer[1:]
+        self.manufacturer = re.sub(r'\s+', ' ', self.manufacturer)
+        self.name = str(self.name[0].upper()) + self.name[1:]
+        self.name = re.sub(r'\s+', ' ', self.name)
+    
+    def unique(self):
+        """
+        Проверка записи на уникальность для пользователя
+        """
+        lure_base_list = LureBase.objects.filter(owner=self.owner)
+        for lure_base in lure_base_list:
+            if lure_base.id != self.id:
+                if (lure_base.manufacturer.lower() == self.manufacturer.lower() and
+                    lure_base.name.lower() == self.name.lower()):
+                    return False
+        else:
+            return True
 
 
 class LureMix(models.Model):  # Смеси прикромов
@@ -880,8 +924,8 @@ class NozzleBase(models.Model):  # Насдаки и наживки
     class Meta:
         verbose_name = "Наживка/насадка"
         verbose_name_plural = "Наживки/насадки"
-        ordering = ['bait', 'nozzle_manufacturer', 'nozzle_name',
-                    'nozzle_type', 'nozzle_diameter', ]
+        ordering = ['bait', 'manufacturer', 'name',
+                    'ntype', 'size', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
@@ -892,21 +936,21 @@ class NozzleBase(models.Model):  # Насдаки и наживки
         default=False,
         verbose_name="Живой компонент")
     # Производитель насадки
-    nozzle_manufacturer = models.CharField(
+    manufacturer = models.CharField(
         max_length=100,
         blank=True,
         verbose_name="Производитель")
     # Название насадки/наживки
-    nozzle_name = models.CharField(
+    name = models.CharField(
         max_length=100,
         verbose_name="Название")
     # Диаметр насадки
-    nozzle_diameter = models.PositiveIntegerField(
+    size = models.PositiveIntegerField(
         default=0,
         blank=True,
-        verbose_name="Диаметр насадки")
+        verbose_name="Размер насадки")
     # тип насадки (Плавающий, тонущий, пылящий и т.д.)
-    nozzle_type = models.ForeignKey(
+    ntype = models.ForeignKey(
         'NozzleType',
         on_delete=models.PROTECT,
         blank=True,
@@ -914,7 +958,37 @@ class NozzleBase(models.Model):  # Насдаки и наживки
         verbose_name='Тип насадки')
 
     def __str__(self):
-        return self.nozzle_name
+        if self.bait:
+            return self.name
+        else:
+            return self.manufacturer + ' ' + self.name + ' ' + str(self.size) + 'мм.' + (str(self.ntype) if self.ntype != None else '')
+
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        if len(self.manufacturer) > 0:
+            self.manufacturer = str(self.manufacturer[0].upper()) + self.manufacturer[1:]
+            self.manufacturer = re.sub(r'\s+', ' ', self.manufacturer)
+        if len(self.name) > 0:
+            self.name = str(self.name[0].upper()) + self.name[1:]
+            self.name = re.sub(r'\s+', ' ', self.name)
+    
+    def unique(self):
+        """
+        Проверка записи на уникальность для пользователя
+        """
+        nozzle_base_list = NozzleBase.objects.filter(owner=self.owner)
+        for nozzle_base in nozzle_base_list:
+            if nozzle_base.id != self.id:
+                if (nozzle_base.manufacturer.lower() == self.manufacturer.lower() and
+                    nozzle_base.name.lower() == self.name.lower() and
+                    nozzle_base.size == self.size and
+                    nozzle_base.ntype == self.ntype and
+                    nozzle_base.bait == self.bait):
+                    return False
+        else:
+            return True
 
 
 class NozzleLure(models.Model):  # Наживки\насадки в прикормочном составе
@@ -943,8 +1017,8 @@ class NozzleState(models.Model):  # Состояние наживки
     Содержит информацию о состоянии насадки
     """
     class Meta:
-        verbose_name = "Состояние насадки"
-        verbose_name_plural = "Состояние насадок"
+        verbose_name = "Состояние наживки или насадки"
+        verbose_name_plural = "Состояние насадок или наживок"
         ordering = ['state', ]
     # Владелец записи
     owner = models.ForeignKey(
@@ -954,11 +1028,30 @@ class NozzleState(models.Model):  # Состояние наживки
     # Состояние
     state = models.CharField(
         max_length=20,
-        verbose_name="Состояние наживки",
-        unique=True)
+        verbose_name="Состояние насадки")
 
     def __str__(self):
         return self.state
+
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        if len(self.state) > 0:
+            self.state = str(self.state[0].upper()) + self.state[1:]
+            self.state = re.sub(r'\s+', ' ', self.state)
+    
+    def unique(self):
+        """
+        Проверка записи на уникальность для пользователя
+        """
+        nozzle_state_list = NozzleState.objects.filter(owner=self.owner)
+        for nozzle_state in nozzle_state_list:
+            if nozzle_state.id != self.id:
+                if nozzle_state.state.lower() == self.state.lower():
+                    return False
+        else:
+            return True
 
 
 class NozzleType(models.Model):
@@ -968,15 +1061,23 @@ class NozzleType(models.Model):
     class Meta:
         verbose_name = 'Тип насадки'
         verbose_name_plural = 'Типы насадки'
-        ordering = ['nozzle_type']
+        ordering = ['name']
 
     # Тип насадки
-    nozzle_type = models.CharField(
+    name = models.CharField(
         max_length=40,
+        unique=True,
         verbose_name='Тип насадки')
 
     def __str__(self):
-        return self.nozzle_type
+        return self.name
+
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        self.name = str(self.name[0].upper()) + self.name[1:]
+        self.name = re.sub(r'\s+', ' ', self.name)
 
 
 class Overcast(models.Model):  # Облачность
@@ -1211,6 +1312,7 @@ class Priming(models.Model):  # Грунт
         """
         self.name = str(self.name[0].upper()) + self.name[1:]
         self.name = re.sub(r'\s+', ' ', self.name)
+
 
 class Tackle(models.Model):  # Снасти
     """

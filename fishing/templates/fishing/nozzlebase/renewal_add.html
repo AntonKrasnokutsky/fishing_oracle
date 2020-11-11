@@ -1,0 +1,58 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+<style>
+  p {
+    text-align: center;
+    font-size: 140%;
+    font-style: oblique;
+  }
+</style>
+{% if nozzle_base %}
+<p>Редактирование насадки</p>
+{% else %}
+<p>Добавление насадки</p>
+{% endif %}
+<br />
+<p class="text-danger" style="font-size: 120%;">{{ errors }}</p>
+
+{% for error in form.manufacturer.errors %}
+  <p class="text-danger" style="font-size: 120%;">{{ error }}</p>
+{% endfor %}
+
+{% for error in form.name.errors %}
+  <p class="text-danger" style="font-size: 120%;">{{ error }}</p>
+{% endfor %}
+
+{% for error in form.size.errors %}
+  <p class="text-danger" style="font-size: 120%;">{{ error }}</p>
+{% endfor %}
+
+{% for error in form.ntype.errors %}
+  <p class="text-danger" style="font-size: 120%;">{{ error }}</p>
+{% endfor %}
+
+<form action="" method="post" style="text-align: center; margin: auto;">
+  {% csrf_token %}
+  <table style="text-align: left; margin: auto;">
+    <tr>
+      <td>{{ form.manufacturer.label_tag }}</td>
+      <td>{{ form.manufacturer }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.name.label_tag }}</td>
+      <td>{{ form.name }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.size.label_tag }}</td>
+      <td>{{ form.size }} мм.</td>
+    </tr>
+    <tr>
+      <td>{{ form.ntype.label_tag }}</td>
+      <td>{{ form.ntype }}</td>
+    </tr>
+  </table>
+  <br />
+  <button class="btn btn-secondary" role="button">Сохранить</button>
+  <a href="{% url 'fishing:nozzle_base' %}" class="btn btn-secondary" role="button">Назад</a>
+</form>
+{% endblock %}

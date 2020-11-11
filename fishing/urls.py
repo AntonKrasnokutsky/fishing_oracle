@@ -42,7 +42,7 @@ urlpatterns = [
          views.FishDetails.as_view(),
          name='fish_details'),
     # Редактирование названия рыбы и описания
-    path('fish/<int:fish_id>/renewal/',
+    path('fish/<int:fish_id>/edit/',
          views.FishEdit.as_view(),
          name="fish_edit"),
     # Добавление рыбы
@@ -50,7 +50,7 @@ urlpatterns = [
          views.FishAdd.as_view(),
          name='fish_add'),
     # Удаление рыбы
-    path('fish/<int:fish_id>/remove/',
+    path('fish/<int:fish_id>/delete/',
          views.FishDelete.as_view(),
          name='fish_delete'),
     # Блок Районов
@@ -153,11 +153,11 @@ urlpatterns = [
          views.CapacityAdd.as_view(),
          name='feed_capacity_add'),
     # Редактирование варианта кормоемскости
-    path('capacity/<int:capacity_id>/renewal/',
+    path('capacity/<int:capacity_id>/edit/',
          views.CapacityEdit.as_view(),
          name='feed_capacity_edit'),
     # Удаление варианта кормоемкости
-    path('capacity/<int:capacity_id>/remove/',
+    path('capacity/<int:capacity_id>/delete/',
          views.CapacityDelete.as_view(),
          name='feed_capacity_delete'),
     # Темп
@@ -329,43 +329,64 @@ urlpatterns = [
          views.trough_remove,
          name='trough_remove'),
     # Состояние наживки
-    # Список состояний наживки
-    path('nozzlestate/',
-         views.nozzle_state_list,
-         name='nozzle_state'),
     # Добавление состояния наживки
-    path('nozzlestate/add/',
-         views.nozzle_state_add,
+    path('nozzle/state/add/',
+         views.NozzleStateAdd.as_view(),
          name='nozzle_state_add'),
     # Редактирование состояния наживки
-    path('nozzlestate/<int:nozzle_state_id>/renewal/',
-         views.nozzle_state_renewal,
-         name='nozzle_state_renewal'),
+    path('nozzle/state/<int:nozzle_state_id>/edit/',
+         views.NozzleStateEdit.as_view(),
+         name='nozzle_state_edit'),
     # Удаление состояния наживки
-    path('nozzlestate/<int:nozzle_state_id>/remove/',
-         views.nozzle_state_remove,
-         name='nozzle_state_remove'),
+    path('nozzle/state/<int:nozzle_state_id>/delete/',
+         views.NozzleStateDelete.as_view(),
+         name='nozzle_state_delete'),
+
     # Наживки
-    # Список наживок
+    # Список насадок/наживок
     path('nozzle/',
-         views.nozzle_list,
-         name='nozzle'),
-    # Описание наживки
-    path('nozzle/<int:nozzle_id>/details/',
-         views.nozzle_details,
-         name='nozzle_details'),
-    # Добавление наживки
+         views.NozzleBaseList.as_view(),
+         name='nozzle_base'),
+    # Добавление насадки
     path('nozzle/add/',
-         views.nozzle_add,
-         name='nozzle_add'),
+         views.NozzleBaseAdd.as_view(),
+         name='nozzle_base_add'),
+    # Редактирование насадки
+    path('nozzle/<int:nozzle_base_id>/edit/',
+         views.NozzleBaseEdit.as_view(),
+         name='nozzle_base_edit'),
+    # Удаление насадки
+    path('nozzle/<int:nozzle_base_id>/delete/',
+         views.NozzleBaseDelete.as_view(),
+         name='nozzle_base_delete'),
+
+    # Добавление наживки
+    path('nozzle/add/bait/',
+         views.BaitBaseAdd.as_view(),
+         name='bait_base_add'),
     # Редактирование наживки
-    path('nozzle/<int:nozzle_id>/renewal/',
-         views.nozzle_renewal,
-         name='nozzle_renewal'),
-    # Удаление наживки
-    path('nozzle/<int:nozzle_id>/remove/',
-         views.nozzle_remove,
-         name='nozzle_remove'),
+    path('nozzle/<int:bait_base_id>/bait/edit/',
+         views.BaitBaseEdit.as_view(),
+         name='bait_base_edit'),
+
+    # Тип наживок
+    # Список типов наживок
+    path('nozzletype/',
+         views.NozzleTypeList.as_view(),
+         name='nozzle_type'),
+    # Добавление типа наживки
+    path('nozzletype/add/',
+         views.NozzleTypeAdd.as_view(),
+         name='nozzle_type_add'),
+    # Редактирование типа наживки
+    path('nozzle/<int:type_id>/edit/',
+         views.NozzleTypeEdit.as_view(),
+         name='nozzle_type_edit'),
+    # Удаление типа наживки
+    path('nozzle/<int:type_id>/delete/',
+         views.NozzleTypeDelete.as_view(),
+         name='nozzle_type_delete'),
+    
     # Прикормочная смесь
     # Список прикормочных смесей
     path('fishinglure/',
@@ -390,20 +411,20 @@ urlpatterns = [
     # Прикорм
     # Список прикормов
     path('lurebase/',
-         views.lure_base_list,
+         views.LureBaseList.as_view(),
          name='lure_base'),
     # Добавление прикорма
     path('lurebase/add/',
-         views.lure_base_add,
+         views.LureBaseAdd.as_view(),
          name='lure_base_add'),
     # Редактирование прикорма
-    path('lurebase/<int:lure_base_id>/renewal/',
-         views.lure_base_renewal,
-         name='lure_base_renewal'),
+    path('lurebase/<int:lure_base_id>/edit/',
+         views.LureBaseEdit.as_view(),
+         name='lure_base_edit'),
     # Удаление прикорма
-    path('lurebase/<int:lure_base_id>/remove/',
-         views.lure_base_remove,
-         name='lure_base_remove'),
+    path('lurebase/<int:lure_base_id>/delete/',
+         views.LureBaseDelete.as_view(),
+         name='lure_base_delete'),
     # Смеси прикорма
     # Добавление прикорма в смесь
     path('fishinglure/<int:fishing_lure_id>/lure/add/',
@@ -420,20 +441,20 @@ urlpatterns = [
     # Арома базовая
     # Список аром
     path('aromabase/',
-         views.aroma_base_list,
+         views.AromaBaseList.as_view(),
          name='aroma_base'),
     # Добавление аромы
     path('aromabase/add/',
-         views.aroma_base_add,
+         views.AromaBaseAdd.as_view(),
          name='aroma_base_add'),
     # Редактирование аромы
-    path('aromabase/<int:aroma_base_id>/renewal/',
-         views.aroma_base_renewal,
-         name='aroma_base_renewal'),
+    path('aromabase/<int:aroma_base_id>/edit/',
+         views.AromaBaseEdit.as_view(),
+         name='aroma_base_edit'),
     # Удаление аромы
-    path('aromabase/<int:aroma_base_id>/remove/',
-         views.aroma_base_remove,
-         name='aroma_base_remove'),
+    path('aromabase/<int:aroma_base_id>/delete/',
+         views.AromaBaseDelete.as_view(),
+         name='aroma_base_delete'),
     # Аромы в прикорме
     # Добавление аромы в прикорм
     path('fishinglure/<int:fishing_lure_id>/aroma/add/',
@@ -457,11 +478,11 @@ urlpatterns = [
          views.CrochetAdd.as_view(),
          name='crochet_add'),
     # Редактирование крючка
-    path('crochet/<int:crochet_id>/renewal/',
+    path('crochet/<int:crochet_id>/edit/',
          views.CrochetEdit.as_view(),
          name='crochet_edit'),
     # Удаление крючка
-    path('crochet/<int:crochet_id>/remove/',
+    path('crochet/<int:crochet_id>/delete/',
          views.CrochetDelete.as_view(),
          name='crochet_delete'),
     # Поводки
@@ -474,7 +495,7 @@ urlpatterns = [
          views.LeashAdd.as_view(),
          name='leash_add'),
     # Редактирование поводка
-    path('leash/<int:leash_id>/renewal/',
+    path('leash/<int:leash_id>/edit/',
          views.LeashEdit.as_view(),
          name='leash_edit'),
     # Удаление поводка
@@ -680,4 +701,5 @@ urlpatterns = [
     path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/nozzle/',
          views.NozzleInLureMixSelect.as_view(),
          name='nozzle_in_lure_mix'),
+    
 ]

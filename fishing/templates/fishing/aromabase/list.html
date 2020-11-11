@@ -1,0 +1,34 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+
+{% if aroma_base_list != None %}
+<!-- Аромы -->
+{% if aroma_base_list %}
+<table class="table table-hover" style="margin: auto;">
+  {% for aroma_base in aroma_base_list %}
+  <tr >
+    <td style="text-align: center; border: 0;">
+    {{aroma_base}}
+    </td>
+    {% if aroma_base.owner == user %}
+    <td style="text-align: center; width: 10%; border: 0;">
+    <a href="{% url 'fishing:aroma_base_edit' aroma_base.id %}" class="btn btn-secondary" role="button">Редактировать</a>
+    </td>
+    <td style="text-align: center; width: 6%; border: 0;">
+    <a href="{% url 'fishing:aroma_base_delete' aroma_base.id %}" class="btn btn-secondary" role="button">Удалить</a>
+    </td>
+    {% endif %}
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p style="margin: auto;">Аромы ещё не добавлены</p>
+{% endif %}
+<br/>
+<p style="text-align: center;">
+  <a href="{% url 'fishing:aroma_base_add' %}" class="btn btn-secondary" role="button">Добавить</a>
+  <a href="{% url 'fishing:index' %}" class="btn btn-secondary" role="button">Назад</a>
+</p>
+{% endif %}
+
+{% endblock %}

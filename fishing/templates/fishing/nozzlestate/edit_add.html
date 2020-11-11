@@ -1,0 +1,34 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+<style>
+  p {
+    text-align: center;
+    font-size: 140%;
+    font-style: oblique;
+  }
+</style>
+{% if nozzle_state %}
+<p>Редактирование состояния наживки или насадки</p>
+{% else %}
+<p>Добавление состояния наживки или насадки</p>
+{% endif %}
+<br />
+<p class="text-danger" style="font-size: 120%;">{{ errors }}</p>
+
+{% for error in form.state.errors %}
+  <p class="text-danger" style="font-size: 120%;">{{ error }}</p>
+{% endfor %}
+
+<form action="" method="post" style="text-align: center; margin: auto;">
+  {% csrf_token %}
+  <table style="text-align: left; margin: auto;">
+    <tr>
+      <td>{{ form.state.label_tag }}</td>
+      <td>{{ form.state }}</td>
+    </tr>
+  </table>
+  <br />
+  <button class="btn btn-secondary" role="button">Сохранить</button>
+  <a href="{% url 'fishing:nozzle_base' %}" class="btn btn-secondary" role="button">Назад</a>
+</form>
+{% endblock %}
