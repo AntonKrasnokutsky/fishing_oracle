@@ -1337,37 +1337,64 @@ class Tackle(models.Model):  # Снасти
     class Meta:
         verbose_name = "Рыболовная снасть"
         verbose_name_plural = "Рыболовные снасти"
-        ordering = ['tackle_manufacturer', 'tackle_name',
-                    'tackle_length', 'tackle_casting_weight', ]
+        ordering = ['manufacturer', 'model_tackle',
+                    'length', 'casting_weight', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # Производитель снасти
-    tackle_manufacturer = models.CharField(
+    manufacturer = models.CharField(
         max_length=20,
         blank=True,
         verbose_name="Производитель")
     # Инормация о используемой снасти
-    tackle_name = models.CharField(
+    model_tackle = models.CharField(
         max_length=30,
+        blank=True,
         verbose_name="Название")
-    tackle_length = models.DecimalField(
+    length = models.DecimalField(
         max_digits=3,
         decimal_places=1,
         default=0,
-        verbose_name="Длина (м)",
+        verbose_name="Длина",
         validators=[MinValueValidator(0.0), MaxValueValidator(99.9)])
-    tackle_casting_weight = models.PositiveIntegerField(
+    casting_weight = models.PositiveIntegerField(
         default=0,
         blank=True,
-        verbose_name="Тест удилища (гр)")
+        verbose_name="Тест удилища")
 
     def __str__(self):
-        return (self.tackle_manufacturer + ' ' + self.tackle_name +
-                ' ' + str(self.tackle_length) + ' ' +
-                str(self.tackle_casting_weight))
+        return (((self.manufacturer + ' ') if self.manufacturer else '') +
+                ((self.model_tackle + ' ') if self.model_tackle else '') +
+                str(self.length) + 'м. ' + str(self.casting_weight) + 'гр.')
+
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        if self.manufacturer:
+            self.manufacturer = str(self.manufacturer[0].upper()) + self.manufacturer[1:]
+            self.manufacturer = re.sub(r'\s+', ' ', self.manufacturer)
+        if self.model_tackle:
+            self.model_tackle = str(self.model_tackle[0].upper()) + self.model_tackle[1:]
+            self.model_tackle = re.sub(r'\s+', ' ', self.model_tackle)
+    
+    def unique(self):
+        """
+        Проверка записи на уникальность для пользователя
+        """
+        tackle_list = Tackle.objects.filter(owner=self.owner)
+        for tackle in tackle_list:
+            if (tackle.id != self.id and
+                tackle.manufacturer.lower() == self.manufacturer.lower() and
+                tackle.model_tackle.lower() == self.model_tackle.lower() and
+                tackle.length == self.length and
+                tackle.casting_weight == self.casting_weight):
+                    return False
+        else:
+            return True
 
 
 class Trough(models.Model):  # Кормушки

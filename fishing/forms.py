@@ -308,9 +308,7 @@ class NozzleBaseForm(forms.ModelForm):
         name = self.cleaned_data.get('name')
         name = re.sub(r'\s+', ' ', name)
         size = self.cleaned_data.get('size')
-        size = re.sub(r'\s+', ' ', size)
         ntype = self.cleaned_data.get('ntype')
-        ntype = re.sub(r'\s+', ' ', ntype)
         
         msg0 = 'Производитель или название должны быть указаны'
         msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
@@ -503,9 +501,34 @@ class PrimingForm(forms.ModelForm):
 class TackleForm(forms.ModelForm):
     class Meta:
         model = Tackle
-        fields = ['tackle_manufacturer', 'tackle_name',
-                  'tackle_length', 'tackle_casting_weight', ]
+        fields = ['manufacturer', 'model_tackle',
+                  'length', 'casting_weight', ]
 
+    def clean(self):
+        manufacturer = self.cleaned_data.get('manufacturer')
+        manufacturer = re.sub(r'\s+', ' ', manufacturer)
+        model_tackle = self.cleaned_data.get('model_tackle')
+        model_tackle = re.sub(r'\s+', ' ', model_tackle)
+        length = self.cleaned_data.get('length')
+        casting_weight = self.cleaned_data.get('casting_weight')
+        
+        msg0 = 'Производитель или название должны быть указаны'
+        msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        
+        if not manufacturer and not model_tackle:
+            self.add_error('manufacturer', msg0)
+        for no_valid_char in no_valid_char_list:
+            if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
+                self.add_error('manufacturer', msg1)
+                break
+            if model_tackle.startswith(no_valid_char) or model_tackle.endswith(no_valid_char):
+                self.add_error('model_tackle', msg2)
+                break
+        return self.cleaned_data
 
 class TroughForm(forms.ModelForm):
     class Meta:

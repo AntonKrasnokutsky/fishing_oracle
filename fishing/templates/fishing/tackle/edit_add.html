@@ -1,0 +1,50 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+<style>
+  p {
+    text-align: center;
+    font-size: 140%;
+    font-style: oblique;
+  }
+</style>
+{% if montage %}
+<p>Редактирование снасти</p>
+{% else %}
+<p>Добавление снасти</p>
+{% endif %}
+
+<p class="text-danger" style="font-size: 100%;">{{ errors }}</p>
+
+{% for error in form.manufacturer.errors %}
+  <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
+{% endfor %}
+
+{% for error in form.model_tackle.errors %}
+  <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
+{% endfor %}
+
+<form action="" method="post" style="text-align: center; margin: auto;">
+  {% csrf_token %}
+  <table style="text-align: center; margin: auto;">
+    <tr>
+      <td>{{ form.manufacturer.label_tag }}</td>
+      <td>{{ form.manufacturer }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.model_tackle.label_tag }}</td>
+      <td>{{ form.model_tackle }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.length.label_tag }}</td>
+      <td>{{ form.length }} м.</td>
+    </tr>
+    <tr>
+      <td>{{ form.casting_weight.label_tag }}</td>
+      <td>{{ form.casting_weight }} гр.</td>
+    </tr>
+  </table>
+  <br />
+  <button class="btn btn-secondary" role="button">Сохранить</button>
+  <a href="{% url 'fishing:tackle' %}" class="btn btn-secondary" role="button">Назад</a>
+</form>
+{% endblock %}

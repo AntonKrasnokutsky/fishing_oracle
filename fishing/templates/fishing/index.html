@@ -6,7 +6,7 @@
 </style>
 
 {% if user.is_authenticated %}
-<p><a href="{% url 'fishing:fishing' %}">Рыбалки</a></p>
+<p><a href="{% url 'fishing:fishing' %}"><span style="color: red;">Рыбалки</span></a></p>
 <p><a href="{% url 'fishing:tackle' %}">Снасти</a></p>
 <p><a href="{% url 'fishing:montage' %}">Монтажи</a></p>
 <p><a href="{% url 'fishing:trough' %}">Кормушки</a></p>

@@ -280,20 +280,20 @@ urlpatterns = [
     # Снасти
     # Список снастей
     path('tackle/',
-         views.tackle_list,
+         views.TackleList.as_view(),
          name='tackle'),
     # Добавление снасти
     path('tackle/add/',
-         views.tackle_add,
+         views.TackleAdd.as_view(),
          name='tackle_add'),
     # Редактирование снасти
-    path('tackle/<int:tackle_id>/renewal/',
-         views.tackle_renewal,
-         name='tackle_renewal'),
+    path('tackle/<int:tackle_id>/edit/',
+         views.TackleEdit.as_view(),
+         name='tackle_edit'),
     # Удаление снасти
-    path('tackle/<int:tackle_id>/remove/',
-         views.tackle_remove,
-         name='tackle_remove'),
+    path('tackle/<int:tackle_id>/delete/',
+         views.TackleDelete.as_view(),
+         name='tackle_delete'),
     # Монтажи
     # Список монтажей
     path('montage/',
