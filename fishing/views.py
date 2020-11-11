@@ -2192,66 +2192,122 @@ class LureMixNewAddInFishingLure(View):
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 
-@login_required
-def montage_add(request):
-    num_visits = visits(request)
-    if request.method == 'POST':
-        montage = Montage()
+class MontageAdd(View):
+    """
+    Добавление монтажа
+    """
+    template = 'fishing/montage/edit_add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(MontageAdd, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
         form = MontageForm(request.POST)
+        montage = Montage()
         if form.is_valid():
             montage = form.save(commit=False)
             montage.owner = request.user
-            montage.save()
-            return redirect('fishing:montage')
-    else:
+            if montage.unique():
+                montage.first_upper()
+                montage.save()
+                return redirect('fishing:montage')
+            else:
+                return render(request,
+                              self.template,
+                              {'form': form,
+                               'errors': 'Такой монтаж уже добавлен'})
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form})
+
+    def get(self, request, *args, **kwargs):
         form = MontageForm()
         return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
+                      self.template,
+                      {'form': form})
 
 
-@login_required
-def montage_list(request):
-    num_visits = visits(request)
-    if request.user.is_staff:
-        montage_list = Montage.objects.all()
-    else:
-        montage_list = Montage.objects.filter(
-            owner=request.user)
-    return render(request,
-                  template_list_path,
-                  {'montage_list': montage_list,
-                   'num_visits': num_visits})
+class MontageList(View):
+    """
+    Возвращает монтажей
+    """
+
+    template = 'fishing/montage/list.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(MontageList, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_staff:
+            montage_list = Montage.objects.all()
+        else:
+            montage_list = Montage.objects.filter(owner=request.user)
+        return render(request,
+                    self.template,
+                    {'montage_list': montage_list})
 
 
-@login_required
-def montage_remove(request, montage_id):
-    montage = get_object_or_404(Montage, pk=montage_id)
-    if montage.owner == request.user:
-        montage.delete()
-    return redirect('fishing:montage')
+class MontageDelete(View):
+    """
+    Удаление монтажа
+    """
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(MontageDelete, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        montage = get_object_or_404(Montage, pk=kwargs['montage_id'])
+        if montage.owner == request.user:
+            montage.delete()
+        return redirect('fishing:montage')
 
 
-@login_required
-def montage_renewal(request, montage_id):
-    num_visits = visits(request)
-    montage = get_object_or_404(Montage, pk=montage_id)
-    if montage.owner == request.user:
-        if request.method == 'POST':
+class MontageEdit(View):
+    """
+    Изменение монтажа
+    """
+    template = 'fishing/montage/edit_add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(MontageEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        montage = get_object_or_404(Montage, pk=kwargs['montage_id'])
+        if montage.owner == request.user:
             form = MontageForm(request.POST, instance=montage)
             if form.is_valid():
                 montage = form.save(commit=False)
                 montage.owner = request.user
-                montage.save()
-                return redirect('fishing:montage')
-        else:
-            form = MontageForm(instance=montage)
+                if montage.unique():
+                    montage.first_upper()
+                    montage.save()
+                    return redirect('fishing:montage')
+                else:
+                    return render(request,
+                                self.template,
+                                {'form': form,
+                                 'montage': montage,
+                                'errors': 'Такой монтаж уже добавлена'})
+            else:
+                return render(request,
+                            self.template,
+                            {'form': form,
+                            'montage': montage})
+        return redirect('fishing:montage')
+
+    def get(self, request, *args, **kwargs):
+        montage = get_object_or_404(Montage, pk=kwargs['montage_id'])
+        if montage.owner == request.user:
+            form = NozzleBaseForm(instance=montage)
             return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
-    else:
+                        self.template,
+                        {'form': form,
+                        'montage': montage})
         return redirect('fishing:montage')
 
 

@@ -297,20 +297,20 @@ urlpatterns = [
     # Монтажи
     # Список монтажей
     path('montage/',
-         views.montage_list,
+         views.MontageList.as_view(),
          name='montage'),
     # Добавить монтаж
     path('montage/add/',
-         views.montage_add,
+         views.MontageAdd.as_view(),
          name='montage_add'),
     # Изменить монтаж
-    path('montage/<int:montage_id>/renewal/',
-         views.montage_renewal,
-         name='montage_renewal'),
+    path('montage/<int:montage_id>/edit/',
+         views.MontageEdit.as_view(),
+         name='montage_edit'),
     # Удалить монтаж
-    path('montage/<int:montage_id>/remove/',
-         views.montage_remove,
-         name='montage_remove'),
+    path('montage/<int:montage_id>/delete/',
+         views.MontageDelete.as_view(),
+         name='montage_delete'),
     # Кормушки
     # Список кормушек
     path('trough/',

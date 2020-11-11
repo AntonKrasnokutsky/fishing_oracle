@@ -871,24 +871,39 @@ class Montage(models.Model):  # Монтажи
     class Meta:
         verbose_name = "Монтаж"
         verbose_name_plural = "Монтажи"
-        ordering = ['montage_name', ]
+        ordering = ['name', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # Вариант монтажа
-    montage_name = models.CharField(
-        max_length=15,
+    name = models.CharField(
+        max_length=50,
         verbose_name="Монтаж")
-    # Скользащий да или нет
-    montage_sliding = models.BooleanField(
-        default=False,
-        verbose_name="Скользящий монтаж")
 
     def __str__(self):
-        return (self.montage_name + ' ' +
-                ('скользящий' if self.montage_sliding else ''))
+        return self.name
+
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        self.name = str(self.name[0].upper()) + self.name[1:]
+        self.name = re.sub(r'\s+', ' ', self.name)
+    
+    def unique(self):
+        """
+        Проверка записи на уникальность для пользователя
+        """
+        montage_list = Montage.objects.filter(owner=self.owner)
+        for montage in montage_list:
+            if montage.id != self.id:
+                if montage.name.lower() == self.name.lower():
+                    return False
+        else:
+            return True
+
 
 
 class Nozzle(models.Model):  # Добавки в прикормочную смесь

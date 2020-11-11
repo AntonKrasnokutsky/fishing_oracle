@@ -193,7 +193,22 @@ class LureMixForm(forms.ModelForm):
 class MontageForm(forms.ModelForm):
     class Meta:
         model = Montage
-        fields = ('montage_name', 'montage_sliding', )
+        fields = ('name',)
+
+    def clean(self):
+        name = self.cleaned_data.get('name')
+        name = re.sub(r'\s+', ' ', name)
+        
+        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        
+        for no_valid_char in no_valid_char_list:
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg2)
+                break
+        return self.cleaned_data
 
 
 class FishingPointForm(forms.ModelForm):
@@ -315,6 +330,7 @@ class NozzleBaseForm(forms.ModelForm):
                 break
         return self.cleaned_data
 
+
 class BaitBaseForm(forms.ModelForm):
     class Meta:
         model = NozzleBase
@@ -360,6 +376,7 @@ class NozzleStateForm(forms.ModelForm):
                 self.add_error('state', msg1)
                 break
         return self.cleaned_data
+
 
 class NozzleTypeForm(forms.ModelForm):
     class Meta:
@@ -525,7 +542,7 @@ class TroughForm(forms.ModelForm):
                 self.add_error('model_name', msg1)
                 break
         return self.cleaned_data
-    
+
 
 class WaterForm(forms.ModelForm):
     class Meta:
