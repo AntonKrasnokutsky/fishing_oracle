@@ -3,7 +3,6 @@
 
 {% if nozzle_base_list != None or nozzle_state_list != None %}
 <!-- Насадки и наживки -->
-{% if nozzle_base_list %}
 
 <table class="table" style="margin: auto;">
   <thead>
@@ -14,6 +13,7 @@
   </thead>
   <tr>
     <td style="text-align: center; width: 35%; border: 0;">
+      {% if nozzle_base_list %}
       <table class="table table-hover"  width="100%" cellpadding="0" cellspacing="0">
         {% for nozzle_base in nozzle_base_list %}
         <tr >
@@ -35,8 +35,18 @@
         </tr>
         {% endfor %}
       </table>
+      {% else %}
+      <table class="table table-hover"  width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td  style="text-align: center; width: 35%; border: 0;">
+            Насадки и наживки ещё не добавлены
+          </td>
+        </tr>
+        </table>
+      {% endif %}
     </td>
     <td style="text-align: center; width: 35%; border: 0;">
+      {% if nozzle_state_list %}
       <table class="table table-hover"  width="100%" cellpadding="0" cellspacing="0">
         {% for nozzle_state in nozzle_state_list %}
         <tr >
@@ -54,6 +64,15 @@
         </tr>
         {% endfor %}
       </table>
+      {% else %}
+      <table class="table table-hover"  width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td style="text-align: center; width: 35%; border: 0;">
+          Состояния насадок и наживок ещё не добавлены
+        </tr>
+      </tr>
+      </table>
+      {% endif %}
     </td>
   </tr>
   <tr>
@@ -66,9 +85,6 @@
     </td>
   </tr>
 </table>
-{% else %}
-<p style="margin: auto;">Насадки, наживки и их состояния ещё не добавлены</p>
-{% endif %}
 <br/>
 <p style="text-align: center;">
   <a href="{% url 'fishing:index' %}" class="btn btn-secondary" role="button">Назад</a>

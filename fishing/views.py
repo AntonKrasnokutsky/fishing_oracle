@@ -3200,65 +3200,121 @@ def tackle_renewal(request, tackle_id):
         return redirect('fishing:tackle')
 
 
-@login_required
-def trough_add(request):
-    num_visits = visits(request)
-    if request.method == 'POST':
-        trough = Trough()
+class TroughAdd(View):
+    """
+    Добавление кормушек
+    """
+    template = 'fishing/trough/edit_add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(TroughAdd, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
         form = TroughForm(request.POST)
+        trough = Trough()
         if form.is_valid():
             trough = form.save(commit=False)
             trough.owner = request.user
-            trough.save()
-        return redirect('fishing:trough')
-    else:
+            if trough.unique():
+                trough.first_upper()
+                trough.save()
+                return redirect('fishing:trough')
+            else:
+                return render(request,
+                              self.template,
+                              {'form': form,
+                               'errors': 'Такая кормушка уже добавлена'})
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form})
+
+    def get(self, request, *args, **kwargs):
         form = TroughForm()
         return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
+                      self.template,
+                      {'form': form})
 
 
-@login_required
-def trough_list(request):
-    num_visits = visits(request)
-    if request.user.is_staff:
-        trough_list = Trough.objects.all()
-    else:
-        trough_list = Trough.objects.filter(owner=request.user)
-    return render(request,
-                  template_list_path,
-                  {'trough_list': trough_list,
-                   'num_visits': num_visits})
+class TroughList(View):
+    """
+    Возвращает список кормушек
+    """
+
+    template = 'fishing/trough/list.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(TroughList, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_staff:
+            trough_list = Trough.objects.all()
+        else:
+            trough_list = Trough.objects.filter(owner=request.user)
+        return render(request,
+                    self.template,
+                    {'trough_list': trough_list})
 
 
-@login_required
-def trough_remove(request, trough_id):
-    trough = get_object_or_404(Trough, pk=trough_id)
-    if trough.owner == request.user:
-        trough.delete()
-    return redirect('fishing:trough')
+class TroughDelete(View):
+    """
+    Удаление кормушки
+    """
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(TroughDelete, self).dispatch(*args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        trough = get_object_or_404(Trough, pk=kwargs['trough_id'])
+        if trough.owner == request.user:
+            trough.delete()
+        return redirect('fishing:trough')
 
 
-@login_required
-def trough_renewal(request, trough_id):
-    num_visits = visits(request)
-    trough = get_object_or_404(Trough, pk=trough_id)
-    if trough.owner == request.user:
-        if request.method == 'POST':
+class TroughEdit(View):
+    """
+    Изменение кормушки
+    """
+    template = 'fishing/trough/edit_add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(TroughEdit, self).dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        trough = get_object_or_404(Trough, pk=kwargs['trough_id'])
+        if trough.owner == request.user:
             form = TroughForm(request.POST, instance=trough)
             if form.is_valid():
                 trough = form.save(commit=False)
                 trough.owner = request.user
-                trough.save()
-            return redirect('fishing:trough')
-        else:
+                if trough.unique():
+                    trough.first_upper()
+                    trough.save()
+                    return redirect('fishing:trough')
+                else:
+                    return render(request,
+                                self.template,
+                                {'form': form,
+                                 'trough': trough,
+                                'errors': 'Такая кормушка уже добавлена'})
+            else:
+                return render(request,
+                            self.template,
+                            {'form': form,
+                            'trough': trough})
+
+    def get(self, request, *args, **kwargs):
+        trough = get_object_or_404(Trough, pk=kwargs['trough_id'])
+        if trough.owner == request.user:
             form = TroughForm(instance=trough)
             return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
-    else:
+                        self.template,
+                        {'form': form,
+                        'trough': trough})
         return redirect('fishing:trough')
 
 

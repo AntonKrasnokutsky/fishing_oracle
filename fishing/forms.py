@@ -292,12 +292,20 @@ class NozzleBaseForm(forms.ModelForm):
         manufacturer = re.sub(r'\s+', ' ', manufacturer)
         name = self.cleaned_data.get('name')
         name = re.sub(r'\s+', ' ', name)
+        size = self.cleaned_data.get('size')
+        size = re.sub(r'\s+', ' ', size)
+        ntype = self.cleaned_data.get('ntype')
+        ntype = re.sub(r'\s+', ' ', ntype)
         
+        msg0 = 'Производитель или название должны быть указаны'
         msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
         msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
         
         no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
                               '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        
+        if not manufacturer and not name:
+            self.add_error('manufacturer', msg0)
         for no_valid_char in no_valid_char_list:
             if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
                 self.add_error('manufacturer', msg1)
@@ -485,10 +493,39 @@ class TackleForm(forms.ModelForm):
 class TroughForm(forms.ModelForm):
     class Meta:
         model = Trough
-        fields = ('trough_manufacturer', 'model_trough_name',
-                  'model_trough_plastic', 'model_trough_lugs',
-                  'feed_capacity', 'trough_weight',)
+        fields = ('manufacturer', 'model_name',
+                  'plastic', 'lugs',
+                  'feed_capacity', 'weight',)
 
+    def clean(self):
+        manufacturer = self.cleaned_data.get('manufacturer')
+        manufacturer = re.sub(r'\s+', ' ', manufacturer)
+        model_name = self.cleaned_data.get('model_name')
+        model_name = re.sub(r'\s+', ' ', model_name)
+        plastic = self.cleaned_data.get('plastic')
+        lugs = self.cleaned_data.get('lugs')
+        feed_capacity = self.cleaned_data.get('feed_capacity')
+        weight = self.cleaned_data.get('weight')
+        
+        msg0 = 'Производитель или модель должны быть указаны'
+        msg1 = 'Название производтеля не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        msg2 = 'Название модели не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        
+        if not manufacturer and not model_name:
+            self.add_error('manufacturer', msg0)
+            
+        for no_valid_char in no_valid_char_list:
+            if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
+                self.add_error('manufacturer', msg1)
+                break
+            if model_name.startswith(no_valid_char) or model_name.endswith(no_valid_char):
+                self.add_error('model_name', msg1)
+                break
+        return self.cleaned_data
+    
 
 class WaterForm(forms.ModelForm):
     class Meta:

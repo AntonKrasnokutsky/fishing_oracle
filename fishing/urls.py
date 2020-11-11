@@ -314,20 +314,20 @@ urlpatterns = [
     # Кормушки
     # Список кормушек
     path('trough/',
-         views.trough_list,
+         views.TroughList.as_view(),
          name='trough'),
     # Добавление кормушки
     path('trough/add/',
-         views.trough_add,
+         views.TroughAdd.as_view(),
          name='trough_add'),
     # Редактирование кормушки
-    path('trough/<int:trough_id>/renewal/',
-         views.trough_renewal,
-         name='trough_renewal'),
+    path('trough/<int:trough_id>/edit/',
+         views.TroughEdit.as_view(),
+         name='trough_edit'),
     # Удаление кормушки
-    path('trough/<int:trough_id>/remove/',
-         views.trough_remove,
-         name='trough_remove'),
+    path('trough/<int:trough_id>/delete/',
+         views.TroughDelete.as_view(),
+         name='trough_delete'),
     # Состояние наживки
     # Добавление состояния наживки
     path('nozzle/state/add/',

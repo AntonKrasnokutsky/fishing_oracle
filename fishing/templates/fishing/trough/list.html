@@ -1,0 +1,34 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+
+{% if trough_list != None %}
+<!-- Кормушки -->
+{% if trough_list %}
+<table class="table table-hover" style="margin: auto;">
+  {% for trough in trough_list %}
+  <tr>
+    <td style="text-align: center; border: 0;">
+    {{trough}}
+    </td>
+    {% if trough.owner == user %}
+    <td style="text-align: center; width: 10%; border: 0;">
+    <a href="{% url 'fishing:trough_edit' trough.id %}" class="btn btn-secondary" role="button">Редактировать</a>
+    </td>
+    <td style="text-align: center; width: 6%; border: 0;">
+    <a href="{% url 'fishing:trough_delete' trough.id %}" class="btn btn-secondary" role="button">Удалить</a>
+    </td>
+    {% endif %}
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p style="margin: auto;">Кормушки ещё не добавлены</p>
+{% endif %}
+<br/>
+<p style="text-align: center;">
+  <a href="{% url 'fishing:trough_add' %}" class="btn btn-secondary" role="button">Добавить</a>
+  <a href="{% url 'fishing:index' %}" class="btn btn-secondary" role="button">Назад</a>
+</p>
+{% endif %}
+
+{% endblock %}

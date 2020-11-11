@@ -371,7 +371,7 @@ class FishingCrochet(models.Model):  # Крючки использованные
         ordering = ['crochet']
     # Владелец записи
     owner = models.ForeignKey(CustomUser,
-                              models.SET_NULL,
+                              models.PROTECT,
                               blank=True,
                               null=True,
                               verbose_name='Владелец записи')
@@ -943,6 +943,7 @@ class NozzleBase(models.Model):  # Насдаки и наживки
     # Название насадки/наживки
     name = models.CharField(
         max_length=100,
+        blank=True,
         verbose_name="Название")
     # Диаметр насадки
     size = models.PositiveIntegerField(
@@ -1361,49 +1362,78 @@ class Trough(models.Model):  # Кормушки
     class Meta:
         verbose_name = "Рыболовная кормушка"
         verbose_name_plural = "Рыболовные кормушки"
-        ordering = ['trough_manufacturer', 'model_trough_name',
-                    'trough_weight', 'feed_capacity', ]
+        ordering = ['manufacturer', 'model_name',
+                    'weight', 'feed_capacity', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # Производитель кормушки
-    trough_manufacturer = models.CharField(
+    manufacturer = models.CharField(
         max_length=50,
         blank=True,
         verbose_name="Поизводитель")
     # Название модели кормушки
-    model_trough_name = models.CharField(
+    model_name = models.CharField(
         max_length=20,
-        default='',
+        blank=True,
         verbose_name="Модель кормушки")
     # Метка пластиковй кормушки
-    model_trough_plastic = models.BooleanField(
+    plastic = models.BooleanField(
         default=False,
         verbose_name="Пластик")
     # Метка наличия грунтозацепов
-    model_trough_lugs = models.BooleanField(
+    lugs = models.BooleanField(
         default=False,
         verbose_name="грунтозацепы")
     # Связь с таблицей кормоемкости
     feed_capacity = models.ForeignKey(
         'FeedCapacity',
         on_delete=models.PROTECT,
+        blank=True,
+        null=True,
         verbose_name="Кормоёмкость")
     # Вес кормушки
-    trough_weight = models.PositiveIntegerField(
+    weight = models.PositiveIntegerField(
         default=0,
         verbose_name="Вес кормушки")
 
     def __str__(self):
-        return (self.trough_manufacturer + ' ' +
-                str(self.model_trough_name) + ' ' +
-                str(' пластик' if self.model_trough_plastic else ' металл') + ' ' +
-                '(' + str(self.feed_capacity) + ' кормоёмкость' + ')' +
-                str(' с грунтозацепами' if self.model_trough_lugs else '') +
-                ' ' +
-                str(self.trough_weight) + 'гр.')
+        return (self.manufacturer + ' ' + str(self.model_name) + ' ' +
+                str(' пластик' if self.plastic else '') + ' ' +
+                ('(' + str(self.feed_capacity) + ' кормоёмкость' + ')' if self.feed_capacity else '')+
+                str(' с грунтозацепами' if self.lugs else '') +
+                ' ' + str(self.weight) + 'гр.')
+
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        if self.manufacturer:
+            self.manufacturer = str(self.manufacturer[0].upper()) + self.manufacturer[1:]
+            self.manufacturer = re.sub(r'\s+', ' ', self.manufacturer)
+        if self.model_name:
+            self.model_name = str(self.model_name[0].upper()) + self.model_name[1:]
+            self.model_name = re.sub(r'\s+', ' ', self.model_name)
+
+    def unique(self):
+        """
+        Проверка записи на уникальность для пользователя
+        """
+        trough_list = Trough.objects.filter(owner=self.owner)
+        for trough in trough_list:
+            if trough.id != self.id:
+                if (trough.manufacturer.lower() == self.manufacturer.lower() and
+                    trough.model_name.lower() == self.model_name.lower() and
+                    trough.length == self.length and
+                    trough.plastic == self.plastic and
+                    trough.lugs == self.lugs and
+                    trough.feed_capacity == self.feed_capacity and
+                    trough.weight == self.weight):
+                    return False
+        else:
+            return True
 
 
 class Water(models.Model):  # Водоемы
