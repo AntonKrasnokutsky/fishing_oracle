@@ -38,7 +38,7 @@ import re
 class AromaForm(forms.ModelForm):
     class Meta:
         model = Aroma
-        fields = ['aroma_volume', ]
+        fields = ['volume', ]
 
 
 class AromaBaseForm(forms.ModelForm):
@@ -187,7 +187,22 @@ class FishingForm(forms.ModelForm):
 class LureMixForm(forms.ModelForm):
     class Meta:
         model = LureMix
-        fields = ('lure_mix_name',)
+        fields = ('name',)
+
+    def clean(self):
+        name = self.cleaned_data.get('name')
+        name = re.sub(r'\s+', ' ', name)
+        
+        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        
+        for no_valid_char in no_valid_char_list:
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg2)
+                break
+        return self.cleaned_data
 
 
 class MontageForm(forms.ModelForm):
@@ -259,7 +274,7 @@ class LeashForm(forms.ModelForm):
 class LureForm(forms.ModelForm):
     class Meta:
         model = Lure
-        fields = ['lure_weight', ]
+        fields = ['weight', ]
 
 
 class LureBaseForm(forms.ModelForm):
@@ -292,7 +307,7 @@ class LureBaseForm(forms.ModelForm):
 class NozzleForm(forms.ModelForm):
     class Meta:
         model = Nozzle
-        fields = ['nozzle_state', ]
+        fields = ['state', ]
 
 
 class NozzleBaseForm(forms.ModelForm):

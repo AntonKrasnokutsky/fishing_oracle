@@ -121,60 +121,6 @@ def index(request):
     return render(request, 'fishing/index.html', {'num_visits': num_visits})
 
 
-@login_required
-def aroma_add(request, fishing_lure_id):
-    num_visits = visits(request)
-    if request.method == 'POST':
-        aroma = Aroma()
-        form = AromaForm(request.POST)
-        if form.is_valid():
-            aroma = form.save(commit=False)
-            aroma.owner = request.user
-            fishing_lure = get_object_or_404(LureMix, pk=fishing_lure_id)
-            aroma.fishing_lure = fishing_lure
-            aroma.save()
-            return redirect('fishing:fishing_lure_details', fishing_lure_id)
-    else:
-        form = AromaForm()
-        return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
-
-
-@login_required
-def aroma_remove(request, fishing_lure_id, aroma_id):
-    aroma = get_object_or_404(Aroma, pk=aroma_id)
-    if aroma.owner == request.user:
-        aroma.delete()
-    return redirect('fishing:fishing_lure_details', fishing_lure_id)
-
-
-@login_required
-def aroma_renewal(request, fishing_lure_id, aroma_id):
-    num_visits = visits(request)
-    aroma = get_object_or_404(Aroma, pk=aroma_id)
-    if aroma.owner == request.user:
-        if request.method == 'POST':
-            form = AromaForm(request.POST, instance=aroma)
-            if form.is_valid():
-                aroma = form.save(commit=False)
-                aroma.owner = request.user
-                fishing_lure = get_object_or_404(
-                    LureMix, pk=fishing_lure_id)
-                aroma.fishing_lure = fishing_lure
-                aroma.save()
-                return redirect('fishing:fishing_lure_details', fishing_lure_id)
-        else:
-            form = AromaForm(initial={
-                'aroma_base': aroma.aroma_base,
-                'aroma_volume': aroma.aroma_volume})
-            return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
-
-
 class AromaBaseAdd(View):
     """
     Добавление аромы
@@ -1219,80 +1165,6 @@ def fishing_leash_select(request, fishing_id, fishing_tackle_id, fishing_leash_i
 
 
 @login_required
-def fishing_lure_add(request):
-    num_visits = visits(request)
-    if request.method == 'POST':
-        fishing_lure = LureMix()
-        form = LureMixForm(request.POST)
-        if form.is_valid():
-            fishing_lure = form.save(commit=False)
-            fishing_lure.owner = request.user
-            fishing_lure.save()
-            return redirect('fishing:fishing_lure')
-    else:
-        form = LureMixForm()
-        return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
-
-
-@login_required
-def fishing_lure_details(request, fishing_lure_id):
-    num_visits = visits(request)
-    fishing_lure = get_object_or_404(LureMix, pk=fishing_lure_id)
-    if request.user.is_staff or fishing_lure.owner == request.user:
-        return render(request,
-                      template_details_path,
-                      {'fishing_lure': fishing_lure,
-                       'num_visits': num_visits})
-    return redirect('fishing:fishing_lure')
-
-
-@login_required
-def fishing_lure_list(request):
-    num_visits = visits(request)
-    if request.user.is_staff:
-        fishing_lure_list = LureMix.objects.all()
-    else:
-        fishing_lure_list = LureMix.objects.filter(owner=request.user)
-    return render(request,
-                  template_list_path,
-                  {'fishing_lure_list': fishing_lure_list,
-                   'num_visits': num_visits})
-
-
-@login_required
-def fishing_lure_remove(request, fishing_lure_id):
-    fishing_lure = get_object_or_404(LureMix, pk=fishing_lure_id)
-    if fishing_lure.owner == request.user:
-        fishing_lure.delete()
-    return redirect('fishing:fishing_lure')
-
-
-@login_required
-def fishing_lure_renewal(request, fishing_lure_id):
-    num_visits = visits(request)
-    fishing_lure = get_object_or_404(LureMix, pk=fishing_lure_id)
-    if fishing_lure.owner == request.user:
-        if request.method == 'POST':
-            form = LureMixForm(request.POST, instance=fishing_lure)
-            if form.is_valid():
-                fishing_lure = form.save(commit=False)
-                fishing_lure.owner = request.user
-                fishing_lure.save()
-                return redirect('fishing:fishnig_lure')
-        else:
-            form = LureMixForm(instance=fishing_lure)
-            return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
-    else:
-        return redirect('fishing:fishing_lure')
-
-
-@login_required
 def fishing_montage_add(request, fishing_id, fishing_tackle_id, montage_id, fishing_montage_id):
     fishing_tackle = get_object_or_404(FishingTackle, pk=fishing_tackle_id)
     montage = get_object_or_404(Montage, pk=montage_id)
@@ -1897,61 +1769,6 @@ class LeashEdit(View):
         return redirect('fishing:leash')
 
 
-@login_required
-def lure_add(request, fishing_lure_id):
-    num_visits = visits(request)
-    if request.method == 'POST':
-        lure = Lure()
-        form = LureForm(request.POST)
-        if form.is_valid():
-            fishing_lure = get_object_or_404(LureMix, pk=fishing_lure_id)
-            lure = form.save(commit=False)
-            lure.owner = request.user
-            lure.fishing_lure = fishing_lure
-            lure.save()
-            return redirect('fishing:fishing_lure_details',
-                            fishing_lure_id)
-    else:
-        form = LureForm()
-        return render(request,
-                      template_renewal_add_path,
-                      {'form': form,
-                       'num_visits': num_visits})
-
-
-@login_required
-def lure_remove(request, fishing_lure_id, lure_id):
-    lure = get_object_or_404(Lure, pk=lure_id)
-    if lure.owner == request.user:
-        lure.delete()
-    return redirect('fishing:fishing_lure_details', fishing_lure_id)
-
-
-@login_required
-def lure_renewal(request, fishing_lure_id, lure_id):
-    num_visits = visits(request)
-    lure = get_object_or_404(Lure, pk=lure_id)
-    if lure.owner == request.user:
-        if request.method == 'POST':
-            form = LureForm(request.POST, instance=lure)
-            if form.is_valid():
-                fishing_lure = get_object_or_404(
-                    LureMix, pk=fishing_lure_id)
-                lure = form.save(commit=False)
-                lure.owner = request.user
-                lure.fishing_lure = fishing_lure
-                lure.save()
-                return redirect('fishing:fishing_lure_details',
-                                fishing_lure_id)
-        else:
-            form = LureForm(initial={'lure_base': lure.lure_base,
-                                     'lure_weight': lure.lure_weight})
-            return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
-
-
 class LureBaseAdd(View):
     """
     Добавление прикорма
@@ -2134,20 +1951,6 @@ class LureInLureMixViews(View):
             return render(request,
                       template_renewal_add_path,
                       {'form': form})
-        return redirect('fishing:fishing_details', kwargs['fishing_id'])
-
-
-class LureMixDelete(View):
-    model = LureMix
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(LureMixDelete, self).dispatch(*args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        lure_mix = get_object_or_404(self.model, pk=kwargs['lure_mix_id'])
-        if lure_mix.owner == request.user:
-            lure_mix.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 

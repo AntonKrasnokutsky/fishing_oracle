@@ -32,6 +32,7 @@ from .models import District
 from .models import Water
 from .models import NozzleType
 from .models import Tackle
+from .models import Nozzle
 
 admin.site.register(Fishing)
 admin.site.register(Fish)
@@ -66,3 +67,4 @@ admin.site.register(District)
 admin.site.register(Water)
 admin.site.register(NozzleType)
 admin.site.register(Tackle)
+admin.site.register(Nozzle)

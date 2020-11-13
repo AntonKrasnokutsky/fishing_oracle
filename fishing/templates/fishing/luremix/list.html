@@ -1,0 +1,34 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+
+{% if lure_mix_list != None %}
+<!-- Прикомочные смеси -->
+{% if lure_mix_list %}
+<table class="table table-hover" style="margin: auto;">
+  {% for lure_mix in lure_mix_list %}
+  <tr >
+    <td style="text-align: center; border: 0;">
+    <a href="{% url 'fishing:lure_mix_details' lure_mix.id %}">{{lure_mix}}</a>
+    </td>
+    {% if lure_mix.owner == user %}
+    <td style="text-align: center; width: 10%; border: 0;">
+    <a href="{% url 'fishing:lure_mix_edit' lure_mix.id %}" class="btn btn-secondary" role="button">Редактировать</a>
+    </td>
+    <td style="text-align: center; width: 6%; border: 0;">
+    <a href="{% url 'fishing:lure_mix_delete' lure_mix.id %}" class="btn btn-secondary" role="button">Удалить</a>
+    </td>
+    {% endif %}
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p style="margin: auto;">Прикормочные смеси еще не добавлены</p>
+{% endif %}
+<br/>
+<p style="text-align: center;">
+  <a href="{% url 'fishing:lure_mix_add' %}" class="btn btn-secondary" role="button">Добавить</a>
+  <a href="{% url 'fishing:index' %}" class="btn btn-secondary" role="button">Назад</a>
+</p>
+{% endif %}
+
+{% endblock %}

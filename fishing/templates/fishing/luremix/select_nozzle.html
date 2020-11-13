@@ -1,0 +1,26 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+
+{% if nozzle_base_list %}
+<!-- Насадки для смеси -->
+<table class="table table-hover"  width="100%" cellpadding="0" cellspacing="0">
+    {% for nozzle_base in nozzle_base_list %}
+    <tr>
+      <td style="text-align: center; width: 19%; border: 0;">
+        {{nozzle_base}}
+      </td>
+      <td style="text-align: center; width: 6%; border: 0;">
+        <a href="{% url 'fishing:add_nozzle_to_mix' lure_mix.id nozzle_base.id %}" class="btn btn-secondary" role="button">Выбрать</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+{% else %}
+<tr>Насадки и наживки ещё не добавлены</tr>
+{% endif %}
+<p  style="text-align: center;">
+  <a href="{% url 'fishing:lure_mix_details' lure_mix.id %}" class="btn btn-secondary" role="button">Назад</a>
+</p>
+
+
+{% endblock %}

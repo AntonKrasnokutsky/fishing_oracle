@@ -1,8 +1,10 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
-
+#import .urls
 app_name = 'fishing'
 urlpatterns = [
+    path('luremix/', include('fishing.url.urls_luremix')),
+    
     # Настройки сайта
     path('settings/',
          views.Settings.as_view(),
@@ -277,6 +279,7 @@ urlpatterns = [
     path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/bottommap/<int:bottom_map_id>/point/<int:point_id>/remove/',
          views.bottom_map_point_remove,
          name='point_remove'),
+
     # Снасти
     # Список снастей
     path('tackle/',
@@ -294,6 +297,7 @@ urlpatterns = [
     path('tackle/<int:tackle_id>/delete/',
          views.TackleDelete.as_view(),
          name='tackle_delete'),
+
     # Монтажи
     # Список монтажей
     path('montage/',
@@ -311,6 +315,7 @@ urlpatterns = [
     path('montage/<int:montage_id>/delete/',
          views.MontageDelete.as_view(),
          name='montage_delete'),
+
     # Кормушки
     # Список кормушек
     path('trough/',
@@ -328,6 +333,7 @@ urlpatterns = [
     path('trough/<int:trough_id>/delete/',
          views.TroughDelete.as_view(),
          name='trough_delete'),
+
     # Состояние наживки
     # Добавление состояния наживки
     path('nozzle/state/add/',
@@ -387,27 +393,6 @@ urlpatterns = [
          views.NozzleTypeDelete.as_view(),
          name='nozzle_type_delete'),
     
-    # Прикормочная смесь
-    # Список прикормочных смесей
-    path('fishinglure/',
-         views.fishing_lure_list,
-         name='fishing_lure'),
-    # Добавление прикормочной смеси
-    path('fishinglure/add/',
-         views.fishing_lure_add,
-         name='fishing_lure_add'),
-    # Детали прикормочной смеси
-    path('fishinglure/<int:fishing_lure_id>/details/',
-         views.fishing_lure_details,
-         name='fishing_lure_details'),
-    # Редактирование прикормочной смеси
-    path('fishinglure/<int:fishing_lure_id>/renewal/',
-         views.fishing_lure_renewal,
-         name='fishing_lure_renewal'),
-    # Удаление прикормочной смеси
-    path('fishinglure/<int:fishing_lure_id>/remove/',
-         views.fishing_lure_remove,
-         name='fishing_lure_remove'),
     # Прикорм
     # Список прикормов
     path('lurebase/',
@@ -425,19 +410,8 @@ urlpatterns = [
     path('lurebase/<int:lure_base_id>/delete/',
          views.LureBaseDelete.as_view(),
          name='lure_base_delete'),
-    # Смеси прикорма
-    # Добавление прикорма в смесь
-    path('fishinglure/<int:fishing_lure_id>/lure/add/',
-         views.lure_add,
-         name='lure_add'),
-    # Редактирование прикорма в смеси
-    path('fishinglure/<int:fishing_lure_id>/lure/<int:lure_id>/renewal/',
-         views.lure_renewal,
-         name='lure_renewal'),
-    # Удаление прикорма из смеси
-    path('fishinglure/<int:fishing_lure_id>/lure/<int:lure_id>/remove/',
-         views.lure_remove,
-         name='lure_remove'),
+
+
     # Арома базовая
     # Список аром
     path('aromabase/',
@@ -455,19 +429,7 @@ urlpatterns = [
     path('aromabase/<int:aroma_base_id>/delete/',
          views.AromaBaseDelete.as_view(),
          name='aroma_base_delete'),
-    # Аромы в прикорме
-    # Добавление аромы в прикорм
-    path('fishinglure/<int:fishing_lure_id>/aroma/add/',
-         views.aroma_add,
-         name='aroma_add'),
-    # Редактирование аромы в прикорме
-    path('fishinglure/<int:fishing_lure_id>/aroma/<int:aroma_id>/renewal/',
-         views.aroma_renewal,
-         name='aroma_renewal'),
-    # Удаление аромы из приколрма
-    path('fishinglure/<int:fishing_lure_id>/aroma/<int:aroma_id>/remove/',
-         views.aroma_remove,
-         name='aroma_remove'),
+
     # Крючки
     # Список крючков
     path('crochet/',
@@ -701,5 +663,4 @@ urlpatterns = [
     path('fishing/<int:fishing_id>/mix/<int:lure_mix_id>/nozzle/',
          views.NozzleInLureMixSelect.as_view(),
          name='nozzle_in_lure_mix'),
-    
 ]

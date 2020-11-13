@@ -7,13 +7,12 @@
     font-style: oblique;
   }
 </style>
-{% if montage %}
-<p>Редактирование монтажа</p>
+{% if lure_mix %}
+<p>Редактирование прикормочной смеси</p>
 {% else %}
-<p>Добавление монтажа</p>
+<p>Добавление прикормочной смеси</p>
 {% endif %}
 <br />
-
 <p class="text-danger" style="font-size: 100%;">{{ errors }}</p>
 
 {% for error in form.name.errors %}
@@ -30,6 +29,6 @@
   </table>
   <br />
   <button class="btn btn-secondary" role="button">Сохранить</button>
-  <a href="{% url 'fishing:montage' %}" class="btn btn-secondary" role="button">Назад</a>
+  <a href="{% url 'fishing:lure_mix' %}" class="btn btn-secondary" role="button">Назад</a>
 </form>
 {% endblock %}

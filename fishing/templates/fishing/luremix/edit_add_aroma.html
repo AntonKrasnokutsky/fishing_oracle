@@ -7,16 +7,15 @@
     font-style: oblique;
   }
 </style>
-{% if montage %}
-<p>Редактирование монтажа</p>
+{% if aroma %}
+<p>Редактирование аромы в смеси</p>
 {% else %}
-<p>Добавление монтажа</p>
+<p>Добавление аромы в смесь</p>
 {% endif %}
 <br />
-
 <p class="text-danger" style="font-size: 100%;">{{ errors }}</p>
 
-{% for error in form.name.errors %}
+{% for error in form.volume.errors %}
   <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
 {% endfor %}
 
@@ -24,12 +23,12 @@
   {% csrf_token %}
   <table style="text-align: center; margin: auto;">
     <tr>
-      <td>{{ form.name.label_tag }}</td>
-      <td>{{ form.name }}</td>
+      <td>{{ form.volume.label_tag }}</td>
+      <td>{{ form.volume }}</td>
     </tr>
   </table>
   <br />
   <button class="btn btn-secondary" role="button">Сохранить</button>
-  <a href="{% url 'fishing:montage' %}" class="btn btn-secondary" role="button">Назад</a>
+  <a href="{% url 'fishing:lure_mix_details' lure_mix.id %}" class="btn btn-secondary" role="button">Назад</a>
 </form>
 {% endblock %}
