@@ -1026,28 +1026,6 @@ class NozzleBase(models.Model):  # Насдаки и наживки
             return True
 
 
-# class NozzleLure(models.Model):  # Наживки\насадки в прикормочном составе
-#     """
-#     """
-#     class Meta:
-#         verbose_name = 'Насадка в прикоме'
-#         verbose_name_plural = 'Насадки в прикорме'
-#         ordering = ['base', ]
-#     # Владелец записи
-#     owner = models.ForeignKey(
-#         CustomUser,
-#         on_delete=models.PROTECT,
-#         verbose_name="Владелец записи")
-#     # Наживка/насадка
-#     base = models.ForeignKey('NozzleBase',
-#                                     on_delete=models.PROTECT,
-#                                     verbose_name='Насадка/наживка')
-#     # Состояние
-#     state = models.ForeignKey('NozzleState',
-#                                      on_delete=models.PROTECT,
-#                                      verbose_name='Состояние наживки/насадки')
-
-
 class NozzleState(models.Model):  # Состояние наживки
     """
     Содержит информацию о состоянии насадки
@@ -1505,19 +1483,97 @@ class Water(models.Model):  # Водоемы
     class Meta:
         verbose_name = "Водоем"
         verbose_name_plural = "Водоемы"
-        ordering = ['water_name', ]
-    # Привязка к району
-    district = models.ForeignKey(
-        'District',
-        on_delete=models.CASCADE,
-        verbose_name="Район")
+        ordering = ['name', ]
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи")
+    # Категория водоема
+    category = models.ForeignKey(
+        'WaterCategory',
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        verbose_name="Категория водоёма")
     # Название водоема
-    water_name = models.CharField(
+    name = models.CharField(
         max_length=100,
         verbose_name="Водоем")
 
     def __str__(self):
-        return self.water_name
+        return ((self.category.abbreviation + '. ') if self.category else '') + self.name
+
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        self.name = str(self.name[0].upper()) + self.name[1:]
+        self.name = re.sub(r'\s+', ' ', self.name)
+
+    def unique(self):
+        """
+        Проверка записи на уникальность для пользователя
+        """
+        water_list = Water.objects.filter(owner=self.owner)
+        for water in water_list:
+            if water.id != self.id:
+                if (water.name.lower() == self.name.lower() and
+                    water.category == self.category):
+                    return False
+        else:
+            return True
+
+
+class WaterCategory(models.Model):
+    """
+    Категории водоемов
+    """
+    
+    class Meta:
+        verbose_name = "Категория водоёма"
+        verbose_name_plural = "Категории водоёмов"
+        ordering = ['category',]
+    category = models.CharField(max_length=20,
+                                blank=True,
+                                verbose_name="Категория")
+    abbreviation = models.CharField(max_length=20,
+                                    blank=True,
+                                    verbose_name="Аббревиатура")
+    
+    def __str__(self):
+        return self.category + ' (' + self.abbreviation + ')'
+    
+    def first_upper(self):
+        """
+        Первая буква названия всегда заглавная
+        """
+        self.category = str(self.category[0].upper()) + self.category[1:]
+        self.category = re.sub(r'\s+', ' ', self.category)
+
+    def getabbreviation(self):
+        """
+        Добавляет аббривиатуру, если она не внесена в форме
+        по первой букве названия, аббривиатура всегда маленькими буквами.
+        Если внесена, преводит все в нижний регистр
+        """
+        if len(self.abbreviation ) == 0:
+            self.abbreviation = self.category[0].lower()
+        else:
+            self.abbreviation = self.abbreviation.lower()
+        
+    def unique(self):
+        """
+        Проверка записи на уникальность
+        """
+        water_category_list = WaterCategory.objects.all()
+        for water_category in water_category_list:
+            if water_category.id != self.id:
+                if (water_category.category.lower() == self.category.lower() or
+                    water_category.abbreviation.lower() == self.abbreviation.lower()):
+                    return False
+        else:
+            return True
 
 
 class Weather(models.Model):  # Погода

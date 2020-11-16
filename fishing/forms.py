@@ -1,6 +1,7 @@
 from .models import Fish
 from .models import District
 from .models import Water
+from .models import WaterCategory
 from .models import Place
 from .models import Priming
 from .models import FeedCapacity
@@ -585,7 +586,56 @@ class TroughForm(forms.ModelForm):
 class WaterForm(forms.ModelForm):
     class Meta:
         model = Water
-        fields = ('water_name',)
+        fields = ('name', 'category',)
+    
+    def clean(self):
+        name = self.cleaned_data.get('name')
+        name = re.sub(r'\s+', ' ', name)
+        
+        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|.'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'",
+                              '.']
+        
+        for no_valid_char in no_valid_char_list:
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg2)
+                break
+        return self.cleaned_data
+
+
+class WaterCategoryForm(forms.ModelForm):
+    class Meta:
+        model = WaterCategory
+        fields = ('category', 'abbreviation',)
+    
+    def clean(self):
+        category = self.cleaned_data.get('category')
+        abbreviation = self.cleaned_data.get('abbreviation')
+        
+        if len(category) == 0:
+            msg0 = 'Название категории не может быть пустым'
+            self.add_erorr('category', msg0)
+            return self.cleaned_data
+        category = re.sub(r'\s+', ' ', category)
+        
+        msg1 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|,'
+        msg2 = 'Аббривиатура не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|,'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'",
+                              ',']
+        
+        for no_valid_char in no_valid_char_list:
+            if category.startswith(no_valid_char) or category.endswith(no_valid_char):
+                self.add_error('category', msg1)
+                break
+            if abbreviation.startswith(no_valid_char) or abbreviation.endswith(no_valid_char):
+                self.add_error('abbreviation', msg2)
+                break
+        return self.cleaned_data
+
 
 
 class WeatherForm(forms.ModelForm):

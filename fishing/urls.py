@@ -4,11 +4,28 @@ from . import views
 app_name = 'fishing'
 urlpatterns = [
     path('luremix/', include('fishing.url.urls_luremix')),
+    path('water/', include('fishing.url.urls_water_place')),
+    path('settings/', include('fishing.url.urls_settings')),
+    # Водоемы
+    # Список водоемов
+#     path('districts/<int:district_id>/water/',
+#          views.water_list,
+#          name='water'),
+#     # Добавление водоема
+#     path('districts/<int:district_id>/water/add/',
+#          views.water_add,
+#          name='water_add'),
+#     # Редактирование водоема
+#     path('districts/<int:district_id>/water/<int:water_id>/renewal/',
+#          views.water_renewal,
+#          name='water_renewal'),
+#     # Удаление водоема
+#     path('districts/<int:district_id>/water/<int:water_id>/remove/',
+#          views.water_remove,
+#          name='water_remove'),
     
-    # Настройки сайта
-    path('settings/',
-         views.Settings.as_view(),
-         name='settings'),
+    
+    
     # Главная страница
     path('',
          views.index,
@@ -34,27 +51,7 @@ urlpatterns = [
     path('fishing/<int:fishing_id>/remove/',
          views.fishing_remove,
          name='fishing_remove'),
-    # Блок рыб
-    # Справочник рыб
-    path('fish/',
-         views.FishList.as_view(),
-         name='fish_list'),
-    # Описание рыбы
-    path('fish/<int:fish_id>/',
-         views.FishDetails.as_view(),
-         name='fish_details'),
-    # Редактирование названия рыбы и описания
-    path('fish/<int:fish_id>/edit/',
-         views.FishEdit.as_view(),
-         name="fish_edit"),
-    # Добавление рыбы
-    path('fish/add/',
-         views.FishAdd.as_view(),
-         name='fish_add'),
-    # Удаление рыбы
-    path('fish/<int:fish_id>/delete/',
-         views.FishDelete.as_view(),
-         name='fish_delete'),
+
     # Блок Районов
     # Список районов
     path('districts/',
@@ -72,23 +69,7 @@ urlpatterns = [
     path('districts/<int:district_id>/remove/',
          views.district_remove,
          name='district_remove'),
-    # Блок грунта
-    # Список вариантов грунта
-    path('primings/',
-         views.PrimingList.as_view(),
-         name='primings'),
-    # Добавление грунта
-    path('primings/add/',
-         views.PrimingAdd.as_view(),
-         name='priming_add'),
-    # Редактирование грунта
-    path('primings/<int:priming_id>/edit/',
-         views.PrimingEdit.as_view(),
-         name='priming_edit'),
-    # Удаление грунта
-    path('primings/<int:priming_id>/delete/',
-         views.PrimingDelete.as_view(),
-         name='priming_delete'),
+    
     # Блок погоды
     # Погода
     path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/weather/',
@@ -110,92 +91,7 @@ urlpatterns = [
     path('districts/<int:district_id>/water/<int:water_id>/place/<int:place_id>/weather/<int:weather_id>/remove/',
          views.weather_remove,
          name='weather_remove'),
-    # Облачность
-    # Список вариантов облачности
-    path('overcast/',
-         views.OvercastList.as_view(),
-         name='overcast'),
-    # Добавдение варианта облачности
-    path('overcast/add/',
-         views.OvercastAdd.as_view(),
-         name='overcast_add'),
-    # Редактирование варианта облачности
-    path('overcast/<int:overcast_id>/edit/',
-         views.OvercastEdit.as_view(),
-         name='overcast_edit'),
-    # Удаление варианта облачности
-    path('overcast/<int:overcast_id>/delete/',
-         views.OvercastDelete.as_view(),
-         name='overcast_delete'),
-    # Погодные явления
-    # Список погодных явления
-    path('weather/condition/',
-         views.ConditionsList.as_view(),
-         name='conditions'),
-    # Добавление погодного явления
-    path('weather/conditions/add/',
-         views.ConditionsAdd.as_view(),
-         name="conditions_add"),
-    # Редактирование погодного явления
-    path('weather/conditions/<int:conditions_id>/edit/',
-         views.ConditionsEdit.as_view(),
-         name='conditions_edit'),
-    # Удаление погодного явления
-    path('weather/conditions/<int:conditions_id>/delete/',
-         views.ConditionsDelete.as_view(),
-         name='conditions_delete'),
-    # Блок кормушек
-    # Кормоемкость
-    # Списк вариантов кормоемкости
-    path('capacity/',
-         views.CapacityList.as_view(),
-         name='feed_capacity'),
-    # Добавление варианта кормоемкости
-    path('capacity/add/',
-         views.CapacityAdd.as_view(),
-         name='feed_capacity_add'),
-    # Редактирование варианта кормоемскости
-    path('capacity/<int:capacity_id>/edit/',
-         views.CapacityEdit.as_view(),
-         name='feed_capacity_edit'),
-    # Удаление варианта кормоемкости
-    path('capacity/<int:capacity_id>/delete/',
-         views.CapacityDelete.as_view(),
-         name='feed_capacity_delete'),
-    # Темп
-    # Список вариантов таблицы Темп
-    path('pace/',
-         views.PaceList.as_view(),
-         name='pace'),
-    # Добавление варианта темпа
-    path('pace/add/',
-         views.PaceAdd.as_view(),
-         name='pace_add'),
-    # Редактирование варианта темпа
-    path('pace/<int:pace_id>/edit',
-         views.PaceEdit.as_view(),
-         name='pace_edit'),
-    # Удаление варианта темпа
-    path('pace/<int:pace_id>/delete/',
-         views.PaceDelete.as_view(),
-         name='pace_delete'),
-    # Водоемы
-    # Список водоемов
-    path('districts/<int:district_id>/water/',
-         views.water_list,
-         name='water'),
-    # Добавление водоема
-    path('districts/<int:district_id>/water/add/',
-         views.water_add,
-         name='water_add'),
-    # Редактирование водоема
-    path('districts/<int:district_id>/water/<int:water_id>/renewal/',
-         views.water_renewal,
-         name='water_renewal'),
-    # Удаление водоема
-    path('districts/<int:district_id>/water/<int:water_id>/remove/',
-         views.water_remove,
-         name='water_remove'),
+
     # Место на водоёме
     # Список мест
     path('districts/<int:district_id>/water/<int:water_id>/place/',
@@ -375,24 +271,6 @@ urlpatterns = [
          views.BaitBaseEdit.as_view(),
          name='bait_base_edit'),
 
-    # Тип наживок
-    # Список типов наживок
-    path('nozzletype/',
-         views.NozzleTypeList.as_view(),
-         name='nozzle_type'),
-    # Добавление типа наживки
-    path('nozzletype/add/',
-         views.NozzleTypeAdd.as_view(),
-         name='nozzle_type_add'),
-    # Редактирование типа наживки
-    path('nozzle/<int:type_id>/edit/',
-         views.NozzleTypeEdit.as_view(),
-         name='nozzle_type_edit'),
-    # Удаление типа наживки
-    path('nozzle/<int:type_id>/delete/',
-         views.NozzleTypeDelete.as_view(),
-         name='nozzle_type_delete'),
-    
     # Прикорм
     # Список прикормов
     path('lurebase/',
