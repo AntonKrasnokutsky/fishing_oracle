@@ -1,0 +1,25 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+
+
+{% if trough_list %}
+<table class="table table-hover" style="margin: auto;">
+  {% for trough in trough_list %}
+  <tr >
+    <td style="text-align: center; border: 0;">
+    {{trough}}
+    </td>
+    <td style="text-align: center; width: 6%; border: 0;">
+      <a href="{% url 'fishing:fishing_trough_add' fishing.id fishing_tackle.id trough.id fishing_trough.id %}" class="btn btn-secondary" role="button">Выбрать</a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>Монтажей еще не добавлено</p>
+{% endif %}
+<p style="text-align: center;">
+  <a href="{% url 'fishing:fishing_details' fishing.id %}" class="btn btn-secondary" role="button">Назад</a>
+</p>
+
+{% endblock %}

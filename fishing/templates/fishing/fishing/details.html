@@ -1,0 +1,453 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+
+<table class="table table-hover" style="margin: auto;">
+  <tr>
+    <td style="text-align: center; border: 0;">
+      <strong>Дата проведения рыбалки:</strong> {{ fishing.date }} 
+      {% if fishing.planned %}
+        (запланировано)
+      {% endif %}
+    </td>
+    <td style="text-align: center; border: 0;">
+      <strong>Время начала рыбалки:</strong> {{ fishing.time_start }}
+    </td>
+    <td style="text-align: center; border: 0;">
+      <strong>Время окончания рыбалки:</strong> {{ fishing.time_end }}
+    </td>
+  </tr>
+</table>
+<br />
+<table class="table" style="margin: auto;">
+  <tr>
+    <td style="text-align: center; border: 0;">
+      <strong>Место проведения рыбалки:</strong>
+    </td>
+  </tr>
+</table>
+
+<table class="table table-hover" style="margin: auto;">
+  {% if fishing.fishingplace_set.get %}
+  <tr>
+    <td style="text-align: center; border: 0;">
+      <strong>Водоём: </strong>{{ fishing.fishingplace_set.get.place.water }}
+    </td>
+    {% if fishing.fishingplace_set.get.place.locality %}
+    <td style="text-align: center; border: 0;">
+      <strong>Ближайший населенный пункт: </strong>{{ fishing.fishingplace_set.get.place.locality }}
+    </td>
+    {% endif %}
+    {% if fishing.fishingplace_set.get.place.name %}
+    <td style="text-align: center; border: 0;">
+      <strong>Место: </strong>{{ fishing.fishingplace_set.get.place.name }}
+    </td>
+    {% endif %}
+    <td style="text-align: center; border: 0; width: 7%;">
+      <a href="{% url 'fishing:fishing_place_select' fishing.id %}" class="btn">Изменить</a>
+    </td>
+    <td style="text-align: center; border: 0; width: 7%;">
+      <a href="{% url 'fishing:fishing_place_delete' fishing.id fishing.fishingplace_set.get.id %}" class="btn">Удалить</a>
+    </td>
+  </tr>
+  {% else %}
+  <tr>
+    <td style="text-align: center; border: 0;">
+      Место не указано
+    </td>
+  </tr>
+  <tr>
+    <td style="text-align: center; border: 0;">
+      <a href="{% url 'fishing:fishing_place_select' fishing.id %}" class="btn">Указать место</a></p>
+    </td>
+  </tr>
+  {% endif %}
+</table>
+
+<table class="table" style="margin: auto;">
+  <tr>
+    <td style="text-align: center; border: 0;">
+      <strong>Погода во время рыбалки:</strong>
+    </td>
+  </tr>
+</table>
+<table class="table table-hover" style="margin: auto;">
+  {% if fishing.fishingweather_set.get %}
+  <tr>
+    {% if fishing.fishingweather_set.get.weather.overcast %}
+      <td style="text-align: center; border: 0;">
+        <strong>Облачность: </strong>{{ fishing.fishingweather_set.get.weather.overcast }}
+      </td>
+    {% endif %}
+    {% if fishing.fishingweather_set.get.weather.temperature %}
+      <td style="text-align: center; border: 0;">
+        <strong>Температруа воздуха: </strong>{{ fishing.fishingweather_set.get.weather.temperature }}
+      </td>
+    {% endif %}
+    {% if fishing.fishingweather_set.get.weather.conditions %}
+      <td style="text-align: center; border: 0;">
+        <strong>Явления: </strong>{{ fishing.fishingweather_set.get.weather.conditions }}
+      </td>
+    {% endif %}
+    <td rowspan="2" style="text-align: center; border: 0; width: 7%;">
+      <a href="{% url 'fishing:fishing_weather_edit' fishing.id fishing.fishingweather_set.get.id %}" class="btn">Изменить</a></p>
+    </td>
+    <td rowspan="2" style="text-align: center; border: 0; width: 7%;">
+      <a href="{% url 'fishing:fishing_weather_delete' fishing.id fishing.fishingweather_set.get.id %}" class="btn">Удалить</a></p>
+    </td>
+  </tr>
+  <tr>
+    {% if fishing.fishingweather_set.get.weather.pressure %}
+      <td style="text-align: center; border: 0;">
+        <strong>Давление: </strong>{{ fishing.fishingweather_set.get.weather.pressure }}
+      </td>
+    {% endif %}
+    {% if fishing.fishingweather_set.get.weather.direction_wind %}
+      <td style="text-align: center; border: 0;">
+        <strong>Направление ветра: </strong>{{ fishing.fishingweather_set.get.weather.direction_wind }}
+      </td>
+    {% endif %}
+    {% if fishing.fishingweather_set.get.weather.wind_speed %}
+      <td style="text-align: center; border: 0;">
+        <strong>Скорость ветра: </strong>{{ fishing.fishingweather_set.get.weather.wind_speed }}
+      </td>
+    {% endif %}
+  </tr>
+  {% else %}
+  <tr>
+    <td style="text-align: center; border: 0;">
+      <a href="{% url 'fishing:fishing_weather_add' fishing.id %}" class="btn">Указать погоду</a>
+    </td>
+  </tr>
+  {% endif %}
+</table>
+
+<table class="table" style="margin: auto;">
+  <thead>
+    <tr>
+      <th style="text-align: center; border: 0; width: 10%;">Снасти:</th>
+      <th style="text-align: center; border: 0; width: 10%;">Монтажи:</th>
+      <th style="text-align: center; border: 0; width: 10%;">Кормушки:</th>
+      <th style="text-align: center; border: 0; width: 10%;">Поводки:</th>
+      <th style="text-align: center; border: 0; width: 10%;">Крючки:</th>
+      <th style="text-align: center; border: 0; width: 10%;">Наживки:</th>
+      <th style="text-align: center; border: 0; width: 10%;">Темп:</th>
+    </tr>
+  </thead>
+  {% for fishing_tackle in fishing.fishingtackle_set.all %}
+    <tr>
+      <td style="text-align: center; border: 0;">
+        {% if fishing_tackle.tackle.manufacturer %}
+          <strong>Производитель: </strong>{{ fishing_tackle.tackle.manufacturer }}
+          <br>
+        {% endif %}
+        {% if fishing_tackle.tackle.model_tackle %}
+          <strong>Модель: </strong>{{ fishing_tackle.tackle.model_tackle }}
+          <br>
+        {% endif %}
+        {% if fishing_tackle.tackle.length %}
+          <strong>Длина: </strong>{{ fishing_tackle.tackle.length }}
+          <br>
+        {% endif %}
+        {% if fishing_tackle.tackle.casting_weight %}
+          <strong>Тест удилища: </strong>{{ fishing_tackle.tackle.casting_weight }}
+        {% endif %}
+      </td>
+      <td style="text-align: center; border: 0;">
+        {{ fishing_tackle.fishingmontage_set.get.montage }}
+      </td>
+      <td style="text-align: center; border: 0;">
+        {% if fishing_tackle.fishingtrough_set.get.trough.manufacturer %}
+          <strong>Производитель :</strong> {{ fishing_tackle.fishingtrough_set.get.trough.manufacturer }}
+          <br>
+        {% endif %}
+        {% if fishing_tackle.fishingtrough_set.get.trough.model_name %}
+          <strong>Модель :</strong>{{ fishing_tackle.fishingtrough_set.get.trough.model_name }}
+          <br>
+        {% endif %}
+        {% if fishing_tackle.fishingtrough_set.get.trough.plastic %}
+          <strong>Материал: </strong>Пластик
+          <br>
+        {% endif %}
+        {% if fishing_tackle.fishingtrough_set.get.trough.lugs %}
+          <strong>Грунтозацепы: </strong>да
+          <br>
+        {% endif %}
+        {% if fishing_tackle.fishingtrough_set.get.trough.feed_capacity %}
+          <strong>Кормоёмкость: </strong>{{fishing_tackle.fishingtrough_set.get.trough.feed_capacity }}
+          <br>
+        {% endif %}
+        {% if fishing_tackle.fishingtrough_set.get.trough.weight %}
+          <strong>Вес: </strong>{{ fishing_tackle.fishingtrough_set.get.trough.weight }}
+        {% endif %}
+      </td>
+      <td style="text-align: center; border: 0;">
+        {% if fishing_tackle.fishingleash_set.get %}
+          {% if fishing_tackle.fishingleash_set.get.leash.material %}
+            <strong>Поводочный материал: </strong>{{ fishing_tackle.fishingleash_set.get.leash.material }}
+            <br>
+          {% endif %}
+          {% if fishing_tackle.fishingleash_set.get.leash.diameter %}
+            <strong>Диаметр поводка: </strong>{{ fishing_tackle.fishingleash_set.get.leash.diameter }} мм.
+            <br>
+          {% endif %}
+          {% if fishing_tackle.fishingleash_set.get.leash.length %}
+            <strong>Длина поводка: </strong>{{ fishing_tackle.fishingleash_set.get.leash.length }} см.
+          {% endif %}
+        {% endif %}
+      </td>
+      <td style="text-align: center; border: 0;">
+        {% if fishing_tackle.fishingcrochet_set.get %}
+          {% if fishing_tackle.fishingcrochet_set.get.crochet.manufacturer %}
+            <strong>Производитель: </strong> {{ fishing_tackle.fishingcrochet_set.get.crochet.manufacturer }}
+            <br>
+          {% endif %}
+          {% if fishing_tackle.fishingcrochet_set.get.crochet.model %}
+            <strong>Модель: </strong>{{ fishing_tackle.fishingcrochet_set.get.crochet.model }}
+            <br>
+          {% endif %}
+          {% if fishing_tackle.fishingcrochet_set.get.crochet.size %}
+            <strong>Размер: </strong>{{ fishing_tackle.fishingcrochet_set.get.crochet.size }}
+          {% endif %}
+        {% endif %}
+      </td>
+      <td style="text-align: center; border: 0;">
+        {% if fishing_tackle.fishingnozzle_set.get %}
+          {% if fishing_tackle.fishingnozzle_set.get.nozzle_base.bait %}
+            {% if fishing_tackle.fishingnozzle_set.get.nozzle_base.name %}
+              <strong>Наживка: </strong>{{ fishing_tackle.fishingnozzle_set.get.nozzle_base.name }}
+              <br>
+            {% endif %}
+            {% if fishing_tackle.fishingnozzle_set.get.nozzle_base.manufacturer %}
+              <strong>Производитель: </strong>{{ fishing_tackle.fishingnozzle_set.get.nozzle_base.manufacturer }}
+            {% endif %}
+            {% else %}
+            {% if fishing_tackle.fishingnozzle_set.get.nozzle_base.manufacturer %}
+              <strong>Производитель: </strong>{{ fishing_tackle.fishingnozzle_set.get.nozzle_base.manufacturer }}
+              <br>
+            {% endif %}
+            {% if fishing_tackle.fishingnozzle_set.get.nozzle_base.name %}
+              <strong>Насадка: </strong>{{ fishing_tackle.fishingnozzle_set.get.nozzle_base.name }}
+              <br>
+            {% endif %}
+            {% if fishing_tackle.fishingnozzle_set.get.nozzle_base.diameter %}
+              <strong>Диаметр насадки: </strong>{{ fishing_tackle.fishingnozzle_set.get.nozzle_base.diameter }}
+              <br>
+            {% endif %}
+            {% if fishing_tackle.fishingnozzle_set.get.nozzle_base.type %}
+              <strong>Тип насадки: </strong>{{ fishing_tackle.fishingnozzle_set.get.nozzle_base.type }}
+            {% endif %}
+          {% endif %}
+        {% endif %}
+      </td>
+      <td style="text-align: center; border: 0;">
+        {{ fishing_tackle.fishingpace_set.get.pace }}
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: center; border: 0;">
+        <a href="{% url 'fishing:fishing_tackle_select' fishing.id fishing_tackle.id %}" class="btn">Изменить</a>
+        <a href="{% url 'fishing:fishing_tackle_delete' fishing.id fishing_tackle.id %}" class="btn">Удалить</a>
+      </td>
+      <td style="text-align: center; border: 0;">
+        {% if fishing_tackle.fishingmontage_set.get %}
+          <a href="{% url 'fishing:fishing_montage_select' fishing.id fishing_tackle.id fishing_tackle.fishingmontage_set.get.id %}" class="btn">Изменить</a>
+          <a href="{% url 'fishing:fishing_montage_delete' fishing.id fishing_tackle.fishingmontage_set.get.id %}" class="btn">Удалить</a>
+        {% else %}
+          <a href="{% url 'fishing:fishing_montage_select' fishing.id fishing_tackle.id 0 %}" class="btn">Указать</a>
+        {% endif %}
+      </td>
+      <td style="text-align: center; border: 0;">
+        {% if fishing_tackle.fishingtrough_set.get %}
+          <a href="{% url 'fishing:fishing_trough_select' fishing.id fishing_tackle.id fishing_tackle.fishingtrough_set.get.id %}" class="btn">Изменить</a>
+          <a href="{% url 'fishing:fishing_trough_delete' fishing.id fishing_tackle.fishingtrough_set.get.id %}" class="btn">Удалить</a>
+        {% else %}
+          <a href="{% url 'fishing:fishing_trough_select' fishing.id fishing_tackle.id 0 %}" class="btn">Указать</a>
+        {% endif %}
+      </td>
+      <td style="text-align: center; border: 0;">
+        {% if fishing_tackle.fishingleash_set.get %}
+          <a href="{% url 'fishing:fishing_leash_select' fishing.id fishing_tackle.id fishing_tackle.fishingleash_set.get.id %}" class="btn">Изменить</a>
+          <a href="{% url 'fishing:fishing_leash_delete' fishing.id fishing_tackle.fishingleash_set.get.id %}" class="btn">Удалить</a>
+        {% else %}
+          <a href="{% url 'fishing:fishing_leash_select' fishing.id fishing_tackle.id 0 %}" class="btn">Указать</a>
+        {% endif %}
+      </td>
+      <td style="text-align: center; border: 0;">
+        {% if fishing_tackle.fishingcrochet_set.get %}
+          <a href="{% url 'fishing:fishing_crochet_select' fishing.id fishing_tackle.id fishing_tackle.fishingcrochet_set.get.id %}" class="btn">Изменить</a>
+          <a href="{% url 'fishing:fishing_crochet_delete' fishing.id fishing_tackle.fishingcrochet_set.get.id %}" class="btn">Удалить</a>
+        {% else %}
+          <a href="{% url 'fishing:fishing_crochet_select' fishing.id fishing_tackle.id 0 %}" class="btn">Указать</a>
+        {% endif %}
+      </td>
+      <td style="text-align: center; border: 0;">
+        {% if fishing_tackle.fishingnozzle_set.get %}
+          <a href="{% url 'fishing:fishing_nozzle_select' fishing.id fishing_tackle.id fishing_tackle.fishingnozzle_set.get.id %}" class="btn">Изменить</a>
+          <a href="{% url 'fishing:fishing_nozzle_delete' fishing.id fishing_tackle.fishingnozzle_set.get.id %}" class="btn">Удалить</a>
+        {% else %}
+          <a href="{% url 'fishing:fishing_nozzle_select' fishing.id fishing_tackle.id 0 %}" class="btn">Указать</a>
+        {% endif %}
+      </td>
+      <td style="text-align: center; border: 0;">
+        {% if fishing_tackle.fishingpace_set.get %}
+          <a href="{% url 'fishing:fishing_pace_select' fishing.id fishing_tackle.id fishing_tackle.fishingpace_set.get.id %}" class="btn">Изменить</a>
+          <a href="{% url 'fishing:fishing_pace_delete' fishing.id fishing_tackle.fishingpace_set.get.id %}" class="btn">Удалить</a>
+        {% else %}
+          <a href="{% url 'fishing:fishing_pace_select' fishing.id fishing_tackle.id 0 %}" class="btn">Указать</a>
+        {% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  <tr>
+    <td colspan="7" style="text-align: center; border: 0;">
+      <a href="{% url 'fishing:fishing_tackle_select' fishing.id 0 %}" class="btn">Добавить снасть</a>
+    </td>
+  </tr>
+</table>
+
+<table class="table" style="margin: auto;">
+  <tr>
+    <td style="text-align: center; border: 0;">
+      <strong>Прикормочная смесь: </strong>{{ fishing.fishingluremix_set.get.lure_mix }}
+    </td>
+  </tr>
+</table>
+<table class="table" style="margin: auto;">
+  {% if fishing.fishingluremix_set.get %}
+    {% if fishing.fishingluremix_set.get.lure_mix.lure_set %}
+      <tr>
+        <td style="text-align: center; border: 0;">
+          <strong>Прикормы:</strong>
+        </td>
+      </tr>
+      <tr>
+        <table class="table" style="margin: auto;">
+          <tr>
+            {% for lure in fishing.fishingluremix_set.get.lure_mix.lure_set.all %}
+            <td style="text-align: center; border: 0;">
+              <strong>Прикорм {{ forloop.counter }}</strong>
+              <br>
+              {% if lure.base.manufacturer %}
+                <strong>Производитель: </strong>{{ lure.base.manufacturer }}
+                <br>
+              {% endif %}
+              {% if lure.base.name %}
+                <strong>Название: </strong>{{ lure.base.name }}
+                <br>
+              {% endif %}
+              {% if lure.weight %}
+                <strong>Доля прикорма: </strong>{{ lure.weight }}
+                <br>
+              {% endif %}
+            </td>
+            {% endfor %}
+          </tr>
+        </table>
+      </tr>
+    {% endif %}
+    {% if fishing.fishingluremix_set.get.lure_mix.aroma_set %}
+      <tr>
+        <td style="text-align: center; border: 0;">
+          <strong>Аромы:</strong>
+        </td>
+      </tr>
+      <tr>
+        <table class="table" style="margin: auto;">
+          <tr>
+            {% for aroma in fishing.fishingluremix_set.get.lure_mix.aroma_set.all %}
+              <td style="text-align: center; border: 0;">
+                <strong>Арома {{ forloop.counter }}</strong>
+                <br>
+                {% if aroma.base.manufacturer %}
+                  <strong>Производитель: </strong>{{ aroma.base.manufacturer }}
+                  <br>
+                {% endif %}
+                {% if aroma.base.name %}
+                  <strong>Название: </strong>{{ aroma.base.name }}
+                  <br>
+                {% endif %}
+                {% if aroma.volume %}
+                  <strong>Объем аромы: </strong>{{ aroma.volume }} л.
+                {% endif %}
+              </td>
+            {% endfor %}
+          </tr>
+        </table>
+      </tr>
+    {% endif %}
+    {% if fishing.fishingluremix_set.get.lure_mix.nozzle_set %}
+    <tr>
+      <td style="text-align: center; border: 0;">
+        <strong>Добавки в состав:</strong>
+      </td>
+    </tr>
+    <tr>
+      <table class="table" style="margin: auto;">
+        <tr>
+          {% for nozzle in fishing.fishingluremix_set.get.lure_mix.nozzle_set.all %}
+            <td style="text-align: center; border: 0;">
+              <strong>Добавка: {{ forloop.counter }}</strong>
+              <br>
+              {% if nozzle.base.manufacturer %}
+                <strong>Производитель: </strong>{{ nozzle.base.manufacturer }}
+                <br>
+              {% endif %}
+              {% if nozzle.base.name %}
+                <strong>Название: </strong>{{ nozzle.base.name }}
+                <br>
+              {% endif %}
+              {% if nozzle.state.state %}
+                <strong>Состояние: </strong>{{ nozzle.state.state }}
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+      </table>
+    </tr>
+    {% endif %}
+    <tr>
+      <td style="text-align: center; border: 0;">
+        <a href="{% url 'fishing:fishing_lure_mix_select' fishing.id fishing.fishingluremix_set.get.id %}" class="btn">Изменить</a>
+        <a href="{% url 'fishing:fishing_lure_mix_delete' fishing.id fishing.fishingluremix_set.get.id %}" class="btn">Удалить</a>
+      </td>
+    </tr>
+  {% else %}
+    <tr>
+      <td style="text-align: center; border: 0;">
+        <a href="{% url 'fishing:fishing_lure_mix_select' fishing.id 0 %}" class="btn">Указать прикормочную смесь</a>
+      </td>
+    </tr>
+  {% endif %}
+</table>
+
+    
+    
+    
+    
+    
+    
+    <p><strong>Улов:</strong></p>
+    {% for fishing_result in fishing.fishingresult_set.all %}
+    <p>
+        {{ forloop.counter }}. {{ fishing_result.fish }}:
+        {{ fishing_result.number_of_fish }} шт. общим весом:
+        {{ fishing_result.fish_weight }} кг.
+        <a href="{% url 'fishing:fishing_result_edit' fishing.id fishing_result.id %}" class="btn">Редактировать</a>
+        <a href="{% url 'fishing:fishing_result_delete' fishing.id fishing_result.id %}" class="btn">Удалить</a>
+    </p>
+    {% endfor %}
+    <a href="{% url 'fishing:fishing_result_add' fishing.id %}" class="btn">Добвить результат</a>
+    
+    <p><strong>Трофеи:</strong></p>
+    {% for fish_trophy in fishing.fishingtrophy_set.all %}
+    <p>
+        {{ forloop.counter }}. {{ fish_trophy.fish }}: вес трофея
+        {{fish_trophy.fish_trophy_weight}} кг.
+        <a href="{% url 'fishing:fish_trophy_edit' fishing.id fish_trophy.id %}" class="btn">Редактировать</a>
+        <a href="{% url 'fishing:fish_trophy_delete' fishing.id fish_trophy.id %}" class="btn">Удалить</a>
+    </p>
+    {% endfor %}
+    <a href="{% url 'fishing:fish_trophy_add' fishing.id %}" class="btn">Добавить трофей</a>
+    <a href="{% url 'fishing:fishing' %}" class="btn btn-secondary" role="button">Назад</a>
+
+{% endblock %}

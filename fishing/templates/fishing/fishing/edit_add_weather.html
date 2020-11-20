@@ -1,0 +1,59 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+<style>
+  p {
+    text-align: center;
+    font-size: 140%;
+    font-style: oblique;
+  }
+</style>
+{% if weather %}
+<p>Редактирование погоды на рыбалке</p>
+{% else %}
+<p>Добавление погоды на рыбалке</p>
+{% endif %}
+<br />
+
+<p class="text-danger" style="font-size: 100%;">{{ errors }}</p>
+
+{% for error in form.direction_wind.errors %}
+  <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
+{% endfor %}
+
+<form action="" method="post" style="text-align: center; margin: auto;">
+  {% csrf_token %}
+  <table style="text-align: center; margin: auto;">
+    <tr>
+      <td>{{ form.overcast.label_tag }}</td>
+      <td>{{ form.overcast }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.conditions.label_tag }}</td>
+      <td>{{ form.conditions }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.temperature.label_tag }}</td>
+      <td>{{ form.temperature }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.pressure.label_tag }}</td>
+      <td>{{ form.pressure }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.direction_wind.label_tag }}</td>
+      <td>{{ form.direction_wind }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.wind_speed.label_tag }}</td>
+      <td>{{ form.wind_speed }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.lunar_day.label_tag }}</td>
+      <td>{{ form.lunar_day }}</td>
+    </tr>
+  </table>
+  <br />
+  <button class="btn btn-secondary" role="button">Сохранить</button>
+  <a href="{% url 'fishing:fishing_details' fishing.id %}" class="btn btn-secondary" role="button">Назад</a>
+</form>
+{% endblock %}

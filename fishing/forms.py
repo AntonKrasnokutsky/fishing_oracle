@@ -1,40 +1,37 @@
-from .models import Fish
-from .models import District
-from .models import Water
-from .models import WaterCategory
-from .models import Place
-from .models import Priming
-from .models import FeedCapacity
-from .models import Pace
-from .models import FishingPoint
-from .models import Tackle
-from .models import Montage
-from .models import Trough
-from .models import BottomMap
-from .models import Point
-from .models import Weather
-from .models import Overcast
+from .models import Aroma
+from .models import AromaBase
+# from .models import BottomMap
 from .models import Conditions
-from .models import Nozzle
-from .models import NozzleState
-from .models import NozzleType
-from .models import NozzleBase
+from .models import Crochet
+# from .models import District
+from .models import FeedCapacity
+from .models import Fish
+from .models import Fishing
+# from .models import FishingPoint
+from .models import FishingResult
+from .models import FishingTrophy
+from .models import Leash
 from .models import Lure
 from .models import LureBase
 from .models import LureMix
-from .models import AromaBase
-from .models import Aroma
-from .models import Crochet
-from .models import Leash
-from .models import Fishing
-from .models import FishingResult
-from .models import FishTrophy
+from .models import Montage
+from .models import Nozzle
+from .models import NozzleBase
+from .models import NozzleState
+from .models import NozzleType
+from .models import Overcast
+from .models import Pace
+from .models import Place
+# from .models import Point
+from .models import Priming
+from .models import Tackle
+from .models import Trough
+from .models import Water
+from .models import WaterCategory
+from .models import Weather
+
 from django import forms
 import re
-
-# widgets = {
-#             'name': forms.TextInput(attrs={'placeholder': 'от 0 до 99.9 кг'}),
-#         }
 
 class AromaForm(forms.ModelForm):
     class Meta:
@@ -69,12 +66,44 @@ class AromaBaseForm(forms.ModelForm):
         return self.cleaned_data
 
 
-class BottomMapForm(forms.ModelForm):
+# class BottomMapForm(forms.ModelForm):
+#     date = forms.DateField(
+#         input_formats=['%d.%m.%Y'],
+#         widget=forms.DateInput(attrs={
+#             'class': 'form-control datetimepicker-input',
+#             'data-target': '#datetimepicker1'
+#         })
+#     )
+    
+#     class Meta:
+#         model = BottomMap
+#         fields = ['date',]
+
+
+class ConditionsForm(forms.ModelForm):
     class Meta:
-        model = BottomMap
-        fields = ['bottom_map_northern_degree', 'bottom_map_northern_minute',
-                  'bottom_map_northern_second', 'bottom_map_easter_degree',
-                  'bottom_map_easter_minute', 'bottom_map_easter_second', ]
+        model = Conditions
+        fields = ('name',)
+    
+    def clean(self):
+        name = self.cleaned_data.get('name')
+        name = re.sub(r'\s+', ' ', name)
+        conditions_list = Conditions.objects.all()
+        for condition in conditions_list:
+            if condition.name.lower() == name.lower():
+                form_saved=self.save(commit=False)
+                if condition.id != form_saved.id:
+                    self.add_error('name', 'Такое погодное явление уже добавлена')
+        
+        msg = 'Название погодного явления не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        for no_valid_char in no_valid_char_list:
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg)
+                break
+        return self.cleaned_data
 
 
 class CrochetForm(forms.ModelForm):
@@ -105,10 +134,10 @@ class CrochetForm(forms.ModelForm):
         return self.cleaned_data
 
 
-class DistrictForm(forms.ModelForm):
-    class Meta:
-        model = District
-        fields = ('district_name',)
+# class DistrictForm(forms.ModelForm):
+#     class Meta:
+#         model = District
+#         fields = ('district_name',)
 
 
 class FeedCapacityForm(forms.ModelForm):
@@ -170,70 +199,55 @@ class FishingForm(forms.ModelForm):
         widget=forms.DateInput(attrs={
             'class': 'form-control datetimepicker-input',
             'data-target': '#datetimepicker1'
-        })
+        },),
+        label='Дата рыбалки'
     )
-    time = forms.TimeField(
+    time_start = forms.TimeField(
         input_formats=['%H:%M'],
         widget=forms.TimeInput(attrs={
             'class': 'form-control datetimepicker-input',
+            'pattern': '[0-2]{1}[0-9]{1}:[0-6]{1}[0-9]{1}',
             'data-target': '#datetimepicker2'
-        })
+        }),
+        label='Время начала рыбалки'
     )
-    
+    time_end = forms.TimeField(
+        input_formats=['%H:%M'],
+        widget=forms.TimeInput(attrs={
+            'class': 'form-control datetimepicker-input',
+            'pattern': '[0-2]{1}[0-9]{1}:[0-6]{1}[0-9]{1}',
+            'data-target': '#datetimepicker3'
+        }),
+        label='Время окончания рыбалки'
+    )
+
     class Meta:
         model = Fishing
-        fields = ['date', 'time', ]
-
-
-class LureMixForm(forms.ModelForm):
-    class Meta:
-        model = LureMix
-        fields = ('name',)
-
+        fields = ['date', 'time_start', 'time_end',]
+    
     def clean(self):
-        name = self.cleaned_data.get('name')
-        name = re.sub(r'\s+', ' ', name)
+        msg0 = 'Время начала и окончания рыбалки не могут быть равны'
+        msg1 = 'Время начала рыбалки не может быть больше времени окончания'
+        date = self.cleaned_data.get('date')
+        time_start = self.cleaned_data.get('time_start')
+        time_end = self.cleaned_data.get('time_end')
         
-        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        print (type(time_start))
+        if time_start > time_end:
+            self.add_error('time_start', msg1)
+        if time_start == time_end:
+            self.add_error('time_start', msg0)
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
-        
-        for no_valid_char in no_valid_char_list:
-            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
-                self.add_error('name', msg2)
-                break
         return self.cleaned_data
 
 
-class MontageForm(forms.ModelForm):
-    class Meta:
-        model = Montage
-        fields = ('name',)
-
-    def clean(self):
-        name = self.cleaned_data.get('name')
-        name = re.sub(r'\s+', ' ', name)
-        
-        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
-        
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
-        
-        for no_valid_char in no_valid_char_list:
-            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
-                self.add_error('name', msg2)
-                break
-        return self.cleaned_data
-
-
-class FishingPointForm(forms.ModelForm):
-    class Meta:
-        model = FishingPoint
-        fields = ['fishing_point_azimuth',
-                  'fishing_point_distance',
-                  'fishing_poiny_depth',
-                  'priming', ]
+# class FishingPointForm(forms.ModelForm):
+#     class Meta:
+#         model = FishingPoint
+#         fields = ['fishing_point_azimuth',
+#                   'fishing_point_distance',
+#                   'fishing_poiny_depth',
+#                   'priming', ]
 
 
 class FishingResultForm(forms.ModelForm):
@@ -242,9 +256,9 @@ class FishingResultForm(forms.ModelForm):
         fields = ['fish', 'number_of_fish', 'fish_weight', ]
 
 
-class FishTrophyForm(forms.ModelForm):
+class FishingTrophyForm(forms.ModelForm):
     class Meta:
-        model = FishTrophy
+        model = FishingTrophy
         fields = ['fish', 'fish_trophy_weight', ]
 
 
@@ -299,6 +313,48 @@ class LureBaseForm(forms.ModelForm):
             if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
                 self.add_error('manufacturer', msg1)
                 break
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg2)
+                break
+        return self.cleaned_data
+
+
+class LureMixForm(forms.ModelForm):
+    class Meta:
+        model = LureMix
+        fields = ('name',)
+
+    def clean(self):
+        name = self.cleaned_data.get('name')
+        name = re.sub(r'\s+', ' ', name)
+        
+        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        
+        for no_valid_char in no_valid_char_list:
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg2)
+                break
+        return self.cleaned_data
+
+
+class MontageForm(forms.ModelForm):
+    class Meta:
+        model = Montage
+        fields = ('name',)
+
+    def clean(self):
+        name = self.cleaned_data.get('name')
+        name = re.sub(r'\s+', ' ', name)
+        
+        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        
+        for no_valid_char in no_valid_char_list:
             if name.startswith(no_valid_char) or name.endswith(no_valid_char):
                 self.add_error('name', msg2)
                 break
@@ -475,17 +531,61 @@ class PaceForm(forms.ModelForm):
 class PlaceForm(forms.ModelForm):
     class Meta:
         model = Place
-        fields = ['place_locality', 'place_name', 'place_northern_degree',
-                  'place_northern_minute', 'place_northern_second',
-                  'place_easter_degree', 'place_easter_minute',
-                  'place_easter_second', ]
+        fields = ['locality', 'name',]
+        
+    def clean(self):
+        msg0 = 'Название места не может быть пустым'
+        
+        name = self.cleaned_data.get('name')
+        if len(name) == 0:
+            self.add_error('name', msg0)
+
+        name = re.sub(r'\s+', ' ', name)
+        
+        locality = self.cleaned_data.get('locality')
+        if len(locality) != 0:
+            locality = re.sub(r'\s+', ' ', locality)
+        
+        msg1 = 'Название населенного пункта не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|.'
+        msg2 = 'Название места не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|.'
+        
+        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'",
+                              '.']
+        
+        for no_valid_char in no_valid_char_list:
+            if locality.startswith(no_valid_char) or locality.endswith(no_valid_char):
+                self.add_error('locality', msg1)
+                break
+            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                self.add_error('name', msg2)
+                break
+        return self.cleaned_data
 
 
-class PointForm(forms.ModelForm):
+class PlaceCoordinatesForm(forms.ModelForm):
     class Meta:
-        model = Point
-        fields = ['point_azimuth', 'point_distance',
-                  'point_depth', 'priming']
+        model = Place
+        fields = ['latitude', 'longitude',]
+        
+    def clean(self):
+        msg1 = 'Широта должа быть в пределах от -90 до 90 градусов'
+        msg2 = 'Долгота должа быть в пределах от -180 до 180 градусов'
+        
+        latitude = self.cleaned_data.get('latitude')
+        longitude = self.cleaned_data.get('longitude')
+        if latitude < -90 or latitude > 90:
+            self.add_error('latitude', msg1)
+        if longitude < -180 or longitude > 180:
+            self.add_error('longitude', msg2)
+        return self.cleaned_data
+
+
+# class PointForm(forms.ModelForm):
+#     class Meta:
+#         model = Point
+#         fields = ['point_azimuth', 'point_distance',
+#                   'point_depth', 'priming']
 
 
 class PrimingForm(forms.ModelForm):
@@ -535,8 +635,13 @@ class TackleForm(forms.ModelForm):
         no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
                               '№', ';', ':', '?', '<', '>', '/', '|', "'"]
         
+        if not manufacturer and not model_tackle and not length and not casting_weight:
+            self.add_error('manufacturer', 'Хотя бы одно поле должно быть заполнено')
+        
         if not manufacturer and not model_tackle:
             self.add_error('manufacturer', msg0)
+        
+        
         for no_valid_char in no_valid_char_list:
             if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
                 self.add_error('manufacturer', msg1)
@@ -545,6 +650,7 @@ class TackleForm(forms.ModelForm):
                 self.add_error('model_tackle', msg2)
                 break
         return self.cleaned_data
+
 
 class TroughForm(forms.ModelForm):
     class Meta:
@@ -637,37 +743,41 @@ class WaterCategoryForm(forms.ModelForm):
         return self.cleaned_data
 
 
-
 class WeatherForm(forms.ModelForm):
     class Meta:
         model = Weather
-        fields = ['date', 'overcast', 'conditions',
-                  'weather_temperature', 'pressure',
+        fields = ['overcast', 'conditions',
+                  'temperature', 'pressure',
                   'direction_wind', 'wind_speed',
                   'lunar_day']
 
-
-class ConditionsForm(forms.ModelForm):
-    class Meta:
-        model = Conditions
-        fields = ('name',)
-    
     def clean(self):
-        name = self.cleaned_data.get('name')
-        name = re.sub(r'\s+', ' ', name)
-        conditions_list = Conditions.objects.all()
-        for condition in conditions_list:
-            if condition.name.lower() == name.lower():
-                form_saved=self.save(commit=False)
-                if condition.id != form_saved.id:
-                    self.add_error('name', 'Такое погодное явление уже добавлена')
+        overcast = self.cleaned_data.get('overcast')
+        conditions = self.cleaned_data.get('conditions')
+        temperature = self.cleaned_data.get('temperature')
+        pressure = self.cleaned_data.get('pressure')
+        direction_wind = self.cleaned_data.get('direction_wind')
+        wind_speed = self.cleaned_data.get('wind_speed')
+        lunar_day = self.cleaned_data.get('lunar_day')
         
-        msg = 'Название погодного явления не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        if (overcast == None and conditions == None and temperature == None and
+            pressure == None and len(direction_wind) == 0 and wind_speed == None and
+            lunar_day == None):
+            self.add_error('direction_wind', 'Хотя бы одно поле должно иметь значение')
+            return self.cleaned_data
+        
+        if len(direction_wind) != 0:
+            direction_wind = re.sub(r'\s+', ' ', direction_wind)
+            
+        msg = 'Направление ветра не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|,'
+        
+        
         
         no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'",
+                              ',']
         for no_valid_char in no_valid_char_list:
-            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
-                self.add_error('name', msg)
+            if direction_wind.startswith(no_valid_char) or direction_wind.endswith(no_valid_char):
+                self.add_error('direction_wind', msg)
                 break
         return self.cleaned_data

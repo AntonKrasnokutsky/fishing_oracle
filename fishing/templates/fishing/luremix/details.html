@@ -104,12 +104,12 @@
         {% endif %}
       </td>
     <td style="text-align: center; width: 35%; border: 0;">
-      {% if lure_mix.fishinglure_set.all %}
+      {% if lure_mix.fishingluremix_set.all %}
       <table class="table table-hover"  width="100%" cellpadding="0" cellspacing="0">
-        {% for fishinglure in lure_mix.fishinglure_set.all %}
+        {% for fishingluremix in lure_mix.fishingluremix_set.all %}
           <tr>
             <td style="text-align: center; border: 0;">
-              {{ fishinglure.fishing }}
+              <a href="{% url 'fishing:fishing_details' fishingluremix.fishing.id %}">{{ fishingluremix.fishing }}</a>
             </td>
           </tr>
         {% endfor %}

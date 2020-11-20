@@ -8,14 +8,17 @@
   {% for water in water_list %}
   <tr >
     <td style="text-align: center; border: 0;">
-    {{water}}
+      {{water}}
     </td>
     {% if water.owner == user %}
+    <td style="text-align: center; width: 5%; border: 0;">
+      <a href="{% url 'fishing:places' water.id %}" class="btn btn-secondary" role="button">Места</a>
+    </td>
     <td style="text-align: center; width: 10%; border: 0;">
-    <a href="{% url 'fishing:water_edit' water.id %}" class="btn btn-secondary" role="button">Редактировать</a>
+      <a href="{% url 'fishing:water_edit' water.id %}" class="btn btn-secondary" role="button">Редактировать</a>
     </td>
     <td style="text-align: center; width: 6%; border: 0;">
-    <a href="{% url 'fishing:water_delete' water.id %}" class="btn btn-secondary" role="button">Удалить</a>
+      <a href="{% url 'fishing:water_delete' water.id %}" class="btn btn-secondary" role="button">Удалить</a>
     </td>
     {% endif %}
   </tr>

@@ -6,7 +6,7 @@
 </style>
 
 {% if user.is_authenticated %}
-<p><a href="{% url 'fishing:fishing' %}"><span style="color: red;">Рыбалки</span></a></p>
+<p><a href="{% url 'fishing:fishing' %}">Рыбалки</a></p>
 <p><a href="{% url 'fishing:tackle' %}">Снасти</a></p>
 <p><a href="{% url 'fishing:montage' %}">Монтажи</a></p>
 <p><a href="{% url 'fishing:trough' %}">Кормушки</a></p>
@@ -16,8 +16,7 @@
 <p><a href="{% url 'fishing:aroma_base' %}">Аромы</a></p>
 <p><a href="{% url 'fishing:crochet' %}">Крючки</a></p>
 <p><a href="{% url 'fishing:leash' %}">Поводки</a></p>
-<p><a href="{% url 'fishing:districts' %}"><span style="color: red;">Районы</span></a></p>
-<p><a href="{% url 'fishing:water' %}"><span style="color: red;">Водоёмы</span></a></p>
+<p><a href="{% url 'fishing:water' %}">Водоёмы/места</a></p>
 {% endif %}
 <p><a href="{% url 'fishing:fish_list' %}">Рыба</a></p>
 {% endblock %}
