@@ -29,9 +29,7 @@
 {% endif %}
 <br/>
 <p style="text-align: center;">
-  {% if user.is_staff %}
   <a href="{% url 'fishing:water_add' %}" class="btn btn-secondary" role="button">Добавить</a>
-  {% endif %}
   <a href="{% url 'fishing:index' %}" class="btn btn-secondary" role="button">Назад</a>
 </p>
 {% endif %}
