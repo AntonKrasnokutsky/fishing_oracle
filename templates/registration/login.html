@@ -1,29 +1,57 @@
-{% extends 'fishing/base.html' %} {% block content %} {% if form.errors %}
-<p>Логин или пароль не верный</p>
-{% endif %} {% if next %} {% if user.is_authenticated %}
-<p>Доступ запрещен</p>
-{% else %}
-<p>Пожалуйста, войдите, чтобы увидеть эту страницу.</p>
-{% endif %} {% endif %}
+{% extends 'fishing/base.html' %}
+{% block content %}
+<style>
+  p {
+    text-align: center;
+    font-size: 120%;
+    font-style: oblique;
+  }
+</style>
 
-<form method="post" action="{% url 'login' %}">
+{% if form.errors %}
+  <p>Логин или пароль не верный</p>
+{% endif %}
+{% if next %}
+  {% if user.is_authenticated %}
+    <p>Доступ запрещен</p>
+  {% else %}
+    <p>Пожалуйста, войдите, чтобы увидеть эту страницу.</p>
+  {% endif %}
+{% endif %}
+
+
+<form method="post" action="{% url 'login' %}" style="text-align: center; margin: auto;">
   {% csrf_token %}
-  <table>
+  <table style="text-align: left; margin: auto;">
     <tr>
-      <td>{{ form.username.label_tag }}</td>
-      <td>{{ form.username }}</td>
+      <td style="text-align: center; border: 0;">
+        {% for error in form.username.errors %}
+          <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
+        {% endfor %}
+      </td>
     </tr>
-
     <tr>
-      <td>{{ form.password.label_tag }}</td>
-      <td>{{ form.password }}</td>
+      <td style="text-align: left; border: 0;">{{ form.username.label_tag }}</td>
+      <td style="text-align: right; border: 0;">{{ form.username }}</td>
+    </tr>
+    <tr>
+      <td style="text-align: center; border: 0;">
+        {% for error in form.password.errors %}
+          <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
+        {% endfor %}
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: right; border: 0;">{{ form.password.label_tag }}</td>
+      <td style="text-align: left; border: 0;">{{ form.password }}</td>
     </tr>
   </table>
-
-  <input type="submit" value="Войти" />
-  <input type="hidden" name="next" value="{{ next }}" />
+  <br />
+  <button class="btn btn-secondary" role="button">Войти</button>
+  <a href="{% url 'accounts:registrations' %}" class="btn btn-secondary" role="button">Регистрация</a>
+  <p style="font-size: 100%;"></p>
+    <a href="{% url 'password_reset' %}">Восстновить пароль</a>
+  </p>
 </form>
-
-<p><a href="{% url 'password_reset' %}">Восстновить пароль</a></p>
 
 {% endblock %}

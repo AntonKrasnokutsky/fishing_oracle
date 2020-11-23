@@ -1,5 +1,15 @@
-{% extends 'fishing/base.html' %} {% block content %}
+{% extends 'fishing/base.html' %}
+{% block content %}
+
+<style>
+    p {
+      text-align: center;
+      font-size: 120%;
+      font-style: oblique;
+    }
+</style>
+
 <p>Выход завершен!</p>
 
-<a href="{% url 'login'%}">Нажмит здесь чтобы войти снова.</a>
+<p><a href="{% url 'login'%}" class="btn btn-secondary" role="button">Нажмит здесь чтобы войти снова.</a></p>
 {% endblock %}

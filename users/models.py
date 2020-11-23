@@ -10,7 +10,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
-    email = models.EmailField('email address', unique=True)
+    email = models.EmailField(verbose_name='Электронная почта',
+                              unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)

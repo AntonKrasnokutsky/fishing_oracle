@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'fishing.apps.FishingConfig',
     'users.apps.UsersConfig',
     'blog.apps.BlogConfig',
+    'accounts.apps.AccountsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -110,7 +111,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LOGIN_REDIRECT_URL = '/'
-LOGIN_URL = '/auth/login/'
+LOGIN_URL = '/accounts/login'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
