@@ -1,8 +1,0 @@
-sudo -u postgres psql -c "DROP DATABASE _"
-sudo -u postgres psql -c "DROP ROLE _"
-sudo -u postgres psql -c "CREATE DATABASE _"
-sudo -u postgres psql -c "CREATE USER _ WITH PASSWORD '_'"
-sudo -u postgres psql -c "ALTER ROLE _ SET client_encoding TO 'utf8'"
-sudo -u postgres psql -c "ALTER ROLE _ SET default_transaction_isolation TO 'read committed'"
-sudo -u postgres psql -c "ALTER ROLE _ SET timezone TO 'Europe/Moscow'"
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE _ TO _"
