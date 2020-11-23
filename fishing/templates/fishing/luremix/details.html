@@ -82,10 +82,14 @@
               <td style="text-align: center; width: 29%; border: 0;">
                   {% if nozzle.base.bait %}
                     <p><strong>Живой компонент: </strong> {{ nozzle.base }}</p>
-                    <p><strong>Состояние: </strong>{{ nozzle.state }}</p>
+                    {% if nozzle.state %}
+                      <p><strong>Состояние: </strong>{{ nozzle.state }}</p>
+                    {% endif %}
                   {% else %}
                     <p><strong>Добавка: </strong> {{ nozzle.base }}</p>
-                    <p><strong>Состояние: </strong>{{ nozzle.state }}</p>
+                    {% if nozzle.state %}
+                      <p><strong>Состояние: </strong>{{ nozzle.state }}</p>
+                    {% endif %}
                   {% endif %}
                 </td>
                 <td style="text-align: center; width: 6%; border: 0;">

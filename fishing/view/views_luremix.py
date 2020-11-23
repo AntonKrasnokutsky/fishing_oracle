@@ -13,6 +13,7 @@ from fishing.models import LureBase
 from fishing.models import LureMix
 from fishing.models import Nozzle
 from fishing.models import NozzleBase
+from fishing.models import NozzleState
 from fishing.forms import AromaForm
 from fishing.forms import LureForm
 from fishing.forms import LureMixForm
@@ -457,11 +458,22 @@ class AddNozzleToMix(View):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
         nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
         if lure_mix.owner == request.user and lure_mix.owner == nozzle_base.owner:
+            # Временная заглушка, пока не решится вопрос с выводом состояний только текущего пользователя
+            nozzle = Nozzle()
+            nozzle.owner = request.user
+            nozzle.mix = lure_mix
+            nozzle.base = nozzle_base
+            nozzle.save()
+            return redirect('fishing:lure_mix_details', lure_mix.id)
+            # После решения опроса с выводом состояни только текущего пользователя вернуть обратно
+            
             form = NozzleForm()
+            nozzle_state = NozzleState.objects.filter(owner=request.user)
             return render(request,
                           self.template,
                           {'form': form,
-                           'lure_mix': lure_mix})
+                           'lure_mix': lure_mix,
+                           'nozzle_state': nozzle_state})
         return redirect('fishing:lure_mix')
 
 

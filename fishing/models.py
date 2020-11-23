@@ -955,8 +955,10 @@ class Nozzle(models.Model):  # Добавки в прикормочную сме
                                     verbose_name='Насадка/наживка')
     # Состояние
     state = models.ForeignKey('NozzleState',
-                                     on_delete=models.PROTECT,
-                                     verbose_name='Состояние наживки/насадки')
+                              on_delete=models.PROTECT,
+                              blank=True,
+                              null=True,
+                              verbose_name='Состояние наживки/насадки')
     # Связь с прикормочной смесью
     mix = models.ForeignKey(
         'LureMix',
