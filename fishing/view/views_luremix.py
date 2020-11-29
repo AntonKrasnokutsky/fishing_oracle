@@ -406,6 +406,7 @@ class EditLureToMix(View):
 
 class SelectNozzleForMix(View):
     """
+    Возвращает список наживок/насадок для добавления в прикормочную смесь
     """
     
     template = 'fishing/luremix/select_nozzle.html'
@@ -425,6 +426,28 @@ class SelectNozzleForMix(View):
         return redirect('fishing:lure_mix')
 
 
+class SelectNozzleStateForMix(View):
+    """
+    Возвращает список состояний наживок/насадок для добавления в прикормочную смесь
+    """
+    
+    template = 'fishing/luremix/select_nozzle_state.html'
+    
+    def dispatch(self, *args, **kwargs):
+        return super(SelectNozzleStateForMix, self).dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
+        nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
+        if nozzle_base.owner == request.user and lure_mix.owner == request.user:
+            nozzle_state_list = NozzleState.objects.filter(owner=request.user)
+            return render(request,
+                          self.template,
+                          {'lure_mix': lure_mix,
+                           'nozzle_base': nozzle_base,
+                           'nozzle_state_list': nozzle_state_list})
+        return redirect('fishing:lure_mix')
+
 class AddNozzleToMix(View):
     """
     Добавление выбранной насдки/каживки в смесь
@@ -435,45 +458,19 @@ class AddNozzleToMix(View):
     def dispatch(self, *args, **kwargs):
         return super(AddNozzleToMix, self).dispatch(*args, **kwargs)
     
-    def post(self, request, *args, **kwargs):
-        lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
-        if lure_mix.owner == request.user and lure_mix.owner == nozzle_base.owner:
-            form = NozzleForm(request.POST)
-            if form.is_valid():
-                nozzle = form.save(commit=False)
-                nozzle.owner = request.user
-                nozzle.mix = lure_mix
-                nozzle.base = nozzle_base
-                nozzle.save()
-                return redirect('fishing:lure_mix_details', lure_mix.id)
-            else:
-                return render(request,
-                              self.template,
-                              {'form': form,
-                               'lure_mix': lure_mix})
-        return redirect('fishing:lure_mix')
-    
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
         nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
-        if lure_mix.owner == request.user and lure_mix.owner == nozzle_base.owner:
-            # Временная заглушка, пока не решится вопрос с выводом состояний только текущего пользователя
+        nozzle_state = get_object_or_404(NozzleState, pk=kwargs['nozzle_state_id'])
+        if (lure_mix.owner == request.user and lure_mix.owner == nozzle_base.owner and
+            lure_mix.owner == nozzle_state.owner):
             nozzle = Nozzle()
             nozzle.owner = request.user
             nozzle.mix = lure_mix
             nozzle.base = nozzle_base
+            nozzle.state = nozzle_state
             nozzle.save()
             return redirect('fishing:lure_mix_details', lure_mix.id)
-            # После решения опроса с выводом состояни только текущего пользователя вернуть обратно
-            
-            form = NozzleForm()
-            nozzle_state = NozzleState.objects.filter(owner=request.user)
-            return render(request,
-                          self.template,
-                          {'form': form,
-                           'lure_mix': lure_mix,
-                           'nozzle_state': nozzle_state})
         return redirect('fishing:lure_mix')
 
 

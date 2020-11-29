@@ -300,9 +300,15 @@ class LureBaseForm(forms.ModelForm):
     def clean(self):
         manufacturer = self.cleaned_data.get('manufacturer')
         name = self.cleaned_data.get('name')
+        msgo = "Производитель или название должны быть указаны"
         
-        manufacturer = re.sub(r'\s+', ' ', manufacturer)
-        name = re.sub(r'\s+', ' ', name)
+        if not manufacturer and not name:
+            self.add_erorr('name', msg0)
+        
+        if manufacturer:
+            manufacturer = re.sub(r'\s+', ' ', manufacturer)
+        if name:
+            name = re.sub(r'\s+', ' ', name)
         
         msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
         msg2 = 'Название прикорма не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'

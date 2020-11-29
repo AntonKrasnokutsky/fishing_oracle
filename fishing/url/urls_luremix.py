@@ -66,8 +66,12 @@ urlpatterns = [
     path('<int:lure_mix_id>/details/selectnozzle',
          views.SelectNozzleForMix.as_view(),
          name='select_nozzle_for_mix'),
+    # Выбор состояния добавки в прикорм
+    path('<int:lure_mix_id>/details/selectnozzlestate/<int:nozzle_base_id>',
+         views.SelectNozzleStateForMix.as_view(),
+         name='select_nozzle_state_for_mix'),
     # Добавление добавки в прикорм
-    path('<int:lure_mix_id>/details/addnozzle/<int:nozzle_base_id>',
+    path('<int:lure_mix_id>/details/addnozzle/<int:nozzle_base_id><int:nozzle_state_id>',
          views.AddNozzleToMix.as_view(),
          name='add_nozzle_to_mix'),
     # Редактирование насадки или наживки в прикорме

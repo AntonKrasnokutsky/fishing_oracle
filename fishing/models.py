@@ -830,6 +830,7 @@ class LureBase(models.Model):  # Прикорм
     # Название прикормки
     name = models.CharField(
         max_length=100,
+        blank=True,
         verbose_name="Название")
 
     def __str__(self):
@@ -839,10 +840,12 @@ class LureBase(models.Model):  # Прикорм
         """
         Первая буква названия всегда заглавная
         """
-        self.manufacturer = str(self.manufacturer[0].upper()) + self.manufacturer[1:]
-        self.manufacturer = re.sub(r'\s+', ' ', self.manufacturer)
-        self.name = str(self.name[0].upper()) + self.name[1:]
-        self.name = re.sub(r'\s+', ' ', self.name)
+        if self.manufacturer:
+            self.manufacturer = str(self.manufacturer[0].upper()) + self.manufacturer[1:]
+            self.manufacturer = re.sub(r'\s+', ' ', self.manufacturer)
+        if self.name:
+            self.name = str(self.name[0].upper()) + self.name[1:]
+            self.name = re.sub(r'\s+', ' ', self.name)
     
     def unique(self):
         """
