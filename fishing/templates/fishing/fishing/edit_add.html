@@ -15,15 +15,7 @@
 
 <p class="text-danger" style="font-size: 100%;">{{ errors }}</p>
 
-{% for error in form.date.errors %}
-  <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
-{% endfor %}
-
-{% for error in form.time_start.errors %}
-  <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
-{% endfor %}
-
-{% for error in form.time_end.errors %}
+{% for error in form.non_field_errors %}
   <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
 {% endfor %}
 
@@ -41,6 +33,16 @@
         </div>
       </td>
     </tr>
+    {% if form.date.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.date.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
     <tr>
       <td>{{ form.time_start.label_tag }}</td>
       <td>
@@ -52,6 +54,16 @@
         </div>
       </td>
     </tr>
+    {% if form.time_start.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.time_start.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
     <tr>
       <td>{{ form.time_end.label_tag }}</td>
       <td>
@@ -63,6 +75,16 @@
         </div>
       </td>
     </tr>
+    {% if form.time_end.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.time_end.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
   </table>
   <br />
   <button class="btn btn-secondary" role="button">Сохранить</button>

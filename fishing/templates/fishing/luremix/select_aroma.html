@@ -16,7 +16,11 @@
     {% endfor %}
   </table>
 {% else %}
+{% if aroma_base_entery %}
+<tr>Все аромы использованны в данной смеси</tr>
+{% else %}
 <tr>Аромы ещё не добавлены</tr>
+{% endif %}
 {% endif %}
 <p  style="text-align: center;">
   <a href="{% url 'fishing:lure_mix_details' lure_mix.id %}" class="btn btn-secondary" role="button">Назад</a>

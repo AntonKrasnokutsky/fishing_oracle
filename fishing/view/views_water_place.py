@@ -56,7 +56,8 @@ class WaterAdd(View):
             else:
                 return render(request,
                               self.template,
-                              {'erorrs': 'Водоём с таким названием и категорией уже добавлен'})
+                              {'form': form,
+                               'errors': 'Водоём с таким названием и категорией уже добавлен'})
         else:
             return render(request,
                           self.template,

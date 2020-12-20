@@ -15,10 +15,6 @@
 <br />
 <p class="text-danger" style="font-size: 120%;">{{ errors }}</p>
 
-{% for error in form.material.errors %}
-  <p class="text-danger" style="font-size: 120%;">{{ error }}</p>
-{% endfor %}
-
 <form action="" method="post" style="text-align: center; margin: auto;">
   {% csrf_token %}
   <table style="text-align: left; margin: auto;">
@@ -26,20 +22,44 @@
       <td>{{ form.material.label_tag }}</td>
       <td>{{ form.material }}</td>
     </tr>
+    {% if form.material.errors %}
     <tr>
-      <td colspan="2" class="text-danger">{{ form.diameter.errors }}</td>
+      <td></td>
+      <td class="text-danger" style="font-size: 80%;">
+        {% for error in form.material.errors %}
+          {{ error }}
+        {% endfor %}
+      </td>
     </tr>
+    {% endif %}
     <tr>
       <td>{{ form.diameter.label_tag }}</td>
       <td>{{ form.diameter }} мм.</td>
     </tr>
+    {% if form.diameter.errors %}
     <tr>
-      <td colspan="2" class="text-danger">{{ form.length.errors }}</td>
+      <td></td>
+      <td class="text-danger" style="font-size: 80%;">
+        {% for error in form.diameter.errors %}
+          {{ error }}
+        {% endfor %}
+      </td>
     </tr>
+    {% endif %}
     <tr>
       <td>{{ form.length.label_tag }}</td>
       <td>{{ form.length }} см.</td>
     </tr>
+    {% if form.length.errors %}
+    <tr>
+      <td></td>
+      <td class="text-danger" style="font-size: 80%;">
+        {% for error in form.length.errors %}
+          {{ error }}
+        {% endfor %}
+      </td>
+    </tr>
+    {% endif %}
   </table>
   <br />
   <button class="btn btn-secondary" role="button">Сохранить</button>

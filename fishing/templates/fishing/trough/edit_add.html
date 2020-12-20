@@ -15,14 +15,6 @@
 <br />
 <p class="text-danger" style="font-size: 120%;">{{ errors }}</p>
 
-{% for error in form.manufacturer.errors %}
-  <p class="text-danger" style="font-size: 120%;">{{ error }}</p>
-{% endfor %}
-
-{% for error in form.model_name.errors %}
-  <p class="text-danger" style="font-size: 120%;">{{ error }}</p>
-{% endfor %}
-
 <form action="" method="post" style="text-align: center; margin: auto;">
   {% csrf_token %}
   <table style="text-align: left; margin: auto;">
@@ -30,10 +22,30 @@
       <td colspan="2">{{ form.manufacturer.label_tag }}</td>
       <td colspan="2">{{ form.manufacturer }}</td>
     </tr>
+    {% if form.manufacturer.errors %}
+    <tr>
+      <td colspan="2"></td>
+      <td class="text-danger" style="font-size: 80%;" colspan="2">
+        {% for error in form.manufacturer.errors %}
+          {{ error }}
+        {% endfor %}
+      </td>
+    </tr>
+    {% endif %}
     <tr>
       <td colspan="2">{{ form.model_name.label_tag }}</td>
       <td colspan="2">{{ form.model_name }}</td>
     </tr>
+    {% if form.model_name.errors %}
+    <tr>
+      <td colspan="2"></td>
+      <td class="text-danger" style="font-size: 80%;" colspan="2">
+        {% for error in form.model_name.errors %}
+          {{ error }}
+        {% endfor %}
+      </td>
+    </tr>
+    {% endif %}
     <tr>
           <td>{{ form.plastic.label_tag }}</td>
           <td>{{ form.plastic }}</td>

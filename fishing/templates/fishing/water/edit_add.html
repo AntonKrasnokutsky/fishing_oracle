@@ -12,12 +12,8 @@
 {% else %}
 <p>Добавление водоёма</p>
 {% endif %}
-
+<br />
 <p class="text-danger" style="font-size: 100%;">{{ errors }}</p>
-
-{% for error in form.name.errors %}
-  <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
-{% endfor %}
 
 <form action="" method="post" style="text-align: center; margin: auto;">
   {% csrf_token %}
@@ -30,6 +26,16 @@
       <td>{{ form.name.label_tag }}</td>
       <td>{{ form.name }}</td>
     </tr>
+    {% if form.name.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.name.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
   </table>
   <br />
   <button class="btn btn-secondary" role="button">Сохранить</button>

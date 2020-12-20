@@ -15,14 +15,6 @@
 
 <p class="text-danger" style="font-size: 100%;">{{ errors }}</p>
 
-{% for error in form.latitude.errors %}
-  <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
-{% endfor %}
-
-{% for error in form.longitude.errors %}
-  <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
-{% endfor %}
-
 <form action="" method="post" style="text-align: center; margin: auto;">
   {% csrf_token %}
   <table style="text-align: center; margin: auto;">
@@ -30,10 +22,30 @@
       <td>{{ form.latitude.label_tag }}</td>
       <td>{{ form.latitude }}</td>
     </tr>
+    {% if form.latitude.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.latitude.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
     <tr>
       <td>{{ form.longitude.label_tag }}</td>
       <td>{{ form.longitude }}</td>
     </tr>
+    {% if form.longitude.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.longitude.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
   </table>
   <br />
   <button class="btn btn-secondary" role="button">Сохранить</button>

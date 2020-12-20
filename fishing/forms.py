@@ -33,11 +33,101 @@ from .models import Weather
 from django import forms
 import re
 
+no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
+                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+
+no_valid_char_error_end = ' не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+
+# AromaFormErrors
+volume_aroma_is_null = 'Необходимо указать объём аромы'
+volume_aroma_is_negative = 'Объём аромы должен быть больше 0'
+
+# AromaBaseErrors
+manufacturer_and_name_aroma_base_is_empty = 'Название производителя или название аромы должно быть заполнено'
+manufacturer_aroma_base_no_valid_char = 'Название производителя' +no_valid_char_error_end
+name_aroma_base_no_valid_char = 'Название аромы' + no_valid_char_error_end
+
+# CrochetFormErrors
+size_is_empty = 'Укажите размер крючка'
+manufacturer_crochet_no_valid_char = 'Название производителя' + no_valid_char_error_end
+model_crochet_no_valid_char = 'Название модели' + no_valid_char_error_end
+
+# FishingFormErrors
+time_start_and_end_equal = 'Время начала и окончания рыбалки не могут быть равны'
+time_start_more_time_end = 'Время окончания рыбалки должно быть больше времени начала'
+
+# LeashFormErrors
+leash_material_empty = 'Укажите материал поводка'
+leash_diameter_empty = 'Укажите диаметр поводка'
+leash_length_empty = 'Укажите длину поводка'
+leash_no_valid_char_error = 'Название поводочного материала' + no_valid_char_error_end
+
+# LureFormErrors
+weight_lure_is_null = 'Необходимо указать долю пркорма'
+weight_lure_is_negative = 'Доля прикорма должна быть больше 0'
+
+# LureBaseFormErrors
+manufacturer_and_name_lure_base_is_empty = 'Название производителя или название прикорма должно быть заполнено'
+manufacturer_lure_base_no_valid_char = 'Название производителя' + no_valid_char_error_end
+name_lure_base_no_valid_char = 'Название прикорма' + no_valid_char_error_end
+
+# LureMixFormErrors
+lure_mix_name_is_empty = 'Укажите название смеси'
+lure_mix_name_no_valid_char = 'Название смеси' + no_valid_char_error_end
+
+# MoontageFormErrors
+montage_name_is_empty = 'Укажите название монтажа'
+montage_name_no_valid_char = 'Название монтажа' + no_valid_char_error_end
+
+# NozzleBaseFormErrors
+manufacturer_and_name_nozzle_is_empty = 'Название производителя или название насадки должно быть указано'
+manufacturer_nozzle_no_valid_char = 'Название производителя' + no_valid_char_error_end
+name_nozzle_no_valid_char = 'Название насадки' + no_valid_char_error_end
+size_nozzle_is_negative = 'Размер насадки должен быть больше 0'
+
+# NozzleStateFormErrors
+state_nozzle_is_empty = 'Укажите состояние наживки'
+state_nozzle_no_valid_char = 'Состояние' + no_valid_char_error_end
+
+# BaitBaseFormErrors
+manufacturer_and_name_bait_is_empty = 'Название производителя или название наживки должно быть указано'
+manufacturer_bait_no_valid_char = 'Название производителя' + no_valid_char_error_end
+name_bait_no_valid_char = 'Название наживки' + no_valid_char_error_end
+
+# PlaceFormErrors
+name_place_is_empty = 'Название места не может быть пустым'
+name_place_no_valid_char = 'Название места' + no_valid_char_error_end
+locality_place_no_valid_char = 'Название населенного пункта' + no_valid_char_error_end
+
+# TackleFormErrors
+tackle_manufacturer_and_model_is_empty = 'Производитель или название должны быть указаны'
+tackle_manufacturer_no_valid_char = 'Название производителя' + no_valid_char_error_end
+tackle_model_no_valid_char = 'Название модели' + no_valid_char_error_end
+
+# TroughFormErrors
+trough_manufacturer_and_model_is_empty = 'Производитель или модель должны быть указаны'
+trough_manufacturer_no_valid_char = 'Название производтеля' + no_valid_char_error_end
+trough_model_no_valid_char = 'Название модели' + no_valid_char_error_end
+
+# WaterFormErrors
+name_water_is_empty = 'Необходимо указать название водоёма'
+name_water_no_valid_char = 'Название водоёма' + no_valid_char_error_end
+
+
 class AromaForm(forms.ModelForm):
     class Meta:
         model = Aroma
         fields = ['volume', ]
 
+    def clean(self):
+        volume = self.cleaned_data.get('volume')
+        
+        if volume == None:
+            self.add_error('volume', volume_aroma_is_null)
+        elif volume <= 0:
+            self.add_error('volume', volume_aroma_is_negative)
+        
+        return self.cleaned_data
 
 class AromaBaseForm(forms.ModelForm):
     class Meta:
@@ -48,20 +138,22 @@ class AromaBaseForm(forms.ModelForm):
         manufacturer = self.cleaned_data.get('manufacturer')
         name = self.cleaned_data.get('name')
         
-        manufacturer = re.sub(r'\s+', ' ', manufacturer)
-        name = re.sub(r'\s+', ' ', name)
+        if len(manufacturer) == 0 and len(name) ==0:
+            self.add_error(None, manufacturer_and_name_aroma_base_is_empty)
         
-        msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
-        msg2 = 'Название аромы не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        manufacturer_errors = False
+        name_errors = False
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
         for no_valid_char in no_valid_char_list:
-            if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
-                self.add_error('manufacturer', msg1)
-                break
-            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
-                self.add_error('name', msg2)
+            if not manufacturer_errors or not name_errors:
+                if not manufacturer_errors and manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
+                    manufacturer_errors = True
+                    self.add_error('manufacturer', manufacturer_aroma_base_no_valid_char)
+                    
+                if not name_errors and name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                    name_errors = True
+                    self.add_error('name', name_aroma_base_no_valid_char)
+            else:
                 break
         return self.cleaned_data
 
@@ -116,20 +208,21 @@ class CrochetForm(forms.ModelForm):
         model = self.cleaned_data.get('model')
         size = self.cleaned_data.get('size')
         
-        manufacturer = re.sub(r'\s+', ' ', manufacturer)
-        model = re.sub(r'\s+', ' ', model)
+        manufacturer_errors = False
+        model_errors = False
+
+        if size == None:
+            self.add_error('size', size_is_empty)
         
-        msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
-        msg2 = 'Название модели не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
-        
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
         for no_valid_char in no_valid_char_list:
-            if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
-                self.add_error('manufacturer', msg1)
-                break
-            if model.startswith(no_valid_char) or model.endswith(no_valid_char):
-                self.add_error('model', msg2)
+            if not manufacturer_errors or not model_errors:
+                if not manufacturer_errors and manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
+                    manufacturer_errors = True
+                    self.add_error('manufacturer', manufacturer_crochet_no_valid_char)
+                if not model_errors and model.startswith(no_valid_char) or model.endswith(no_valid_char):
+                    model_errors = True
+                    self.add_error('model', model_crochet_no_valid_char)
+            else:
                 break
         return self.cleaned_data
 
@@ -226,17 +319,14 @@ class FishingForm(forms.ModelForm):
         fields = ['date', 'time_start', 'time_end',]
     
     def clean(self):
-        msg0 = 'Время начала и окончания рыбалки не могут быть равны'
-        msg1 = 'Время начала рыбалки не может быть больше времени окончания'
         date = self.cleaned_data.get('date')
         time_start = self.cleaned_data.get('time_start')
         time_end = self.cleaned_data.get('time_end')
         
-        print (type(time_start))
         if time_start > time_end:
-            self.add_error('time_start', msg1)
+            self.add_error('time_end', time_start_more_time_end)
         if time_start == time_end:
-            self.add_error('time_start', msg0)
+            self.add_error(None, time_start_and_end_equal)
         
         return self.cleaned_data
 
@@ -273,15 +363,18 @@ class LeashForm(forms.ModelForm):
         diameter = self.cleaned_data.get('diameter')
         length = self.cleaned_data.get('length')
         
-        material = re.sub(r'\s+', ' ', material)
+        if len(material) == 0:
+            self.add_error('material', leash_material_empty)
         
-        msg = 'Название поводочного материала не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        if diameter == None:
+            self.add_error('diameter', leash_diameter_empty)
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        if length == None:
+            self.add_error('length', leash_length_empty)
+        
         for no_valid_char in no_valid_char_list:
             if material.startswith(no_valid_char) or material.endswith(no_valid_char):
-                self.add_error('material', msg)
+                self.add_error('material', leash_no_valid_char_error)
                 break
         return self.cleaned_data
 
@@ -290,6 +383,16 @@ class LureForm(forms.ModelForm):
     class Meta:
         model = Lure
         fields = ['weight', ]
+    
+    def clean(self):
+        weight = self.cleaned_data.get('weight')
+        
+        if weight == None:
+            self.add_error('weight', weight_lure_is_null)
+        elif weight <= 0:
+            self.add_error('weight', weight_lure_is_negative)
+        
+        return self.cleaned_data
 
 
 class LureBaseForm(forms.ModelForm):
@@ -300,27 +403,21 @@ class LureBaseForm(forms.ModelForm):
     def clean(self):
         manufacturer = self.cleaned_data.get('manufacturer')
         name = self.cleaned_data.get('name')
-        msgo = "Производитель или название должны быть указаны"
         
-        if not manufacturer and not name:
-            self.add_erorr('name', msg0)
+        if len(manufacturer) ==0 and len(name) == 0:
+            self.add_error(None, manufacturer_and_name_lure_base_is_empty)
         
-        if manufacturer:
-            manufacturer = re.sub(r'\s+', ' ', manufacturer)
-        if name:
-            name = re.sub(r'\s+', ' ', name)
-        
-        msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
-        msg2 = 'Название прикорма не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
-        
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        manufacturer_errors = False
+        name_errors = False
         for no_valid_char in no_valid_char_list:
-            if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
-                self.add_error('manufacturer', msg1)
-                break
-            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
-                self.add_error('name', msg2)
+            if not manufacturer_errors or not name_errors:
+                if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
+                    manufacturer_errors = True
+                    self.add_error('manufacturer', manufacturer_lure_base_no_valid_char)
+                if name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                    name_errors = True
+                    self.add_error('name', name_lure_base_no_valid_char)
+            else:
                 break
         return self.cleaned_data
 
@@ -328,20 +425,22 @@ class LureBaseForm(forms.ModelForm):
 class LureMixForm(forms.ModelForm):
     class Meta:
         model = LureMix
-        fields = ('name',)
+        fields = ('name', 'description')
 
     def clean(self):
         name = self.cleaned_data.get('name')
-        name = re.sub(r'\s+', ' ', name)
         
-        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        if len(name) == 0:
+            self.add_error('name', lure_mix_name_is_empty)
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        name_errors = False
         
         for no_valid_char in no_valid_char_list:
-            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
-                self.add_error('name', msg2)
+            if not name_errors:
+                if not name_errors and name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                    name_errors = True
+                    self.add_error('name', lure_mix_name_no_valid_char)
+            else:
                 break
         return self.cleaned_data
 
@@ -355,14 +454,17 @@ class MontageForm(forms.ModelForm):
         name = self.cleaned_data.get('name')
         name = re.sub(r'\s+', ' ', name)
         
-        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        if len(name) == 0:
+            self.add_error('name', montage_name_is_empty)
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        name_errors = False
         
         for no_valid_char in no_valid_char_list:
-            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
-                self.add_error('name', msg2)
+            if not name_errors:
+                if not name_errors and name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                    name_errors = True
+                    self.add_error('name', montage_name_no_valid_char)
+            else:
                 break
         return self.cleaned_data
 
@@ -382,27 +484,28 @@ class NozzleBaseForm(forms.ModelForm):
 
     def clean(self):
         manufacturer = self.cleaned_data.get('manufacturer')
-        manufacturer = re.sub(r'\s+', ' ', manufacturer)
         name = self.cleaned_data.get('name')
-        name = re.sub(r'\s+', ' ', name)
         size = self.cleaned_data.get('size')
         ntype = self.cleaned_data.get('ntype')
         
-        msg0 = 'Производитель или название должны быть указаны'
-        msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
-        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        if len(manufacturer) == 0 and len(name) == 0:
+            self.add_error(None, manufacturer_and_name_nozzle_is_empty)
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        if size != None and size <= 0:
+            self.add_error('size', size_nozzle_is_negative)
         
-        if not manufacturer and not name:
-            self.add_error('manufacturer', msg0)
+        manufacturer_errors = False
+        name_errors = False
+        
         for no_valid_char in no_valid_char_list:
-            if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
-                self.add_error('manufacturer', msg1)
-                break
-            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
-                self.add_error('name', msg2)
+            if not manufacturer_errors or name_errors:
+                if not manufacturer_errors and manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
+                    manufacturer_errors = True
+                    self.add_error('manufacturer', manufacturer_nozzle_no_valid_char)
+                if not name_errors and name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                    name_errors = True
+                    self.add_error('name', name_nozzle_no_valid_char)
+            else:
                 break
         return self.cleaned_data
 
@@ -415,21 +518,23 @@ class BaitBaseForm(forms.ModelForm):
 
     def clean(self):
         manufacturer = self.cleaned_data.get('manufacturer')
-        manufacturer = re.sub(r'\s+', ' ', manufacturer)
         name = self.cleaned_data.get('name')
-        name = re.sub(r'\s+', ' ', name)
         
-        msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
-        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        if len(manufacturer) == 0 and len(name) == 0:
+            self.add_error(None, manufacturer_and_name_bait_is_empty)
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        manufacturer_errors = False
+        name_errors = False
+        
         for no_valid_char in no_valid_char_list:
-            if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
-                self.add_error('manufacturer', msg1)
-                break
-            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
-                self.add_error('name', msg2)
+            if not manufacturer_errors or not name_errors:
+                if not manufacturer_errors and manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
+                    manufacturer_errors = True
+                    self.add_error('manufacturer', manufacturer_bait_no_valid_char)
+                if not name_errors and name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                    name_errors = True
+                    self.add_error('name', name_bait_no_valid_char)
+            else:
                 break
         return self.cleaned_data
 
@@ -441,15 +546,17 @@ class NozzleStateForm(forms.ModelForm):
 
     def clean(self):
         state = self.cleaned_data.get('state')
-        state = re.sub(r'\s+', ' ', state)
         
-        msg1 = 'Состояние не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
+        if len(state) == 0:
+            self.add_error('state', state_nozzle_is_empty)
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+        state_errors = False
         for no_valid_char in no_valid_char_list:
-            if state.startswith(no_valid_char) or state.endswith(no_valid_char):
-                self.add_error('state', msg1)
+            if not state_errors:
+                if not state_errors and state.startswith(no_valid_char) or state.endswith(no_valid_char):
+                    state_errors = True
+                    self.add_error('state', state_nozzle_no_valid_char)
+            else:
                 break
         return self.cleaned_data
 
@@ -540,11 +647,9 @@ class PlaceForm(forms.ModelForm):
         fields = ['locality', 'name',]
         
     def clean(self):
-        msg0 = 'Название места не может быть пустым'
-        
         name = self.cleaned_data.get('name')
         if len(name) == 0:
-            self.add_error('name', msg0)
+            self.add_error('name', name_place_is_empty)
 
         name = re.sub(r'\s+', ' ', name)
         
@@ -552,19 +657,18 @@ class PlaceForm(forms.ModelForm):
         if len(locality) != 0:
             locality = re.sub(r'\s+', ' ', locality)
         
-        msg1 = 'Название населенного пункта не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|.'
-        msg2 = 'Название места не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|.'
-        
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'",
-                              '.']
+        locality_errors = False
+        name_errors = False
         
         for no_valid_char in no_valid_char_list:
-            if locality.startswith(no_valid_char) or locality.endswith(no_valid_char):
-                self.add_error('locality', msg1)
-                break
-            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
-                self.add_error('name', msg2)
+            if not locality_errors or not name_errors:
+                if not locality_errors and locality.startswith(no_valid_char) or locality.endswith(no_valid_char):
+                    locality_errors = True
+                    self.add_error('locality', locality_place_no_valid_char)
+                if not name_errors and name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                    name_errors = True
+                    self.add_error('name', name_place_no_valid_char)
+            else:
                 break
         return self.cleaned_data
 
@@ -580,9 +684,14 @@ class PlaceCoordinatesForm(forms.ModelForm):
         
         latitude = self.cleaned_data.get('latitude')
         longitude = self.cleaned_data.get('longitude')
-        if latitude < -90 or latitude > 90:
+        if latitude == None:
+            self.add_error('latitude', 'Укажите широту')
+        elif latitude < -90 or latitude > 90:
             self.add_error('latitude', msg1)
-        if longitude < -180 or longitude > 180:
+
+        if longitude == None:
+            self.add_error('longitude', 'Укажите долготу')
+        elif longitude < -180 or longitude > 180:
             self.add_error('longitude', msg2)
         return self.cleaned_data
 
@@ -634,26 +743,20 @@ class TackleForm(forms.ModelForm):
         length = self.cleaned_data.get('length')
         casting_weight = self.cleaned_data.get('casting_weight')
         
-        msg0 = 'Производитель или название должны быть указаны'
-        msg1 = 'Название производителя не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
-        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
-        
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
-        
-        if not manufacturer and not model_tackle and not length and not casting_weight:
-            self.add_error('manufacturer', 'Хотя бы одно поле должно быть заполнено')
-        
         if not manufacturer and not model_tackle:
-            self.add_error('manufacturer', msg0)
+            self.add_error(None, tackle_manufacturer_and_model_is_empty)
         
-        
+        manufacturer_error = False
+        model_error = False
         for no_valid_char in no_valid_char_list:
-            if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
-                self.add_error('manufacturer', msg1)
-                break
-            if model_tackle.startswith(no_valid_char) or model_tackle.endswith(no_valid_char):
-                self.add_error('model_tackle', msg2)
+            if not manufacturer_error or not model_error:
+                if not manufacturer_error and manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
+                    manufacturer_error = True
+                    self.add_error('manufacturer', tackle_manufacturer_no_valid_char)
+                if not model_error and model_tackle.startswith(no_valid_char) or model_tackle.endswith(no_valid_char):
+                    model_error = True
+                    self.add_error('model_tackle', tackle_model_no_valid_char)
+            else:
                 break
         return self.cleaned_data
 
@@ -670,27 +773,22 @@ class TroughForm(forms.ModelForm):
         manufacturer = re.sub(r'\s+', ' ', manufacturer)
         model_name = self.cleaned_data.get('model_name')
         model_name = re.sub(r'\s+', ' ', model_name)
-        plastic = self.cleaned_data.get('plastic')
-        lugs = self.cleaned_data.get('lugs')
-        feed_capacity = self.cleaned_data.get('feed_capacity')
-        weight = self.cleaned_data.get('weight')
-        
-        msg0 = 'Производитель или модель должны быть указаны'
-        msg1 = 'Название производтеля не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
-        msg2 = 'Название модели не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
-        
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
         
         if not manufacturer and not model_name:
-            self.add_error('manufacturer', msg0)
-            
+            self.add_error('manufacturer', trough_manufacturer_and_model_is_empty)
+        
+        manufacturer_errors = False
+        model_name_errors = False
+        
         for no_valid_char in no_valid_char_list:
-            if manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
-                self.add_error('manufacturer', msg1)
-                break
-            if model_name.startswith(no_valid_char) or model_name.endswith(no_valid_char):
-                self.add_error('model_name', msg1)
+            if not manufacturer_errors and not model_name_errors:
+                if not manufacturer_errors and manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
+                    manufacturer_errors = True
+                    self.add_error('manufacturer', trough_manufacturer_no_valid_char)
+                if not model_name_errors and model_name.startswith(no_valid_char) or model_name.endswith(no_valid_char):
+                    model_name_errors = True
+                    self.add_error('model_name', trough_model_no_valid_char)
+            else:
                 break
         return self.cleaned_data
 
@@ -702,17 +800,18 @@ class WaterForm(forms.ModelForm):
     
     def clean(self):
         name = self.cleaned_data.get('name')
+        if len(name) == 0:
+            self.add_error('name', name_water_is_empty)
+            return self.cleaned_data
         name = re.sub(r'\s+', ' ', name)
         
-        msg2 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|.'
-        
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'",
-                              '.']
-        
+        name_errors = False
         for no_valid_char in no_valid_char_list:
-            if name.startswith(no_valid_char) or name.endswith(no_valid_char):
-                self.add_error('name', msg2)
+            if not name_errors:
+                if not name_errors and name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                    name_errors = True
+                    self.add_error('name', name_water_no_valid_char)
+            else:
                 break
         return self.cleaned_data
 
@@ -728,11 +827,11 @@ class WaterCategoryForm(forms.ModelForm):
         
         if len(category) == 0:
             msg0 = 'Название категории не может быть пустым'
-            self.add_erorr('category', msg0)
+            self.add_error('category', msg0)
             return self.cleaned_data
         category = re.sub(r'\s+', ' ', category)
         
-        msg1 = 'Название не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|,'
+        msg1 = 'Категория не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|,'
         msg2 = 'Аббривиатура не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|,'
         
         no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',

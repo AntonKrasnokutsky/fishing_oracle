@@ -37,10 +37,23 @@ class SelectAromaForMix(View):
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
         if lure_mix.owner == request.user:
+            aroma_list = Aroma.objects.filter(mix=lure_mix)
             aroma_base_list = AromaBase.objects.filter(owner=request.user)
+            
+            if aroma_base_list:
+                aroma_base_entery = True
+            else:
+                aroma_base_entery = False
+                
+            for aroma_base in aroma_base_list:
+                for aroma in aroma_list:
+                    if aroma.base == aroma_base:
+                        aroma_base_list = aroma_base_list.exclude(id=aroma.base.id)
+                        
             return render(request,
                     self.template,
                     {'lure_mix': lure_mix,
+                     'aroma_base_entery': aroma_base_entery,
                      'aroma_base_list': aroma_base_list})
         return redirect('fishing:lure_mix')
 
@@ -293,14 +306,27 @@ class SelectLureForMix(View):
     def dispatch(self, *args, **kwargs):
         return super(SelectLureForMix, self).dispatch(*args, **kwargs)
 
+
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
         if lure_mix.owner == request.user:
+            lure_list = Lure.objects.filter(mix=lure_mix)
             lure_base_list = LureBase.objects.filter(owner=request.user)
+            if lure_base_list:
+                lure_base_entery = True
+            else:
+                lure_base_entery = False
+            # Убираем из списка уже добавленные корма
+            for lure_base in lure_base_list:
+                for lure in lure_list:
+                    if lure.base == lure_base:
+                        lure_base_list = lure_base_list.exclude(id=lure.base.id)
+
             return render(request,
-                    self.template,
-                    {'lure_mix': lure_mix,
-                     'lure_base_list': lure_base_list})
+                          self.template,
+                          {'lure_mix': lure_mix,
+                           'lure_base_entery': lure_base_entery,
+                           'lure_base_list': lure_base_list})
         return redirect('fishing:lure_mix')
 
 
@@ -440,13 +466,27 @@ class SelectNozzleStateForMix(View):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
         nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
         if nozzle_base.owner == request.user and lure_mix.owner == request.user:
+            nozzle_list = Nozzle.objects.filter(mix=lure_mix, base=nozzle_base)
             nozzle_state_list = NozzleState.objects.filter(owner=request.user)
+            
+            if nozzle_state_list:
+                nozzle_state_entery = True
+            else:
+                nozzle_state_entery = False
+                
+            for nozzle_state in nozzle_state_list:
+                for nozzle in nozzle_list:
+                    if nozzle.state == nozzle_state:
+                        nozzle_state_list = nozzle_state_list.exclude(id=nozzle_state.id)
+                        
             return render(request,
                           self.template,
                           {'lure_mix': lure_mix,
                            'nozzle_base': nozzle_base,
+                           'nozzle_state_entery': nozzle_state_entery,
                            'nozzle_state_list': nozzle_state_list})
         return redirect('fishing:lure_mix')
+
 
 class AddNozzleToMix(View):
     """

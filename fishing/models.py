@@ -33,7 +33,7 @@ class Aroma(models.Model):  # Аромы в прикормочной смеси
     volume = models.DecimalField(
         max_digits=4,
         decimal_places=2,
-        default=0,
+        blank=True,
         verbose_name="Количество аромы")
 
 
@@ -58,6 +58,7 @@ class AromaBase(models.Model):  # Аромы базовые
     # Название аромы
     name = models.CharField(
         max_length=100,
+        blank=True,
         verbose_name="Название")
 
     def __str__(self):
@@ -67,10 +68,12 @@ class AromaBase(models.Model):  # Аромы базовые
         """
         Первая буква названия всегда заглавная
         """
-        self.manufacturer = str(self.manufacturer[0].upper()) + self.manufacturer[1:]
-        self.manufacturer = re.sub(r'\s+', ' ', self.manufacturer)
-        self.name = str(self.name[0].upper()) + self.name[1:]
-        self.name = re.sub(r'\s+', ' ', self.name)
+        if len(self.manufacturer) != 0:
+            self.manufacturer = str(self.manufacturer[0].upper()) + self.manufacturer[1:]
+            self.manufacturer = re.sub(r'\s+', ' ', self.manufacturer)
+        if len(self.name) != 0:
+            self.name = str(self.name[0].upper()) + self.name[1:]
+            self.name = re.sub(r'\s+', ' ', self.name)
     
     def unique(self):
         """
@@ -181,7 +184,7 @@ class Crochet(models.Model):  # Крючки
         verbose_name="Модель крючка")
     # размер
     size = models.PositiveIntegerField(
-        default=0,
+        blank=True,
         verbose_name="Размер крючка")
 
     def __str__(self):
@@ -191,8 +194,9 @@ class Crochet(models.Model):  # Крючки
         """
         Первая буква названия всегда заглавная
         """
-        self.manufacturer = str(self.manufacturer[0].upper()) + self.manufacturer[1:]
-        self.manufacturer = re.sub(r'\s+', ' ', self.manufacturer)
+        if len(self.manufacturer) != 0:
+            self.manufacturer = str(self.manufacturer[0].upper()) + self.manufacturer[1:]
+            self.manufacturer = re.sub(r'\s+', ' ', self.manufacturer)
     
     def unique(self):
         """
@@ -728,25 +732,23 @@ class Leash(models.Model):  # Поводки
         verbose_name_plural = "Поводки"
         ordering = ['material', 'diameter', 'length', ]
     # Владелец записи
-    owner = models.ForeignKey(
-        CustomUser,
-        on_delete=models.PROTECT,
-        verbose_name="Владелец записи"
-    )
+    owner = models.ForeignKey(CustomUser,
+                              on_delete=models.PROTECT,
+                              verbose_name="Владелец записи")
     # Поводочный материал
     material = models.CharField(
         max_length=20,
+        blank=True,
         verbose_name="Материал поводка")
     # Диаметр поводочного материала
     diameter = models.DecimalField(
         max_digits=4,
         decimal_places=3,
-        default=0,
+        blank=True,
         verbose_name="Диаметр поводка")
     # Длина поводка
-    length = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Длина поводка")
+    length = models.PositiveIntegerField(blank=True,
+                                         verbose_name="Длина поводка")
 
     def __str__(self):
         return (self.material + ' ' + str(self.diameter) + ' мм.' +
@@ -796,12 +798,11 @@ class Lure(models.Model):  # Смесь прикорма
         on_delete=models.PROTECT,
         verbose_name="Базовый прикорм")
     # Вес базового прикорма
-    weight = models.DecimalField(
-        max_digits=5,
-        decimal_places=2,
-        verbose_name="Доля прикорма",
-        help_text="от 0 до 99.9 кг",
-        validators=[MinValueValidator(0.0), MaxValueValidator(99.9)])
+    weight = models.DecimalField(max_digits=5,
+                                 decimal_places=2,
+                                 blank=True,
+                                 verbose_name="Доля прикорма",
+                                 help_text="Укажите долю прикорма в смеси")
 
     def __str__(self):
         return str(self.base)
@@ -876,8 +877,12 @@ class LureMix(models.Model):  # Смеси прикромов
         verbose_name="Владелец записи")
     # Название состава
     name = models.CharField(max_length=100,
+                            blank=True,
                             verbose_name='Название состава')
+    description = models.TextField(blank=True,
+                                   verbose_name='Описание состава')
 
+    
     def __str__(self):
         return self.name
 
@@ -918,6 +923,7 @@ class Montage(models.Model):  # Монтажи
     # Вариант монтажа
     name = models.CharField(
         max_length=50,
+        blank=True,
         verbose_name="Монтаж")
 
     def __str__(self):
@@ -1000,8 +1006,8 @@ class NozzleBase(models.Model):  # Насдаки и наживки
         blank=True,
         verbose_name="Название")
     # Диаметр насадки
-    size = models.PositiveIntegerField(
-        default=0,
+    size = models.IntegerField(
+        null=True,
         blank=True,
         verbose_name="Размер насадки")
     # тип насадки (Плавающий, тонущий, пылящий и т.д.)
@@ -1016,7 +1022,9 @@ class NozzleBase(models.Model):  # Насдаки и наживки
         if self.bait:
             return self.name
         else:
-            return self.manufacturer + ' ' + self.name + ' ' + str(self.size) + 'мм.' + (str(self.ntype) if self.ntype != None else '')
+            return (self.manufacturer + ' ' + self.name + ' ' +
+                    ((str(self.size) + 'мм.') if self.size != None else '') +
+                    (str(self.ntype) if self.ntype != None else ''))
 
     def first_upper(self):
         """
@@ -1062,6 +1070,7 @@ class NozzleState(models.Model):  # Состояние наживки
     # Состояние
     state = models.CharField(
         max_length=20,
+        blank=True,
         verbose_name="Состояние насадки")
 
     def __str__(self):
@@ -1191,6 +1200,7 @@ class Place(models.Model):  # Места
     # Название места
     name = models.CharField(
         max_length=50,
+        blank=True,
         verbose_name="Название места")
     # Координа места рыбалки, градусы северной широты от -90 до 90
     latitude = models.DecimalField(max_digits=8,
@@ -1441,7 +1451,8 @@ class Trough(models.Model):  # Кормушки
         verbose_name="Кормоёмкость")
     # Вес кормушки
     weight = models.PositiveIntegerField(
-        default=0,
+        blank=True,
+        null=True,
         verbose_name="Вес кормушки")
 
     def __str__(self):
@@ -1449,7 +1460,7 @@ class Trough(models.Model):  # Кормушки
                 str(' пластик' if self.plastic else '') + ' ' +
                 ('(' + str(self.feed_capacity) + ' кормоёмкость' + ')' if self.feed_capacity else '')+
                 str(' с грунтозацепами' if self.lugs else '') +
-                ' ' + str(self.weight) + 'гр.')
+                ' ' + ((str(self.weight) + 'гр.') if self.weight else ''))
 
     def first_upper(self):
         """
@@ -1504,7 +1515,8 @@ class Water(models.Model):  # Водоемы
     # Название водоема
     name = models.CharField(
         max_length=100,
-        verbose_name="Водоем")
+        blank=True,
+        verbose_name="Название водоёма")
 
     def __str__(self):
         return ((self.category.abbreviation + '. ') if self.category else '') + self.name

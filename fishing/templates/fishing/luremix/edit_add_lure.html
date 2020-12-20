@@ -15,10 +15,6 @@
 <br />
 <p class="text-danger" style="font-size: 100%;">{{ errors }}</p>
 
-{% for error in form.weight.errors %}
-  <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
-{% endfor %}
-
 <form action="" method="post" style="text-align: center; margin: auto;">
   {% csrf_token %}
   <table style="text-align: center; margin: auto;">
@@ -26,6 +22,21 @@
       <td>{{ form.weight.label_tag }}</td>
       <td>{{ form.weight }}</td>
     </tr>
+    {% if form.weight.errors %}
+    <tr>
+      <td></td>
+      <td class="text-danger" style="font-size: 80%;">
+        {% for error in form.weight.errors %}
+          {{ error }}
+        {% endfor %}
+      </td>
+    </tr>
+    {% else %}
+    <tr>
+      <td></td>
+      <td style="font-size: 80%;">{{form.weight.help_text}}</td>
+    </tr>
+    {% endif %}
   </table>
   <br />
   <button class="btn btn-secondary" role="button">Сохранить</button>

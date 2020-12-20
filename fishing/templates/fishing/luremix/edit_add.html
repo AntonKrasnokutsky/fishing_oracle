@@ -15,8 +15,8 @@
 <br />
 <p class="text-danger" style="font-size: 100%;">{{ errors }}</p>
 
-{% for error in form.name.errors %}
-  <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
+{% for error in form.non_field_errors %}
+<p class="text-danger" style="font-size: 120%;">{{ error }}</p>
 {% endfor %}
 
 <form action="" method="post" style="text-align: center; margin: auto;">
@@ -26,6 +26,30 @@
       <td>{{ form.name.label_tag }}</td>
       <td>{{ form.name }}</td>
     </tr>
+    {% if form.name.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.name.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
+    <tr>
+      <td>{{form.description.label_tag }}</td>
+      <td>{{form.description }}</td>
+    </tr>
+    {% if form.description.errors %}
+    <tr>
+      <td></td>
+      <td class="text-danger" style="font-size: 80%;">
+        {% for error in form.description.errors %}
+          {{ error }}
+        {% endfor %}
+      </td>
+    </tr>
+  {% endif %}
   </table>
   <br />
   <button class="btn btn-secondary" role="button">Сохранить</button>
