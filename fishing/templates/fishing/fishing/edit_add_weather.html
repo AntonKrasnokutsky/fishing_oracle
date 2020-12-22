@@ -16,7 +16,7 @@
 
 <p class="text-danger" style="font-size: 100%;">{{ errors }}</p>
 
-{% for error in form.direction_wind.errors %}
+{% for error in form.non_field_errors %}
   <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
 {% endfor %}
 
@@ -27,30 +27,100 @@
       <td>{{ form.overcast.label_tag }}</td>
       <td>{{ form.overcast }}</td>
     </tr>
+    {% if form.overcast.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.overcast.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
     <tr>
       <td>{{ form.conditions.label_tag }}</td>
       <td>{{ form.conditions }}</td>
     </tr>
+    {% if form.conditions.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.conditions.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
     <tr>
       <td>{{ form.temperature.label_tag }}</td>
       <td>{{ form.temperature }}</td>
     </tr>
+    {% if form.temperature.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.temperature.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
     <tr>
       <td>{{ form.pressure.label_tag }}</td>
       <td>{{ form.pressure }}</td>
     </tr>
+    {% if form.pressure.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.pressure.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
     <tr>
       <td>{{ form.direction_wind.label_tag }}</td>
       <td>{{ form.direction_wind }}</td>
     </tr>
+    {% if form.direction_wind.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.direction_wind.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
     <tr>
       <td>{{ form.wind_speed.label_tag }}</td>
       <td>{{ form.wind_speed }}</td>
     </tr>
+    {% if form.wind_speed.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.wind_speed.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
     <tr>
       <td>{{ form.lunar_day.label_tag }}</td>
       <td>{{ form.lunar_day }}</td>
     </tr>
+    {% if form.lunar_day.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.lunar_day.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
   </table>
   <br />
   <button class="btn btn-secondary" role="button">Сохранить</button>

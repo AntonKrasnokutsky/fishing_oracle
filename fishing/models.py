@@ -586,7 +586,7 @@ class FishingResult(models.Model):  # Результат рыбалки
     class Meta:
         verbose_name = "Результат рыбалки"
         verbose_name_plural = "Результат рыбалок"
-        ordering = ['fish', ]
+        ordering = ['id', ]
     # Привязка к рыбалке, т.к. может быть несколько вариантов
     # то именное модель результатов привязываем, а не на
     # Владелец записи
@@ -595,29 +595,29 @@ class FishingResult(models.Model):  # Результат рыбалки
         on_delete=models.PROTECT,
         verbose_name="Владелец записи")
     # оборот
-    fishing = models.ForeignKey(
-        'Fishing',
-        on_delete=models.CASCADE,
-        verbose_name="Рыбалка")
+    fishing = models.ForeignKey('Fishing',
+                                on_delete=models.CASCADE,
+                                verbose_name="Рыбалка")
     # Рыба
-    fish = models.ForeignKey(
-        'Fish',
-        on_delete=models.PROTECT,
-        verbose_name="Рыба")
+    fish = models.ForeignKey('Fish',
+                             blank=True,
+                             null=True,
+                             on_delete=models.PROTECT,
+                             verbose_name="Рыба")
     # Количество хвостов
-    number_of_fish = models.PositiveIntegerField(
-        blank=True,
-        verbose_name="Количество рыб")
+    number_of_fish = models.PositiveIntegerField(blank=True,
+                                                 null=True,
+                                                 verbose_name="Количество рыб")
     # Масса улова по выбранной рыбе
-    fish_weight = models.DecimalField(
-        max_digits=6,
-        decimal_places=3,
-        blank=True,
-        verbose_name="Вес улова")
+    fish_weight = models.DecimalField(max_digits=6,
+                                      decimal_places=3,
+                                      blank=True,
+                                      null=True,
+                                      verbose_name="Вес улова")
 
     def __str__(self):
-        return (str(self.fish) + ': ' + str(self.number_of_fish) +
-                'шт. ' + str(self.fish_weight) + 'кг.')
+        return (str(self.fish) + ': ' + ((str(self.number_of_fish) + 'шт. ') if self.number_of_fish else '') +
+                ((str(self.fish_weight) + 'кг.') if self.fish_weight else ''))
 
 
 class FishingTackle(models.Model):  # Снасть использованная в рыбалке
@@ -660,15 +660,16 @@ class FishingTrophy(models.Model):  # Трофей рыбалки
         on_delete=models.CASCADE,
         verbose_name="Рыбалка")
     # Порода трофея
-    fish = models.ForeignKey(
-        'Fish',
-        on_delete=models.PROTECT,
-        verbose_name="Рыба")
+    fish = models.ForeignKey('Fish',
+                             on_delete=models.PROTECT,
+                             blank=True,
+                             null=True,
+                             verbose_name="Рыба")
     # Вес трофея
-    fish_trophy_weight = models.DecimalField(
-        max_digits=4,
-        decimal_places=2,
-        verbose_name="Вес трофея")
+    fish_trophy_weight = models.DecimalField(max_digits=4,
+                                             blank=True,
+                                             decimal_places=2,
+                                             verbose_name="Вес трофея")
     #fish_trophy_photo=models.ImageField(verbose_name="Фото трофея")
 
     def __str__(self):
@@ -1633,7 +1634,7 @@ class Weather(models.Model):  # Погода
                                       blank=True,
                                       verbose_name="Направление ветра")
     # Скорость ветра
-    wind_speed = models.DecimalField(max_digits=4,
+    wind_speed = models.DecimalField(max_digits=3,
                                      decimal_places=1,
                                      blank=True,
                                      null=True,

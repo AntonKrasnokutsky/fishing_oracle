@@ -56,6 +56,14 @@ model_crochet_no_valid_char = 'Название модели' + no_valid_char_er
 time_start_and_end_equal = 'Время начала и окончания рыбалки не могут быть равны'
 time_start_more_time_end = 'Время окончания рыбалки должно быть больше времени начала'
 
+# FishingResultFormErrors
+fishing_result_fish_not_select = 'Выбирете рыбу'
+fishing_result_number_of_fish_is_empty = 'Укажите количество рыб'
+
+# FishingTrophyFormErrors
+fishing_trophy_fish_is_empty = 'Выберите рыбу'
+fishing_trophy_weight_is_empty = 'Укажите вес трофея'
+
 # LeashFormErrors
 leash_material_empty = 'Укажите материал поводка'
 leash_diameter_empty = 'Укажите диаметр поводка'
@@ -113,6 +121,20 @@ trough_model_no_valid_char = 'Название модели' + no_valid_char_err
 name_water_is_empty = 'Необходимо указать название водоёма'
 name_water_no_valid_char = 'Название водоёма' + no_valid_char_error_end
 
+# WeatherFormErrors
+# Предельные значения температуры воздуха
+weather_min_temperature = -60
+weather_max_temperature = 60
+weather_min_pressure = 650
+weather_max_pressure = 860
+weather_form_fields_is_empty = 'Хотя бы одно поле должно иметь значение'
+weather_direction_wind_no_valid_char = 'Направление ветра' + no_valid_char_error_end
+weather_temperature_is_low = 'Темепература воздуха не может быть ниже ' + str(weather_min_temperature)
+weather_temperature_is_high = 'Темепература воздуха не может быть выше ' + str(weather_max_temperature)
+weather_pressure_is_low = 'Атмосферное давление не может быть ниже ' + str(weather_min_pressure)
+weather_pressure_is_high = 'Атмосферное давление не может быть выше ' + str(weather_max_pressure)
+weather_wind_speed_is_negative = 'Сокрость ветра не может быть меньше 0'
+weather_wind_speed_is_high = 'Скорость ветра не может быть больше 100 м/с'
 
 class AromaForm(forms.ModelForm):
     class Meta:
@@ -189,8 +211,6 @@ class ConditionsForm(forms.ModelForm):
         
         msg = 'Название погодного явления не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
         for no_valid_char in no_valid_char_list:
             if name.startswith(no_valid_char) or name.endswith(no_valid_char):
                 self.add_error('name', msg)
@@ -250,8 +270,6 @@ class FeedCapacityForm(forms.ModelForm):
         
         msg = 'Название кормоёмкости не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
         for no_valid_char in no_valid_char_list:
             if name.startswith(no_valid_char) or name.endswith(no_valid_char):
                 self.add_error('name', msg)
@@ -276,9 +294,7 @@ class FishForm(forms.ModelForm):
                     self.add_error('name', 'Такая рыба уже добавлена')
         
         msg = 'Название рыбы не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
-        
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+
         for no_valid_char in no_valid_char_list:
             if name.startswith(no_valid_char) or name.endswith(no_valid_char):
                 self.add_error('name', msg)
@@ -344,12 +360,36 @@ class FishingResultForm(forms.ModelForm):
     class Meta:
         model = FishingResult
         fields = ['fish', 'number_of_fish', 'fish_weight', ]
+    
+    def clean(self):
+        fish = self.cleaned_data.get('fish')
+        number_of_fish = self.cleaned_data.get('number_of_fish')
+
+        if fish == None:
+            self.add_error('fish', fishing_result_fish_not_select)
+        
+        if number_of_fish == None:
+            self.add_error('number_of_fish', fishing_result_number_of_fish_is_empty)
+        
+        return self.cleaned_data
 
 
 class FishingTrophyForm(forms.ModelForm):
     class Meta:
         model = FishingTrophy
         fields = ['fish', 'fish_trophy_weight', ]
+    
+    def clean(self):
+        fish = self.cleaned_data.get('fish')
+        fish_trophy_weight = self.cleaned_data.get('fish_trophy_weight')
+        
+        if fish == None:
+            self.add_error('fish', fishing_trophy_fish_is_empty)
+        
+        if fish_trophy_weight == None:
+            self.add_error('fish_trophy_weight', fishing_trophy_weight_is_empty)
+        
+        return self.cleaned_data
 
 
 class LeashForm(forms.ModelForm):
@@ -498,7 +538,7 @@ class NozzleBaseForm(forms.ModelForm):
         name_errors = False
         
         for no_valid_char in no_valid_char_list:
-            if not manufacturer_errors or name_errors:
+            if not manufacturer_errors or not name_errors:
                 if not manufacturer_errors and manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
                     manufacturer_errors = True
                     self.add_error('manufacturer', manufacturer_nozzle_no_valid_char)
@@ -578,8 +618,6 @@ class NozzleTypeForm(forms.ModelForm):
         
         msg = 'Название типа насадки не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
         for no_valid_char in no_valid_char_list:
             if name.startswith(no_valid_char) or name.endswith(no_valid_char):
                 self.add_error('name', msg)
@@ -604,8 +642,6 @@ class OvercastForm(forms.ModelForm):
         
         msg = 'Название облачности не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
         for no_valid_char in no_valid_char_list:
             if name.startswith(no_valid_char) or name.endswith(no_valid_char):
                 self.add_error('name', msg)
@@ -629,9 +665,6 @@ class PaceForm(forms.ModelForm):
                     self.add_error('interval', 'Такой темп уже добавлен')
         
         msg = 'Название темпа не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
-        
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
         
         for no_valid_char in no_valid_char_list:
             if interval.startswith(no_valid_char) or interval.endswith(no_valid_char):
@@ -720,8 +753,6 @@ class PrimingForm(forms.ModelForm):
         
         msg = 'Название покрытия не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
         for no_valid_char in no_valid_char_list:
             if name.startswith(no_valid_char) or name.endswith(no_valid_char):
                 self.add_error('name', msg)
@@ -781,7 +812,7 @@ class TroughForm(forms.ModelForm):
         model_name_errors = False
         
         for no_valid_char in no_valid_char_list:
-            if not manufacturer_errors and not model_name_errors:
+            if not manufacturer_errors or not model_name_errors:
                 if not manufacturer_errors and manufacturer.startswith(no_valid_char) or manufacturer.endswith(no_valid_char):
                     manufacturer_errors = True
                     self.add_error('manufacturer', trough_manufacturer_no_valid_char)
@@ -834,10 +865,6 @@ class WaterCategoryForm(forms.ModelForm):
         msg1 = 'Категория не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|,'
         msg2 = 'Аббривиатура не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|,'
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'",
-                              ',']
-        
         for no_valid_char in no_valid_char_list:
             if category.startswith(no_valid_char) or category.endswith(no_valid_char):
                 self.add_error('category', msg1)
@@ -868,21 +895,30 @@ class WeatherForm(forms.ModelForm):
         if (overcast == None and conditions == None and temperature == None and
             pressure == None and len(direction_wind) == 0 and wind_speed == None and
             lunar_day == None):
-            self.add_error('direction_wind', 'Хотя бы одно поле должно иметь значение')
+            self.add_error(None, weather_form_fields_is_empty)
             return self.cleaned_data
         
-        if len(direction_wind) != 0:
-            direction_wind = re.sub(r'\s+', ' ', direction_wind)
-            
-        msg = 'Направление ветра не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|,'
+        if temperature != None and temperature < weather_min_temperature:
+            self.add_error('temperature', weather_temperature_is_low)
+        elif temperature != None and temperature > weather_max_temperature:
+            self.add_error('temperature', weather_temperature_is_high)
         
+        if pressure != None and pressure < weather_min_pressure:
+            self.add_error('pressure', weather_pressure_is_low)
+        elif pressure != None and pressure > weather_max_pressure:
+            self.add_error('pressure', weather_pressure_is_high)
         
+        if wind_speed != None and wind_speed < 0:
+            self.add_error('wind_speed', weather_wind_speed_is_negative)
+        elif wind_speed != None and wind_speed >= 100:
+            self.add_error('wind_speed', weather_wind_speed_is_high)
         
-        no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'",
-                              ',']
+        direction_wind_error = False
+        
         for no_valid_char in no_valid_char_list:
-            if direction_wind.startswith(no_valid_char) or direction_wind.endswith(no_valid_char):
-                self.add_error('direction_wind', msg)
+            if not direction_wind_error:
+                if not direction_wind_error and direction_wind.startswith(no_valid_char) or direction_wind.endswith(no_valid_char):
+                    self.add_error('direction_wind', weather_direction_wind_no_valid_char)
+            else:
                 break
         return self.cleaned_data

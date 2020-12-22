@@ -15,7 +15,8 @@
 <br />
 <p class="text-danger" style="font-size: 100%;">{{ errors }}</p>
 
-{% for error in form.fish.errors %}
+
+{% for error in form.non_field_errors %}
   <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
 {% endfor %}
 
@@ -26,10 +27,30 @@
       <td>{{ form.fish.label_tag }}</td>
       <td>{{ form.fish }}</td>
     </tr>
+    {% if form.fish.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.fish.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
     <tr>
       <td>{{ form.fish_trophy_weight.label_tag }}</td>
       <td>{{ form.fish_trophy_weight }} кг.</td>
     </tr>
+    {% if form.fish_trophy_weight.errors %}
+      <tr>
+        <td></td>
+        <td class="text-danger" style="font-size: 80%;">
+          {% for error in form.fish_trophy_weight.errors %}
+            {{ error }}
+          {% endfor %}
+        </td>
+      </tr>
+    {% endif %}
   </table>
   <br />
   <button class="btn btn-secondary" role="button">Сохранить</button>

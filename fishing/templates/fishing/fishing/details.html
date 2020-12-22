@@ -430,8 +430,11 @@
     {% for fishing_result in fishing.fishingresult_set.all %}
     <p>
         {{ forloop.counter }}. {{ fishing_result.fish }}:
-        {{ fishing_result.number_of_fish }} шт. общим весом:
+        {{ fishing_result.number_of_fish }} шт.
+        {% if fishing_result.fish_weight %}
+        общим весом:
         {{ fishing_result.fish_weight }} кг.
+        {% endif %}
         <a href="{% url 'fishing:fishing_result_edit' fishing.id fishing_result.id %}" class="btn">Редактировать</a>
         <a href="{% url 'fishing:fishing_result_delete' fishing.id fishing_result.id %}" class="btn">Удалить</a>
     </p>
