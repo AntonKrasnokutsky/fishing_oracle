@@ -11,6 +11,7 @@ from .models import Fish
 from .models import Fishing
 from .models import FishingCrochet
 from .models import FishingLeash
+from .models import FishingLure
 from .models import FishingLureMix
 from .models import FishingMontage
 from .models import FishingNozzle
@@ -55,6 +56,7 @@ admin.site.register(Fishing)
 admin.site.register(FishingCrochet)
 admin.site.register(FishingLeash)
 admin.site.register(FishingLureMix)
+admin.site.register(FishingLure)
 admin.site.register(FishingMontage)
 admin.site.register(FishingNozzle)
 admin.site.register(FishingPace)

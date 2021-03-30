@@ -416,6 +416,36 @@ class FishingLeash(models.Model):  # Поводки использованные
                               verbose_name='Поводок')
 
 
+class FishingLure(models.Model):
+    class Meta:
+        verbose_name = "Прикорм использованный в рыбалке"
+        verbose_name_plural = "Прикормы использованные в рыбалке"
+        
+    # Владелец записи
+    owner = models.ForeignKey(
+        CustomUser,
+        on_delete=models.PROTECT,
+        verbose_name="Владелец записи")
+    # Привязка к рыбалке
+    fishing = models.ForeignKey('Fishing',
+                                on_delete=models.PROTECT,
+                                verbose_name='Рыбалка')
+    # Привязка к прикорму
+    lure_base = models.ForeignKey('LureBase',
+                                  on_delete=models.PROTECT,
+                                  verbose_name='Прикорм')
+    # Вес базового прикорма
+    weight = models.DecimalField(max_digits=5,
+                                 decimal_places=2,
+                                 blank=True,
+                                 verbose_name="Доля прикорма",
+                                 help_text="Укажите долю прикорма в смеси")
+    
+    def __str__(self):
+        return str(self.fishing) + ' ' + str(self.lure_base)
+
+
+
 class FishingLureMix(models.Model):  # Прикормочный состав для рыбалки
     """
     Содержит информацию о прикормочной смеси

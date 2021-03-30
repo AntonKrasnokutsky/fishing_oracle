@@ -7,6 +7,7 @@ from .models import Crochet
 from .models import FeedCapacity
 from .models import Fish
 from .models import Fishing
+from .models import FishingLure
 # from .models import FishingPoint
 from .models import FishingResult
 from .models import FishingTrophy
@@ -347,6 +348,22 @@ class FishingForm(forms.ModelForm):
         return self.cleaned_data
 
 
+class FishingLureForm(forms.ModelForm):
+    class Meta:
+        model = FishingLure
+        fields = ['weight']
+    
+    def clean(self):
+        weight = self.cleaned_data.get('weight')
+        
+        if weight == None:
+            self.add_error('weight', weight_lure_is_null)
+        elif weight <= 0:
+            self.add_error('weight', weight_lure_is_negative)
+        
+        return self.cleaned_data
+    
+    
 # class FishingPointForm(forms.ModelForm):
 #     class Meta:
 #         model = FishingPoint

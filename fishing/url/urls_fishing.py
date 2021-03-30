@@ -165,6 +165,20 @@ urlpatterns = [
          views.FishingLureMixSelect.as_view(),
          name='fishing_lure_mix_select'),
     
+    # Прикорм для рыбалки
+    # Указать часть прикорма в рыбалке
+    path('<int:fishing_id>/change/lure/<int:lure_base_id><int:fishing_lure_id>/',
+         views.FishingLureChangeWeight.as_view(),
+         name='fishing_lure_change_weight'),
+    # Удалить прикорм из рыбалки
+    path('<int:fishing_id>/delete/lure/<int:fishing_lure_id>',
+         views.FishingLureDelete.as_view(),
+         name='fishing_lure_delete'),
+    # Выбрать прикорм для рыбалки
+    path('<int:fishing_id>/select/lure/',
+         views.FishingLureSelect.as_view(),
+         name='fishing_lure_select'),
+    
     # Результат рыбалки
     # Добавление результата рыбалки
     path('<int:fishing_id>/add/fishingresult/',

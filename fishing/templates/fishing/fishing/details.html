@@ -313,108 +313,139 @@
   </tr>
 </table>
 <table class="table" style="margin: auto;">
+  {% if fishing.fishingluremix_set.get or fishing.fishinglure_set.get %}
   {% if fishing.fishingluremix_set.get %}
-    {% if fishing.fishingluremix_set.get.lure_mix.lure_set %}
-      <tr>
-        <td style="text-align: center; border: 0;">
-          <strong>Прикормы:</strong>
-        </td>
-      </tr>
-      <tr>
-        <table class="table" style="margin: auto;">
-          <tr>
-            {% for lure in fishing.fishingluremix_set.get.lure_mix.lure_set.all %}
-            <td style="text-align: center; border: 0;">
-              <strong>Прикорм {{ forloop.counter }}</strong>
-              <br>
-              {% if lure.base.manufacturer %}
-                <strong>Производитель: </strong>{{ lure.base.manufacturer }}
-                <br>
-              {% endif %}
-              {% if lure.base.name %}
-                <strong>Название: </strong>{{ lure.base.name }}
-                <br>
-              {% endif %}
-              {% if lure.weight %}
-                <strong>Доля прикорма: </strong>{{ lure.weight }}
-                <br>
-              {% endif %}
-            </td>
-            {% endfor %}
-          </tr>
-        </table>
-      </tr>
-    {% endif %}
-    {% if fishing.fishingluremix_set.get.lure_mix.aroma_set %}
-      <tr>
-        <td style="text-align: center; border: 0;">
-          <strong>Аромы:</strong>
-        </td>
-      </tr>
-      <tr>
-        <table class="table" style="margin: auto;">
-          <tr>
-            {% for aroma in fishing.fishingluremix_set.get.lure_mix.aroma_set.all %}
+      {% if fishing.fishingluremix_set.get.lure_mix.lure_set %}
+        <tr>
+          <td style="text-align: center; border: 0;">
+            <strong>Прикормы:</strong>
+          </td>
+        </tr>
+        <tr>
+          <table class="table" style="margin: auto;">
+            <tr>
+              {% for lure in fishing.fishingluremix_set.get.lure_mix.lure_set.all %}
               <td style="text-align: center; border: 0;">
-                <strong>Арома {{ forloop.counter }}</strong>
+                <strong>Прикорм {{ forloop.counter }}</strong>
                 <br>
-                {% if aroma.base.manufacturer %}
-                  <strong>Производитель: </strong>{{ aroma.base.manufacturer }}
+                {% if lure.base.manufacturer %}
+                  <strong>Производитель: </strong>{{ lure.base.manufacturer }}
                   <br>
                 {% endif %}
-                {% if aroma.base.name %}
-                  <strong>Название: </strong>{{ aroma.base.name }}
+                {% if lure.base.name %}
+                  <strong>Название: </strong>{{ lure.base.name }}
                   <br>
                 {% endif %}
-                {% if aroma.volume %}
-                  <strong>Объем аромы: </strong>{{ aroma.volume }} л.
+                {% if lure.weight %}
+                  <strong>Доля прикорма: </strong>{{ lure.weight }}
+                  <br>
+                {% endif %}
+              </td>
+              {% endfor %}
+            </tr>
+          </table>
+        </tr>
+      {% endif %}
+      {% if fishing.fishingluremix_set.get.lure_mix.aroma_set %}
+        <tr>
+          <td style="text-align: center; border: 0;">
+            <strong>Аромы:</strong>
+          </td>
+        </tr>
+        <tr>
+          <table class="table" style="margin: auto;">
+            <tr>
+              {% for aroma in fishing.fishingluremix_set.get.lure_mix.aroma_set.all %}
+                <td style="text-align: center; border: 0;">
+                  <strong>Арома {{ forloop.counter }}</strong>
+                  <br>
+                  {% if aroma.base.manufacturer %}
+                    <strong>Производитель: </strong>{{ aroma.base.manufacturer }}
+                    <br>
+                  {% endif %}
+                  {% if aroma.base.name %}
+                    <strong>Название: </strong>{{ aroma.base.name }}
+                    <br>
+                  {% endif %}
+                  {% if aroma.volume %}
+                    <strong>Объем аромы: </strong>{{ aroma.volume }} л.
+                  {% endif %}
+                </td>
+              {% endfor %}
+            </tr>
+          </table>
+        </tr>
+      {% endif %}
+      {% if fishing.fishingluremix_set.get.lure_mix.nozzle_set %}
+      <tr>
+        <td style="text-align: center; border: 0;">
+          <strong>Добавки в состав:</strong>
+        </td>
+      </tr>
+      <tr>
+        <table class="table" style="margin: auto;">
+          <tr>
+            {% for nozzle in fishing.fishingluremix_set.get.lure_mix.nozzle_set.all %}
+              <td style="text-align: center; border: 0;">
+                <strong>Добавка: {{ forloop.counter }}</strong>
+                <br>
+                {% if nozzle.base.manufacturer %}
+                  <strong>Производитель: </strong>{{ nozzle.base.manufacturer }}
+                  <br>
+                {% endif %}
+                {% if nozzle.base.name %}
+                  <strong>Название: </strong>{{ nozzle.base.name }}
+                  <br>
+                {% endif %}
+                {% if nozzle.state.state %}
+                  <strong>Состояние: </strong>{{ nozzle.state.state }}
                 {% endif %}
               </td>
             {% endfor %}
           </tr>
         </table>
       </tr>
+      {% endif %}
+      <tr>
+        <td style="text-align: center; border: 0;">
+          <a href="{% url 'fishing:fishing_lure_mix_select' fishing.id fishing.fishingluremix_set.get.id %}" class="btn">Изменить</a>
+          <a href="{% url 'fishing:fishing_lure_mix_delete' fishing.id fishing.fishingluremix_set.get.id %}" class="btn">Удалить</a>
+        </td>
+      </tr>
+    {% else %}
+      <tr>
+        
+        <td style="text-align: center; border: 0;">
+          <strong>Прикорм</strong>
+          <br>
+          {% if fishing.fishinglure_set.get.lure_base.manufacturer %}
+            <strong>Производитель: </strong>{{ fishing.fishinglure_set.get.lure_base.manufacturer }}
+            <br>
+          {% endif %}
+          {% if fishing.fishinglure_set.get.lure_base.name %}
+            <strong>Название: </strong>{{ fishing.fishinglure_set.get.lure_base.name }}
+            <br>
+          {% endif %}
+          {% if fishing.fishinglure_set.get.weight %}
+            <strong>Доля прикорма: </strong>{{ fishing.fishinglure_set.get.weight }}
+            <br>
+          {% endif %}
+        </td>
+      </tr>
+
+      <tr>
+        <td style="text-align: center; border: 0;">
+          <a href="{% url 'fishing:fishing_lure_change_weight' fishing.id fishing.fishinglure_set.get.lure_base.id fishing.fishinglure_set.get.id %}" class="btn">Изменить</a>
+          <a href="{% url 'fishing:fishing_lure_delete' fishing.id fishing.fishinglure_set.get.id %}" class="btn">Удалить</a>
+        </td>
+      </tr>
+
     {% endif %}
-    {% if fishing.fishingluremix_set.get.lure_mix.nozzle_set %}
-    <tr>
-      <td style="text-align: center; border: 0;">
-        <strong>Добавки в состав:</strong>
-      </td>
-    </tr>
-    <tr>
-      <table class="table" style="margin: auto;">
-        <tr>
-          {% for nozzle in fishing.fishingluremix_set.get.lure_mix.nozzle_set.all %}
-            <td style="text-align: center; border: 0;">
-              <strong>Добавка: {{ forloop.counter }}</strong>
-              <br>
-              {% if nozzle.base.manufacturer %}
-                <strong>Производитель: </strong>{{ nozzle.base.manufacturer }}
-                <br>
-              {% endif %}
-              {% if nozzle.base.name %}
-                <strong>Название: </strong>{{ nozzle.base.name }}
-                <br>
-              {% endif %}
-              {% if nozzle.state.state %}
-                <strong>Состояние: </strong>{{ nozzle.state.state }}
-              {% endif %}
-            </td>
-          {% endfor %}
-        </tr>
-      </table>
-    </tr>
-    {% endif %}
-    <tr>
-      <td style="text-align: center; border: 0;">
-        <a href="{% url 'fishing:fishing_lure_mix_select' fishing.id fishing.fishingluremix_set.get.id %}" class="btn">Изменить</a>
-        <a href="{% url 'fishing:fishing_lure_mix_delete' fishing.id fishing.fishingluremix_set.get.id %}" class="btn">Удалить</a>
-      </td>
-    </tr>
   {% else %}
     <tr>
       <td style="text-align: center; border: 0;">
         <a href="{% url 'fishing:fishing_lure_mix_select' fishing.id 0 %}" class="btn">Указать прикормочную смесь</a>
+        <a href="{% url 'fishing:fishing_lure_select' fishing.id %}" class="btn">Указать прикорм</a>
       </td>
     </tr>
   {% endif %}

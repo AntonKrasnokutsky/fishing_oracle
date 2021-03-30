@@ -1,0 +1,25 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+
+
+{% if lure_base_list %}
+<table class="table table-hover" style="margin: auto;">
+  {% for lure_base in lure_base_list %}
+  <tr >
+    <td style="text-align: center; border: 0;">
+    {{lure_base}}
+    </td>
+    <td style="text-align: center; width: 6%; border: 0;">
+      <a href="{% url 'fishing:fishing_lure_change_weight' fishing.id lure_base.id 0 %}" class="btn btn-secondary" role="button">Выбрать</a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>Прикормы еще не добавлены</p>
+{% endif %}
+<p style="text-align: center;">
+  <a href="{% url 'fishing:fishing_details' fishing.id %}" class="btn btn-secondary" role="button">Назад</a>
+</p>
+
+{% endblock %}

@@ -26,14 +26,18 @@ from fishing.models import FishingNozzle
 from fishing.models import Pace
 from fishing.models import FishingPace
 from fishing.models import LureMix
+from fishing.models import LureBase
 from fishing.models import FishingLureMix
 from fishing.models import FishingResult
 from fishing.models import FishingTrophy
+from fishing.models import FishingLure
+
 
 from fishing.forms import FishingForm
 from fishing.forms import WeatherForm
 from fishing.forms import FishingResultForm
 from fishing.forms import FishingTrophyForm
+from fishing.forms import FishingLureForm
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -841,6 +845,90 @@ class FishingPaceDelete(View):
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 
+class FishingLureDelete(View):
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def get(self, request,*args, **kwargs):
+        fishing_lure = get_object_or_404(FishingLure, pk=kwargs['fishing_lure_id'])
+        if fishing_lure.owner == request.user:
+            fishing_lure.delete()
+        return redirect('fishing:fishing_details', kwargs['fishing_id'])
+
+
+class FishingLureSelect(View):
+    """
+    Выбор прикорма для рыбалки
+    """
+    
+    template = 'fishing/fishing/select_lure.html'
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == request.user:
+            lure_base_list = LureBase.objects.filter(owner=request.user)
+            return render(request,
+                          self.template,
+                          {'fishing': fishing,
+                           'lure_base_list': lure_base_list})
+        return redirect('fishing:fishing')
+
+
+class FishingLureChangeWeight(View):
+    
+    template = 'fishing/fishing/lure_weight.html'
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def get_fishing(self, *args, **kwargs):
+        return get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+    
+    def get(self, request, *args, **kwargs):
+        fishing = self.get_fishing(*args, **kwargs)
+        if fishing.owner == request.user:
+            if kwargs['fishing_lure_id'] != 0:
+                fishing_lure = get_object_or_404(FishingLure, pk=kwargs['fishing_lure_id'])
+                form = FishingLureForm(instance=fishing_lure)
+            else:
+                form = FishingLureForm()
+            return render(request,
+                          self.template,
+                          {'fishing': fishing,
+                           'form': form})
+        return redirect('fishing:fishing')
+    
+    def post(self, request, *args, **kwargs):
+        fishing = self.get_fishing(*args, **kwargs)
+        if fishing.owner == request.user:
+            if kwargs['fishing_lure_id'] != 0:
+                fishing_lure = get_object_or_404(FishingLure, pk=kwargs['fishing_lure_id'])
+                form = FishingLureForm(request.POST, instance=fishing_lure)
+            else:
+                form = FishingLureForm(request.POST)
+            if form.is_valid():
+                fishing_lure = form.save(commit=False)
+                fishing_lure.owner = request.user
+                fishing_lure.fishing = fishing
+                lure_base = get_object_or_404(LureBase, pk=kwargs['lure_base_id'])
+                fishing_lure.lure_base = lure_base
+                fishing_lure.save()
+                return redirect('fishing:fishing_details', fishing.id)
+            else:
+                return render(request,
+                              self.template,
+                              {'form': form,
+                               'fishing': fishing})
+        return redirect('fishing:fishing')
+
+
 class FishingLureMixSelect(View):
     """
     Возращает список прикормочных смесей для выбора
@@ -1101,56 +1189,3 @@ class FishingTrophyEdit(View):
                            'fishing': fishing,
                            'fishing_trophy': fishing_trophy})
         return redirect('fishing:fishing')
-
-@login_required
-def fish_trophy_add(request, fishing_id):
-    num_visits = visits(request)
-    fishing = get_object_or_404(Fishing, pk=fishing_id)
-    if fishing.owner == request.user:
-        if request.method == 'POST':
-            fish_trophy = FishTrophy()
-            form = FishTrophyForm(request.POST)
-            if form.is_valid():
-                fish_trophy = form.save(commit=False)
-                fish_trophy.owner = request.user
-                fish_trophy.fishing = fishing
-                fish_trophy.save()
-            return redirect('fishing:fishing_details', fishing_id)
-        else:
-            form = FishTrophyForm()
-            return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
-    return redirect('fishing:fishing_details', fishing_id)
-
-
-@login_required
-def fish_trophy_remove(request, fishing_id, fish_trophy_id):
-    fish_trophy = get_object_or_404(FishTrophy, pk=fish_trophy_id)
-    if fish_trophy.owner == request.user:
-        fish_trophy.delete()
-    return redirect('fishing:fishing_details', fishing_id)
-
-
-@login_required
-def fish_trophy_renewal(request, fishing_id, fish_trophy_id):
-    num_visits = visits(request)
-    fish_trophy = get_object_or_404(FishTrophy, pk=fish_trophy_id)
-    if fish_trophy.owner == request.user:
-        if request.method == 'POST':
-            form = FishTrophyForm(request.POST, instance=fish_trophy)
-            if form.is_valid():
-                fish_trophy = form.save(commit=False)
-                fish_trophy.owner = request.user
-                fishing = get_object_or_404(Fishing, pk=fishing_id)
-                fish_trophy.fishing = fishing
-                fish_trophy.save()
-            return redirect('fishing:fishing_details', fishing_id)
-        else:
-            form = FishTrophyForm(instance=fish_trophy)
-            return render(request,
-                          template_renewal_add_path,
-                          {'form': form,
-                           'num_visits': num_visits})
-    return redirect('fishing:fishing_details', fishing_id)
