@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.views import View
 
 from fishing.models import LureBase
+from fishing.models import LureMix
 from fishing.forms import LureBaseForm
 
 from django.contrib.auth.decorators import login_required
@@ -126,3 +127,36 @@ class LureBaseEdit(View):
                         {'form': form,
                         'lure_base': lure_base})
         return redirect('fishing:lure_base')
+
+
+class LureBaseAddFromLureMix(View):
+    template = 'fishing/lurebase/renewal_add.html'
+    
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        form = LureBaseForm()
+        return render(request,
+                      self.template,
+                      {'form': form})
+    
+    def post(self, request, *args, **kwargs):
+        form = LureBaseForm(request.POST)
+        lure_base = LureBase()
+        if form.is_valid():
+            lure_base = form.save(commit=False)
+            lure_base.owner = request.user
+            if lure_base.unique():
+                lure_base.first_upper()
+                lure_base.save()
+                return redirect('fishing:add_lure_to_mix', kwargs['lure_mix_id'], lure_base.id)
+            else:
+                return render(request,
+                              self.template,
+                              {'form': form,
+                               'errors': 'Такой прикорм уже добавлен'})
+        else:
+            return render(request,
+                          self.template,
+                          {'form': form})

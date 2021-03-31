@@ -237,7 +237,7 @@ class FeedCapacity(models.Model):  # Кормоёмкость
     class Meta:
         verbose_name = "Кормоёмкость кормушки"
         verbose_name_plural = "Кормоёмкость кормушек"
-        ordering = ['name']
+        ordering = ['id']
     # Кормоемкость кормушки
     name = models.CharField(
         max_length=20,

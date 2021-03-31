@@ -406,12 +406,6 @@
         </table>
       </tr>
       {% endif %}
-      <tr>
-        <td style="text-align: center; border: 0;">
-          <a href="{% url 'fishing:fishing_lure_mix_select' fishing.id fishing.fishingluremix_set.get.id %}" class="btn">Изменить</a>
-          <a href="{% url 'fishing:fishing_lure_mix_delete' fishing.id fishing.fishingluremix_set.get.id %}" class="btn">Удалить</a>
-        </td>
-      </tr>
     {% else %}
       <tr>
         
