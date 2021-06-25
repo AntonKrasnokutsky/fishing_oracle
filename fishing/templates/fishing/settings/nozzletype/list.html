@@ -1,0 +1,48 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+{% block content %}
+
+{% if nozzle_type_list != None %}
+<!-- Типы насадок -->
+  {% if user.is_staff %}
+    <div class="content__item">
+      {% if nozzle_type_list %}
+      <table>
+        {% for nozzle_type in nozzle_type_list %}
+        <tr>
+          <td>
+            {{nozzle_type.name}}
+          </td>
+          <td>
+            {% if user.is_staff %}
+            <a href="{% url 'fishing:nozzle_type_edit' nozzle_type.id %}">
+              <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
+            </a>
+            <a href="{% url 'fishing:nozzle_type_delete' nozzle_type.id %}">
+              <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
+            </a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <div class="content__item-text content__item-text--center">
+        <p>Типы насадок еще не добавлены</p>
+      </div>
+      {% endif %}
+      <br/>
+      <div class="content__item content__item--btn-position">
+        <a class="button__std" href="{% url 'fishing:nozzle_type_add' %}">
+          <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+          Добавить
+        </a>
+        <a class="button__std" href="{% url 'fishing:settings' %}">
+          Назад
+        </a>
+      </div>
+    </div>
+  {% endif %}
+{% endif %}
+
+{% endblock %}

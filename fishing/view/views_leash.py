@@ -6,6 +6,8 @@ from django.views import View
 from fishing.models import Leash
 from fishing.forms import LeashForm
 
+from fishing.getinfo import siteinfo, getuserinfo
+
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
@@ -14,7 +16,7 @@ class LeashAdd(View):
     """
     Добавление поводка
     """
-    template = 'fishing/leash/renewal_add.html'
+    template = 'fishing/notes/gears/leash/renewal_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -33,18 +35,24 @@ class LeashAdd(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'errors': 'Такой поводок уже добавлен'})
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = LeashForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class LeashList(View):
@@ -52,7 +60,7 @@ class LeashList(View):
     Возвращает список поводков
     """
 
-    template = 'fishing/leash/list.html'
+    template = 'fishing/notes/gears/leash/list.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -65,7 +73,9 @@ class LeashList(View):
             leash_list = Leash.objects.filter(owner=request.user)
         return render(request,
                     self.template,
-                    {'leash_list': leash_list})
+                    {'fisherman': getuserinfo(request),
+                     'siteinfo': siteinfo(),
+                     'leash_list': leash_list})
 
 
 class LeashDelete(View):
@@ -88,7 +98,7 @@ class LeashEdit(View):
     """
     Изменение поводка
     """
-    template = 'fishing/leash/renewal_add.html'
+    template = 'fishing/notes/gears/leash/renewal_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -108,14 +118,18 @@ class LeashEdit(View):
                 else:
                     return render(request,
                                 self.template,
-                                {'form': form,
+                                {'fisherman': getuserinfo(request),
+                                 'siteinfo': siteinfo(),
+                                 'form': form,
                                  'leash': leash,
-                                'errors': 'Такой поводок уже добавлен'})
+                                 'errors': 'Такой поводок уже добавлен'})
             else:
                 return render(request,
                             self.template,
-                            {'form': form,
-                            'leash': leash})
+                            {'fisherman': getuserinfo(request),
+                             'siteinfo': siteinfo(),
+                             'form': form,
+                             'leash': leash})
         else:
             return redirect('fishing:leash')
 
@@ -125,6 +139,8 @@ class LeashEdit(View):
             form = LeashForm(instance=leash)
             return render(request,
                         self.template,
-                        {'form': form,
-                        'leash': leash})
+                        {'fisherman': getuserinfo(request),
+                         'siteinfo': siteinfo(),
+                         'form': form,
+                         'leash': leash})
         return redirect('fishing:leash')

@@ -1,17 +1,20 @@
 {% extends 'fishing/base.html' %}
 {% block content %}
+{% load static %}
 
 {% if fish != None %}
 <!-- Рыба -->
 <div>
-<p style="font-size: 140%; font-style: oblique; text-align: center;"> {{ fish.name }}</p>
-<p style="font-size: 120%; text-align: justify; text-indent: 20px;"></style>{{ fish.description|linebreaks }}<p/>
-<p style="text-align: center;">
-    {% if user.is_staff %}
-    <a href="{% url 'fishing:fish_edit' fish.id %}" class="btn btn-secondary" role="button">Редактировать</a>
-    {% endif %}
-    <a href="{% url 'fishing:fish_list' %}" class="btn btn-secondary" role="button">Назад</a>
-</p>
+  <div class="content__item-title">
+    <p>{{ fish.name }}</p>
+  </div>
+  <div class="content__item-text">
+    <p>{{ fish.description|linebreaks }}</p>
+  </div>
+
+  <div class="content__item content__item--btn-position">
+    <a class="button__std" href="{% url 'fishing:fish_list' %}">Назад</a>
+  </div>
 </div>
 {% endif %}
 

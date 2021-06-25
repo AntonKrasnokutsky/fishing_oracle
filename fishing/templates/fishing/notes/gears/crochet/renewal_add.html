@@ -1,0 +1,104 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+
+<div class="errors">
+  <div class="errors__inner">
+    <div class="errors__item">
+      <p>{{ errors }}</p>
+    </div>
+    {% for error in form.non_field_errors %}
+      <div class="errors__item">
+        <p>{{ error }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<form class="content__form" action="" method="post">
+  {% csrf_token %}
+  <table>
+    <tr>
+      <td>
+        {{ form.manufacturer.label_tag }}
+      </td>
+      <td>
+        <label class="textareaContainer textareaContainer--right8">
+          <input class="content__input" type="text" maxlength="20" name="manufacturer" id="id_manufacturer" value="{{ form.manufacturer.value|default_if_none:"" }}">
+        </label>
+      </td>
+    </tr>
+    {% if form.manufacturer.errors %}
+      <tr>
+        <td></td>
+        <td>
+          <div class="errors">
+            <div class="errors__inner">
+              {% for error in form.manufacturer.errors %}
+                <div class="errors__item">
+                  <p>{{ error }}</p>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </td>
+      </tr>
+    {% endif %}
+    <tr>
+      <td>
+        {{ form.model.label_tag }}
+      </td>
+      <td>
+        <label class="textareaContainer textareaContainer--right8">
+          <input class="content__input" type="text" maxlength="20" name="model" id="id_model" value="{{ form.model.value|default_if_none:"" }}">
+        </label>
+      </td>
+    </tr>
+    {% if form.model.errors %}
+      <tr>
+        <td></td>
+        <td>
+          <div class="errors">
+            <div class="errors__inner">
+              {% for error in form.model.errors %}
+                <div class="errors__item">
+                  <p>{{ error }}</p>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </td>
+      </tr>
+    {% endif %}
+    <tr>
+      <td>
+        {{ form.size.label_tag }}
+      </td>
+      <td>
+        <label class="textareaContainer textareaContainer--right8">
+          <input class="content__input" type="number" min="0" step="1" name="size" id="id_size" value="{{ form.size.value|default_if_none:"" }}">
+        </label>
+      </td>
+    </tr>
+    {% if form.size.errors %}
+      <tr>
+        <td></td>
+        <td>
+          <div class="errors">
+            <div class="errors__inner">
+              {% for error in form.size.errors %}
+                <div class="errors__item">
+                  <p>{{ error }}</p>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </td>
+      </tr>
+    {% endif %}
+  </table>
+  <div class="content__item content__item--btn-position">
+    <button class="button__std">Сохранить</button>
+    <a class="button__std" href="{% url 'fishing:crochet' %}">Назад</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'fishing/base.html' %}
+{% load element_by_key %}
+{% load len_element %}
+{% block content %}
+<div class="content__inner">
+  <table class="trophys_report">
+    <header>
+      <th>
+        Свои трофеи
+      </th>
+      <th>
+        Трофеи других рыбаков<br>
+        (из отчетов по прямой ссылке)
+      </th>
+    </header>
+    <tr>
+      {% if user.is_authenticated %}
+        <td>
+          {% if trophys.fisherman.fish %}
+            
+              {% for id_element in trophys.fisherman|get_len %}
+                <table>
+                  <tr><strong>Рыба</strong>: {{trophys.fisherman.fish|get_element:id_element}}</tr>  
+                  <tr>
+                    <td>
+                      <strong>Вес</strong>: {{trophys.fisherman.weight|get_element:id_element}} кг.
+                    </td>
+                    <td>
+                      <a href="{% url 'fishing:fishing_details' trophys.fisherman.fishing|get_element:id_element %}">
+                        К рыбалке
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              {% endfor %}
+          {% else %}
+            Трофейных рыб еще не попадалось
+          {% endif %}
+        </td>
+      {% else %}
+        <td>
+          Водите, чтобы увидеть свою трофейную рыбу
+        </td>
+      {% endif %}
+      <td>
+        {% if trophys.reports.fish %}
+          {% for id_element in trophys.reports|get_len %}
+            <table class="trophys_report">
+              <tr>
+                <strong>Трофей</strong>: {{ trophys.reports.fish|get_element:id_element }}
+              </tr>
+              <tr>
+                <td>
+                  <strong>Вес</strong>: {{ trophys.reports.weight|get_element:id_element }} кг.
+                </td>
+                <td>
+                  <strong>Счастливчик</strong>: {{ trophys.reports.fisherman|get_element:id_element }}
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <strong>Водоём</strong>: {{ trophys.reports.water|get_element:id_element }}
+                </td>
+                <td>
+                  <strong>Дата</strong>: {{ trophys.reports.date|get_element:id_element }}
+                </td>
+              </tr>
+            </table>
+          {% endfor %}
+        {% else %}
+          Еще никому не повезло с трофейными рыбами
+        {% endif %}
+      </td>
+    </tr>
+  </table>
+  <div class="content__item content__item--btn-position">
+    <a class="button__std" href="{% url 'fishing:index' %}">На главную</a>
+  </div>
+</div>
+{% endblock %}

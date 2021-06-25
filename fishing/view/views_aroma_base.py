@@ -6,6 +6,8 @@ from django.views import View
 from fishing.models import AromaBase
 from fishing.forms import AromaBaseForm
 
+from fishing.getinfo import siteinfo, getuserinfo
+
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
@@ -14,11 +16,11 @@ class AromaBaseAdd(View):
     """
     Добавление аромы
     """
-    template = 'fishing/aromabase/renewal_add.html'
+    template = 'fishing/notes/feeds/aromabase/renewal_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(AromaBaseAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = AromaBaseForm(request.POST)
@@ -33,18 +35,24 @@ class AromaBaseAdd(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'errors': 'Такая арома уже добавлена'})
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = AromaBaseForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class AromaBaseList(View):
@@ -52,11 +60,11 @@ class AromaBaseList(View):
     Возвращает список аром
     """
 
-    template = 'fishing/aromabase/list.html'
+    template = 'fishing/notes/feeds/aromabase/list.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(AromaBaseList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         if request.user.is_staff:
@@ -65,7 +73,9 @@ class AromaBaseList(View):
             aroma_base_list = AromaBase.objects.filter(owner=request.user)
         return render(request,
                     self.template,
-                    {'aroma_base_list': aroma_base_list})
+                    {'fisherman': getuserinfo(request),
+                     'siteinfo': siteinfo(),
+                     'aroma_base_list': aroma_base_list})
 
 
 class AromaBaseDelete(View):
@@ -75,7 +85,7 @@ class AromaBaseDelete(View):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(AromaBaseDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         aroma = get_object_or_404(AromaBase, pk=kwargs['aroma_base_id'])
@@ -88,11 +98,11 @@ class AromaBaseEdit(View):
     """
     Изменение аромы
     """
-    template = 'fishing/aromabase/renewal_add.html'
+    template = 'fishing/notes/feeds/aromabase/renewal_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(AromaBaseEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         aroma_base = get_object_or_404(AromaBase, pk=kwargs['aroma_base_id'])
@@ -108,14 +118,18 @@ class AromaBaseEdit(View):
                 else:
                     return render(request,
                                 self.template,
-                                {'form': form,
+                                {'fisherman': getuserinfo(request),
+                                 'siteinfo': siteinfo(),
+                                 'form': form,
                                  'aroma_base': aroma_base,
-                                'errors': 'Такая арома уже добавлена'})
+                                 'errors': 'Такая арома уже добавлена'})
             else:
                 return render(request,
                             self.template,
-                            {'form': form,
-                            'aroma_base': aroma_base})
+                            {'fisherman': getuserinfo(request),
+                             'siteinfo': siteinfo(),
+                             'form': form,
+                             'aroma_base': aroma_base})
 
     def get(self, request, *args, **kwargs):
         aroma_base = get_object_or_404(AromaBase, pk=kwargs['aroma_base_id'])
@@ -123,6 +137,8 @@ class AromaBaseEdit(View):
             form = AromaBaseForm(instance=aroma_base)
             return render(request,
                         self.template,
-                        {'form': form,
-                        'aroma_base': aroma_base})
+                        {'fisherman': getuserinfo(request),
+                         'siteinfo': siteinfo(),
+                         'form': form,
+                         'aroma_base': aroma_base})
         return redirect('fishing:aroma_base')

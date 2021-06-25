@@ -1,0 +1,51 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+{% block content %}
+
+{% if capacity_list != None %}
+<!-- Кормоемкость -->
+  {% if user.is_staff %}
+    <div class="content__item">
+      {% if capacity_list %}
+      <table>
+        {% for capacity in capacity_list %}
+        <tr>
+          <td>
+            {{capacity.name}}
+          </td>
+          <td>
+            {% if user.is_staff %}
+            <a href="{% url 'fishing:feed_capacity_edit' capacity.id %}">
+              <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
+            </a>
+            <a href="{% url 'fishing:feed_capacity_delete' capacity.id %}">
+              <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
+            </a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+        <div class="content__item-text content__item-text--center">
+          <p>Варианты кормоёмкости еще не добавлены</p>
+        </div>
+      {% endif %}
+      
+      <div class="content__item content__item--btn-position">
+        
+        <a class="button__std" href="{% url 'fishing:feed_capacity_add' %}">
+          <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+          Добавить
+        </a>
+        <a class="button__std" href="{% url 'fishing:settings' %}">
+          Назад
+        </a>
+      </div>
+    </div>
+  {% else %}
+    <meta http-equiv="refresh" content="1;URL={% url 'fishing:index' %}" />
+  {% endif %}
+{% endif %}
+
+{% endblock %}

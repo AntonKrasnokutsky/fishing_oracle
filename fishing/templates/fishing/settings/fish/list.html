@@ -1,0 +1,38 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="content__inner">
+  {% if fish_list %}
+  <div class="content__grid-4-column content__grid--rows-150">
+    {% for fish in fish_list %}
+    <div class="content__grid-item">
+      {% if fish.description %}
+        <a href="{% url 'fishing:settings_fish_details' fish.id %}">{{fish.name}}</a>
+      {% else %}
+        {{fish.name}}
+      {% endif %}
+          <a href="{% url 'fishing:settings_fish_edit' fish.id %}">
+            <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
+          </a>
+          <a href="{% url 'fishing:settings_fish_delete' fish.id %}">
+            <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
+          </a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="content__item-text content__item-text--center">
+    <p>Ни одной рыбы ещё не добавлено</p>
+  </div>
+  {% endif %}
+  <div class="content__item content__item--btn-position">
+    <a class="button__std" href="{% url 'fishing:settings_fish_add' %}">
+      <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+      Добавить
+    </a>
+    <a class="button__std" href="{% url 'fishing:settings' %}">Назад</a>
+  </div>
+</div>
+
+{% endblock %}

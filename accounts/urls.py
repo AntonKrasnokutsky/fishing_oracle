@@ -8,4 +8,7 @@ urlpatterns = [
     path('signup/',
          views.RegistrationView.as_view(),
          name='registrations'),
+    path('editnick/',
+         views.UserNickEdit.as_view(),
+         name='editnick'),
 ]

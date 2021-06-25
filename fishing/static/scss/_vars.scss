@@ -1,0 +1,19 @@
+$error: red;
+$default: #000;
+$border-input: #393c40;
+$content-border: rgb(0, 124, 0);
+$content-background: #fafafa;
+$hover-color:#eee;
+
+
+%title-font{
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+%font{
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+}

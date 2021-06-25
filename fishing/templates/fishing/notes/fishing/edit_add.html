@@ -1,0 +1,87 @@
+{% extends 'fishing/base.html' %}
+{% load l10n %}
+{% block content %}
+{% load static %}
+
+<div class="content__item">
+
+  <div class="errors">
+    <div class="errors__inner">
+      <div class="errors__item">
+        <p>{{ errors }}</p>
+      </div>
+      {% for error in form.non_field_errors %}
+        <div class="errors__item">
+          <p>{{ error }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <form class="content__form" action="" method="post">
+    {% csrf_token %}
+    <div class="content__item-2-column">
+      <div class="content__text content__text--weight">
+        {{ form.date.label_tag }}
+      </div>
+      <div class="content__input">
+        <input class="content__input-date-time" type="text" name="date" autocomplete="off" required id="id_date" value={{ form.date.value|date:"d.m.Y" }}>
+      </div>
+    </div>
+    {% if form.date.errors %}
+      <div class="errors">
+        <div class="errors__inner">
+          {% for error in form.date.errors %}
+            <div class="errors__item">
+              <p>{{ error }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    <div class="content__item-2-column">
+      <div class="content__text content__text--weight">
+        {{ form.time_start.label_tag }}
+      </div>
+      <div class="content__input">
+        <input class="content__input-date-time" type="text" name="time_start" autocomplete="off" required id="id_time_start" value={{ form.time_start.value|default_if_none:'' }}>
+      </div>
+    </div>
+    {% if form.time_start.errors %}
+      <div class="errors">
+        <div class="errors__inner">
+          {% for error in form.time_start.errors %}
+            <div class="errors__item">
+              <p>{{ error }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+    <div class="content__item-2-column">
+      <div class="content__text content__text--weight">
+        {{ form.time_end.label_tag }}
+      </div>
+      <div class="content__input">
+        <input class="content__input-date-time" type="text" name="time_end" autocomplete="off" required id="id_time_end" value={{ form.time_end.value|default_if_none:"" }}>
+      </div>
+    </div>
+    {% if form.time_end.errors %}
+      <div class="errors">
+        <div class="errors__inner">
+          {% for error in form.time_end.errors %}
+            <div class="errors__item">
+              <p>{{ error }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="content__item content__item--center">
+      <button class="button__std  button__std--center">Сохранить</button>
+      <a class="button__std  button__std--center" href="{% url 'fishing:fishing' %}">Назад</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

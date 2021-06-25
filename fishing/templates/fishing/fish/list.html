@@ -1,40 +1,29 @@
 {% extends 'fishing/base.html' %}
+{% load static %}
 {% block content %}
 
 {% if fish_list != None %}
 <!-- Рыбы -->
 {% if fish_list %}
-<table class="table table-hover" style="margin: auto;">
+<div class="content__grid-4-column content__grid--rows-150">
   {% for fish in fish_list %}
-  <tr >
-    <td style="text-align: center; border: 0;">
+  <div class="content__grid-item">
     {% if fish.description %}
       <a href="{% url 'fishing:fish_details' fish.id %}">{{fish.name}}</a>
     {% else %}
       {{fish.name}}
     {% endif %}
-    </td>
-    {% if user.is_staff %}
-    <td style="text-align: center; width: 10%; border: 0;">
-    <a href="{% url 'fishing:fish_edit' fish.id %}" class="btn btn-secondary" role="button">Редактировать</a>
-    </td>
-    <td style="text-align: center; width: 6%; border: 0;">
-    <a href="{% url 'fishing:fish_delete' fish.id %}" class="btn btn-secondary" role="button">Удалить</a>
-    </td>
-    {% endif %}
-  </tr>
+  </div>
   {% endfor %}
-</table>
+</div>
 {% else %}
-<p style="margin: auto;">Ни одной рыбы ещё не добавлено</p>
+<div class="content__item-text">
+  <p>Ни одной рыбы ещё не добавлено</p>
+</div>
 {% endif %}
-<br/>
-<p style="text-align: center;">
-  {% if user.is_staff %}
-  <a href="{% url 'fishing:fish_add' %}" class="btn btn-secondary" role="button">Добавить</a>
-  {% endif %}
-  <a href="{% url 'fishing:index' %}" class="btn btn-secondary" role="button">Назад</a>
-</p>
+<div class="content__item content__item--btn-position">
+  <a class="button__std button__std--center" href="{% url 'fishing:index' %}">На главную</a>
+</div>
 {% endif %}
 
 {% endblock %}

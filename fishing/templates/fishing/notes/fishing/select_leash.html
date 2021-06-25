@@ -1,0 +1,27 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+{% load static %}
+
+{% if leash_list %}
+<table>
+  {% for leash in leash_list %}
+  <tr>
+    <td>
+      {{leash}}
+    </td>
+    <td>
+      <a href="{% url 'fishing:fishing_leash_add' fishing.id fishing_tackle.id leash.id fishing_leash.id %}">
+        <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
+      </a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+  <p>Поводков еще не добавлено</p>
+{% endif %}
+<div class="content__item content__item--center">
+  <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
+</div>
+
+{% endblock %}

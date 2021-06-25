@@ -119,23 +119,23 @@ urlpatterns = [
     # Справочник рыб
     path('fish/',
          views.FishList.as_view(),
-         name='fish_list'),
+         name='settings_fish_list'),
     # Описание рыбы
     path('fish/<int:fish_id>/',
          views.FishDetails.as_view(),
-         name='fish_details'),
+         name='settings_fish_details'),
     # Редактирование названия рыбы и описания
     path('fish/<int:fish_id>/edit/',
          views.FishEdit.as_view(),
-         name="fish_edit"),
+         name="settings_fish_edit"),
     # Добавление рыбы
     path('fish/add/',
          views.FishAdd.as_view(),
-         name='fish_add'),
+         name='settings_fish_add'),
     # Удаление рыбы
     path('fish/<int:fish_id>/delete/',
          views.FishDelete.as_view(),
-         name='fish_delete'),
+         name='settings_fish_delete'),
     
     # Категории водоемов
     # Списк категорий водоемов

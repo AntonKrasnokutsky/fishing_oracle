@@ -1,0 +1,32 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content__grid-3-column">
+  <div class="content__grid-item content__grid-item--border">
+    <a href="{% url 'fishing:nozzle_base' %}">
+      <img src="{% static 'images/feed/logo_nozzle.png' %}" alt="Наживки">
+    </a>
+  </div>
+  <div class="content__grid-item content__grid-item--border">
+    <a href="{% url 'fishing:lure_base' %}">
+      <img src="{% static 'images/feed/logo_lure.png' %}" alt="Прикормы">
+    </a>
+  </div>
+  <div class="content__grid-item content__grid-item--border">
+    <a href="{% url 'fishing:aroma_base' %}">
+      <img src="{% static 'images/feed/logo_aroma.png' %}" alt="Аромы">
+    </a>
+  </div>
+  <div class="content__grid-item content__grid-item--border">
+    <a href="{% url 'fishing:lure_mix' %}">
+      <img src="{% static 'images/feed/logo_luremix.png' %}" alt="Смеси">
+    </a>
+  </div>
+</div>
+
+<div class="content__item content__item--btn-position">
+  <a class="button__std" href="{% url 'fishing:fisherman_notes' %}">Назад</a>
+</div>
+
+{% endblock %}

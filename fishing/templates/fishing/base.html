@@ -1,53 +1,133 @@
 {% load static %}
 
-{% include "fishing/bootstrap.html" %}
 
-<html>
-  <link rel="stylesheet" href="{% static 'css/base.css' %}">
 
-<head>
-  <title>RGB Fish</title>
-</head>
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RGB Fish</title>
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript" >
+      (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+      m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+      (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
 
-<div>
-  <div class="navbar">
-    <div style="width: 45%; margin-right: 0; margin-left: auto;">
-      <a href="/">Домой</a>
-      {% if user.is_authenticated %}
-      <a href="{% url 'fishing:fishing' %}">Рыбалки</a>
-      <a href="{% url 'blog:post_list' %}" target="_blank">Блог</a>
-      {% endif %}
-      <a href="{% url 'fishing:fish_list' %}">Рыба</a>
+      ym(65474584, "init", {
+          clickmap:true,
+          trackLinks:true,
+          accurateTrackBounce:true
+      });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/65474584" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/style.min.css' %}">
+  </head>
+  <body>
+    <div class="wrapper">
+      {% include "fishing/header.html" %}
+
+      <div class="main">
+        <div class="container">
+          <div class="main__inner">
+            <div class="content">
+              {% block content %} {% endblock %}
+            </div>
+            <div class="main__panel">
+                <div class="info">
+                  {% if user.is_authenticated %}
+                    <div class="info__content">
+                      <p class="info__nickname">{{ user.nick }} <a class="button__img" href="{% url 'accounts:editnick' %}"><img class="info__image" src="{% static 'images/edit.png' %}" alt="sign_out"></a>{% if user.is_staff %}<a class="button__img" href="{% url 'fishing:settings' %}"><img class="info__image" src="{% static 'images/logo_settings.png' %}" alt="sign_out"></a> {% endif %} </p>
+                      <ul class="info__list">
+                        <li class="info__item">
+                          Рыбалок: 
+                          <a class="info__item-link" href="{% url 'fishing:fishing' %}">{{ fisherman.fishing }}</a>
+                        </li>
+                        <li class="info__item">
+                          Поймал рыб: 
+                          <a class="info__item-link" href="#">{{ fisherman.fish }}</a>
+                        </li>
+                        <li class="info__item">
+                          Вес улова: 
+                          <a class="info__item-link" href="#">{{ fisherman.fish_weight }}</a>
+                          кг
+                        </li>
+                        <li class="info__item">
+                          Поймал трофеев: 
+                          <a class="info__item-link" href="{% url 'fishing:statistic_trophy' %}">{{ fisherman.fish_trophy }}</a>
+                        </li>
+                      </ul>
+                      <div class="info__trophy">
+                        {% if fisherman.fish_trophy_weight %}
+                          <p class="info__trophy-title">Самый крупный трофей:</p>
+                          <p class="info__trophy-text">{{ fisherman.fish_trophy_name }}</p>
+                          <p class="info__trophy-text">{{ fisherman.fish_trophy_weight }} кг</p>
+                        {% endif %}
+                      </div>
+                      <a class="button__std" href="{% url 'fishing:fisherman_notes' %}">Записи рыбака</a>
+                      <a class="button__std" href="{% url 'logout'%}?next={{request.path}}"><img class="button__img" src="{% static 'images/sign-out.png' %}" alt="sign_out"></a>
+                    </div>
+                  {% else %}
+                    <form class="info__login-form" method="POST" action="{% url 'login' %}">
+                      {% csrf_token %}
+                      <div class="info__login-block">
+                        <p class="info__login-form-text">Электронная почта:</p>
+                        <input class="info__login-form-input" type="email" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="254" id="id_username">
+                        <p class="info__login-form-text">Пароль:</p>
+                        <input class="info__login-form-input" type="password" name="password" autocomplete="current-password" id="id_password">
+                      </div>
+                        <div class="info__login-form-error">
+                          {% for error in fisherman.errors %}
+                            <p>{{ error }}</p>
+                          {% endfor %}
+                        </div>
+                        <button class="button__std" type="submit">Войти</button>
+                        <input type="hidden" name="next" value="{% url 'fishing:fisherman_notes' %}" />
+                        <a class="button__std" href="{% url 'accounts:registrations' %}">Регистрация</a>
+                        <a class="info__restore-password" href="{% url 'password_reset' %}">Восстановить пароль</a>
+                    </form>
+                  {% endif %}
+                </div>
+              <div class="info">
+                <ul class="info__list">
+                  <li class="info__item">
+                    Рыбаков:
+                    {{ siteinfo.fisherman }}
+                  </li>
+                  <li class="info__item">
+                    Рыбалок: 
+                    {{ siteinfo.fishing }}
+                  </li>
+                  <li class="info__item">
+                    Поймали рыб: 
+                    {{ siteinfo.fish }}
+                  </li>
+                  <li class="info__item">
+                    Вес улова: 
+                    {{ siteinfo.fish_weight }}
+                    кг
+                  </li>
+                  <li class="info__item">
+                    Поймано трофеев: 
+                    {{ siteinfo.fish_trophy }}
+                  </li>
+                </ul>
+                <div class="info__trophy">
+                  <p class="info__trophy-title">Самый крупный трофей:</p>
+                  <p class="info__trophy-text">{{ siteinfo.fish_trophy_name }}</p>
+                  <p class="info__trophy-text">{{ siteinfo.fish_trophy_weight }} кг</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script src="{% static 'js/main.min.js' %}"></script>
     </div>
-    <div style="width: 25%; margin-right: 0; margin-left: auto;">
-      {% if user.is_authenticated %}
-        {% if user.is_staff %}
-          <a href="{% url 'fishing:settings' %}"><i class="fas fa-cog"></i></a>
-          <a href="{% url 'logout'%}?next={{request.path}}">Выйти</a>
-          
-        {% else %}
-          <a href="{% url 'logout'%}?next={{request.path}}">Выйти</a>
-        {% endif %}
-      {% else %}
-      <a href="{% url 'login'%}?next={{request.path}}">Войти</a>
-      {% endif %}
-    </div>
-  </div>
-</div>
-
-<body>
-  {% include "fishing/scripts.html" %}
-  <section class="main">
-    <div style="width: 70%; margin: auto;">
-      {% block content %} {% endblock %}
-    </div>
-  </section>
-</body>
-<footer>
-  <div class="footer">
-    <p style="font-size: 100%;"><span style="color: red;">R</span><span style="color: green;">G</span><span style="color: blue;">B</span>fish 2020</p>
-
-  </div>
-</footer>
-
+  </body>
 </html>

@@ -22,6 +22,8 @@ SECRET_KEY = os.environ['SECRET_KEY_FO']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool( os.environ.get('DEBUG_FO', True) )
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 if DEBUG:
     ALLOWED_HOSTS = ['*']
 else:
@@ -35,7 +37,6 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'blog.apps.BlogConfig',
     'accounts.apps.AccountsConfig',
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

@@ -1,0 +1,44 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+{% block content %}
+
+{% if aroma_base_list %}
+<!-- Аромы для смеси -->
+<div>
+  <table>
+      {% for aroma_base in aroma_base_list %}
+      <tr>
+        <td>
+          {{aroma_base}}
+        </td>
+        <td>
+          <a href="{% url 'fishing:add_aroma_to_mix' lure_mix.id aroma_base.id %}">
+            <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% else %}
+  {% if aroma_base_entery %}
+    <tr>
+      <div class="content__item-text content__item-text--center">
+        <p>Все аромы использованны в данной смеси</p>
+      </div>
+    </tr>
+  {% else %}
+    <tr>
+      <div class="content__item-text content__item-text--center">
+        <p>Аромы ещё не добавлены</p>
+      </div>
+    </tr>
+  {% endif %}
+{% endif %}
+  <div class="content__item content__item--btn-position">
+    <a class="button__std" href="{% url 'fishing:lure_mix_details' lure_mix.id %}">
+      Назад
+    </a>
+  </div>
+</div>
+
+{% endblock %}

@@ -4,8 +4,9 @@ from django.shortcuts import render
 from django.views import View
 
 from fishing.models import LureBase
-from fishing.models import LureMix
 from fishing.forms import LureBaseForm
+
+from fishing.getinfo import siteinfo, getuserinfo
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -15,11 +16,11 @@ class LureBaseAdd(View):
     """
     Добавление прикорма
     """
-    template = 'fishing/lurebase/renewal_add.html'
+    template = 'fishing/notes/feeds/lurebase/renewal_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(LureBaseAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = LureBaseForm(request.POST)
@@ -34,18 +35,24 @@ class LureBaseAdd(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'errors': 'Такой прикорм уже добавлен'})
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = LureBaseForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class LureBaseList(View):
@@ -53,11 +60,11 @@ class LureBaseList(View):
     Возвращает список прикормов
     """
 
-    template = 'fishing/lurebase/list.html'
+    template = 'fishing/notes/feeds/lurebase/list.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(LureBaseList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         if request.user.is_staff:
@@ -66,7 +73,9 @@ class LureBaseList(View):
             lure_base_list = LureBase.objects.filter(owner=request.user)
         return render(request,
                     self.template,
-                    {'lure_base_list': lure_base_list})
+                    {'fisherman': getuserinfo(request),
+                     'siteinfo': siteinfo(),
+                     'lure_base_list': lure_base_list})
 
 
 class LureBaseDelete(View):
@@ -76,7 +85,7 @@ class LureBaseDelete(View):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(LureBaseDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         lure = get_object_or_404(LureBase, pk=kwargs['lure_base_id'])
@@ -89,11 +98,11 @@ class LureBaseEdit(View):
     """
     Изменение прикорма
     """
-    template = 'fishing/lurebase/renewal_add.html'
+    template = 'fishing/notes/feeds/lurebase/renewal_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(LureBaseEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         lure_base = get_object_or_404(LureBase, pk=kwargs['lure_base_id'])
@@ -109,14 +118,18 @@ class LureBaseEdit(View):
                 else:
                     return render(request,
                                 self.template,
-                                {'form': form,
+                                {'fisherman': getuserinfo(request),
+                                 'siteinfo': siteinfo(),
+                                 'form': form,
                                  'lure_base': lure_base,
-                                'errors': 'Такой прикорм уже добавлен'})
+                                 'errors': 'Такой прикорм уже добавлен'})
             else:
                 return render(request,
                             self.template,
-                            {'form': form,
-                            'lure_base': lure_base})
+                            {'fisherman': getuserinfo(request),
+                             'siteinfo': siteinfo(),
+                             'form': form,
+                             'lure_base': lure_base})
 
     def get(self, request, *args, **kwargs):
         lure_base = get_object_or_404(LureBase, pk=kwargs['lure_base_id'])
@@ -124,13 +137,15 @@ class LureBaseEdit(View):
             form = LureBaseForm(instance=lure_base)
             return render(request,
                         self.template,
-                        {'form': form,
-                        'lure_base': lure_base})
+                        {'fisherman': getuserinfo(request),
+                         'siteinfo': siteinfo(),
+                         'form': form,
+                         'lure_base': lure_base})
         return redirect('fishing:lure_base')
 
 
 class LureBaseAddFromLureMix(View):
-    template = 'fishing/lurebase/renewal_add.html'
+    template = 'fishing/luremix/lure_base_add.html'
     
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
@@ -139,7 +154,10 @@ class LureBaseAddFromLureMix(View):
         form = LureBaseForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'luremix_id': kwargs['lure_mix_id'],
+                       'form': form})
     
     def post(self, request, *args, **kwargs):
         form = LureBaseForm(request.POST)
@@ -154,9 +172,15 @@ class LureBaseAddFromLureMix(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'luremix_id': kwargs['lure_mix_id'],
+                               'form': form,
                                'errors': 'Такой прикорм уже добавлен'})
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'luremix_id': kwargs['lure_mix_id'],
+                           'form': form})

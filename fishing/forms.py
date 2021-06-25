@@ -1,3 +1,4 @@
+from django.db.models import fields
 from .models import Aroma
 from .models import AromaBase
 # from .models import BottomMap
@@ -9,6 +10,7 @@ from .models import Fish
 from .models import Fishing
 from .models import FishingLure
 # from .models import FishingPoint
+from .models import FishingReportsSettings
 from .models import FishingResult
 from .models import FishingTrophy
 from .models import Leash
@@ -150,7 +152,7 @@ class AromaForm(forms.ModelForm):
         elif volume <= 0:
             self.add_error('volume', volume_aroma_is_negative)
         
-        return self.cleaned_data
+        return super().clean()
 
 class AromaBaseForm(forms.ModelForm):
     class Meta:
@@ -178,7 +180,7 @@ class AromaBaseForm(forms.ModelForm):
                     self.add_error('name', name_aroma_base_no_valid_char)
             else:
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 # class BottomMapForm(forms.ModelForm):
@@ -216,7 +218,7 @@ class ConditionsForm(forms.ModelForm):
             if name.startswith(no_valid_char) or name.endswith(no_valid_char):
                 self.add_error('name', msg)
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class CrochetForm(forms.ModelForm):
@@ -245,7 +247,7 @@ class CrochetForm(forms.ModelForm):
                     self.add_error('model', model_crochet_no_valid_char)
             else:
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 # class DistrictForm(forms.ModelForm):
@@ -275,7 +277,7 @@ class FeedCapacityForm(forms.ModelForm):
             if name.startswith(no_valid_char) or name.endswith(no_valid_char):
                 self.add_error('name', msg)
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class FishForm(forms.ModelForm):
@@ -300,35 +302,21 @@ class FishForm(forms.ModelForm):
             if name.startswith(no_valid_char) or name.endswith(no_valid_char):
                 self.add_error('name', msg)
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class FishingForm(forms.ModelForm):
     date = forms.DateField(
         input_formats=['%d.%m.%Y'],
-        widget=forms.DateInput(attrs={
-            'class': 'form-control datetimepicker-input',
-            'data-target': '#datetimepicker1'
-        },),
         label='Дата рыбалки'
     )
     time_start = forms.TimeField(
         input_formats=['%H:%M'],
-        widget=forms.TimeInput(attrs={
-            'class': 'form-control datetimepicker-input',
-            'pattern': '[0-2]{1}[0-9]{1}:[0-6]{1}[0-9]{1}',
-            'data-target': '#datetimepicker2'
-        }),
-        label='Время начала рыбалки'
+        label='Время начала'
     )
     time_end = forms.TimeField(
         input_formats=['%H:%M'],
-        widget=forms.TimeInput(attrs={
-            'class': 'form-control datetimepicker-input',
-            'pattern': '[0-2]{1}[0-9]{1}:[0-6]{1}[0-9]{1}',
-            'data-target': '#datetimepicker3'
-        }),
-        label='Время окончания рыбалки'
+        label='Время окончания'
     )
 
     class Meta:
@@ -345,7 +333,21 @@ class FishingForm(forms.ModelForm):
         if time_start == time_end:
             self.add_error(None, time_start_and_end_equal)
         
-        return self.cleaned_data
+        return super().clean()
+
+
+class FishingNoteForm(forms.ModelForm):
+    class Meta:
+        model = Fishing
+        fields = ['note']
+
+
+class FishingReportsSettingsForm(forms.ModelForm):
+    class Meta:
+        model = FishingReportsSettings
+        fields = ['fisherman', 'time_start', 'time_end', 'place_water', 'place_locality',
+                  'place_name', 'place_coordinate', 'weather', 'tackle', 'montage', 'trough',
+                  'leash', 'crochet', 'nozzle', 'pace', 'lure', 'result', 'trophy', 'note']
 
 
 class FishingLureForm(forms.ModelForm):
@@ -361,7 +363,7 @@ class FishingLureForm(forms.ModelForm):
         elif weight <= 0:
             self.add_error('weight', weight_lure_is_negative)
         
-        return self.cleaned_data
+        return super().clean()
     
     
 # class FishingPointForm(forms.ModelForm):
@@ -388,7 +390,7 @@ class FishingResultForm(forms.ModelForm):
         if number_of_fish == None:
             self.add_error('number_of_fish', fishing_result_number_of_fish_is_empty)
         
-        return self.cleaned_data
+        return super().clean()
 
 
 class FishingTrophyForm(forms.ModelForm):
@@ -406,7 +408,7 @@ class FishingTrophyForm(forms.ModelForm):
         if fish_trophy_weight == None:
             self.add_error('fish_trophy_weight', fishing_trophy_weight_is_empty)
         
-        return self.cleaned_data
+        return super().clean()
 
 
 class LeashForm(forms.ModelForm):
@@ -433,7 +435,7 @@ class LeashForm(forms.ModelForm):
             if material.startswith(no_valid_char) or material.endswith(no_valid_char):
                 self.add_error('material', leash_no_valid_char_error)
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class LureForm(forms.ModelForm):
@@ -449,7 +451,7 @@ class LureForm(forms.ModelForm):
         elif weight <= 0:
             self.add_error('weight', weight_lure_is_negative)
         
-        return self.cleaned_data
+        return super().clean()
 
 
 class LureBaseForm(forms.ModelForm):
@@ -476,7 +478,7 @@ class LureBaseForm(forms.ModelForm):
                     self.add_error('name', name_lure_base_no_valid_char)
             else:
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class LureMixForm(forms.ModelForm):
@@ -499,7 +501,7 @@ class LureMixForm(forms.ModelForm):
                     self.add_error('name', lure_mix_name_no_valid_char)
             else:
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class MontageForm(forms.ModelForm):
@@ -523,7 +525,7 @@ class MontageForm(forms.ModelForm):
                     self.add_error('name', montage_name_no_valid_char)
             else:
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class NozzleForm(forms.ModelForm):
@@ -564,7 +566,7 @@ class NozzleBaseForm(forms.ModelForm):
                     self.add_error('name', name_nozzle_no_valid_char)
             else:
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class BaitBaseForm(forms.ModelForm):
@@ -593,7 +595,7 @@ class BaitBaseForm(forms.ModelForm):
                     self.add_error('name', name_bait_no_valid_char)
             else:
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class NozzleStateForm(forms.ModelForm):
@@ -615,7 +617,7 @@ class NozzleStateForm(forms.ModelForm):
                     self.add_error('state', state_nozzle_no_valid_char)
             else:
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class NozzleTypeForm(forms.ModelForm):
@@ -639,7 +641,7 @@ class NozzleTypeForm(forms.ModelForm):
             if name.startswith(no_valid_char) or name.endswith(no_valid_char):
                 self.add_error('name', msg)
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class OvercastForm(forms.ModelForm):
@@ -663,7 +665,7 @@ class OvercastForm(forms.ModelForm):
             if name.startswith(no_valid_char) or name.endswith(no_valid_char):
                 self.add_error('name', msg)
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class PaceForm(forms.ModelForm):
@@ -688,7 +690,7 @@ class PaceForm(forms.ModelForm):
                 self.add_error('interval', msg)
                 break
 
-        return self.cleaned_data
+        return super().clean()
 
 
 class PlaceForm(forms.ModelForm):
@@ -720,7 +722,7 @@ class PlaceForm(forms.ModelForm):
                     self.add_error('name', name_place_no_valid_char)
             else:
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class PlaceCoordinatesForm(forms.ModelForm):
@@ -743,7 +745,7 @@ class PlaceCoordinatesForm(forms.ModelForm):
             self.add_error('longitude', 'Укажите долготу')
         elif longitude < -180 or longitude > 180:
             self.add_error('longitude', msg2)
-        return self.cleaned_data
+        return super().clean()
 
 
 # class PointForm(forms.ModelForm):
@@ -774,7 +776,7 @@ class PrimingForm(forms.ModelForm):
             if name.startswith(no_valid_char) or name.endswith(no_valid_char):
                 self.add_error('name', msg)
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class TackleForm(forms.ModelForm):
@@ -806,7 +808,7 @@ class TackleForm(forms.ModelForm):
                     self.add_error('model_tackle', tackle_model_no_valid_char)
             else:
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class TroughForm(forms.ModelForm):
@@ -838,7 +840,7 @@ class TroughForm(forms.ModelForm):
                     self.add_error('model_name', trough_model_no_valid_char)
             else:
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class WaterForm(forms.ModelForm):
@@ -850,7 +852,7 @@ class WaterForm(forms.ModelForm):
         name = self.cleaned_data.get('name')
         if len(name) == 0:
             self.add_error('name', name_water_is_empty)
-            return self.cleaned_data
+            return super().clean()
         name = re.sub(r'\s+', ' ', name)
         
         name_errors = False
@@ -861,7 +863,7 @@ class WaterForm(forms.ModelForm):
                     self.add_error('name', name_water_no_valid_char)
             else:
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class WaterCategoryForm(forms.ModelForm):
@@ -876,7 +878,7 @@ class WaterCategoryForm(forms.ModelForm):
         if len(category) == 0:
             msg0 = 'Название категории не может быть пустым'
             self.add_error('category', msg0)
-            return self.cleaned_data
+            return super().clean()
         category = re.sub(r'\s+', ' ', category)
         
         msg1 = 'Категория не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|,'
@@ -889,7 +891,7 @@ class WaterCategoryForm(forms.ModelForm):
             if abbreviation.startswith(no_valid_char) or abbreviation.endswith(no_valid_char):
                 self.add_error('abbreviation', msg2)
                 break
-        return self.cleaned_data
+        return super().clean()
 
 
 class WeatherForm(forms.ModelForm):
@@ -913,7 +915,7 @@ class WeatherForm(forms.ModelForm):
             pressure == None and len(direction_wind) == 0 and wind_speed == None and
             lunar_day == None):
             self.add_error(None, weather_form_fields_is_empty)
-            return self.cleaned_data
+            return super().clean()
         
         if temperature != None and temperature < weather_min_temperature:
             self.add_error('temperature', weather_temperature_is_low)
@@ -938,4 +940,4 @@ class WeatherForm(forms.ModelForm):
                     self.add_error('direction_wind', weather_direction_wind_no_valid_char)
             else:
                 break
-        return self.cleaned_data
+        return super().clean()

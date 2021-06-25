@@ -1,0 +1,45 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+{% block content %}
+
+{% if trough_list != None %}
+<!-- Кормушки -->
+<div class="content__item">
+  {% if trough_list %}
+  <table>
+    {% for trough in trough_list %}
+    <tr>
+      <td>
+        {{trough}}
+      </td>
+      <td>
+        {% if trough.owner == user %}
+        <a href="{% url 'fishing:trough_edit' trough.id %}">
+          <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
+        </a>
+        <a href="{% url 'fishing:trough_delete' trough.id %}">
+          <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
+        </a>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="content__item-text">
+    <p>Кормушки ещё не добавлены</p>
+  </div>
+  {% endif %}
+  <div class="content__item content__item--center">
+    <a class="button__std" href="{% url 'fishing:trough_add' %}">
+      <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+      Добавить
+    </a>
+    <a class="button__std" href="{% url 'fishing:fisherman_gear' %}">
+      Назад
+    </a>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

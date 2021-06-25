@@ -1,0 +1,45 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+{% block content %}
+
+{% if tackle_list != None %}
+<!-- Снасти -->
+<div class="content__item">
+  {% if tackle_list %}
+  <table>
+    {% for tackle in tackle_list %}
+    <tr>
+      <td>
+        {{tackle}}
+      </td>
+      <td>
+        {% if tackle.owner == user %}
+          <a href="{% url 'fishing:tackle_edit' tackle.id %}">
+            <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
+          </a>
+          <a href="{% url 'fishing:tackle_delete' tackle.id %}">
+            <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
+          </a>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="content__item-text">
+    <p>Снасти еще не добавлены</p>
+  </div>
+  {% endif %}
+  <div class="content__item content__item--center">
+    <a class="button__std button__std--center" href="{% url 'fishing:tackle_add' %}">
+      <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+      Добавить
+    </a>
+    <a class="button__std button__std--center" href="{% url 'fishing:fisherman_gear' %}">
+      Назад
+    </a>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

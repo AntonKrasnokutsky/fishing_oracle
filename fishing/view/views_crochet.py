@@ -6,6 +6,8 @@ from django.views import View
 from fishing.models import Crochet
 from fishing.forms import CrochetForm
 
+from fishing.getinfo import siteinfo, getuserinfo
+
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
@@ -14,11 +16,11 @@ class CrochetAdd(View):
     """
     Добавление крючка
     """
-    template = 'fishing/crochet/renewal_add.html'
+    template = 'fishing/notes/gears/crochet/renewal_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(CrochetAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = CrochetForm(request.POST)
@@ -33,18 +35,24 @@ class CrochetAdd(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'errors': 'Такой крючок уже добавлен'})
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = CrochetForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class CrochetList(View):
@@ -52,11 +60,11 @@ class CrochetList(View):
     Возвращает список крючков
     """
 
-    template = 'fishing/crochet/list.html'
+    template = 'fishing/notes/gears/crochet/list.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(CrochetList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         if request.user.is_staff:
@@ -65,7 +73,9 @@ class CrochetList(View):
             crochet_list = Crochet.objects.filter(owner=request.user)
         return render(request,
                     self.template,
-                    {'crochet_list': crochet_list})
+                    {'fisherman': getuserinfo(request),
+                     'siteinfo': siteinfo(),
+                     'crochet_list': crochet_list})
 
 
 class CrochetDelete(View):
@@ -75,7 +85,7 @@ class CrochetDelete(View):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(CrochetDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         crochet = get_object_or_404(Crochet, pk=kwargs['crochet_id'])
@@ -88,11 +98,11 @@ class CrochetEdit(View):
     """
     Изменение крючка
     """
-    template = 'fishing/crochet/renewal_add.html'
+    template = 'fishing/notes/gears/crochet/renewal_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(CrochetEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         crochet = get_object_or_404(Crochet, pk=kwargs['crochet_id'])
@@ -108,14 +118,18 @@ class CrochetEdit(View):
                 else:
                     return render(request,
                                 self.template,
-                                {'form': form,
+                                {'fisherman': getuserinfo(request),
+                                 'siteinfo': siteinfo(),
+                                 'form': form,
                                  'crochet': crochet,
-                                'errors': 'Такой крючок уже добавлен'})
+                                 'errors': 'Такой крючок уже добавлен'})
             else:
                 return render(request,
                             self.template,
-                            {'form': form,
-                            'crochet': crochet})
+                            {'fisherman': getuserinfo(request),
+                             'siteinfo': siteinfo(),
+                             'form': form,
+                             'crochet': crochet})
 
     def get(self, request, *args, **kwargs):
         crochet = get_object_or_404(Crochet, pk=kwargs['crochet_id'])
@@ -123,6 +137,8 @@ class CrochetEdit(View):
             form = CrochetForm(instance=crochet)
             return render(request,
                         self.template,
-                        {'form': form,
-                        'crochet': crochet})
+                        {'fisherman': getuserinfo(request),
+                         'siteinfo': siteinfo(),
+                         'form': form,
+                         'crochet': crochet})
         return redirect('fishing:crochet')

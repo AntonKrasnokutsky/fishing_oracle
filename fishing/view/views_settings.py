@@ -20,7 +20,8 @@ from fishing.forms import FeedCapacityForm
 from fishing.forms import FishForm
 from fishing.forms import WaterCategoryForm
 
-from django.contrib.auth.decorators import login_required
+from fishing.getinfo import siteinfo, getuserinfo
+
 from django.utils.decorators import method_decorator
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -28,24 +29,27 @@ class Settings(View):
     """
     Страница администратора
     """
-
-    @method_decorator(staff_member_required)
+    template = 'fishing/settings.html'
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(Settings, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        return render(request, 'fishing/settings.html')
+        return render(request,
+                      self.template,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),})
 
 
 class PrimingAdd(View):
     """
     Добавление варианта покрытия дна
     """
-    template = 'fishing/priming/renewal_add.html'
+    template = 'fishing/settings/priming/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(PrimingAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = PrimingForm(request.POST)
@@ -58,13 +62,17 @@ class PrimingAdd(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = PrimingForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class PrimingList(View):
@@ -72,17 +80,19 @@ class PrimingList(View):
     Возвращает список варинатов покрытия дна
     """
 
-    template = 'fishing/priming/list.html'
+    template = 'fishing/settings/priming/list.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(PrimingList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         primings_list = Priming.objects.all()
         return render(request,
                       self.template,
-                      {'primings_list': primings_list})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'primings_list': primings_list})
 
 
 class PrimingDelete(View):
@@ -90,9 +100,9 @@ class PrimingDelete(View):
     Удаление варианта покрытия дна
     """
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(PrimingDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         priming = get_object_or_404(Priming, pk=kwargs['priming_id'])
@@ -104,11 +114,11 @@ class PrimingEdit(View):
     """
     Изменение варианта покрытия дна
     """
-    template = 'fishing/priming/renewal_add.html'
+    template = 'fishing/settings/priming/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(PrimingEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         priming = get_object_or_404(Priming, pk=kwargs['priming_id'])
@@ -121,7 +131,9 @@ class PrimingEdit(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'priming': priming})
 
     def get(self, request, *args, **kwargs):
@@ -129,18 +141,21 @@ class PrimingEdit(View):
         form = PrimingForm(instance=priming)
         return render(request,
                       self.template,
-                      {'form': form,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form,
                        'priming': priming})
+
 
 class ConditionsAdd(View):
     """
     Добавление варианта погодного явления
     """
-    template = 'fishing/conditions/renewal_add.html'
+    template = 'fishing/settings/conditions/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(ConditionsAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = ConditionsForm(request.POST)
@@ -153,13 +168,17 @@ class ConditionsAdd(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = ConditionsForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class ConditionsList(View):
@@ -167,17 +186,19 @@ class ConditionsList(View):
     Возвращает список варинатов погодных явлений
     """
 
-    template = 'fishing/conditions/list.html'
+    template = 'fishing/settings/conditions/list.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(ConditionsList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         conditions_list = Conditions.objects.all()
         return render(request,
                       self.template,
-                      {'conditions_list': conditions_list})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'conditions_list': conditions_list})
 
 
 class ConditionsDelete(View):
@@ -185,9 +206,9 @@ class ConditionsDelete(View):
     Удаление варианта погодного явления
     """
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(ConditionsDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         conditions = get_object_or_404(Conditions, pk=kwargs['conditions_id'])
@@ -199,11 +220,11 @@ class ConditionsEdit(View):
     """
     Изменение варианта погодного явления
     """
-    template = 'fishing/conditions/renewal_add.html'
+    template = 'fishing/settings/conditions/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(ConditionsEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         conditions = get_object_or_404(Conditions, pk=kwargs['conditions_id'])
@@ -216,7 +237,9 @@ class ConditionsEdit(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'conditions': conditions})
 
     def get(self, request, *args, **kwargs):
@@ -224,7 +247,9 @@ class ConditionsEdit(View):
         form = ConditionsForm(instance=conditions)
         return render(request,
                       self.template,
-                      {'form': form,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form,
                        'conditions': conditions})
 
 
@@ -232,11 +257,11 @@ class OvercastAdd(View):
     """
     Добавление варианта облачности
     """
-    template = 'fishing/overcast/renewal_add.html'
+    template = 'fishing/settings/overcast/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(OvercastAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = OvercastForm(request.POST)
@@ -249,13 +274,17 @@ class OvercastAdd(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = OvercastForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class OvercastList(View):
@@ -263,17 +292,19 @@ class OvercastList(View):
     Возвращает список варинатов облачности
     """
 
-    template = 'fishing/overcast/list.html'
+    template = 'fishing/settings/overcast/list.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(OvercastList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         overcast_list = Overcast.objects.all()
         return render(request,
                       self.template,
-                      {'overcast_list': overcast_list})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'overcast_list': overcast_list})
 
 
 class OvercastDelete(View):
@@ -281,9 +312,9 @@ class OvercastDelete(View):
     Удаление варианта облачности
     """
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(OvercastDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         overcast = get_object_or_404(Overcast, pk=kwargs['overcast_id'])
@@ -295,11 +326,11 @@ class OvercastEdit(View):
     """
     Изменение варианта облачности
     """
-    template = 'fishing/overcast/renewal_add.html'
+    template = 'fishing/settings/overcast/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(OvercastEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         overcast = get_object_or_404(Overcast, pk=kwargs['overcast_id'])
@@ -311,7 +342,9 @@ class OvercastEdit(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'overcast': overcast})
 
     def get(self, request, *args, **kwargs):
@@ -319,7 +352,9 @@ class OvercastEdit(View):
         form = OvercastForm(instance=overcast)
         return render(request,
                       self.template,
-                      {'form': form,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form,
                        'overcast': overcast})
 
 
@@ -327,11 +362,11 @@ class PaceAdd(View):
     """
     Добавление варианта темпа
     """
-    template = 'fishing/pace/renewal_add.html'
+    template = 'fishing/settings/pace/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(PaceAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = PaceForm(request.POST)
@@ -344,13 +379,17 @@ class PaceAdd(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = PaceForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class PaceList(View):
@@ -358,17 +397,19 @@ class PaceList(View):
     Возвращает список варинатов темпа ловли
     """
 
-    template = 'fishing/pace/list.html'
+    template = 'fishing/settings/pace/list.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(PaceList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         pace_list = Pace.objects.all()
         return render(request,
                       self.template,
-                      {'pace_list': pace_list})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'pace_list': pace_list})
 
 
 class PaceDelete(View):
@@ -376,9 +417,9 @@ class PaceDelete(View):
     Удаление варианта темпа ловли
     """
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(PaceDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         pace = get_object_or_404(Pace, pk=kwargs['pace_id'])
@@ -390,11 +431,11 @@ class PaceEdit(View):
     """
     Изменение варианта темпа ловли
     """
-    template = 'fishing/pace/renewal_add.html'
+    template = 'fishing/settings/pace/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(PaceEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         pace = get_object_or_404(Pace, pk=kwargs['pace_id'])
@@ -407,7 +448,9 @@ class PaceEdit(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'pace': pace})
 
     def get(self, request, *args, **kwargs):
@@ -415,7 +458,9 @@ class PaceEdit(View):
         form = PaceForm(instance=pace)
         return render(request,
                       self.template,
-                      {'form': form,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form,
                        'pace': pace})
 
 
@@ -423,11 +468,11 @@ class NozzleTypeAdd(View):
     """
     Добавление типа насадки
     """
-    template = 'fishing/nozzletype/renewal_add.html'
+    template = 'fishing/settings/nozzletype/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(NozzleTypeAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = NozzleTypeForm(request.POST)
@@ -440,13 +485,17 @@ class NozzleTypeAdd(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = NozzleTypeForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class NozzleTypeList(View):
@@ -454,17 +503,19 @@ class NozzleTypeList(View):
     Возвращает список типов насадок
     """
 
-    template = 'fishing/nozzletype/list.html'
+    template = 'fishing/settings/nozzletype/list.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(NozzleTypeList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         nozzle_type_list = NozzleType.objects.all()
         return render(request,
                       self.template,
-                      {'nozzle_type_list': nozzle_type_list})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'nozzle_type_list': nozzle_type_list})
 
 
 class NozzleTypeDelete(View):
@@ -472,9 +523,9 @@ class NozzleTypeDelete(View):
     Удаление типа насадки
     """
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(NozzleTypeDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         nozzle_type = get_object_or_404(NozzleType, pk=kwargs['type_id'])
@@ -486,11 +537,11 @@ class NozzleTypeEdit(View):
     """
     Изменение типа насадки
     """
-    template = 'fishing/nozzletype/renewal_add.html'
+    template = 'fishing/settings/nozzletype/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(NozzleTypeEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         nozzle_type = get_object_or_404(NozzleType, pk=kwargs['type_id'])
@@ -503,7 +554,9 @@ class NozzleTypeEdit(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'nozzle_type': nozzle_type})
 
     def get(self, request, *args, **kwargs):
@@ -511,7 +564,9 @@ class NozzleTypeEdit(View):
         form = NozzleTypeForm(instance=nozzle_type)
         return render(request,
                       self.template,
-                      {'form': form,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form,
                        'nozzle_type': nozzle_type})
 
 
@@ -519,11 +574,11 @@ class CapacityAdd(View):
     """
     Добавление варианта темпа
     """
-    template = 'fishing/capacity/renewal_add.html'
+    template = 'fishing/settings/capacity/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(CapacityAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = FeedCapacityForm(request.POST)
@@ -536,13 +591,17 @@ class CapacityAdd(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = FeedCapacityForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class CapacityList(View):
@@ -550,17 +609,19 @@ class CapacityList(View):
     Возвращает список варинатов кормоемкости
     """
 
-    template = 'fishing/capacity/list.html'
+    template = 'fishing/settings/capacity/list.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(CapacityList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         capacity_list = FeedCapacity.objects.all()
         return render(request,
                       self.template,
-                      {'capacity_list': capacity_list})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'capacity_list': capacity_list})
 
 
 class CapacityDelete(View):
@@ -568,9 +629,9 @@ class CapacityDelete(View):
     Удаление варианта кормоёмкости
     """
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(CapacityDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         capacity = get_object_or_404(FeedCapacity, pk=kwargs['capacity_id'])
@@ -582,11 +643,11 @@ class CapacityEdit(View):
     """
     Изменение варианта кормоёмкости
     """
-    template = 'fishing/capacity/renewal_add.html'
+    template = 'fishing/settings/capacity/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(CapacityEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         capacity = get_object_or_404(FeedCapacity, pk=kwargs['capacity_id'])
@@ -599,7 +660,9 @@ class CapacityEdit(View):
         else:
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'capacity': capacity})
 
     def get(self, request, *args, **kwargs):
@@ -607,7 +670,9 @@ class CapacityEdit(View):
         form = FeedCapacityForm(instance=capacity)
         return render(request,
                       self.template,
-                      {'form': form,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form,
                        'capacity': capacity})
 
 
@@ -615,31 +680,35 @@ class FishAdd(View):
     """
     Добавление рыб
     """
-    template = 'fishing/fish/renewal_add.html'
+    template = 'fishing/settings/fish/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(FishAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        form = FishForm(request.POST)
+        form_fish = FishForm(request.POST)
         fish = Fish()
-        if form.is_valid():
-            fish = form.save(commit=False)
+        if form_fish.is_valid():
+            fish = form_fish.save(commit=False)
             fish.first_upper()
             fish.save()
-            return redirect('fishing:fish_list')
+            return redirect('fishing:settings_fish_list')
         else:
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form_fish': form_fish,
                            'fish': fish})
 
     def get(self, request, *args, **kwargs):
-        form = FishForm()
+        form_fish = FishForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form_fish': form_fish})
 
 
 class FishList(View):
@@ -647,13 +716,19 @@ class FishList(View):
     Возвращает список рыб
     """
 
-    template = 'fishing/fish/list.html'
+    template = 'fishing/settings/fish/list.html'
 
+    @method_decorator(staff_member_required(login_url='login'))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
     def get(self, request, *args, **kwargs):
         fish_list = Fish.objects.all()
         return render(request,
                       self.template,
-                      {'fish_list': fish_list})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'fish_list': fish_list})
 
 
 class FishDelete(View):
@@ -661,46 +736,51 @@ class FishDelete(View):
     Удаление рыбы
     """
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(FishDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         fish = get_object_or_404(Fish, pk=kwargs['fish_id'])
         fish.delete()
-        return redirect('fishing:fish_list')
+        return redirect('fishing:settings_fish_list')
 
 
 class FishEdit(View):
     """
     Изменение рыбы
     """
-    template = 'fishing/fish/renewal_add.html'
+    
+    template = 'fishing/settings/fish/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(FishEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         fish = get_object_or_404(Fish, pk=kwargs['fish_id'])
-        form = FishForm(request.POST, instance=fish)
-        if form.is_valid():
-            fish = form.save(commit=False)
+        form_fish = FishForm(request.POST, instance=fish)
+        if form_fish.is_valid():
+            fish = form_fish.save(commit=False)
             fish.first_upper()
             fish.save()
-            return redirect('fishing:fish_list')
+            return redirect('fishing:settings_fish_list')
         else:
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form_fish': form_fish,
                            'fish': fish})
 
     def get(self, request, *args, **kwargs):
         fish = get_object_or_404(Fish, pk=kwargs['fish_id'])
-        form = FishForm(instance=fish)
+        form_fish = FishForm(instance=fish)
         return render(request,
                       self.template,
-                      {'form': form,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form_fish': form_fish,
                        'fish': fish})
 
 
@@ -709,24 +789,26 @@ class FishDetails(View):
     Возвращает подробную нинформацию о рыбе
     """
 
-    template = 'fishing/fish/details.html'
+    template = 'fishing/settings/fish/details.html'
 
     def get(self, request, *args, **kwargs):
         fish_details = get_object_or_404(Fish, pk=kwargs['fish_id'])
         return render(request,
                       self.template,
-                      {'fish': fish_details})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'fish': fish_details})
 
 
 class WaterCategoryAdd(View):
     """
     Добавление категории водоема
     """
-    template = 'fishing/watercategory/renewal_add.html'
+    template = 'fishing/settings/watercategory/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(WaterCategoryAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = WaterCategoryForm(request.POST)
@@ -741,23 +823,31 @@ class WaterCategoryAdd(View):
                 else:
                     return render(request,
                               self.template,
-                              {'form': form,
-                              'errors': 'Укажите аббревиатуру'})
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
+                               'errors': 'Укажите аббревиатуру'})
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
-                              'errors': 'Такая категория водоёма или аббревиатура уже добавлена'})
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
+                               'errors': 'Такая категория водоёма или аббревиатура уже добавлена'})
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = WaterCategoryForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class WaterCategoryList(View):
@@ -765,17 +855,19 @@ class WaterCategoryList(View):
     Возвращает список категорий водоемов
     """
 
-    template = 'fishing/watercategory/list.html'
+    template = 'fishing/settings/watercategory/list.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(WaterCategoryList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         water_category_list = WaterCategory.objects.all()
         return render(request,
                       self.template,
-                      {'water_category_list': water_category_list})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'water_category_list': water_category_list})
 
 
 class WaterCategoryDelete(View):
@@ -783,9 +875,9 @@ class WaterCategoryDelete(View):
     Удаление категории водоема
     """
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(WaterCategoryDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         water_category = get_object_or_404(WaterCategory, pk=kwargs['water_category_id'])
@@ -797,11 +889,11 @@ class WaterCategoryEdit(View):
     """
     Изменение катеогории водоёма
     """
-    template = 'fishing/watercategory/renewal_add.html'
+    template = 'fishing/settings/watercategory/renewal_add.html'
 
-    @method_decorator(staff_member_required)
+    @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
-        return super(WaterCategoryEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         water_category = get_object_or_404(WaterCategory, pk=kwargs['water_category_id'])
@@ -815,13 +907,17 @@ class WaterCategoryEdit(View):
                 return redirect('fishing:water_category')
             return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'water_category': water_category,
-                              'errors': 'Такая категория водоёма или аббревиатура уже добавлена'})
+                               'errors': 'Такая категория водоёма или аббревиатура уже добавлена'})
         else:
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'water_category': water_category})
 
     def get(self, request, *args, **kwargs):
@@ -829,5 +925,7 @@ class WaterCategoryEdit(View):
         form = WaterCategoryForm(instance=water_category)
         return render(request,
                       self.template,
-                      {'form': form,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form,
                        'water_category': water_category})

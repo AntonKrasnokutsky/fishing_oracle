@@ -19,6 +19,8 @@ from fishing.forms import LureForm
 from fishing.forms import LureMixForm
 from fishing.forms import NozzleForm
 
+from fishing.getinfo import siteinfo, getuserinfo
+
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
@@ -28,11 +30,11 @@ class SelectAromaForMix(View):
     Список прикормов для выбора в прикормочную смесь
     """
 
-    template = 'fishing/luremix/select_aroma.html'
+    template = 'fishing/notes/feeds/luremix/select_aroma.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(SelectAromaForMix, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
@@ -52,7 +54,9 @@ class SelectAromaForMix(View):
                         
             return render(request,
                     self.template,
-                    {'lure_mix': lure_mix,
+                    {'fisherman': getuserinfo(request),
+                     'siteinfo': siteinfo(),
+                     'lure_mix': lure_mix,
                      'aroma_base_entery': aroma_base_entery,
                      'aroma_base_list': aroma_base_list})
         return redirect('fishing:lure_mix')
@@ -62,11 +66,11 @@ class AddAromaToMix(View):
     """
     Добавление выбранной аромы в смесь
     """
-    template = 'fishing/luremix/edit_add_aroma.html'
+    template = 'fishing/notes/feeds/luremix/edit_add_aroma.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(AddAromaToMix, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
@@ -83,7 +87,9 @@ class AddAromaToMix(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'lure_mix': lure_mix})
         return redirect('fishing:lure_mix')
     
@@ -94,7 +100,9 @@ class AddAromaToMix(View):
             form = AromaForm()
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'lure_mix': lure_mix})
         return redirect('fishing:lure_mix')
 
@@ -106,7 +114,7 @@ class DeleteAromaOfMix(View):
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(DeleteAromaOfMix, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
         aroma = get_object_or_404(Aroma, pk=kwargs['aroma_id'])
@@ -121,11 +129,11 @@ class EditAromaToMix(View):
     """
     Редактиорвание выбраннй аромы в смеси
     """
-    template = 'fishing/luremix/edit_add_aroma.html'
+    template = 'fishing/notes/feeds/luremix/edit_add_aroma.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(EditAromaToMix, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
@@ -139,7 +147,9 @@ class EditAromaToMix(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'lure_mix': lure_mix,
                                'aroma': aroma})
         return redirect('fishing:lure_mix')
@@ -151,7 +161,9 @@ class EditAromaToMix(View):
             form = AromaForm(instance=aroma)
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'lure_mix': lure_mix,
                            'aroma': aroma})
         return redirect('fishing:lure_mix')
@@ -161,7 +173,7 @@ class LureMixAdd(View):
     """
     Добавление прикормочных смесей
     """
-    template = 'fishing/luremix/edit_add.html'
+    template = 'fishing/notes/feeds/luremix/edit_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -175,22 +187,28 @@ class LureMixAdd(View):
             if lure_mix.unique():
                 lure_mix.first_upper()
                 lure_mix.save()
-                return redirect('fishing:lure_mix')
+                return redirect('fishing:lure_mix_details', lure_mix.id)
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'errors': 'Такая прикормочная смесь уже добавлена'})
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = LureMixForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class LureMixList(View):
@@ -198,11 +216,11 @@ class LureMixList(View):
     Возвращает список прикормочных смесей
     """
 
-    template = 'fishing/luremix/list.html'
+    template = 'fishing/notes/feeds/luremix/list.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(LureMixList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         if request.user.is_staff:
@@ -211,7 +229,9 @@ class LureMixList(View):
             lure_mix_list = LureMix.objects.filter(owner=request.user)
         return render(request,
                     self.template,
-                    {'lure_mix_list': lure_mix_list})
+                    {'fisherman': getuserinfo(request),
+                     'siteinfo': siteinfo(),
+                     'lure_mix_list': lure_mix_list})
 
 
 class LureMixDelete(View):
@@ -221,7 +241,7 @@ class LureMixDelete(View):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(LureMixDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
@@ -234,11 +254,11 @@ class LureMixEdit(View):
     """
     Изменение названия прикормочной смеси
     """
-    template = 'fishing/luremix/edit_add.html'
+    template = 'fishing/notes/feeds/luremix/edit_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(LureMixEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
@@ -254,14 +274,18 @@ class LureMixEdit(View):
                 else:
                     return render(request,
                                 self.template,
-                                {'form': form,
+                                {'fisherman': getuserinfo(request),
+                                 'siteinfo': siteinfo(),
+                                 'form': form,
                                  'lure_mix': lure_mix,
                                  'errors': 'Такая прикормочная смесь уже добавлена'})
             else:
                 return render(request,
                             self.template,
-                            {'form': form,
-                            'lure_mix': lure_mix})
+                            {'fisherman': getuserinfo(request),
+                             'siteinfo': siteinfo(),
+                             'form': form,
+                             'lure_mix': lure_mix})
         return redirect('fishing:lure_mix')
 
     def get(self, request, *args, **kwargs):
@@ -270,8 +294,10 @@ class LureMixEdit(View):
             form = LureMixForm(instance=lure_mix)
             return render(request,
                         self.template,
-                        {'form': form,
-                        'lure_mix': lure_mix})
+                        {'fisherman': getuserinfo(request),
+                         'siteinfo': siteinfo(),
+                         'form': form,
+                         'lure_mix': lure_mix})
         return redirect('fishing:lure_mix')
 
 
@@ -280,18 +306,20 @@ class LureMixDetails(View):
     Подробности о прикормочной смеси
     """
 
-    template = 'fishing/luremix/details.html'
+    template = 'fishing/notes/feeds/luremix/details.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(LureMixDetails, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
         if lure_mix.owner == request.user:
             return render(request,
                     self.template,
-                    {'lure_mix': lure_mix})
+                    {'fisherman': getuserinfo(request),
+                     'siteinfo': siteinfo(),
+                     'lure_mix': lure_mix})
         return redirect('fishing:lure_mix')
 
 
@@ -300,11 +328,11 @@ class SelectLureForMix(View):
     Список прикормов для выбора в прикормочную смесь
     """
 
-    template = 'fishing/luremix/select_lure.html'
+    template = 'fishing/notes/feeds/luremix/select_lure.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(SelectLureForMix, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
 
     def get(self, request, *args, **kwargs):
@@ -324,7 +352,9 @@ class SelectLureForMix(View):
 
             return render(request,
                           self.template,
-                          {'lure_mix': lure_mix,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'lure_mix': lure_mix,
                            'lure_base_entery': lure_base_entery,
                            'lure_base_list': lure_base_list})
         return redirect('fishing:lure_mix')
@@ -334,11 +364,11 @@ class AddLureToMix(View):
     """
     Добавление выбранного прикорма в смесь
     """
-    template = 'fishing/luremix/edit_add_lure.html'
+    template = 'fishing/notes/feeds/luremix/edit_add_lure.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(AddLureToMix, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
@@ -355,7 +385,9 @@ class AddLureToMix(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'lure_mix': lure_mix,
                                'lure_base': lure_base})
         return redirect('fishing:lure_mix')
@@ -367,7 +399,9 @@ class AddLureToMix(View):
             form = LureForm()
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'lure_mix': lure_mix})
         return redirect('fishing:lure_mix')
 
@@ -379,7 +413,7 @@ class DeleteLureOfMix(View):
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(DeleteLureOfMix, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
         lure = get_object_or_404(Lure, pk=kwargs['lure_id'])
@@ -394,11 +428,11 @@ class EditLureToMix(View):
     """
     Редактиорвание выбранного прикорма в смеси
     """
-    template = 'fishing/luremix/edit_add_lure.html'
+    template = 'fishing/notes/feeds/luremix/edit_add_lure.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(EditLureToMix, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
@@ -412,7 +446,9 @@ class EditLureToMix(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'lure_mix': lure_mix,
                                'lure': lure})
         return redirect('fishing:lure_mix')
@@ -424,7 +460,9 @@ class EditLureToMix(View):
             form = LureForm(instance=lure)
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'lure_mix': lure_mix,
                            'lure': lure})
         return redirect('fishing:lure_mix')
@@ -435,11 +473,11 @@ class SelectNozzleForMix(View):
     Возвращает список наживок/насадок для добавления в прикормочную смесь
     """
     
-    template = 'fishing/luremix/select_nozzle.html'
+    template = 'fishing/notes/feeds/luremix/select_nozzle.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(SelectNozzleForMix, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
@@ -447,7 +485,9 @@ class SelectNozzleForMix(View):
             nozzle_base_list = NozzleBase.objects.filter(owner=request.user)
             return render(request,
                     self.template,
-                    {'lure_mix': lure_mix,
+                    {'fisherman': getuserinfo(request),
+                     'siteinfo': siteinfo(),
+                     'lure_mix': lure_mix,
                      'nozzle_base_list': nozzle_base_list})
         return redirect('fishing:lure_mix')
 
@@ -457,10 +497,10 @@ class SelectNozzleStateForMix(View):
     Возвращает список состояний наживок/насадок для добавления в прикормочную смесь
     """
     
-    template = 'fishing/luremix/select_nozzle_state.html'
+    template = 'fishing/notes/feeds/luremix/select_nozzle_state.html'
     
     def dispatch(self, *args, **kwargs):
-        return super(SelectNozzleStateForMix, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
@@ -481,7 +521,9 @@ class SelectNozzleStateForMix(View):
                         
             return render(request,
                           self.template,
-                          {'lure_mix': lure_mix,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'lure_mix': lure_mix,
                            'nozzle_base': nozzle_base,
                            'nozzle_state_entery': nozzle_state_entery,
                            'nozzle_state_list': nozzle_state_list})
@@ -492,11 +534,11 @@ class AddNozzleToMix(View):
     """
     Добавление выбранной насдки/каживки в смесь
     """
-    template = 'fishing/luremix/edit_add_nozzle.html'
+    template = 'fishing/notes/feeds/luremix/edit_add_nozzle.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(AddNozzleToMix, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
@@ -521,7 +563,7 @@ class DeleteNozzleOfMix(View):
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(DeleteNozzleOfMix, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
         nozzle = get_object_or_404(Nozzle, pk=kwargs['nozzle_id'])
@@ -536,11 +578,11 @@ class EditNozzleToMix(View):
     """
     Редактиорвание выбранной насадки или наживки в смеси
     """
-    template = 'fishing/luremix/edit_add_nozzle.html'
+    template = 'fishing/notes/feeds/luremix/edit_add_nozzle.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(EditNozzleToMix, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
@@ -554,7 +596,9 @@ class EditNozzleToMix(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'lure_mix': lure_mix,
                                'nozzle': nozzle})
         return redirect('fishing:lure_mix')
@@ -566,7 +610,9 @@ class EditNozzleToMix(View):
             form = NozzleForm(instance=nozzle)
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'lure_mix': lure_mix,
                            'nozzle': nozzle})
         return redirect('fishing:lure_mix')

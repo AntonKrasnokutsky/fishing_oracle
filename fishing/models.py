@@ -2,8 +2,23 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from django.core.validators import MaxValueValidator
 from datetime import datetime
+
+from django.shortcuts import get_object_or_404
 from users.models import CustomUser
 import re
+
+months = ['января',
+          'февраля',
+          'марта',
+          'апреля',
+          'мая',
+          'июня',
+          'июля',
+          'августа',
+          'сентября',
+          'октября',
+          'ноября',
+          'декабря']
 
 
 class Aroma(models.Model):  # Аромы в прикормочной смеси
@@ -35,6 +50,9 @@ class Aroma(models.Model):  # Аромы в прикормочной смеси
         decimal_places=2,
         blank=True,
         verbose_name="Количество аромы")
+    
+    def __str__(self):
+        return str(self.base) + ' ' + str(self.volume) + 'л.'
 
 
 class AromaBase(models.Model):  # Аромы базовые
@@ -267,10 +285,10 @@ class Fish(models.Model):  # Рыбы
     # Название рыбы https://gdekluet.ru/directory/fish/
     name = models.CharField(
         max_length=20,
-        verbose_name="Рыба",
+        verbose_name="Название рыбы",
         unique=True)
     description = models.TextField(blank=True,
-                                        verbose_name="Описание")
+                                        verbose_name="Описание рыбы")
 
     def __str__(self):
         return self.name
@@ -304,11 +322,11 @@ class Fishing(models.Model):  # Рыбалки
     # Время начала рыбалки
     time_start = models.TimeField(
         auto_now_add=False,
-        verbose_name="Время начала рыбалки")
+        verbose_name="Время начала")
     # Время начала рыбалки
     time_end = models.TimeField(
         auto_now_add=False,
-        verbose_name="Время окончания рыбалки")
+        verbose_name="Время окончания")
     # Место проведения рыбалки
     # PlaceFishing
     # Погода
@@ -335,9 +353,23 @@ class Fishing(models.Model):  # Рыбалки
     # Трофей
     #
     planned = models.BooleanField(default=False)
+    note = models.TextField(blank=True,
+                            verbose_name="Заметки о рыбалке")
+    report = models.TextField(blank=True,
+                              verbose_name="Отчет по рыбалке")
 
+    def date_to_str(self):
+        result = str(self.date)[8:10] + ' ' + months[int(str(self.date)[5:7])-1] + ' ' + str(self.date)[:4]
+        return result
+    
     def __str__(self):
-        return str(self.date) + ': ' + str(self.time_start)[:5] + '-' + str(self.time_end)[:5] + (' (запланировано)' if self.planned else '')
+        fp = FishingPlace.objects.filter(fishing=self)
+        try:
+            fp = str(fp[0])
+        except IndexError:
+            fp = 'Рыбалка '
+        
+        return  fp + ' ' + str(self.date) + ': ' + str(self.time_start)[:5] + (' (запланировано)' if self.planned else '')
 
     def set_planned(self):
         """
@@ -360,6 +392,395 @@ class Fishing(models.Model):  # Рыбалки
             else:
                 break
         return True
+
+    def get_trophys(request):
+        result = {}
+        result['fish'] = []
+        result['weight'] = []
+        result['fishing'] = []
+        fishings = Fishing.objects.filter(owner=request.user)
+        for fishing in fishings:
+            try:
+                fishing_trophys = FishingTrophy.objects.filter(fishing=fishing)
+            except:
+                fishing_trophys = None
+            if fishing_trophys:
+                for fishing_trophy in fishing_trophys:
+                    result['fish'].append(str(fishing_trophy.fish))
+                    result['weight'].append(str(fishing_trophy.fish_trophy_weight))
+                    result['fishing'].append(fishing_trophy.fishing.id)
+        return result
+
+
+class FishingReportsSettings(models.Model):
+    
+    self_id = models.CharField(max_length=50)
+    fishing_id = models.IntegerField()
+    fisherman = models.BooleanField(default=True,
+                                    verbose_name='Ник рыбака')
+    time_start = models.BooleanField(default=True,
+                                     verbose_name='Время начала')
+    time_end = models.BooleanField(default=True,
+                                   verbose_name='Время окончания')
+    place_water = models.BooleanField(default=True,
+                                      verbose_name='Водоём')
+    place_locality = models.BooleanField(default=True,
+                                         verbose_name='Населенный пункт')
+    place_name = models.BooleanField(default=True,
+                                     verbose_name='Название места')
+    place_coordinate = models.BooleanField(default=True,
+                                           verbose_name='Координаты места')
+    weather = models.BooleanField(default=True,
+                                  verbose_name='Погода')
+    tackle = models.BooleanField(default=True,
+                                 verbose_name='Снасти')
+    montage = models.BooleanField(default=True,
+                                  verbose_name='Монтажи')
+    trough = models.BooleanField(default=True,
+                                 verbose_name='Кормушки')
+    leash = models.BooleanField(default=True,
+                                verbose_name='Лески')
+    crochet = models.BooleanField(default=True,
+                                  verbose_name='Крючки')
+    nozzle = models.BooleanField(default=True,
+                                 verbose_name='Наживки')
+    pace = models.BooleanField(default=True,
+                               verbose_name='Темп')
+    lure = models.BooleanField(default=True,
+                               verbose_name='Прикормы или их смеси')
+    result = models.BooleanField(default=True,
+                                 verbose_name='Улов')
+    trophy = models.BooleanField(default=True,
+                                 verbose_name='Трофеи')
+    note = models.BooleanField(default=True,
+                               verbose_name='Заметки')
+
+    def report_place(self, *args, **kwargs):
+        try:
+            fishing_place = FishingPlace.objects.get(fishing=kwargs['fishing'])
+            report=kwargs['report']
+            report['place'] = {}
+        except:
+            fishing_place = False
+        if fishing_place:
+            if self.place_water:
+                report['place']['water'] = fishing_place.place.water.__str__()
+            if self.place_locality:
+                report['place']['locality'] = fishing_place.place.locality.__str__()
+            if self.place_name:
+                report['place']['name'] = fishing_place.place.name.__str__()
+            if self.place_coordinate:
+                report['place']['coordinate'] = fishing_place.place.coordinates()
+            del(fishing_place)
+    
+    def report_weather(self, *args, **kwargs):
+        try:
+            fishing_weather = FishingWeather.objects.get(fishing=kwargs['fishing'])
+            weather = fishing_weather.weather
+            report = kwargs['report']
+            report['weather'] = {}
+            del(fishing_weather)
+        except:
+            weather = False
+        if weather:
+            if weather.overcast:
+                report['weather']['overcast'] = weather.overcast.__str__()
+            if weather.conditions:
+                report['weather']['conditions'] = weather.conditions.__str__()
+            if weather.temperature:
+                report['weather']['temperature'] = weather.temperature.__str__()
+            if weather.pressure:
+                report['weather']['pressure'] = weather.pressure.__str__()
+            if weather.direction_wind:
+                report['weather']['direction_wind'] = weather.direction_wind.__str__()
+            if weather.wind_speed:
+                report['weather']['wind_speed'] = weather.wind_speed.__str__()
+            if weather.lunar_day:
+                report['weather']['lunar_day'] = weather.lunar_day.__str__()
+        del(weather)
+    
+    def report_montage(self, *args, **kwargs):
+        report = kwargs['report']
+        report['tackles']['montage'] = []
+        fishing_tackles = kwargs['fishing_tackles']
+        for fishing_tackle in fishing_tackles:
+            try:
+                fishing_montage = FishingMontage.objects.get(fishing_tackle=fishing_tackle)
+            except:
+                report['tackles']['montage'].append('')
+                continue
+            montage = fishing_montage.montage
+            report['tackles']['montage'].append(montage.__str__())
+        for_delete = True
+        for montage in report['tackles']['montage']:
+            if montage != '':
+                for_delete = False
+        if for_delete:
+            report['tackles'].pop('montage')
+    
+    def report_trough(self, *args, **kwargs):
+        report = kwargs['report']
+        report['tackles']['trough'] = []
+        fishing_tackles = kwargs['fishing_tackles']
+        for fishing_tackle in fishing_tackles:
+            try:
+                fishing_trough = FishingTrough.objects.get(fishing_tackle=fishing_tackle)
+            except:
+                report['tackles']['trough'].append('')
+                continue
+            report['tackles']['trough'].append(fishing_trough.trough.__str__())
+        for_delete = True
+        for trough in report['tackles']['trough']:
+            if trough != '':
+                for_delete = False
+        if for_delete:
+            report['tackles'].pop('trough')
+    
+    def report_leash(self, *args, **kwargs):
+        report = kwargs['report']
+        report['tackles']['leash'] = []
+        fishing_tackles = kwargs['fishing_tackles']
+        for fishing_tackle in fishing_tackles:
+            try:
+                fishing_leash = FishingLeash.objects.get(fishing_tackle=fishing_tackle)
+            except:
+                report['tackles']['leash'].append('')
+                continue
+            report['tackles']['leash'].append(fishing_leash.leash.__str__())
+        for_delete = True
+        for leash in report['tackles']['leash']:
+            if leash != '':
+                for_delete = False
+        if for_delete:
+            report['tackles'].pop('leash')
+    
+    def report_crochet(self, *args, **kwargs):
+        report = kwargs['report']
+        report['tackles']['crochet'] = []
+        fishing_tackles = kwargs['fishing_tackles']
+        for fishing_tackle in fishing_tackles:
+            try:
+                fishing_crochet = FishingCrochet.objects.get(fishing_tackle=fishing_tackle)
+            except:
+                report['tackles']['crochet'].append('')
+                continue
+            report['tackles']['crochet'].append(fishing_crochet.crochet.__str__())
+        for_delete = True
+        for crochet in report['tackles']['crochet']:
+            if crochet != '':
+                for_delete = False
+        if for_delete:
+            report['tackles'].pop('crochet')
+    
+    def report_nozzle(self, *args, **kwargs):
+        report = kwargs['report']
+        report['tackles']['nozzle'] = []
+        fishing_tackles = kwargs['fishing_tackles']
+        for fishing_tackle in fishing_tackles:
+            try:
+                fishing_nozzle = FishingNozzle.objects.get(fishing_tackle=fishing_tackle)
+            except:
+                report['tackles']['nozzle'].append('')
+                continue
+            report['tackles']['nozzle'].append(fishing_nozzle.nozzle_base.__str__())
+        for_delete = True
+        for nozzle in report['tackles']['nozzle']:
+            if nozzle != '':
+                for_delete = False
+        if for_delete:
+            report['tackles'].pop('nozzle')
+    
+    def report_pace(self, *args, **kwargs):
+        report = kwargs['report']
+        report['tackles']['pace'] = []
+        fishing_tackles = kwargs['fishing_tackles']
+        for fishing_tackle in fishing_tackles:
+            try:
+                fishing_pace = FishingPace.objects.get(fishing_tackle=fishing_tackle)
+            except:
+                report['tackles']['pace'].append('')
+                continue
+            report['tackles']['pace'].append(fishing_pace.pace.__str__())
+        for_delete = True
+        for pace in report['tackles']['pace']:
+            if pace != '':
+                for_delete = False
+        if for_delete:
+            report['tackles'].pop('pace')
+    
+    def report_tackle(self, *args, **kwargs):
+        try:
+            fishing_tackles = FishingTackle.objects.filter(fishing=kwargs['fishing'])
+            report = kwargs['report']
+            report['tackles'] = {}
+        except:
+            fishing_tackles = False
+        if fishing_tackles:
+            if self.tackle:
+                report['tackles']['tackle'] = []
+                for fishing_tackle in fishing_tackles:
+                    report['tackles']['tackle'].append(fishing_tackle.tackle.__str__())
+            if self.montage:
+                self.report_montage(report=report, fishing_tackles=fishing_tackles)
+            if self.trough:
+                self.report_trough(report=report, fishing_tackles=fishing_tackles)
+            if self.leash:
+                self.report_leash(report=report, fishing_tackles=fishing_tackles)
+            if self.crochet:
+                self.report_crochet(report=report, fishing_tackles=fishing_tackles)
+            if self.nozzle:
+                self.report_nozzle(report=report, fishing_tackles=fishing_tackles)
+            if self.pace:
+                self.report_pace(report=report, fishing_tackles=fishing_tackles)
+    
+    def report_lure(self, *args, **kwargs):
+        try:
+            fishing_luremix = FishingLureMix.objects.get(fishing=kwargs['fishing'])
+            lure_mix = fishing_luremix.lure_mix
+            del(fishing_luremix)
+            report = kwargs['report']
+        except:
+            lure_mix = False
+        try:
+            lure = FishingLure.objects.get(fishing=kwargs['fishing'])
+            report = kwargs['report']
+        except:
+            lure = False
+        if lure_mix:
+            report['luremix'] = {}
+            report['luremix']['lures'] = []
+            report['luremix']['aromas'] = []
+            report['luremix']['nozzles'] = []
+            lures = Lure.objects.filter(mix=lure_mix)
+            for lure in lures:
+                report['luremix']['lures'].append(lure.__str__())
+            del(lures)
+            aromas = Aroma.objects.filter(mix=lure_mix)
+            for aroma in aromas:
+                report['luremix']['aromas'].append(aroma.__str__())
+            del(aromas)
+            nozzles = Nozzle.objects.filter(mix=lure_mix)
+            for nozzle in nozzles:
+                report['luremix']['nozzles'].append(nozzle.__str__())
+            del(nozzles)
+            if len(report['luremix']['lures']) == 0:
+                report['luremix'].pop('lures')
+            if len(report['luremix']['aromas']) == 0:
+                report['luremix'].pop('aromas')
+            if len(report['luremix']['nozzles']) == 0:
+                report['luremix'].pop('nozzles')
+        elif lure:
+            report['lure'] = lure.__str__()
+    
+    def report_fishs(self, *args, **kwargs):
+        try:
+            fishing_results = FishingResult.objects.filter(fishing=kwargs['fishing'])
+            report = kwargs['report']
+            report['fishs'] = []
+        except:
+            fishing_results = False
+        if fishing_results:
+            for fishing_result in fishing_results:
+                report['fishs'].append(fishing_result.__str__())
+        del(fishing_results)
+    
+    def report_trophys(self, *agrs, **kwargs):
+        try:
+            fishing_trophys = FishingTrophy.objects.filter(fishing=kwargs['fishing'])
+            report = kwargs['report']
+            report['trophys'] = []
+        except:
+            fishing_trophys = False
+        if fishing_trophys:
+            for fishing_trophy in fishing_trophys:
+                report['trophys'].append(fishing_trophy.__str__())
+        del(fishing_trophys)
+    
+    def report(self, *args, **kwargs):
+        report = {}
+        fishing = get_object_or_404(Fishing, pk=self.fishing_id)
+        report['date'] = fishing.date
+        if self.fisherman:
+            report['fisherman'] = fishing.owner.nick
+        if self.time_start:
+            report['time_start'] = fishing.time_start
+        if self.time_end:
+            report['time_end'] = fishing.time_end
+        if (self.place_water or self.place_name or
+                self.place_coordinate or self.place_locality):
+            self.report_place(report=report, fishing=fishing)
+        if self.weather:
+            self.report_weather(report=report, fishing=fishing)
+        if (self.tackle or self.montage or
+                self.trough or self.leash or
+                self.crochet or self.nozzle or
+                self.pace):
+            self.report_tackle(report=report, fishing=fishing)
+        if self.lure:
+            self.report_lure(report=report, fishing=fishing)
+        if self.result:
+            self.report_fishs(report=report, fishing=fishing)
+        if self.trophy:
+            self.report_trophys(report=report, fishing=fishing)
+        if self.note:
+            report['note'] = str(fishing.note)
+        return report
+
+    def get_trophy(request):
+        def combine_result(*args, **kwargs):
+            if pre_result['fish'] in result['fish']:
+                pos = result['fish'].index(pre_result['fish'])
+                if pre_result['weight'] > result['weight'][pos]:
+                    result['weight'][pos] = pre_result['weight']
+                    result['fisherman'][pos] = pre_result['fisherman']
+                    result['water'][pos] = pre_result['water']
+                    result['date'][pos] = pre_result['date']
+            else:
+                result['fish'].append(pre_result['fish'])
+                result['weight'].append(pre_result['weight'])
+                result['fisherman'].append(pre_result['fisherman'])
+                result['water'].append(pre_result['water'])
+                result['date'].append(pre_result['date'])
+        result = {'fish': [],
+                  'weight': [],
+                  'fisherman': [],
+                  'water': [],
+                  'date': []}
+        try:
+            fishing_reports = FishingReportsSettings.objects.filter(trophy=True)
+        except:
+            fishing_reports = None
+        if fishing_reports:
+            for fishing_report in fishing_reports:
+                fishing = Fishing.objects.get(id=fishing_report.fishing_id)
+                if fishing.owner != request.user:
+                    try:
+                        fishing_trophys = FishingTrophy.objects.filter(fishing=fishing)
+                    except:
+                        fishing_trophys = None
+                    if fishing_trophys:
+                        for fishing_trophy in fishing_trophys:
+                            pre_result = {}
+                            pre_result['date'] = str(fishing.date)
+                            if fishing_report.fisherman:
+                                pre_result['fisherman'] = str(fishing.owner.nick)
+                            else:
+                                pre_result['fisherman'] = ''
+                            if fishing_report.place_water:
+                                try:
+                                    fishing_place = FishingPlace.objects.get(fishing=fishing)
+                                except:
+                                    fishing_place = None
+                                if fishing_place:
+                                    pre_result['water'] = str(fishing_place.place.water)
+                                else:
+                                    pre_result['water'] = ''
+                            else:
+                                pre_result['water'] = ''
+                            pre_result['fish'] = str(fishing_trophy.fish.name)
+                            pre_result['weight'] = str(fishing_trophy.fish_trophy_weight)
+                            combine_result()
+        return result
 
 
 class FishingCrochet(models.Model):  # Крючки использованные в рыбалке
@@ -442,8 +863,7 @@ class FishingLure(models.Model):
                                  help_text="Укажите долю прикорма в смеси")
     
     def __str__(self):
-        return str(self.fishing) + ' ' + str(self.lure_base)
-
+        return str(self.lure_base) + '\nВес прикрома: ' + str(self.weight) + 'кг.'
 
 
 class FishingLureMix(models.Model):  # Прикормочный состав для рыбалки
@@ -562,6 +982,9 @@ class FishingPlace(models.Model):  # Место рыбалки
     place = models.ForeignKey('Place',
                               on_delete=models.PROTECT,
                               verbose_name='Место рыбалки')
+    
+    def __str__(self):
+        return str(self.place)
 
 
 # class FishingPoint(models.Model):  # Точки ловли
@@ -637,13 +1060,13 @@ class FishingResult(models.Model):  # Результат рыбалки
     # Количество хвостов
     number_of_fish = models.PositiveIntegerField(blank=True,
                                                  null=True,
-                                                 verbose_name="Количество рыб")
+                                                 verbose_name="Количество рыб, шт.")
     # Масса улова по выбранной рыбе
     fish_weight = models.DecimalField(max_digits=6,
                                       decimal_places=3,
                                       blank=True,
                                       null=True,
-                                      verbose_name="Вес улова")
+                                      verbose_name="Вес улова, кг.")
 
     def __str__(self):
         return (str(self.fish) + ': ' + ((str(self.number_of_fish) + 'шт. ') if self.number_of_fish else '') +
@@ -699,7 +1122,7 @@ class FishingTrophy(models.Model):  # Трофей рыбалки
     fish_trophy_weight = models.DecimalField(max_digits=4,
                                              blank=True,
                                              decimal_places=2,
-                                             verbose_name="Вес трофея")
+                                             verbose_name="Вес трофея, кг.")
     #fish_trophy_photo=models.ImageField(verbose_name="Фото трофея")
 
     def __str__(self):
@@ -737,8 +1160,8 @@ class FishingWeather(models.Model):  # Погода во время рыбалк
     Содержит информацию о погоде во время рыбалки
     """
     class Meta:
-        verbose_name = ''
-        verbose_name_plural = ''
+        verbose_name = 'Погода во время рыбалки'
+        verbose_name_plural = 'Погода во время рыбалки'
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
@@ -776,10 +1199,10 @@ class Leash(models.Model):  # Поводки
         max_digits=4,
         decimal_places=3,
         blank=True,
-        verbose_name="Диаметр поводка")
+        verbose_name="Диаметр поводка, мм")
     # Длина поводка
     length = models.PositiveIntegerField(blank=True,
-                                         verbose_name="Длина поводка")
+                                         verbose_name="Длина поводка, см")
 
     def __str__(self):
         return (self.material + ' ' + str(self.diameter) + ' мм.' +
@@ -836,7 +1259,7 @@ class Lure(models.Model):  # Смесь прикорма
                                  help_text="Укажите долю прикорма в смеси")
 
     def __str__(self):
-        return str(self.base)
+        return str(self.base) + ' ' + str(self.weight) + 'кг.'
 
 
 class LureBase(models.Model):  # Прикорм
@@ -1004,6 +1427,9 @@ class Nozzle(models.Model):  # Добавки в прикормочную сме
         'LureMix',
         on_delete=models.PROTECT,
         verbose_name="Прикормочная смесь")
+    
+    def __str__(self):
+        return str(self.base) + ' ' + str(self.state)
 
 
 class NozzleBase(models.Model):  # Насдаки и наживки
@@ -1040,7 +1466,7 @@ class NozzleBase(models.Model):  # Насдаки и наживки
     size = models.IntegerField(
         null=True,
         blank=True,
-        verbose_name="Размер насадки")
+        verbose_name="Размер насадки, мм")
     # тип насадки (Плавающий, тонущий, пылящий и т.д.)
     ntype = models.ForeignKey(
         'NozzleType',
@@ -1055,7 +1481,7 @@ class NozzleBase(models.Model):  # Насдаки и наживки
         else:
             return (self.manufacturer + ' ' + self.name + ' ' +
                     ((str(self.size) + 'мм.') if self.size != None else '') +
-                    (str(self.ntype) if self.ntype != None else ''))
+                    ('\nТип: ' + str(self.ntype) if self.ntype != None else ''))
 
     def first_upper(self):
         """
@@ -1221,18 +1647,19 @@ class Place(models.Model):  # Места
     water = models.ForeignKey(
         'Water',
         on_delete=models.PROTECT,
-        verbose_name="Водоем")
+        verbose_name="Водоём")
     # Ближайший населенный пункт
     locality = models.CharField(
         max_length=50,
         blank=True,
-        verbose_name="Населенный пункт",
+        verbose_name="Ближайший населенный пункт",
         help_text="Название ближайшего населенного пункта")
     # Название места
     name = models.CharField(
         max_length=50,
         blank=True,
-        verbose_name="Название места")
+        verbose_name="Место",
+        help_text='Название места')
     # Координа места рыбалки, градусы северной широты от -90 до 90
     latitude = models.DecimalField(max_digits=8,
                                    decimal_places=6,
@@ -1252,7 +1679,9 @@ class Place(models.Model):  # Места
         return ((self.locality + '. ') if self.locality else '') + self.name
 
     def coordinates(self):
-        return 'с.ш.' + str(self.latitude) + 'в.д.' + str(self.longitude)
+        if self.latitude and self.longitude:
+            return 'с.ш.' + str(self.latitude) + ' в.д.' + str(self.longitude)
+        return False
     
     def first_upper(self):
         """
@@ -1401,12 +1830,12 @@ class Tackle(models.Model):  # Снасти
         decimal_places=1,
         blank=True,
         null=True,
-        verbose_name="Длина",
+        verbose_name="Длина, м",
         validators=[MinValueValidator(0.0), MaxValueValidator(99.9)])
     casting_weight = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name="Тест удилища")
+        verbose_name="Тест удилища, гр")
 
     def __str__(self):
         return (((self.manufacturer + ' ') if self.manufacturer else '') +
@@ -1484,7 +1913,7 @@ class Trough(models.Model):  # Кормушки
     weight = models.PositiveIntegerField(
         blank=True,
         null=True,
-        verbose_name="Вес кормушки")
+        verbose_name="Вес кормушки, гр")
 
     def __str__(self):
         return (self.manufacturer + ' ' + str(self.model_name) + ' ' +
@@ -1676,5 +2105,3 @@ class Weather(models.Model):  # Погода
 
     def __str__(self):
         return str(self.date)
-
-

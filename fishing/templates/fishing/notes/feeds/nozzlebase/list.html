@@ -1,0 +1,114 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+{% block content %}
+
+{% if nozzle_base_list != None or nozzle_state_list != None %}
+<!-- Насадки и наживки -->
+
+<table>
+  <thead>
+    <tr>
+      <th>Насадки и наживки</th>
+      <th>Состояние насадок и наживок</th>
+    </tr>
+  </thead>
+  <tr>
+    <td>
+      {% if nozzle_base_list %}
+      <table>
+        {% for nozzle_base in nozzle_base_list %}
+        <tr>
+          <td>
+            {{nozzle_base}}
+          </td>
+          <td>
+            {% if nozzle_base.owner == user %}
+              {% if nozzle_base.bait %}
+                <a href="{% url 'fishing:bait_base_edit' nozzle_base.id %}">
+                  <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
+                </a>
+              {% else %}
+                <a href="{% url 'fishing:nozzle_base_edit' nozzle_base.id %}">
+                  <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
+                </a>
+              {% endif %}
+              <a href="{% url 'fishing:nozzle_base_delete' nozzle_base.id %}">
+                <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
+              </a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <table>
+        <tr>
+          <td>
+            Насадки и наживки ещё не добавлены
+          </td>
+        </tr>
+        </table>
+      {% endif %}
+    </td>
+    <td>
+      {% if nozzle_state_list %}
+      <table>
+        {% for nozzle_state in nozzle_state_list %}
+        <tr>
+          <td>
+            {{nozzle_state}}
+          </td>
+          <td>
+            {% if nozzle_state.owner == user %}
+              <a href="{% url 'fishing:nozzle_state_edit' nozzle_state.id %}">
+                <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
+              </a>
+              <a href="{% url 'fishing:nozzle_state_delete' nozzle_state.id %}">
+                <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
+              </a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% else %}
+      <table>
+      <tr>
+        <td>
+          Состояния насадок и наживок ещё не добавлены
+        </tr>
+      </tr>
+      </table>
+      {% endif %}
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div class="content__item content__item--btn-position">
+        <a class="button__std" href="{% url 'fishing:nozzle_base_add' %}">
+          <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+          Добавить насадку
+        </a>
+        <a class="button__std" href="{% url 'fishing:bait_base_add' %}">
+          <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+          Добавить наживку
+        </a>
+      </div>
+    </td>
+    <td>
+      <div class="content__item content__item--btn-position">
+        <a class="button__std" href="{% url 'fishing:nozzle_state_add' %}">
+          <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+          Добавить состояние
+        </a>
+      </div>
+    </td>
+  </tr>
+</table>
+<br/>
+<div class="content__item content__item--btn-position">
+  <a class="button__std" href="{% url 'fishing:fisherman_feed' %}">Назад</a>
+</div>
+{% endif %}
+
+{% endblock %}

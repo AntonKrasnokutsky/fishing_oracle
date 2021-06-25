@@ -16,15 +16,13 @@ class Post(models.Model):
     title = models.CharField(
         max_length=200,
         verbose_name='Тема')
+    #Краткое описание
+    discription = models.TextField(
+        default="",
+        verbose_name='Краткое содержание')
     #Подробное описание
     text = models.TextField(
-        verbose_name='Подробное описание ошибки')
-    #Полный путь до страницы с ошибкой
-    adress = models.CharField(
-        max_length=200,
-        blank=True,
-        null=True,
-        verbose_name='Полный путь до страницы с ошибкой')
+        verbose_name='Текст статьи')
     #Дата создания
     created_date = models.DateTimeField(
         default=timezone.now,

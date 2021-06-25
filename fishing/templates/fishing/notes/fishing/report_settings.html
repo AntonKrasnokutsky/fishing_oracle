@@ -1,0 +1,156 @@
+{% extends 'fishing/base.html' %}
+{% load l10n %}
+{% block content %}
+{% load static %}
+
+<div class="content__item">
+
+  <div class="errors">
+    <div class="errors__inner">
+      <div class="errors__item">
+        <p>{{ errors }}</p>
+      </div>
+      {% for error in form.non_field_errors %}
+        <div class="errors__item">
+          <p>{{ error }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <form class="content__form" action="" method="post">
+    {% csrf_token %}
+    <table>
+      <tr>
+        <td>
+          {{ form.fisherman.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="fisherman" id="id_fisherman" {% if form.fisherman.value %} checked {% endif %}>
+        </td>
+        <td>
+          {{ form.time_start.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="time_start" id="id_time_start" {% if form.time_start.value %} checked {% endif %}>
+        </td>
+        <td>
+          {{ form.time_end.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="time_end" id="id_time_end" {% if form.time_end.value %} checked {% endif %}>
+        </td>
+        <td>
+          {{ form.weather.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="weather" id="id_weather" {% if form.weather.value %} checked {% endif %}>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {{ form.place_water.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="place_water" id="id_place_water" {% if form.place_water.value %} checked {% endif %}>
+        </td>
+        <td>
+          {{ form.place_locality.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="place_locality" id="id_place_locality" {% if form.place_locality.value %} checked {% endif %}>
+        </td>
+        <td>
+          {{ form.place_name.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="place_name" id="id_place_name" {% if form.place_name.value %} checked {% endif %}>
+        </td>
+        <td>
+          {{ form.place_coordinate.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="place_coordinate" id="id_place_coordinate" {% if form.place_coordinate.value %} checked {% endif %}>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {{ form.tackle.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="tackle" id="id_tackle" {% if form.tackle.value %} checked {% endif %}>
+        </td>
+        <td>
+          {{ form.montage.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="montage" id="id_montage" {% if form.montage.value %} checked {% endif %}>
+        </td>
+        <td>
+          {{ form.trough.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="trough" id="id_trough" {% if form.trough.value %} checked {% endif %}>
+        </td>
+        <td>
+          {{ form.leash.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="leash" id="id_leash" {% if form.leash.value %} checked {% endif %}>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {{ form.crochet.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="crochet" id="id_crochet" {% if form.crochet.value %} checked {% endif %}>
+        </td>
+        <td>
+          {{ form.nozzle.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="nozzle" id="id_nozzle" {% if form.nozzle.value %} checked {% endif %}>
+        </td>
+        <td>
+          {{ form.pace.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="pace" id="id_pace" {% if form.pace.value %} checked {% endif %}>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {{ form.lure.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="lure" id="id_lure" {% if form.lure.value %} checked {% endif %}>
+        </td>
+        <td>
+          {{ form.result.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="result" id="id_result" {% if form.result.value %} checked {% endif %}>
+        </td>
+        <td>
+          {{ form.trophy.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="trophy" id="id_trophy" {% if form.trophy.value %} checked {% endif %}>
+        </td>
+        <td>
+          {{ form.note.label_tag}}
+        </td>
+        <td>
+          <input class="content__input--checkbox" type="checkbox" name="note" id="id_note" {% if form.note.value %} checked {% endif %}>
+        </td>
+      </tr>
+    </table>
+    
+    <div class="content__item content__item--btn-position">
+      <button class="button__std">Сохранить</button>
+      <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

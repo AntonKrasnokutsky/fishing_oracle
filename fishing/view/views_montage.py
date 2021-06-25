@@ -6,6 +6,8 @@ from django.views import View
 from fishing.models import Montage
 from fishing.forms import MontageForm
 
+from fishing.getinfo import siteinfo, getuserinfo
+
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
@@ -14,7 +16,7 @@ class MontageAdd(View):
     """
     Добавление монтажа
     """
-    template = 'fishing/montage/edit_add.html'
+    template = 'fishing/notes/gears/montage/edit_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -33,18 +35,24 @@ class MontageAdd(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'errors': 'Такой монтаж уже добавлен'})
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = MontageForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class MontageList(View):
@@ -52,7 +60,7 @@ class MontageList(View):
     Возвращает монтажей
     """
 
-    template = 'fishing/montage/list.html'
+    template = 'fishing/notes/gears/montage/list.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -65,7 +73,9 @@ class MontageList(View):
             montage_list = Montage.objects.filter(owner=request.user)
         return render(request,
                     self.template,
-                    {'montage_list': montage_list})
+                    {'fisherman': getuserinfo(request),
+                     'siteinfo': siteinfo(),
+                     'montage_list': montage_list})
 
 
 class MontageDelete(View):
@@ -88,7 +98,7 @@ class MontageEdit(View):
     """
     Изменение монтажа
     """
-    template = 'fishing/montage/edit_add.html'
+    template = 'fishing/notes/gears/montage/edit_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -108,22 +118,28 @@ class MontageEdit(View):
                 else:
                     return render(request,
                                 self.template,
-                                {'form': form,
+                                {'fisherman': getuserinfo(request),
+                                 'siteinfo': siteinfo(),
+                                 'form': form,
                                  'montage': montage,
-                                'errors': 'Такой монтаж уже добавлена'})
+                                 'errors': 'Такой монтаж уже добавлена'})
             else:
                 return render(request,
                             self.template,
-                            {'form': form,
-                            'montage': montage})
+                            {'fisherman': getuserinfo(request),
+                             'siteinfo': siteinfo(),
+                             'form': form,
+                             'montage': montage})
         return redirect('fishing:montage')
 
     def get(self, request, *args, **kwargs):
         montage = get_object_or_404(Montage, pk=kwargs['montage_id'])
         if montage.owner == request.user:
-            form = NozzleBaseForm(instance=montage)
+            form = MontageForm(instance=montage)
             return render(request,
                         self.template,
-                        {'form': form,
-                        'montage': montage})
+                        {'fisherman': getuserinfo(request),
+                         'siteinfo': siteinfo(),
+                         'form': form,
+                         'montage': montage})
         return redirect('fishing:montage')

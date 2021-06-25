@@ -1,0 +1,33 @@
+html,
+body{
+    height: 100%;
+}
+
+body{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 400;
+    font-size: 14;
+    line-height: 17px;
+    color: $default;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.main {
+    flex: 1 0 auto;
+}
+
+.footer {
+    flex: 0 0 auto;
+}
+
+.container{
+    max-width: 1060px;
+    overflow: hidden;
+    margin: 0 auto;
+    padding: 0 15px;
+}

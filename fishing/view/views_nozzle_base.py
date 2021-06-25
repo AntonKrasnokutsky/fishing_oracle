@@ -5,9 +5,12 @@ from django.views import View
 
 from fishing.models import NozzleBase
 from fishing.models import NozzleState
+from fishing.models import NozzleType
 from fishing.forms import NozzleBaseForm
 from fishing.forms import NozzleStateForm
 from fishing.forms import BaitBaseForm
+
+from fishing.getinfo import siteinfo, getuserinfo
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -17,11 +20,11 @@ class NozzleStateAdd(View):
     """
     Добавление состояния насадки или наживки
     """
-    template = 'fishing/nozzlestate/edit_add.html'
+    template = 'fishing/notes/feeds/nozzlestate/edit_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(NozzleStateAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = NozzleStateForm(request.POST)
@@ -36,29 +39,35 @@ class NozzleStateAdd(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'errors': 'Такое состояние уже добавлена'})
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = NozzleStateForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class NozzleStateEdit(View):
     """
     Изменение состояния насадки или наживки
     """
-    template = 'fishing/nozzlestate/edit_add.html'
+    template = 'fishing/notes/feeds/nozzlestate/edit_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(NozzleStateEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         nozzle_state = get_object_or_404(NozzleState, pk=kwargs['nozzle_state_id'])
@@ -74,14 +83,18 @@ class NozzleStateEdit(View):
                 else:
                     return render(request,
                                 self.template,
-                                {'form': form,
+                                {'fisherman': getuserinfo(request),
+                                 'siteinfo': siteinfo(),
+                                 'form': form,
                                  'nozzle_state': nozzle_state,
-                                'errors': 'Такое сосотояние наживки или насадки уже добавлена'})
+                                 'errors': 'Такое сосотояние наживки или насадки уже добавлена'})
             else:
                 return render(request,
                             self.template,
-                            {'form': form,
-                            'nozzle_state': nozzle_state})
+                            {'fisherman': getuserinfo(request),
+                             'siteinfo': siteinfo(),
+                             'form': form,
+                             'nozzle_state': nozzle_state})
 
     def get(self, request, *args, **kwargs):
         nozzle_state = get_object_or_404(NozzleState, pk=kwargs['nozzle_state_id'])
@@ -89,8 +102,10 @@ class NozzleStateEdit(View):
             form = NozzleStateForm(instance=nozzle_state)
             return render(request,
                         self.template,
-                        {'form': form,
-                        'nozzle_state': nozzle_state})
+                        {'fisherman': getuserinfo(request),
+                         'siteinfo': siteinfo(),
+                         'form': form,
+                         'nozzle_state': nozzle_state})
         return redirect('fishing:nozzle_base')
 
 
@@ -101,7 +116,7 @@ class NozzleStateDelete(View):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(NozzleStateDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         nozzle_state = get_object_or_404(NozzleState, pk=kwargs['nozzle_state_id'])
@@ -114,11 +129,11 @@ class NozzleBaseAdd(View):
     """
     Добавление насадки
     """
-    template = 'fishing/nozzlebase/renewal_add.html'
+    template = 'fishing/notes/feeds/nozzlebase/renewal_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(NozzleBaseAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = NozzleBaseForm(request.POST)
@@ -132,20 +147,32 @@ class NozzleBaseAdd(View):
                 nozzle_base.save()
                 return redirect('fishing:nozzle_base')
             else:
+                nozzletypes = NozzleType.objects.all()
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'nozzletypes': nozzletypes,
+                               'form': form,
                                'errors': 'Такая насадка уже добавлена'})
         else:
+            nozzletypes = NozzleType.objects.all()
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'nozzletypes': nozzletypes,
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = NozzleBaseForm()
+        nozzletypes = NozzleType.objects.all()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'nozzletypes': nozzletypes,
+                       'form': form})
 
 
 class NozzleBaseList(View):
@@ -153,11 +180,11 @@ class NozzleBaseList(View):
     Возвращает список наживок/насадок
     """
 
-    template = 'fishing/nozzlebase/list.html'
+    template = 'fishing/notes/feeds/nozzlebase/list.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(NozzleBaseList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         if request.user.is_staff:
@@ -168,7 +195,9 @@ class NozzleBaseList(View):
             nozzle_state_list = NozzleState.objects.filter(owner=request.user)
         return render(request,
                     self.template,
-                    {'nozzle_base_list': nozzle_base_list,
+                    {'fisherman': getuserinfo(request),
+                     'siteinfo': siteinfo(),
+                     'nozzle_base_list': nozzle_base_list,
                      'nozzle_state_list':nozzle_state_list})
 
 
@@ -179,7 +208,7 @@ class NozzleBaseDelete(View):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(NozzleBaseDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         nozzle = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
@@ -192,11 +221,11 @@ class NozzleBaseEdit(View):
     """
     Изменение насадки
     """
-    template = 'fishing/nozzlebase/renewal_add.html'
+    template = 'fishing/notes/feeds/nozzlebase/renewal_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(NozzleBaseEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
@@ -210,25 +239,37 @@ class NozzleBaseEdit(View):
                     nozzle_base.save()
                     return redirect('fishing:nozzle_base')
                 else:
+                    nozzletypes = NozzleType.objects.all()
                     return render(request,
                                 self.template,
-                                {'form': form,
+                                {'fisherman': getuserinfo(request),
+                                 'siteinfo': siteinfo(),
+                                 'nozzletypes': nozzletypes,
+                                 'form': form,
                                  'nozzle_base': nozzle_base,
-                                'errors': 'Такая насадка уже добавлена'})
+                                 'errors': 'Такая насадка уже добавлена'})
             else:
+                nozzletypes = NozzleType.objects.all()
                 return render(request,
                             self.template,
-                            {'form': form,
-                            'nozle_base': nozzle_base})
+                            {'fisherman': getuserinfo(request),
+                             'siteinfo': siteinfo(),
+                             'nozzletypes': nozzletypes,
+                             'form': form,
+                             'nozle_base': nozzle_base})
 
     def get(self, request, *args, **kwargs):
         nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
         if nozzle_base.owner == request.user:
             form = NozzleBaseForm(instance=nozzle_base)
+            nozzletypes = NozzleType.objects.all()
             return render(request,
                         self.template,
-                        {'form': form,
-                        'nozzle_base': nozzle_base})
+                        {'fisherman': getuserinfo(request),
+                         'siteinfo': siteinfo(),
+                         'nozzletypes': nozzletypes,
+                         'form': form,
+                         'nozzle_base': nozzle_base})
         return redirect('fishing:nozzle_base')
 
 
@@ -236,11 +277,11 @@ class BaitBaseAdd(View):
     """
     Добавление насадки
     """
-    template = 'fishing/nozzlebase/bait_edit_add.html'
+    template = 'fishing/notes/feeds/nozzlebase/bait_edit_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(BaitBaseAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = BaitBaseForm(request.POST)
@@ -256,29 +297,35 @@ class BaitBaseAdd(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'errors': 'Такая наживка уже добавлена'})
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = BaitBaseForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class BaitBaseEdit(View):
     """
     Изменение наживки
     """
-    template = 'fishing/nozzlebase/bait_edit_add.html'
+    template = 'fishing/notes/feeds/nozzlebase/bait_edit_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(BaitBaseEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         bait_base = get_object_or_404(NozzleBase, pk=kwargs['bait_base_id'])
@@ -294,14 +341,18 @@ class BaitBaseEdit(View):
                 else:
                     return render(request,
                                 self.template,
-                                {'form': form,
+                                {'fisherman': getuserinfo(request),
+                                 'siteinfo': siteinfo(),
+                                 'form': form,
                                  'bait_base': bait_base,
-                                'errors': 'Такая наживка уже добавлена'})
+                                 'errors': 'Такая наживка уже добавлена'})
             else:
                 return render(request,
                             self.template,
-                            {'form': form,
-                            'bait_base': bait_base})
+                            {'fisherman': getuserinfo(request),
+                             'siteinfo': siteinfo(),
+                             'form': form,
+                             'bait_base': bait_base})
 
     def get(self, request, *args, **kwargs):
         bait_base = get_object_or_404(NozzleBase, pk=kwargs['bait_base_id'])
@@ -309,6 +360,8 @@ class BaitBaseEdit(View):
             form = BaitBaseForm(instance=bait_base)
             return render(request,
                         self.template,
-                        {'form': form,
-                        'bait_base': bait_base})
+                        {'fisherman': getuserinfo(request),
+                         'siteinfo': siteinfo(),
+                         'form': form,
+                         'bait_base': bait_base})
         return redirect('fishing:nozzle_base')

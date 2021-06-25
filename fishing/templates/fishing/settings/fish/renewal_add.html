@@ -1,0 +1,48 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+<div class="content__inner">
+
+  <div class="content__item">
+    <div class="errors">
+      <div class="errors__inner">
+        {% for error in form.name.errors %}
+          <div class="errors__item">
+            <p>{{ error }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <form class="content__form" action="" method="post">
+      {% csrf_token %}
+      <table>
+        <tr>
+          <td>
+            {{ form_fish.name.label_tag }}
+          </td>
+          <td>
+            <lable class="textareaContainer textareaContainer--right8">
+              <input class="content__input" type="text" name="name" required autofocus maxlength="254" id="id_name" value={{ form_fish.name.value|default_if_none:"" }}>
+            </lable>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            {{ form_fish.description.label_tag }}
+          </td>
+          <td>
+            <label class="textareaContainer textareaContainer--right8">
+              <textarea class="content__input-description" type="text" name="description" cols="40" rows="10" id="id_description">{{ form_fish.description.value|default_if_none:"" }}</textarea>
+            </label>
+          </td>
+        </tr>
+      </table>
+
+      <div class="content__item content__item--btn-position">
+        <button class="button__std">Сохранить</button>
+        <a class="button__std" href="{% url 'fishing:settings_fish_list' %}">Назад</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

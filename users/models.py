@@ -12,6 +12,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(verbose_name='Электронная почта',
                               unique=True)
+    nick = models.CharField(max_length=50,
+                            unique=True,
+
+                            verbose_name='Ник')
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -20,4 +24,4 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.email
+        return self.nick

@@ -1,0 +1,28 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+{% load static %}
+
+{% if montage_list %}
+<!-- Место рыбалки -->
+<table>
+  {% for montage in montage_list %}
+  <tr>
+    <td>
+      {{montage}}
+    </td>
+    <td>
+      <a href="{% url 'fishing:fishing_montage_add' fishing.id fishing_tackle.id montage.id fishing_montage.id %}">
+        <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
+      </a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>Монтажей еще не добавлено</p>
+{% endif %}
+<div class="content__item content__item--center">
+  <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
+</div>
+
+{% endblock %}

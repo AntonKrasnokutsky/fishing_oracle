@@ -1,7 +1,9 @@
 from django.shortcuts import get_object_or_404
 from django.shortcuts import redirect
 from django.shortcuts import render
+from django.urls import reverse
 from django.views import View
+from random import randint
 import datetime
 
 from fishing.models import Fishing
@@ -31,33 +33,41 @@ from fishing.models import FishingLureMix
 from fishing.models import FishingResult
 from fishing.models import FishingTrophy
 from fishing.models import FishingLure
-
+from fishing.models import Fish
+from fishing.models import FishingReportsSettings
 
 from fishing.forms import FishingForm
 from fishing.forms import WeatherForm
 from fishing.forms import FishingResultForm
 from fishing.forms import FishingTrophyForm
 from fishing.forms import FishingLureForm
+from fishing.forms import FishingNoteForm
+from fishing.forms import FishingReportsSettingsForm
+
+from fishing.getinfo import siteinfo, getuserinfo
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+
 
 class FishingList(View):
     """
     Возвращает список рыбалок пользователя
     """
     
-    template = 'fishing/fishing/list.html'
+    template = 'fishing/notes/fishing/list.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(FishingList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
         fishing_list = Fishing.objects.filter(owner=request.user)
         return render(request,
                       self.template,
-                      {'fishing_list': fishing_list})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'fishing_list': fishing_list})
 
 
 class FishingAdd(View):
@@ -65,8 +75,9 @@ class FishingAdd(View):
     Добавляет рыбалку пользователю
     """
     
-    template = 'fishing/fishing/edit_add.html'
+    template = 'fishing/notes/fishing/edit_add.html'
     
+    @method_decorator(login_required())
     def dispatch(self, *args, **kwargs):
         return super(FishingAdd, self).dispatch(*args, **kwargs)
     
@@ -78,7 +89,7 @@ class FishingAdd(View):
             fishing.set_planned()
             if fishing.unique():
                 fishing.save()
-                return redirect('fishing:fishing')
+                return redirect('fishing:fishing_details', fishing.id)
             else:
                 return render(request,
                               self.template,
@@ -113,6 +124,9 @@ class FishingDelete(View):
     def get(self, request, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
         if fishing.owner == request.user:
+            if fishing.report:
+                fishint_report_settings = FishingReportsSettings.objects.get(fishing=fishing.id)
+                fishint_report_settings.delete()
             fishing.delete()
         return redirect('fishing:fishing')
 
@@ -121,7 +135,7 @@ class FishingEdit(View):
     """
     Редактирует дату и время рыбалки
     """
-    template = 'fishing/fishing/edit_add.html'
+    template = 'fishing/notes/fishing/edit_add.html'
     
     def dispatch(self, *args, **kwargs):
         return super(FishingEdit, self).dispatch(*args, **kwargs)
@@ -167,7 +181,7 @@ class FishingDetails(View):
     Возвращает подробное описание рыбалки
     """
     
-    template = 'fishing/fishing/details.html'
+    template = 'fishing/notes/fishing/details.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -176,18 +190,118 @@ class FishingDetails(View):
     def get(self, request, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
         if fishing.owner == request.user:
+            try:
+                fishing_report_settings = FishingReportsSettings.objects.get(fishing_id=fishing.id)
+            except:
+                fishing_report_settings = None
             return render(request,
                           self.template,
-                          {'fishing': fishing})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishing_report_settings': fishing_report_settings,
+                           'fishing': fishing})
         else:
             return redirect('fishing:fishing')
+
+
+class FishingReportSetingsView(View):
+    """
+    Настройка отчета, изменение отображаемых элементов
+    """
+    
+    template = 'fishing/notes/fishing/report_settings.html'
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def generate_self_id(self, *args, **kwargs):
+        items = 1
+        result = ''
+        while (items < 51):
+            item = randint(48, 122)
+            if not ((item > 57 and item < 65) or (item > 90 and item < 97)):
+                result += chr(item)
+                items += 1
+        return result
+    
+    def get_self_id(self, *args, **kwargs):
+        while (True):
+            self_id = self.generate_self_id()
+            try:
+                FishingReportsSettings.objects.get(self_id=self_id)
+            except:
+                break
+        return self_id
+    
+    def get(self, request, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == request.user:
+            try:
+                fishing_report_settings = FishingReportsSettings.objects.get(fishing_id=fishing.id)
+                form = FishingReportsSettingsForm(instance=fishing_report_settings)
+            except:
+                form = FishingReportsSettingsForm()
+            return render(request,
+                          self.template,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
+                           'fishing': fishing})
+        return redirect('fishing:fishing')
+    
+    def post(self, request, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == request.user:
+            try:
+                fishing_report_settings = FishingReportsSettings.objects.get(fishing_id=fishing.id)
+                form = FishingReportsSettingsForm(request.POST, instance=fishing_report_settings)
+            except:
+                fishing_report_settings = FishingReportsSettings()
+                form = FishingReportsSettingsForm(request.POST)
+            if form.is_valid():
+                fishing_report_settings = form.save(commit=False)
+                if not fishing_report_settings.fishing_id:
+                    fishing_report_settings.fishing_id = fishing.id
+                    fishing_report_settings.self_id = self.get_self_id()
+                    fishing.report = request.build_absolute_uri(reverse('fishing:fishing_report', args=(fishing_report_settings.self_id, )))
+                    fishing.save()
+                fishing_report_settings.save()
+                return redirect('fishing:fishing_details', fishing.id)
+            else:
+                return render(request,
+                              self.template,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
+                               'fishing': fishing})
+        return redirect('fishing:fishing')
+
+
+class FishingReportsSettingsDelete(View):
+    """
+    Удаляет отчет по рыбалке рыбалку
+    """
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == request.user:
+            fishing_report_settings = get_object_or_404(FishingReportsSettings, fishing_id=fishing.id)
+            fishing_report_settings.delete()
+            fishing.report = ''
+            fishing.save()
+        return redirect('fishing:fishing_details', fishing.id)
 
 
 class FishingPlaceSelect(View):
     """
     Возвращает страницу выбора со списком мест
     """
-    template = 'fishing/fishing/select_place.html'
+    template = 'fishing/notes/fishing/select_place.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -199,7 +313,9 @@ class FishingPlaceSelect(View):
         if fishing.owner == request.user:
             return render(request,
                           self.template,
-                          {'fishing': fishing,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishing': fishing,
                            'place_list': place_list})
         return redirect('fishing:fishing')
 
@@ -266,7 +382,7 @@ class FishingWeatherAdd(View):
     Добавляет информацию о погоде в рыбалку (ручной ввод)
     """
     
-    template = 'fishing/fishing/edit_add_weather.html'
+    template = 'fishing/notes/fishing/edit_add_weather.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -285,18 +401,30 @@ class FishingWeatherAdd(View):
             fishing_weather.weather = weather
             fishing_weather.save()
             return redirect('fishing:fishing_details', fishing.id)
+        overcasts = Overcast.objects.all()
+        conditions = Conditions.objects.all()
         return render(request,
                       self.template,
-                      {'form': form,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'overcasts': overcasts,
+                       'conditions': conditions,
+                       'form': form,
                        'fishing': fishing})
     
     def get(self, request, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
         if fishing.owner == request.user:
             form = WeatherForm()
+            overcasts = Overcast.objects.all()
+            conditions = Conditions.objects.all()
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'overcasts': overcasts,
+                           'conditions': conditions,
+                           'form': form,
                            'fishing': fishing})
         return redirect('fishing:fishing')
 
@@ -306,7 +434,7 @@ class FishingWeatherEdit(View):
     Редактирование информации о погоде на рыбалки (ручной ввод)
     """
     
-    template = 'fishing/fishing/edit_add_weather.html'
+    template = 'fishing/notes/fishing/edit_add_weather.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -320,9 +448,15 @@ class FishingWeatherEdit(View):
             weather = form.save(commit=False)
             weather.save()
             return redirect('fishing:fishing_details', fishing.id)
+        overcasts = Overcast.objects.all()
+        conditions = Conditions.objects.all()
         return render(request,
                       self.template,
-                      {'form': form,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'overcasts': overcasts,
+                       'conditions': conditions,
+                       'form': form,
                        'fishing': fishing})
     
     def get(self, request, *args, **kwargs):
@@ -330,9 +464,15 @@ class FishingWeatherEdit(View):
         if fishing.owner == request.user:
             fishing_weather = FishingWeather.objects.filter(fishing=fishing)
             form = WeatherForm(instance=fishing_weather[0].weather)
+            overcasts = Overcast.objects.all()
+            conditions = Conditions.objects.all()
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'overcasts': overcasts,
+                           'conditions': conditions,
+                           'form': form,
                            'fishing': fishing})
         return redirect('fishing:fishing')
 
@@ -342,7 +482,7 @@ class FishingTackleSelect(View):
     Возращает список снастей для выбора
     """
     
-    template = 'fishing/fishing/select_tackle.html'
+    template = 'fishing/notes/fishing/select_tackle.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -359,7 +499,9 @@ class FishingTackleSelect(View):
                 fishing_tackle.id = 0
             return render(request,
                           self.template,
-                          {'fishing': fishing,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishing': fishing,
                            'fishing_tackle': fishing_tackle,
                            'tackle_list': tackle_list})
         return redirect('fishing:fishing')
@@ -412,7 +554,7 @@ class FishingMontageSelect(View):
     Возращает список монтажей для выбора
     """
     
-    template = 'fishing/fishing/select_montage.html'
+    template = 'fishing/notes/fishing/select_montage.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -430,7 +572,9 @@ class FishingMontageSelect(View):
                 fishing_montage.id = 0
             return render(request,
                           self.template,
-                          {'fishing': fishing,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishing': fishing,
                            'fishing_tackle': fishing_tackle,
                            'montage_list': montage_list,
                            'fishing_montage': fishing_montage})
@@ -485,7 +629,7 @@ class FishingTroughSelect(View):
     Возращает список кормушек для выбора
     """
     
-    template = 'fishing/fishing/select_trough.html'
+    template = 'fishing/notes/fishing/select_trough.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -503,7 +647,9 @@ class FishingTroughSelect(View):
                 fishing_trough.id = 0
             return render(request,
                           self.template,
-                          {'fishing': fishing,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishing': fishing,
                            'fishing_tackle': fishing_tackle,
                            'trough_list': trough_list,
                            'fishing_trough': fishing_trough})
@@ -558,7 +704,7 @@ class FishingLeashSelect(View):
     Возращает список поводков для выбора
     """
     
-    template = 'fishing/fishing/select_leash.html'
+    template = 'fishing/notes/fishing/select_leash.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -576,7 +722,9 @@ class FishingLeashSelect(View):
                 fishing_leash.id = 0
             return render(request,
                           self.template,
-                          {'fishing': fishing,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishing': fishing,
                            'fishing_tackle': fishing_tackle,
                            'leash_list': leash_list,
                            'fishing_leash': fishing_leash})
@@ -631,7 +779,7 @@ class FishingCrochetSelect(View):
     Возращает список крючков для выбора
     """
     
-    template = 'fishing/fishing/select_crochet.html'
+    template = 'fishing/notes/fishing/select_crochet.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -649,7 +797,9 @@ class FishingCrochetSelect(View):
                 fishing_crochet.id = 0
             return render(request,
                           self.template,
-                          {'fishing': fishing,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishing': fishing,
                            'fishing_tackle': fishing_tackle,
                            'crochet_list': crochet_list,
                            'fishing_crochet': fishing_crochet})
@@ -704,7 +854,7 @@ class FishingNozzleSelect(View):
     Возращает список наживок/насадок для выбора
     """
     
-    template = 'fishing/fishing/select_nozzle.html'
+    template = 'fishing/notes/fishing/select_nozzle.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -722,7 +872,9 @@ class FishingNozzleSelect(View):
                 fishing_nozzle.id = 0
             return render(request,
                           self.template,
-                          {'fishing': fishing,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishing': fishing,
                            'fishing_tackle': fishing_tackle,
                            'nozzle_list': nozzle_base_list,
                            'fishing_nozzle': fishing_nozzle})
@@ -777,7 +929,7 @@ class FishingPaceSelect(View):
     Возращает список темпов для выбора
     """
     
-    template = 'fishing/fishing/select_pace.html'
+    template = 'fishing/notes/fishing/select_pace.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -795,7 +947,9 @@ class FishingPaceSelect(View):
                 fishing_pace.id = 0
             return render(request,
                           self.template,
-                          {'fishing': fishing,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishing': fishing,
                            'fishing_tackle': fishing_tackle,
                            'pace_list': pace_list,
                            'fishing_pace': fishing_pace})
@@ -863,7 +1017,7 @@ class FishingLureSelect(View):
     Выбор прикорма для рыбалки
     """
     
-    template = 'fishing/fishing/select_lure.html'
+    template = 'fishing/notes/fishing/select_lure.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -875,14 +1029,16 @@ class FishingLureSelect(View):
             lure_base_list = LureBase.objects.filter(owner=request.user)
             return render(request,
                           self.template,
-                          {'fishing': fishing,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishing': fishing,
                            'lure_base_list': lure_base_list})
         return redirect('fishing:fishing')
 
 
 class FishingLureChangeWeight(View):
     
-    template = 'fishing/fishing/lure_weight.html'
+    template = 'fishing/notes/fishing/lure_weight.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -901,7 +1057,9 @@ class FishingLureChangeWeight(View):
                 form = FishingLureForm()
             return render(request,
                           self.template,
-                          {'fishing': fishing,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishing': fishing,
                            'form': form})
         return redirect('fishing:fishing')
     
@@ -924,7 +1082,9 @@ class FishingLureChangeWeight(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'fishing': fishing})
         return redirect('fishing:fishing')
 
@@ -934,7 +1094,7 @@ class FishingLureMixSelect(View):
     Возращает список прикормочных смесей для выбора
     """
     
-    template = 'fishing/fishing/select_lure_mix.html'
+    template = 'fishing/notes/fishing/select_lure_mix.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -951,7 +1111,9 @@ class FishingLureMixSelect(View):
                 fishing_lure_mix.id = 0
             return render(request,
                           self.template,
-                          {'fishing': fishing,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishing': fishing,
                            'lure_mix_list': lure_mix_list,
                            'fishing_lure_mix': fishing_lure_mix})
         return redirect('fishing:fishing')
@@ -1004,7 +1166,7 @@ class FishingResultAdd(View):
     Добавляет результат рыбалки
     """
 
-    template = 'fishing/fishing/edit_add_fishing_result.html'
+    template = 'fishing/notes/fishing/edit_add_fishing_result.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -1021,9 +1183,13 @@ class FishingResultAdd(View):
                 fishing_result.save()
                 return redirect('fishing:fishing_details', fishing.id)
             else:
+                fishs = Fish.objects.all()
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'fishs': fishs,
+                               'form': form,
                                'fishing': fishing})
         return redirect('fishing:fishing')
     
@@ -1031,9 +1197,13 @@ class FishingResultAdd(View):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
         if fishing.owner == request.user:
             form = FishingResultForm()
+            fishs = Fish.objects.all()
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishs': fishs,
+                           'form': form,
                            'fishing': fishing})
         return redirect('fishing:fishing')
 
@@ -1059,7 +1229,7 @@ class FishingResultEdit(View):
     Редактирует результат рыбалки
     """
 
-    template = 'fishing/fishing/edit_add_fishing_result.html'
+    template = 'fishing/notes/fishing/edit_add_fishing_result.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -1075,9 +1245,13 @@ class FishingResultEdit(View):
                 fishing_result.save()
                 return redirect('fishing:fishing_details', fishing.id)
             else:
+                fishs = Fish.objects.all()
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'fishs': fishs,
+                               'form': form,
                                'fishing': fishing,
                                'fishing_result': fishing_result})
         return redirect('fishing:fishing')
@@ -1087,9 +1261,13 @@ class FishingResultEdit(View):
         fishing_result = get_object_or_404(FishingResult, pk=kwargs['fishing_result_id'])
         if fishing.owner == request.user and fishing_result.fishing == fishing:
             form = FishingResultForm(instance=fishing_result)
+            fishs = Fish.objects.all()
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishs': fishs,
+                           'form': form,
                            'fishing': fishing,
                            'fishing_result': fishing_result})
         return redirect('fishing:fishing')
@@ -1100,11 +1278,11 @@ class FishingTrophyAdd(View):
     Добавляет трофей рыбалки
     """
 
-    template = 'fishing/fishing/edit_add_fishing_trophy.html'
+    template = 'fishing/notes/fishing/edit_add_fishing_trophy.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(FishingTrophyAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
@@ -1117,9 +1295,13 @@ class FishingTrophyAdd(View):
                 fishing_trophy.save()
                 return redirect('fishing:fishing_details', fishing.id)
             else:
+                fishs = Fish.objects.all()
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'fishs': fishs,
+                               'form': form,
                                'fishing': fishing})
         return redirect('fishing:fishing')
     
@@ -1127,9 +1309,13 @@ class FishingTrophyAdd(View):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
         if fishing.owner == request.user:
             form = FishingTrophyForm()
+            fishs = Fish.objects.all()
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishs': fishs,
+                           'form': form,
                            'fishing': fishing})
         return redirect('fishing:fishing')
 
@@ -1155,7 +1341,7 @@ class FishingTrophyEdit(View):
     Редактирует трофей рыбалки
     """
 
-    template = 'fishing/fishing/edit_add_fishing_trophy.html'
+    template = 'fishing/notes/fishing/edit_add_fishing_trophy.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -1171,9 +1357,13 @@ class FishingTrophyEdit(View):
                 fishing_trophy.save()
                 return redirect('fishing:fishing_details', fishing.id)
             else:
+                fishs = Fish.objects.all()
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'fishs': fishs,
+                               'form': form,
                                'fishing': fishing,
                                'fishing_trophy': fishing_trophy})
         return redirect('fishing:fishing')
@@ -1183,9 +1373,49 @@ class FishingTrophyEdit(View):
         fishing_trophy = get_object_or_404(FishingTrophy, pk=kwargs['fishing_trophy_id'])
         if fishing.owner == request.user and fishing_trophy.fishing == fishing:
             form = FishingTrophyForm(instance=fishing_trophy)
+            fishs = Fish.objects.all()
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'fishs': fishs,
+                           'form': form,
                            'fishing': fishing,
                            'fishing_trophy': fishing_trophy})
+        return redirect('fishing:fishing')
+
+
+class FishingNoteAddEdit(View):
+    template = 'fishing/notes/fishing/edit_add_fishing_note.html'
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == request.user:
+            form = FishingNoteForm(request.POST)
+            if form.is_valid():
+                fishing.note = form.cleaned_data['note']
+                fishing.save()
+                return redirect('fishing:fishing_details', fishing.id)
+            return render(request,
+                          self.template,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
+                           'fishing': fishing})
+        return redirect('fishing:fishing')
+    
+    def get(self, request, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == request.user:
+            form = FishingNoteForm(instance=fishing)
+            return render(request,
+                          self.template,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
+                           'fishing': fishing})
         return redirect('fishing:fishing')

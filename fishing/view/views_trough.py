@@ -5,6 +5,9 @@ from django.views import View
 
 from fishing.models import Trough
 from fishing.forms import TroughForm
+from fishing.models import FeedCapacity
+
+from fishing.getinfo import siteinfo, getuserinfo
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -14,11 +17,11 @@ class TroughAdd(View):
     """
     Добавление кормушек
     """
-    template = 'fishing/trough/edit_add.html'
+    template = 'fishing/notes/gears/trough/edit_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(TroughAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         form = TroughForm(request.POST)
@@ -31,20 +34,32 @@ class TroughAdd(View):
                 trough.save()
                 return redirect('fishing:trough')
             else:
+                feedcapacitys = FeedCapacity.objects.all()
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'feedcapacitys': feedcapacitys,
+                               'form': form,
                                'errors': 'Такая кормушка уже добавлена'})
         else:
+            feedcapacitys = FeedCapacity.objects.all()
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'feedcapacitys': feedcapacitys,
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = TroughForm()
+        feedcapacitys = FeedCapacity.objects.all()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'feedcapacitys': feedcapacitys,
+                       'form': form})
 
 
 class TroughList(View):
@@ -52,7 +67,7 @@ class TroughList(View):
     Возвращает список кормушек
     """
 
-    template = 'fishing/trough/list.html'
+    template = 'fishing/notes/gears/trough/list.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -65,7 +80,9 @@ class TroughList(View):
             trough_list = Trough.objects.filter(owner=request.user)
         return render(request,
                     self.template,
-                    {'trough_list': trough_list})
+                    {'fisherman': getuserinfo(request),
+                     'siteinfo': siteinfo(),
+                     'trough_list': trough_list})
 
 
 class TroughDelete(View):
@@ -88,7 +105,7 @@ class TroughEdit(View):
     """
     Изменение кормушки
     """
-    template = 'fishing/trough/edit_add.html'
+    template = 'fishing/notes/gears/trough/edit_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -106,23 +123,35 @@ class TroughEdit(View):
                     trough.save()
                     return redirect('fishing:trough')
                 else:
+                    feedcapacitys = FeedCapacity.objects.all()
                     return render(request,
                                 self.template,
-                                {'form': form,
+                                {'fisherman': getuserinfo(request),
+                                 'siteinfo': siteinfo(),
+                                 'feedcapacitys': feedcapacitys,
+                                 'form': form,
                                  'trough': trough,
-                                'errors': 'Такая кормушка уже добавлена'})
+                                 'errors': 'Такая кормушка уже добавлена'})
             else:
+                feedcapacitys = FeedCapacity.objects.all()
                 return render(request,
                             self.template,
-                            {'form': form,
-                            'trough': trough})
+                            {'fisherman': getuserinfo(request),
+                             'siteinfo': siteinfo(),
+                             'feedcapacitys': feedcapacitys,
+                             'form': form,
+                             'trough': trough})
 
     def get(self, request, *args, **kwargs):
         trough = get_object_or_404(Trough, pk=kwargs['trough_id'])
         if trough.owner == request.user:
             form = TroughForm(instance=trough)
+            feedcapacitys = FeedCapacity.objects.all()
             return render(request,
                         self.template,
-                        {'form': form,
-                        'trough': trough})
+                        {'fisherman': getuserinfo(request),
+                         'siteinfo': siteinfo(),
+                         'feedcapacitys': feedcapacitys,
+                         'form': form,
+                         'trough': trough})
         return redirect('fishing:trough')

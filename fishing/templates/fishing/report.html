@@ -1,0 +1,318 @@
+{% extends 'fishing/base.html' %}
+{% load element_by_key %}
+{% load len_element %}
+{% block content %}
+<div class="content__inner">
+  {% if report.fisherman %}
+    <div class="content__item-text content__item-text--center">
+      <p>
+        <strong>Рыболов</strong>: 
+        {{ report.fisherman }}
+      </p>
+    </div>
+  {% endif %}
+  <div class="content__item-text" >
+    <div class="content__div content__div--in-line">
+      <p>
+        <strong>День рыбалки</strong>: 
+        {{ report.date }}
+      </p>
+    </div>
+    {% if report.time_start %}
+    <div class="content__div content__div--in-line">
+      <p>
+        <strong>Начало рыбалки</strong>:
+        {{ report.time_start }}
+      </p>
+    </div>
+  {% endif %}
+  {% if report.time_end %}
+    <div class="content__div content__div--in-line">
+      <p>
+        <strong>Конец рыбалки</strong>: 
+        {{ report.time_end }}
+      </p>
+    </div>
+  {% endif %}
+  </div>
+  
+  {% if report.place %}
+    <div class="content__item-text">
+      <div class="content__item-text content__item-text--center">
+        <p><strong>Место проведение рыбалки:</strong> {{ report.place.name }}</p>
+      </div>
+      {% if report.place.water %}
+        <div class="content__div content__div--in-line">
+          <p>
+            <strong>Водоём</strong>: 
+            {{ report.place.water }}
+          </p>
+        </div>
+      {% endif %}
+      {% if report.place.locality %}
+        <div class="content__div content__div--in-line">
+          <p>
+            <strong>Населённый пункт</strong>: 
+            {{ report.place.locality }}
+          </p>
+        </div>
+      {% endif %}
+      {% if report.place.coordinate %}
+        <div class="content__div content__div--in-line">
+          <p>
+            <strong>Координаты места</strong>:</p>
+          <p>
+            {{ report.place.coordinate }}
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if report.weather %}
+    <div class="content__item-text">
+      <div class="content__item-text content__item-text--center">
+        <p><strong>Погода на рыбалке:</strong></p>
+      </div>
+      {% if report.weather.overcast %}
+        <div class="content__div content__div--in-line">
+          <p>
+            <strong>Облачность</strong>: 
+            {{ report.weather.overcast }}
+          </p>
+        </div>
+      {% endif %}
+      {% if report.weather.conditions %}
+        <div class="content__div content__div--in-line">
+          <p>
+            <strong>Погодные явления</strong>: 
+            {{ report.weather.conditions }}
+          </p>
+        </div>
+      {% endif %}
+      {% if report.weather.temperature %}
+        <div class="content__div content__div--in-line">
+          <p>
+            <strong>Температура воздуха</strong>: 
+            {{ report.weather.temperature }}
+          </p>
+        </div>
+      {% endif %}
+      {% if report.weather.pressure %}
+        <div class="content__div content__div--in-line">
+          <p>
+            <strong>Атмосферное давление</strong>: 
+            {{ report.weather.pressure }}
+          </p>
+        </div>
+      {% endif %}
+      {% if report.weather.direction_wind %}
+        <div class="content__div content__div--in-line">
+          <p>
+            <strong>Направление ветра</strong>: 
+            {{ report.weather.direction_wind }}
+          </p>
+        </div>
+      {% endif %}
+      {% if report.weather.wind_speed %}
+        <div class="content__div content__div--in-line">
+          <p>
+            <strong>Скорость ветра</strong>: 
+            {{ report.weather.wind_speed }}
+          </p>
+        </div>
+      {% endif %}
+      {% if report.weather.lunar_day %}
+        <div class="content__div content__div--in-line">
+          <p>
+            <strong>Лунный день</strong>: 
+            {{ report.weather.lunar_day }}
+          </p>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if report.tackles %}
+    <div class="content__item-text content__item-text--center">
+      <p><strong>Снасти использованные в рыбалке</strong>:</p>
+    </div>
+    <table class="content__report">
+      <tr>
+        {% if report.tackles.tackle %}
+          <th>
+            Снасть
+          </th>
+        {% endif %}
+        {% if report.tackles.montage %}
+          <th>
+            Монтаж
+          </th>
+        {% endif %}
+        {% if report.tackles.trough %}
+          <th>
+            Кормушка
+          </th>
+        {% endif %}
+        {% if report.tackles.leash %}
+          <th>
+            Поводок
+          </th>
+        {% endif %}
+        {% if report.tackles.crochet %}
+          <th>
+            Крючок
+          </th>
+        {% endif %}
+        {% if report.tackles.nozzle %}
+          <th>
+            Наживка
+          </th>
+        {% endif %}
+        {% if report.tackles.pace %}
+          <th>
+            Темп
+          </th>
+        {% endif %}
+      </tr>
+      {% for id_element in report.tackles|get_len %}
+        <tr>
+          {% if report.tackles.tackle %}
+            <td>
+              {{report.tackles.tackle|get_element:id_element}}
+            </td>
+          {% endif %}
+          {% if report.tackles.montage %}
+            <td>
+              {{report.tackles.montage|get_element:id_element}}
+            </td>
+          {% endif %}
+          {% if report.tackles.trough %}
+            <td>
+              {{report.tackles.trough|get_element:id_element}}
+            </td>
+          {% endif %}
+          {% if report.tackles.leash %}
+            <td>
+              {{report.tackles.leash|get_element:id_element}}
+            </td>
+          {% endif %}
+          {% if report.tackles.crochet %}
+            <td>
+              {{report.tackles.crochet|get_element:id_element}}
+            </td>
+          {% endif %}
+          {% if report.tackles.nozzle %}
+            <td>
+              {{report.tackles.nozzle|get_element:id_element}}
+            </td>
+          {% endif %}
+          {% if report.tackles.pace %}
+            <td>
+              {{report.tackles.pace|get_element:id_element}}
+            </td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+    </table>
+  {% endif %}
+  
+  {% if report.luremix %}
+  <div class="content__item-text">
+    <p><strong>Прикормочная смесь:</strong></p>
+  </div>
+  <table>
+    <thead>
+      {% if report.luremix.lures %}
+        <th>
+          Прикормы:
+        </th>
+      {% endif %}
+      {% if report.luremix.aromas %}
+        <th>
+          Аромы:
+        </th>
+      {% endif %}
+      {% if report.luremix.nozzles %}
+        <th>
+          Добавки:
+        </th>
+      {% endif %}
+    </thead>
+    <tr>
+      {% if report.luremix.lures %}
+        <td>
+          {% for lure in report.luremix.lures %}
+            <p>{{lure}}</p>
+          {% endfor %}
+        </td>
+      {% endif %}
+      {% if report.luremix.aromas %}
+        <td>
+          {% for aroma in report.luremix.aromas %}
+            <p>{{aroma}}</p>
+          {% endfor %}
+        </td>
+      {% endif %}
+      {% if report.luremix.nozzles %}
+        <td>
+          {% for nozzle in report.luremix.nozzles %}
+            <p>{{nozzle}}</p>
+          {% endfor %}
+        </td>
+      {% endif %}
+    </tr>
+  </table>
+  {% endif %}
+  {% if report.lure %}
+  <div>
+    <p><strong>Прикорм:</strong></p>
+    {{report.lure}}
+  </div>
+  {% endif %}
+
+  
+  {% if report.fishs or report.trophys %}
+  <div class="content__item-text">
+    <p><strong>Результаты рыбалки:</strong></p>
+  </div>
+  <table>
+    <thead>
+      {% if report.fishs %}
+        <th>
+          Улов:
+        </th>
+      {% endif %}
+      {% if report.trophys %}
+        <th>
+          Трофеи:
+        </th>
+      {% endif %}
+    </thead>
+    <tr>
+      {% if report.fishs %}
+        <td>
+          {% for fish in report.fishs %}
+            <p>{{ fish }}</p>
+          {% endfor %}
+        </td>
+      {% endif %}
+      {% if report.trophys %}
+        <td>
+          {% for trophy in report.trophys %}
+            <p>{{ trophy }}</p>
+          {% endfor %}
+        </td>
+      {% endif %}
+    </tr>
+  </table>
+  {% endif %}
+  {% if report.note %}
+    <div class="content__item-text">
+      <p><strong>Заметки о рыбалке</strong>:</p>
+      {{report.note}}
+    </div>
+
+  {% endif %}
+</div>
+{% endblock %}

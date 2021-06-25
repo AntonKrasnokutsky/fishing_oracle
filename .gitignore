@@ -1,6 +1,8 @@
- 
 .venv/
+venv/
 env/
 **/__pycache__/
 **/migrations/
 /static/
+node_modules/
+package-lock.json

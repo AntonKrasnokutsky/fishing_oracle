@@ -1,0 +1,35 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content__grid-3-column">
+  <div class="content__grid-item content__grid-item--border">
+    <a calss="button__img" href="{% url 'fishing:fishing' %}">
+      <img src="{% static 'images/logo_fishing.png' %}" alt="">
+    </a>
+  </div>
+  <div class="content__grid-item content__grid-item--border">
+    <a class="button__img" href="{% url 'fishing:fisherman_gear' %}">
+      <img src="{% static 'images/gear/logo_gear.png' %}" alt="">
+    </a>
+  </div>
+  <div class="content__grid-item content__grid-item--border">
+    <a class="button__img" href="{% url 'fishing:fisherman_feed' %}">
+      <img src="{% static 'images/feed/logo_feed.png' %}" alt="">
+    </a>
+  </div>
+  <div class="content__grid-item content__grid-item--border">
+    <a class="button__img" href="{% url 'fishing:water' %}">
+      <img src="{% static 'images/logo_place.png' %}" alt="">
+    </a>
+  </div>
+  <div class="content__grid-item content__grid-item--border">
+    <a href="{% url 'fishing:statistic_trophy' %}">
+      <img src="{% static 'images/logo_trophy.png' %}" alt="">
+    </a>
+  </div>
+  <div class="content__grid-item content__grid-item--border">
+    
+  </div>
+</div>
+{% endblock %}

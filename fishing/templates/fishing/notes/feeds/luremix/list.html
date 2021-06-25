@@ -1,0 +1,48 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+{% block content %}
+
+{% if lure_mix_list != None %}
+<!-- Прикомочные смеси -->
+<div>
+  {% if lure_mix_list %}
+  <table>
+    {% for lure_mix in lure_mix_list %}
+    <tr>
+      <td>
+      <a href="{% url 'fishing:lure_mix_details' lure_mix.id %}">
+        {{lure_mix}}
+      </a>
+      </td>
+      <td>
+        {% if lure_mix.owner == user %}
+          <a href="{% url 'fishing:lure_mix_edit' lure_mix.id %}">
+            <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
+          </a>
+          <a href="{% url 'fishing:lure_mix_delete' lure_mix.id %}">
+            <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
+          </a>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="content__item-text">
+    <p>Прикормочные смеси еще не добавлены</p>
+  </div>
+  {% endif %}
+
+  <div class="content__item content__item--btn-position">
+    <a class="button__std" href="{% url 'fishing:lure_mix_add' %}">
+      <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+      Добавить
+    </a>
+    <a class="button__std" href="{% url 'fishing:fisherman_feed' %}">
+      Назад
+    </a>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

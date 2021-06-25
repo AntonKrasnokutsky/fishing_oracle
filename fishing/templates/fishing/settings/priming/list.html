@@ -1,0 +1,40 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="content__item">
+  {% if primings_list %}
+  <table>
+    {% for priming in primings_list %}
+    <tr>
+      <td>
+        {{priming.name}}
+      </td>
+      <td>
+        <a href="{% url 'fishing:priming_edit' priming.id %}">
+          <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
+        </a>
+        <a href="{% url 'fishing:priming_delete' priming.id %}">
+          <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="content__item-text content__item-text--center">
+    <p>Варианты грунтов еще не добавлены</p>
+  </div>
+  {% endif %}
+  <div class="content__item content__item--btn-position">
+    <a class="button__std" href="{% url 'fishing:priming_add' %}">
+      <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+      Добавить
+    </a>
+    <a class="button__std" href="{% url 'fishing:settings' %}">
+      Назад
+    </a>
+  </div>
+</div>
+
+{% endblock %}

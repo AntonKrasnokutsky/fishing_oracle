@@ -1,0 +1,37 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content__grid-3-column">
+  <div class="content__grid-item content__grid-item--border">
+    <a href="{% url 'fishing:tackle' %}">
+      <img src="{% static 'images/gear/logo_tackle.png' %}" alt="Снасти">
+    </a>
+  </div>
+  <div class="content__grid-item content__grid-item--border">
+    <a href="{% url 'fishing:montage' %}">
+      <img src="{% static 'images/gear/logo_montage.png' %}" alt="Монтажи">
+    </a>
+  </div>
+  <div class="content__grid-item content__grid-item--border">
+    <a href="{% url 'fishing:trough' %}">
+      <img src="{% static 'images/gear/logo_trough.png' %}" alt="Кормушки">
+    </a>
+  </div>
+  <div class="content__grid-item content__grid-item--border">
+    <a href="{% url 'fishing:leash' %}">
+      <img src="{% static 'images/gear/logo_leash.png' %}" alt="Поводки">
+    </a>
+  </div>
+  <div class="content__grid-item content__grid-item--border">
+    <a href="{% url 'fishing:crochet' %}">
+      <img src="{% static 'images/gear/logo_crochet.png' %}" alt="Крючки">
+    </a>
+  </div>
+</div>
+
+<div class="content__item content__item--btn-position">
+  <a class="button__std" href="{% url 'fishing:fisherman_notes' %}">Назад</a>
+</div>
+
+{% endblock %}

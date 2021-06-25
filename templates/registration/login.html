@@ -1,57 +1,45 @@
 {% extends 'fishing/base.html' %}
 {% block content %}
-<style>
-  p {
-    text-align: center;
-    font-size: 120%;
-    font-style: oblique;
-  }
-</style>
 
-{% if form.errors %}
-  <p>Логин или пароль не верный</p>
-{% endif %}
+<div class="errors">
+  <div class="container">
+    <div class="errors__inner">
+      {% if form.errors %}
+      <div class="errors__item">
+        <p>Логин или пароль не верный</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
 {% if next %}
   {% if user.is_authenticated %}
-    <p>Доступ запрещен</p>
-  {% else %}
-    <p>Пожалуйста, войдите, чтобы увидеть эту страницу.</p>
+  <div class="content__item-text content__item-text--center">
+    <p>Доступ к разделу ограничен</p>
+  </div>
   {% endif %}
 {% endif %}
 
-
-<form method="post" action="{% url 'login' %}" style="text-align: center; margin: auto;">
-  {% csrf_token %}
-  <table style="text-align: left; margin: auto;">
-    <tr>
-      <td style="text-align: center; border: 0;">
-        {% for error in form.username.errors %}
-          <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
-        {% endfor %}
-      </td>
-    </tr>
-    <tr>
-      <td style="text-align: left; border: 0;">{{ form.username.label_tag }}</td>
-      <td style="text-align: right; border: 0;">{{ form.username }}</td>
-    </tr>
-    <tr>
-      <td style="text-align: center; border: 0;">
-        {% for error in form.password.errors %}
-          <p class="text-danger" style="font-size: 100%;">{{ error }}</p>
-        {% endfor %}
-      </td>
-    </tr>
-    <tr>
-      <td style="text-align: right; border: 0;">{{ form.password.label_tag }}</td>
-      <td style="text-align: left; border: 0;">{{ form.password }}</td>
-    </tr>
-  </table>
-  <br />
-  <button class="btn btn-secondary" role="button">Войти</button>
-  <a href="{% url 'accounts:registrations' %}" class="btn btn-secondary" role="button">Регистрация</a>
-  <p style="font-size: 100%;"></p>
-    <a href="{% url 'password_reset' %}">Восстановить пароль</a>
-  </p>
-</form>
+<div class="info">
+  <form class="info__login-form" method="post" action="{% url 'login' %}">
+    {% csrf_token %}
+    <div class="info__login-block">
+      <p class="info__login-form-text">{{ form.username.label_tag }}</p>
+      <input class="info__login-form-input" type="email" name="username" autofocus autocapitalize="none" autocomplete="username" maxlength="254" required id="id_username">
+      <p class="info__login-form-text">{{ form.password.label_tag }}</p>
+      <input class="info__login-form-input" type="password" name="password" autocomplete="current-password" required id="id_password">
+    </div>
+    <div class="info__login-form-error">
+      {% if fisherman.errors %}
+        <p>Логин или пароль не верный</p>
+      {% endif %}
+    </div>
+    <button class="info__button" type="submit">Войти</button>
+    <input type="hidden" name="next" value="{{ next }}" />
+    <a class="info__button" href="{% url 'accounts:registrations' %}">Регистрация</a>
+    <p><a class="info__restore-password" href="{% url 'password_reset' %}">Восстановить пароль</a></p>
+  </form>
+</div>
 
 {% endblock %}

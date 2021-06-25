@@ -1,55 +1,36 @@
 {% extends 'fishing/base.html' %}
 
 {% block content %}
-<style>
-  p {
-    text-align: center;
-    font-size: 140%;
-    font-style: oblique;
-  }
-</style>
-<p>Регистрация</p>
-<form method="post" style="text-align: center; margin: auto;">
-  {% csrf_token %}
-  <table style="text-align: left; margin: auto;">
-    {% if form.email.errors %}
-    <tr>
-      <td colspan="2">
+<div class="info">
+  <form class="info__login-form" method="post">
+    {% csrf_token %}
+    <div class="info__login-block">
+      <p class="info__login-form-text">{{ form.email.label_tag }}</p>
+      <input class="info__login-form-input" type="email" name="email" autofocus autocapitalize="none" autocomplete="username" maxlength="254" required id="id_email" value={{ form.email.value|default_if_none:"" }}>
+      <div class="info__login-form-error">
         {% for error in form.email.errors %}
-          <p class="text-danger">{{ error }}</p>
+          <p>{{ error }}</p>
         {% endfor %}
-      </td>
-    </tr>
-    {% endif %}
-    <tr>
-      <td style="text-align: right;">{{ form.email.label_tag }}</td>
-      <td>{{ form.email }}</td>
-    </tr>
-    {% if form.password1.errors or form.password2.errors %}
-    <tr>
-      <td colspan="2">
+      </div>
+      <p class="info__login-form-text">{{ form.nick.label_tag }}</p>
+      <input class="info__login-form-input" type="text" name="nick" maxlength="14" required id="id_nick" value={{ form.nick.value|default_if_none:"" }}>
+      <p class="info__login-form-text">{{ form.password1.label_tag }}</p>
+      <input class="info__login-form-input" type="password" name="password1" autocomplete="current-password" required id="id_password1">
+      <p class="info__login-form-text">{{ form.password2.label_tag }}</p>
+      <input class="info__login-form-input" type="password" name="password2" autocomplete="current-password" required id="id_password2">
+    </div>
+    <div class="info__login-form-error">
+      {% if form.password1.errors or form.password2.errors %}
         {% for error in form.password1.errors %}
-          <p class="text-danger">{{ error }}</p>
+          <p>{{ error }}</p>
         {% endfor %}
         {% for error in form.password2.errors %}
-          <p class="text-danger">{{ error }}</p>
+          <p>{{ error }}</p>
         {% endfor %}
-      </td>
-    </tr>
-    {% endif %}
-    <tr>
-      <td style="text-align: right;">{{ form.password1.label_tag }}</td>
-      <td>{{ form.password1 }}</td>
-    </tr>
-    <tr>
-      <td style="text-align: right;">{{ form.password2.label_tag }}</td>
-      <td>{{ form.password2 }}</td>
-    </tr>
-    <ul>
-  </ul>
-  </table>
-  <br />
-  <input type="submit" class="btn btn-secondary" value="Регистрация" />
-</form>
+      {% endif %}
+    </div>
+    <button class="info__button" type="submit">Регистрация</button>
+  </form>
+</div>
 
 {% endblock content %}

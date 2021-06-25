@@ -1,0 +1,28 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+{% load static %}
+
+{% if place_list %}
+<!-- Место рыбалки -->
+<table>
+  {% for place in place_list %}
+  <tr >
+    <td>
+    {{place}}
+    </td>
+    <td>
+      <a href="{% url 'fishing:fishing_place_add' fishing.id place.id %}">
+        <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
+      </a>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% else %}
+<p>Мест еще не добавлено</p>
+{% endif %}
+<div class="content__item content__item--center">
+  <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
+</div>
+
+{% endblock %}

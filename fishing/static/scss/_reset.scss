@@ -1,0 +1,23 @@
+body,
+p,
+ul{
+    margin: 0;
+    font-size: inherit;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+img {
+    max-width: 100%;
+}
+
+a {
+    text-decoration: none;
+}
+
+body{
+    background-color: $content-background;
+}

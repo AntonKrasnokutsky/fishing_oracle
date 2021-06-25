@@ -1,0 +1,23 @@
+{% extends 'fishing/base.html' %}
+
+{% block content %}
+
+<div class="info">
+  <form class="info__login-form" method="post">
+    {% csrf_token %}
+    <div class="info__login-block">
+      <p class="info__login-form-text">{{ usernickeditform.nick.label_tag }}</p>
+      <div class="info__login-form-error">
+        {% for error in usernickeditform.nick.errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      <input class="info__login-form-input" type="text" name="nick" maxlength="14" required id="id_nick" value={{ usernickeditform.nick.value|default_if_none:"" }}>
+    </div>
+    <button class="info__button" type="submit">Сохранить</button>
+  </form>
+</div>
+
+
+
+{% endblock content %}

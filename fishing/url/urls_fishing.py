@@ -206,4 +206,14 @@ urlpatterns = [
     path('<int:fishing_id>/delete/fishingtrophy/<int:fishing_trophy_id>/',
          views.FishingTrophyDelete.as_view(),
          name='fish_trophy_delete'),
+    path('<int:fishing_id>/edit/note/',
+         views.FishingNoteAddEdit.as_view(),
+         name='fishing_note'),
+    path('<int:fishing_id>/report_settings',
+         views.FishingReportSetingsView.as_view(),
+         name='fishing_report_settings'),
+    path('<int:fishing_id>/report_settings/delete',
+         views.FishingReportsSettingsDelete.as_view(),
+         name='fishing_report_settings_delete')
+    
     ]

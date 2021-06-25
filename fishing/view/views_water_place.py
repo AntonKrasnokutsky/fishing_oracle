@@ -6,10 +6,12 @@ from django.views import View
 
 from fishing.models import Water
 from fishing.models import Place
+from fishing.models import WaterCategory
 from fishing.forms import WaterForm
 from fishing.forms import PlaceForm
 from fishing.forms import PlaceCoordinatesForm
 
+from fishing.getinfo import siteinfo, getuserinfo
 
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -20,17 +22,19 @@ class WaterList(View):
     Список водоёмов
     """
 
-    template = 'fishing/water/list.html'
+    template = 'fishing/notes/waters/water/list.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(WaterList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         water_list = Water.objects.filter(owner=request.user)
         return render(request,
                 self.template,
-                {'water_list': water_list})
+                {'fisherman': getuserinfo(request),
+                 'siteinfo': siteinfo(),
+                 'water_list': water_list})
 
 
 class WaterAdd(View):
@@ -38,11 +42,11 @@ class WaterAdd(View):
     Добавляет водоем
     """
     
-    template = 'fishing/water/edit_add.html'
+    template = 'fishing/notes/waters/water/edit_add.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(WaterAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
         form = WaterForm(request.POST)
@@ -54,20 +58,32 @@ class WaterAdd(View):
                 water.save()
                 return redirect('fishing:water')
             else:
+                watercategorys = WaterCategory.objects.all()
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'watercategorys': watercategorys,
+                               'form': form,
                                'errors': 'Водоём с таким названием и категорией уже добавлен'})
         else:
+            watercategorys = WaterCategory.objects.all()
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'watercategorys': watercategorys,
+                           'form': form})
     
     def get(self, request, *args, **kwargs):
         form = WaterForm()
+        watercategorys = WaterCategory.objects.all()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'watercategorys': watercategorys,
+                       'form': form})
 
 
 class WaterDelete(View):
@@ -77,7 +93,7 @@ class WaterDelete(View):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(WaterDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         water = get_object_or_404(Water, pk=kwargs['water_id'])
@@ -91,11 +107,11 @@ class WaterEdit(View):
     Редактирует водоем
     """
     
-    template = 'fishing/water/edit_add.html'
+    template = 'fishing/notes/waters/water/edit_add.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(WaterEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
         water = get_object_or_404(Water, pk=kwargs['water_id'])
@@ -108,14 +124,22 @@ class WaterEdit(View):
                     water.save()
                     return redirect('fishing:water')
                 else:
+                    watercategorys = WaterCategory.objects.all()
                     return render(request,
                                   self.template,
-                                  {'form': form,
+                                  {'fisherman': getuserinfo(request),
+                                   'siteinfo': siteinfo(),
+                                   'watercategorys': watercategorys,
+                                   'form': form,
                                    'errors': 'Водоём с таким названием и категорией уже добавлен'})
             else:
+                watercategorys = WaterCategory.objects.all()
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'watercategorys': watercategorys,
+                               'form': form,
                                'water': water})
         else:
             return redirect('fishing:water')
@@ -124,10 +148,14 @@ class WaterEdit(View):
         water = get_object_or_404(Water, pk=kwargs['water_id'])
         if water.owner == request.user:
             form = WaterForm(instance=water)
+            watercategorys = WaterCategory.objects.all()
             return render(request,
                           self.template,
-                          {'form': form,
-                           "water": water})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'watercategorys': watercategorys,
+                           'form': form,
+                           'water': water})
         return redirect('fishing:water')
 
 
@@ -136,18 +164,20 @@ class PlaceList(View):
     Список мест на водоёме
     """
     
-    template = 'fishing/place/list.html'
+    template = 'fishing/notes/waters/place/list.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(PlaceList, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
         water = get_object_or_404(Water, pk=kwargs['water_id'])
         places_list = Place.objects.filter(owner=request.user, water=water)
         return render(request,
                       self.template,
-                      {'water': water,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'water': water,
                        'places_list': places_list})
 
 
@@ -156,11 +186,11 @@ class PlaceAdd(View):
     Добавление места на водоеме
     """
     
-    template = 'fishing/place/edit_add.html'
+    template = 'fishing/notes/waters/place/edit_add.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(PlaceAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
         water = get_object_or_404(Water, pk=kwargs['water_id'])
@@ -177,13 +207,17 @@ class PlaceAdd(View):
                 else:
                     return render(request,
                                   self.template,
-                                  {'form': form,
+                                  {'fisherman': getuserinfo(request),
+                                   'siteinfo': siteinfo(),
+                                   'form': form,
                                    'water': water,
                                    'errors': 'Место с таким названием на этом водоеме уже добавлено'})
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'water': water})
         return redirect('fishing:places', kwargs['water_id'])
     
@@ -193,7 +227,9 @@ class PlaceAdd(View):
             form = PlaceForm()
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'water': water})
         return redirect('fishing:places', kwargs['water_id'])
 
@@ -205,7 +241,7 @@ class PlaceDelete(View):
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(PlaceDelete, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
         water = get_object_or_404(Water, pk=kwargs['water_id'])
@@ -220,11 +256,11 @@ class PlaceEdit(View):
     Редактирование места на водоеме
     """
     
-    template = 'fishing/place/edit_add.html'
+    template = 'fishing/notes/waters/place/edit_add.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(PlaceEdit, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
         water = get_object_or_404(Water, pk=kwargs['water_id'])
@@ -240,14 +276,18 @@ class PlaceEdit(View):
                 else:
                     return render(request,
                                   self.template,
-                                  {'form': form,
+                                  {'fisherman': getuserinfo(request),
+                                   'siteinfo': siteinfo(),
+                                   'form': form,
                                    'place': place,
                                    'water': water,
                                    'errors': 'Место с таким названием на этом водоеме уже добавлено'})
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'place': place,
                                'water': water})
         return redirect('fishing:places', kwargs['water_id'])
@@ -259,7 +299,9 @@ class PlaceEdit(View):
             form = PlaceForm(instance=place)
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'place': place,
                            'water': water})
         return redirect('fishing:places', kwargs['water_id'])
@@ -270,11 +312,11 @@ class PlaceCoordinatesAdd(View):
     Добавление координат места на водоеме
     """
     
-    template = 'fishing/place/edit_add_coordinates.html'
+    template = 'fishing/notes/waters/place/edit_add_coordinates.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(PlaceCoordinatesAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
         water = get_object_or_404(Water, pk=kwargs['water_id'])
@@ -289,13 +331,17 @@ class PlaceCoordinatesAdd(View):
                 else:
                     return render(request,
                                   self.template,
-                                  {'form': form,
+                                  {'fisherman': getuserinfo(request),
+                                   'siteinfo': siteinfo(),
+                                   'form': form,
                                    'water': water,
                                    'errors': 'Место с такими координатами уже добавлено'})
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'place': place,
                                'water': water})
         return redirect('fishing:places', kwargs['water_id'])
@@ -307,7 +353,9 @@ class PlaceCoordinatesAdd(View):
             form = PlaceCoordinatesForm(instance=place)
             return render(request,
                           self.template,
-                          {'form': form,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
                            'place': place,
                            'water': water})
         return redirect('fishing:places', kwargs['water_id'])

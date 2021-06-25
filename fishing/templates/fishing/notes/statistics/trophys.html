@@ -1,0 +1,35 @@
+{% extends 'fishing/base.html' %}
+{% load element_by_key %}
+{% load len_element %}
+{% block content %}
+<div class="content__inner">
+  <table>
+    <tr>
+        <td>
+          {% if trophys.fisherman.fish %}
+            {% for id_element in trophys.fisherman|get_len %}
+              <table>
+                <tr><strong>Рыба</strong>: {{trophys.fisherman.fish|get_element:id_element}}</tr>  
+                <tr>
+                  <td>
+                    <strong>Вес</strong>: {{trophys.fisherman.weight|get_element:id_element}} кг.
+                  </td>
+                  <td>
+                    <a href="{% url 'fishing:fishing_details' trophys.fisherman.fishing|get_element:id_element %}">
+                      К рыбалке
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            {% endfor %}
+          {% else %}
+            Трофейных рыб еще не попадалось
+          {% endif %}
+        </td>
+    </tr>
+  </table>
+  <div class="content__item content__item--btn-position">
+    <a class="button__std" href="{% url 'fishing:fisherman_notes' %}">Назад</a>
+  </div>
+</div>
+{% endblock %}

@@ -6,6 +6,8 @@ from django.views import View
 from fishing.models import Tackle
 from fishing.forms import TackleForm
 
+from fishing.getinfo import siteinfo, getuserinfo
+
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
@@ -14,7 +16,7 @@ class TackleAdd(View):
     """
     Добавление снастей
     """
-    template = 'fishing/tackle/edit_add.html'
+    template = 'fishing/notes/gears/tackle/edit_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -32,18 +34,24 @@ class TackleAdd(View):
             else:
                 return render(request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'errors': 'Такая снасть уже добавлена'})
         else:
             return render(request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
 
     def get(self, request, *args, **kwargs):
         form = TackleForm()
         return render(request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class TackleList(View):
@@ -51,7 +59,7 @@ class TackleList(View):
     Возвращает список снастей
     """
 
-    template = 'fishing/tackle/list.html'
+    template = 'fishing/notes/gears/tackle/list.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -64,7 +72,9 @@ class TackleList(View):
             tackle_list = Tackle.objects.filter(owner=request.user)
         return render(request,
                     self.template,
-                    {'tackle_list': tackle_list})
+                    {'fisherman': getuserinfo(request),
+                      'siteinfo': siteinfo(),
+                      'tackle_list': tackle_list})
 
 
 class TackleDelete(View):
@@ -87,7 +97,7 @@ class TackleEdit(View):
     """
     Изменение снасти
     """
-    template = 'fishing/tackle/edit_add.html'
+    template = 'fishing/notes/gears/tackle/edit_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -107,14 +117,18 @@ class TackleEdit(View):
                 else:
                     return render(request,
                                 self.template,
-                                {'form': form,
+                                {'fisherman': getuserinfo(request),
+                                 'siteinfo': siteinfo(),
+                                 'form': form,
                                  'tackle': tackle,
-                                'errors': 'Такая снасть уже добавлена'})
+                                 'errors': 'Такая снасть уже добавлена'})
             else:
                 return render(request,
                             self.template,
-                            {'form': form,
-                            'tackle': tackle})
+                            {'fisherman': getuserinfo(request),
+                             'siteinfo': siteinfo(),
+                             'form': form,
+                             'tackle': tackle})
         return redirect('fishing:tackle')
 
     def get(self, request, *args, **kwargs):
@@ -123,6 +137,8 @@ class TackleEdit(View):
             form = TackleForm(instance=tackle)
             return render(request,
                         self.template,
-                        {'form': form,
-                        'tackle': tackle})
+                        {'fisherman': getuserinfo(request),
+                         'siteinfo': siteinfo(),
+                         'form': form,
+                         'tackle': tackle})
         return redirect('fishing:tackle')

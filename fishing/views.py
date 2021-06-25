@@ -1,8 +1,95 @@
-from django.shortcuts import render
+from .models import Aroma, FishingCrochet, FishingLeash, FishingLure, FishingLureMix, FishingNozzle, FishingPace, FishingReportsSettings, FishingResult, FishingTackle, FishingTrophy, FishingTrough, FishingWeather, Lure, Montage, Nozzle
+from .models import Fishing
+from .models import FishingPlace
+from .models import FishingMontage
+
+from django.shortcuts import get_object_or_404, redirect, render
+# from users.forms import CustomUserChangeForm
+from .update import update
+from blog.views import Post
+from django.views import View
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from .getinfo import siteinfo, getuserinfo
+
+class Index(View):
+    template = 'fishing/index.html'
+
+    def get(self, request, *args, **kwargs):
+        # posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')
+        return render(request,
+                      self.template,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'posts': Post.objects.all()})
 
 
-def index(request):
-    """
-    Главная страница
-    """
-    return render(request, 'fishing/index.html')
+class FishermanNotes(View):
+    template = 'fishing/notes.html'
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        return render(request, 
+                      self.template,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo()})
+
+
+class FishermanGear(View):
+    template = 'fishing/gear.html'
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        return render(request,
+                      self.template,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo()})
+
+
+class FishermanFeed(View):
+    template = 'fishing/feed.html'
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        return render(request,
+                      self.template,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo()})
+
+
+class FishingReportView(View):
+    
+    template = 'fishing/report.html'
+    
+    def get(self, request, *args, **kwargs):
+        fishing_report_settings = get_object_or_404(FishingReportsSettings, self_id=kwargs['report_id'])
+        report = fishing_report_settings.report()
+        return render(request,
+                      self.template,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'report': report})
+
+
+class TrophtReport(View):
+    template = 'fishing/trophys.html'
+    
+    def get(self, *args, **kwargs):
+        trophys = {}
+        # Трофеи пользователя
+        if self.request.user.is_authenticated:
+            trophys['fisherman'] = Fishing.get_trophys(self.request)
+        trophys['reports'] = FishingReportsSettings.get_trophy(request=self.request)
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'trophys': trophys})

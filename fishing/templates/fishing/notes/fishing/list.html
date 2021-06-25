@@ -1,0 +1,42 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+
+{% block content %}
+{% if fishing_list %}
+
+  <div class="content__item">
+    <table class="content__item-table">
+      {% for fishing in fishing_list %}
+        <tr>
+          <td>
+            <a href="{% url 'fishing:fishing_details' fishing.id %}">{{fishing}}</a>
+          </td>
+          <td>
+            {% if fishing.owner == user %}
+              {% if fishing.report %}
+                <input type="url" hidden id="id_text_to_copy_{{fishing.id}}" value="{{ fishing.report }}">
+                <button class="button__img" onclick="copyToClipboard('id_text_to_copy_{{fishing.id}}')">
+                  <img class="button__img" src="{% static 'images/copy.png' %}" alt="Copy">
+                </button>
+              {% endif %}
+              <a href="{% url 'fishing:fishing_edit' fishing.id %}"><img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit"></a>
+              <a href="{% url 'fishing:fishing_delete' fishing.id %}"><img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete"></a>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% else %}
+<div class="content__item-text">
+  <p>Ни одной рыбалки ещё не добавлено</p>
+</div>
+{% endif %}
+
+<div class="content__item content__item--center">
+  <a class="button__std button__std--center" href="{% url 'fishing:fishing_add' %}"><img class="button__img" src="{% static 'images/add.png' %}" alt="">Добавить</a>
+  <a class="button__std button__std--center" href="{% url 'fishing:fisherman_notes' %}">Назад</a>
+</div>
+
+<p>{{ redirect_to }}</p>
+{% endblock %}
