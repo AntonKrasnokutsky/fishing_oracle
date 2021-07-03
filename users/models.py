@@ -14,6 +14,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                               unique=True)
     nick = models.CharField(max_length=50,
                             unique=False,
+                            default='Рыболов'
                             verbose_name='Ник')
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
