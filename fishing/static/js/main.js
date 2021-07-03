@@ -1,8 +1,8 @@
 function copyToClipboard(id_to_copy) {
-    var copyText = document.getElementById(id_to_copy);
-    copyText.select();
-    navigator.clipboard.writeText(copyText.value);
-    alert("Ссылка скопирована: " + copyText.value)
+    var t = document.getElementById(id_to_copy);
+    t.select();
+    navigator.clipboard.writeText(t.value);
+    alert("Ссылка скопирована: " + t.value);
 }
 
 $(function () {
