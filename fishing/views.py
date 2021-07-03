@@ -2,7 +2,6 @@ from .models import FishingReportsSettings
 from .models import Fishing
 
 from django.shortcuts import get_object_or_404, render
-from .update import update
 from blog.views import Post
 from django.views import View
 from django.contrib.auth.decorators import login_required
@@ -13,7 +12,6 @@ class Index(View):
     template = 'fishing/index.html'
 
     def get(self, request, *args, **kwargs):
-        update()
         return render(request,
                       self.template,
                       {'fisherman': getuserinfo(request),
