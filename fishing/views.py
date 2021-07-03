@@ -1,10 +1,7 @@
-from .models import Aroma, FishingCrochet, FishingLeash, FishingLure, FishingLureMix, FishingNozzle, FishingPace, FishingReportsSettings, FishingResult, FishingTackle, FishingTrophy, FishingTrough, FishingWeather, Lure, Montage, Nozzle
+from .models import FishingReportsSettings
 from .models import Fishing
-from .models import FishingPlace
-from .models import FishingMontage
 
-from django.shortcuts import get_object_or_404, redirect, render
-# from users.forms import CustomUserChangeForm
+from django.shortcuts import get_object_or_404, render
 from .update import update
 from blog.views import Post
 from django.views import View
@@ -16,7 +13,7 @@ class Index(View):
     template = 'fishing/index.html'
 
     def get(self, request, *args, **kwargs):
-        # posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')
+        update()
         return render(request,
                       self.template,
                       {'fisherman': getuserinfo(request),
