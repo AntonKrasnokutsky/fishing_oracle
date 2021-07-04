@@ -29,14 +29,15 @@ if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 else:
     ALLOWED_HOSTS = ['rgbfish.ru']
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 EMAIL_HOST = os.environ['EMAIL_HOST']
 EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
 EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
-EMAIL_PORT = int(os.environ['EMAIL_PORT'])
+EMAIL_PORT = os.environ['EMAIL_PORT']
 EMAIL_USE_TLS = bool(os.environ['EMAIL_USE_TLS'])
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 # Application definition
 
 INSTALLED_APPS = [
