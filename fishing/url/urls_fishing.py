@@ -125,7 +125,7 @@ urlpatterns = [
     
     # Насадки/наживки использованные в рыбалке\
     # Добавить наживку в рыбалку
-    path('<int:fishing_id>/add/fishingnozzle/<int:fishing_tackle_id><int:nozzle_id><int:fishing_nozzle_id>/',
+    path('<int:fishing_id>/add/fishingnozzle/<int:fishing_tackle_id>/<int:nozzle_id>/<int:fishing_nozzle_id>/',
          views.FishingNozzleAdd.as_view(),
          name='fishing_nozzle_add'),
     # Удалить наживку/насадку из рыбалки
