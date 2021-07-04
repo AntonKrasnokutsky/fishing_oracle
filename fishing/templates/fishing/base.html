@@ -42,7 +42,19 @@
                 <div class="info">
                   {% if user.is_authenticated %}
                     <div class="info__content">
-                      <p class="info__nickname">{{ user.nick }} <a class="button__img" href="{% url 'accounts:editnick' %}"><img class="info__image" src="{% static 'images/edit.png' %}" alt="sign_out"></a>{% if user.is_staff %}<a class="button__img" href="{% url 'fishing:settings' %}"><img class="info__image" src="{% static 'images/logo_settings.png' %}" alt="sign_out"></a> {% endif %} </p>
+                      <p class="info__nickname">
+                        {{ user.nick }}
+                        <a class="button__img" href="{% url 'accounts:editnick' %}">
+                          <img class="info__image" src="{% static 'images/edit.png' %}" alt="Edit">
+                        </a>
+                        {% if user.is_staff %}
+                          <a class="button__img" href="{% url 'fishing:settings' %}">
+                            <img class="info__image" src="{% static 'images/logo_settings.png' %}" alt="Settings">
+                          </a>
+                          <a class="button__img" href="{% url 'fishing:environments' %}">
+                            <img class="info__image" src="{% static 'images/logo_settings.png' %}" alt="Vars">
+                          </a>
+                        {% endif %} </p>
                       <ul class="info__list">
                         <li class="info__item">
                           Рыбалок: 

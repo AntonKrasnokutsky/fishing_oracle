@@ -1,3 +1,4 @@
+from fishing_oracle.settings import DEFAULT_FROM_EMAIL, EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER, EMAIL_PORT, EMAIL_USE_TLS
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -929,3 +930,37 @@ class WaterCategoryEdit(View):
                        'siteinfo': siteinfo(),
                        'form': form,
                        'water_category': water_category})
+
+
+class EnvironmentVariables(View):
+    
+    template = 'fishing/settings/environment.html'
+    
+    @method_decorator(staff_member_required(login_url='login'))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def get(self, request, *args, **kwargs):
+        result = {'variables': [],
+                  'value': [],
+                  'type': []}
+        result['variables'].append('EMAIL_HOST')
+        result['value'].append(EMAIL_HOST)
+        result['type'].append(type(EMAIL_HOST))
+        result['variables'].append('EMAIL_HOST_USER')
+        result['value'].append(EMAIL_HOST_USER)
+        result['type'].append(type(EMAIL_HOST_USER))
+        result['variables'].append('EMAIL_PORT')
+        result['value'].append(EMAIL_PORT)
+        result['type'].append(type(EMAIL_PORT))
+        result['variables'].append('EMAIL_USE_TLS')
+        result['value'].append(EMAIL_USE_TLS)
+        result['type'].append(type(EMAIL_USE_TLS))
+        result['variables'].append('DEFAULT_FROM_EMAIL')
+        result['value'].append(DEFAULT_FROM_EMAIL)
+        result['type'].append(type(DEFAULT_FROM_EMAIL))
+        return render(request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'environments': result})

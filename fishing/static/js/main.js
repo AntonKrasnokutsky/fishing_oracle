@@ -1,6 +1,5 @@
 function copyToClipboard(id_to_copy) {
     var t = document.getElementById(id_to_copy);
-    t.select();
     navigator.clipboard.writeText(t.value);
     alert("Ссылка скопирована: " + t.value);
 }

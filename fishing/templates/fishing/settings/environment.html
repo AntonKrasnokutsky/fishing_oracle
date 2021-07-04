@@ -1,0 +1,22 @@
+{% extends 'fishing/base.html' %}
+{% load element_by_key %}
+{% load len_element %}
+{% block content %}
+<div class="content__inner">
+  <table>
+    <header>
+      <th>Переменная</th>
+      <th>Значение</th>
+      <th>Тип</th>
+    </header>
+    {% for i in environments|get_len %}
+      <tr>
+        <td>{{ environments.variables|get_element:i }}</td>
+        <td>{{ environments.value|get_element:i }}</td>
+        <td>{{ environments.type|get_element:i }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+
+{% endblock %}

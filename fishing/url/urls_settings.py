@@ -8,6 +8,10 @@ urlpatterns = [
          views.Settings.as_view(),
          name='settings'),
     
+    # Переменные среды
+    path('environments/',
+         views.EnvironmentVariables.as_view(),
+         name='environments'),
     # Блок грунта
     # Список вариантов грунта
     path('primings/',

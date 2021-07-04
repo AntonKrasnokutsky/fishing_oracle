@@ -1,6 +1,6 @@
 {% extends 'fishing/base.html' %}
-{% block content %}
 {% load static %}
+{% block content %}
 
 {% if leash_list %}
 <table>
@@ -24,4 +24,3 @@
   <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
 </div>
 
-{% endblock %}
