@@ -1,0 +1,154 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+<div class="content__inner">
+  <div class="errors">
+    <div class="errors__inner">
+      {% for error in form.non_field_errors %}
+        <div class="errors__item">
+          <p>{{ error }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <form class="content__form" method="POST" >
+    {% csrf_token %}
+    <table>
+      <tr>
+        <td>
+          {{ form.title.label_tag }}
+        </td>
+        <td>
+          <label class="textareaContainer textareaContainer--right8">
+            <input class="content__input" autofocus type="text" name="title" id="id_title" maxlength="200" value="{{ form.title.value|default_if_none:"" }}">
+          </label>
+        </td>
+      </tr>
+      {% if form.title.errors %}
+        <tr>
+          <td></td>
+          <td>
+            <div class="errors">
+              <div class="errors__inner">
+                {% for error in form.title.errors %}
+                  <div class="errors__item">
+                    <p>{{ error }}</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <td>
+          {{ form.discription.label_tag }}
+        </td>
+        <td>
+          <label class="textareaContainer textareaContainer--right8">
+            <textarea class="content__input-description" type="text" name="discription" cols="40" rows="3" id="id_discription">{{ form.discription.value|default_if_none:"" }}</textarea>
+          </label>
+        </td>
+      </tr>
+      {% if form.discription.errors %}
+        <tr>
+          <td></td>
+          <td>
+            <div class="errors">
+              <div class="errors__inner">
+                {% for error in form.discription.errors %}
+                  <div class="errors__item">
+                    <p>{{ error }}</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <td>
+          {{ form.text.label_tag }}
+        </td>
+        <td>
+          <label class="textareaContainer textareaContainer--right8">
+            <textarea class="content__input-description" type="text" name="text" cols="40" rows="15" id="id_text">{{ form.text.value|default_if_none:"" }}</textarea>
+          </label>
+        </td>
+      </tr>
+      {% if form.text.errors %}
+        <tr>
+          <td></td>
+          <td>
+            <div class="errors">
+              <div class="errors__inner">
+                {% for error in form.text.errors %}
+                  <div class="errors__item">
+                    <p>{{ error }}</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <td>
+          {{ form.created_date.label_tag }}
+        </td>
+        <td>
+          <input class="content__input-date-time" type="text" name="created_date" autocomplete="off" required id="id_created_date" value={{ form.created_date.value|date:"d.m.Y" }}>
+        </td>
+      </tr>
+      {% if form.created_date.errors %}
+        <tr>
+          <td></td>
+          <td>
+            <div class="errors">
+              <div class="errors__inner">
+                {% for error in form.created_date.errors %}
+                  <div class="errors__item">
+                    <p>{{ error }}</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <td>
+          {{ form.published_date.label_tag }}
+        </td>
+        <td>
+          <input class="content__input-date-time" type="text" name="published_date" autocomplete="off" required id="id_published_date" value={{ form.published_date.value|date:"d.m.Y" }}>
+        </td>
+      </tr>
+      {% if form.published_date.errors %}
+        <tr>
+          <td></td>
+          <td>
+            <div class="errors">
+              <div class="errors__inner">
+                {% for error in form.published_date.errors %}
+                  <div class="errors__item">
+                    <p>{{ error }}</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+
+    </table>
+    <div class="content__item content__item--btn-position">
+      <a class="button__std" href="{% url 'fishing:index' %}" class="btn">Назад</a>
+      <button class="button__std">Сохранить</button>
+      {% if old %}
+        <a class="button__std" href="{% url 'news:delete' news_id %}" class="btn">Удалить</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -15,7 +15,7 @@ class Post(models.Model):
     #Тема
     title = models.CharField(
         max_length=200,
-        verbose_name='Тема')
+        verbose_name='Заголовок')
     #Краткое описание
     discription = models.TextField(
         default="",
@@ -29,8 +29,7 @@ class Post(models.Model):
         verbose_name='Дата создания')
     #Дата публикации
     published_date = models.DateTimeField(
-        blank=True,
-        null=True,
+        default=timezone.now,
         verbose_name='Дата публикации')
 
     def publish(self):

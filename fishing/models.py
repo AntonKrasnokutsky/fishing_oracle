@@ -1724,6 +1724,9 @@ class Place(models.Model):  # Места
                 break
         return True
 
+    def add_full(request):
+        pass
+
 
 # class Point(models.Model):  # Точки карт дна
 #     """

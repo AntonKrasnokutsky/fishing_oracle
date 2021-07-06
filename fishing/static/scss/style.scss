@@ -187,7 +187,7 @@
     width: 100%;
     max-width: 860px;
     @extend %font;
-    padding: 0 5px 10px;
+    padding: 2px 5px 10px;
     background-color: $content-background;
     & table{
         @extend %font;
@@ -373,7 +373,7 @@
         @extend %font;
         border-radius: 3px;
         width: 100%;
-        background-color: #f5f5f5;
+        background-color: transparent;
         border: 1px solid rgba($border-input, .7);
         resize: none;
         &::placeholder{

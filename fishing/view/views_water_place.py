@@ -48,32 +48,18 @@ class WaterAdd(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
-    def post(self, request, *args, **kwargs):
-        form = WaterForm(request.POST)
-        if form.is_valid():
-            water = form.save(commit=False)
-            water.owner = request.user
-            if water.unique():
-                water.first_upper()
-                water.save()
-                return redirect('fishing:water')
-            else:
-                watercategorys = WaterCategory.objects.all()
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'watercategorys': watercategorys,
-                               'form': form,
-                               'errors': 'Водоём с таким названием и категорией уже добавлен'})
+    def post(self, *args, **kwargs):
+        result = WaterForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:water')
         else:
             watercategorys = WaterCategory.objects.all()
-            return render(request,
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
                            'watercategorys': watercategorys,
-                           'form': form})
+                           'form': result})
     
     def get(self, request, *args, **kwargs):
         form = WaterForm()
@@ -114,35 +100,17 @@ class WaterEdit(View):
         return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
-        water = get_object_or_404(Water, pk=kwargs['water_id'])
-        form = WaterForm(request.POST, instance=water)
-        if water.owner == request.user:
-            if form.is_valid():
-                water = form.save(commit=False)
-                if water.unique():
-                    water.first_upper()
-                    water.save()
-                    return redirect('fishing:water')
-                else:
-                    watercategorys = WaterCategory.objects.all()
-                    return render(request,
-                                  self.template,
-                                  {'fisherman': getuserinfo(request),
-                                   'siteinfo': siteinfo(),
-                                   'watercategorys': watercategorys,
-                                   'form': form,
-                                   'errors': 'Водоём с таким названием и категорией уже добавлен'})
-            else:
-                watercategorys = WaterCategory.objects.all()
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'watercategorys': watercategorys,
-                               'form': form,
-                               'water': water})
-        else:
+        result = WaterForm.save_me(request, water_id=kwargs['water_id'])
+        if str(type(result)) == str(type(1)):
             return redirect('fishing:water')
+        else:
+            watercategorys = WaterCategory.objects.all()
+            return render(request,
+                          self.template,
+                          {'fisherman': getuserinfo(request),
+                           'siteinfo': siteinfo(),
+                           'watercategorys': watercategorys,
+                           'form': result})
     
     def get(self, request, *args, **kwargs):
         water = get_object_or_404(Water, pk=kwargs['water_id'])
@@ -194,31 +162,17 @@ class PlaceAdd(View):
     
     def post(self, request, *args, **kwargs):
         water = get_object_or_404(Water, pk=kwargs['water_id'])
-        if water.owner == request.user:
-            form = PlaceForm(request.POST)
-            if form.is_valid():
-                place = form.save(commit=False)
-                place.owner = request.user
-                place.water = water
-                if place.unique():
-                    place.first_upper()
-                    place.save()
-                    return redirect('fishing:places', kwargs['water_id'])
-                else:
-                    return render(request,
-                                  self.template,
-                                  {'fisherman': getuserinfo(request),
-                                   'siteinfo': siteinfo(),
-                                   'form': form,
-                                   'water': water,
-                                   'errors': 'Место с таким названием на этом водоеме уже добавлено'})
+        if water.owner == self.request.user:
+            result = PlaceForm.save_me(self.request, water=water)
+            if str(type(result)) == str(type(1)):
+                return redirect('fishing:places', kwargs['water_id'])
             else:
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'form': form,
-                               'water': water})
+                return render(self.request,
+                            self.template,
+                            {'fisherman': getuserinfo(self.request),
+                            'siteinfo': siteinfo(),
+                            'water_id': kwargs['water_id'],
+                            'form': result})
         return redirect('fishing:places', kwargs['water_id'])
     
     def get(self, request, *args, **kwargs):
@@ -262,34 +216,19 @@ class PlaceEdit(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
-    def post(self, request, *args, **kwargs):
+    def post(self, *args, **kwargs):
         water = get_object_or_404(Water, pk=kwargs['water_id'])
-        place = get_object_or_404(Place, pk=kwargs['place_id'])
-        if water.owner == request.user and water.owner == place.owner:
-            form = PlaceForm(request.POST, instance=place)
-            if form.is_valid():
-                place = form.save(commit=False)
-                if place.unique():
-                    place.first_upper()
-                    place.save()
-                    return redirect('fishing:places', kwargs['water_id'])
-                else:
-                    return render(request,
-                                  self.template,
-                                  {'fisherman': getuserinfo(request),
-                                   'siteinfo': siteinfo(),
-                                   'form': form,
-                                   'place': place,
-                                   'water': water,
-                                   'errors': 'Место с таким названием на этом водоеме уже добавлено'})
+        if water.owner == self.request.user:
+            result = PlaceForm.save_me(self.request, water=water, place_id=kwargs['place_id'])
+            if str(type(result)) == str(type(1)):
+                return redirect('fishing:places', kwargs['water_id'])
             else:
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'form': form,
-                               'place': place,
-                               'water': water})
+                return render(self.request,
+                            self.template,
+                            {'fisherman': getuserinfo(self.request),
+                            'siteinfo': siteinfo(),
+                            'water_id': kwargs['water_id'],
+                            'form': result})
         return redirect('fishing:places', kwargs['water_id'])
     
     def get(self, request, *args, **kwargs):

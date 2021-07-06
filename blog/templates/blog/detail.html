@@ -1,0 +1,23 @@
+{% extends 'fishing/base.html' %}
+
+{% block content %}
+<div class="content__inner">
+  <div class="content__item">
+    <p class="content__item-title">{{ news.title }}</p>
+    <div class="content__item-info">
+      <p class="content__item-date">{{ news.created_date }}</p>
+      <p class="content__item-author">Автор: {{ news.author.nick }}</p>
+    </div>
+    <div class="content__item-text content__item-text--discription">
+      {{ news.discription }}
+    </div>
+    <div class="content__item-text">
+        {{ news.text }}
+    </div>
+  </div>
+  <div class="content__item content__item--btn-position">
+    <a class="button__std" href="{% url 'fishing:index' %}" class="btn">Назад</a>
+  </div>
+</div>
+
+{% endblock %}

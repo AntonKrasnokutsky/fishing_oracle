@@ -13,6 +13,18 @@ $(function () {
         mask: true,
     });
 
+    jQuery('#id_published_date').datetimepicker({
+        timepicker:false,
+        format:'d.m.Y',
+        mask: true,
+    });
+    
+    jQuery('#id_created_date').datetimepicker({
+        timepicker:false,
+        format:'d.m.Y',
+        mask: true,
+    });
+
     jQuery('#id_time_start').datetimepicker({
         datepicker:false,
         format:'H:i',

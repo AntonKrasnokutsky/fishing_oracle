@@ -941,7 +941,7 @@ class EnvironmentVariables(View):
         return super().dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
-        result = {}
+        result = {'result': []}
         return render(request,
                       self.template,
                       {'fisherman': getuserinfo(self.request),

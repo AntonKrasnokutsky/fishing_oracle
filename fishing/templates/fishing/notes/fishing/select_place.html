@@ -21,7 +21,11 @@
 {% else %}
 <p>Мест еще не добавлено</p>
 {% endif %}
-<div class="content__item content__item--center">
+<div class="content__item content__item--btn-position">
+  <a class="button__std" href="{% url 'fishing:fishing_place_water_select' fishing.id %}">
+    <img class="button__img" src="{% static 'images/add.png' %}" alt="Добавить">
+    Место
+  </a>
   <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
 </div>
 

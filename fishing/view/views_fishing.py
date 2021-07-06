@@ -6,7 +6,7 @@ from django.views import View
 from random import randint
 import datetime
 
-from fishing.models import Fishing
+from fishing.models import Fishing, Water, WaterCategory
 from fishing.models import Place
 from fishing.models import FishingPlace
 from fishing.models import Weather
@@ -36,7 +36,7 @@ from fishing.models import FishingLure
 from fishing.models import Fish
 from fishing.models import FishingReportsSettings
 
-from fishing.forms import FishingForm
+from fishing.forms import FishingForm, PlaceFullForm, WaterForm
 from fishing.forms import WeatherForm
 from fishing.forms import FishingResultForm
 from fishing.forms import FishingTrophyForm
@@ -327,7 +327,7 @@ class FishingPlaceAdd(View):
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(FishingPlaceAdd, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
@@ -1419,3 +1419,100 @@ class FishingNoteAddEdit(View):
                            'form': form,
                            'fishing': fishing})
         return redirect('fishing:fishing')
+
+
+class FishingPlaceWaterSelect(View):
+    
+    template = 'fishing/notes/fishing/place/water/select.html'
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def get(self, *args, **kwargs):
+        water_list = Water.objects.filter(owner=self.request.user)
+        return render(self.request,
+                self.template,
+                {'fisherman': getuserinfo(self.request),
+                 'siteinfo': siteinfo(),
+                 'fishing_id': kwargs['fishing_id'],
+                 'water_list': water_list})
+
+
+class FishingPlaceWaterAdd(View):
+    
+    template = 'fishing/notes/fishing/place/water/add.html'
+    @method_decorator(login_required)
+    def dispatch(self,*args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def post(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == self.request.user:
+            result = WaterForm.save_me(self.request)
+            if str(type(result)) == str(type(1)):
+                return redirect('fishing:fishing_place_water_place_add', kwargs['fishing_id'], result)
+            else:
+                watercategorys = WaterCategory.objects.all()
+                return render(self.request,
+                            self.template,
+                            {'fisherman': getuserinfo(self.request),
+                            'siteinfo': siteinfo(),
+                            'watercategorys': watercategorys,
+                            'fishing_id': kwargs['fishing_id'],
+                            'form': result})
+        return redirect('fishing:fishing_details', fishing.id)
+    
+    def get (self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == self.request.user:
+            form = WaterForm()
+            watercategorys = WaterCategory.objects.all()
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'watercategorys': watercategorys,
+                           'form': form})
+        return redirect('fishing:fishing_details', fishing.id)
+
+
+class FishingPlaceWaterPlaceAdd(View):
+    
+    template = 'fishing/notes/fishing/place/add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def post(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        water = get_object_or_404(Water, pk=kwargs['water_id'])
+        if fishing.owner == self.request.user and water.owner == self.request.user:
+            result = PlaceFullForm.save_me(self.request, water=water)
+            if str(type(result)) == str(type(1)):
+                return redirect('fishing:fishing_place_add', kwargs['fishing_id'], result)
+            else:
+                return render(self.request,
+                            self.template,
+                            {'fisherman': getuserinfo(self.request),
+                            'siteinfo': siteinfo(),
+                            'water_id': kwargs['water_id'],
+                            'fishing_id': kwargs['fishing_id'],
+                            'form': result})
+        return redirect('fishing:fishing_details', fishing.id)
+    
+    def get(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        water = get_object_or_404(Water, pk=kwargs['water_id'])
+        if fishing.owner == self.request.user and water.owner == self.request.user:
+            form = PlaceFullForm()
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
+                           'water_id': kwargs['water_id'],
+                           'fishing_id': kwargs['fishing_id']})
+        return redirect('fishing:fishing_details', kwargs['fishing_id'])

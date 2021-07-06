@@ -21,6 +21,58 @@
     <table>
       <tr>
         <td>
+          {{ form.name.label_tag }}
+        </td>
+        <td>
+          <label class="textareaContainer textareaContainer--right8">
+            <input class="content__input" type="text" maxlength="50" name="name" id="id_mane" value="{{ form.name.value|default_if_none:"" }}">
+          </label>
+        </td>
+      </tr>
+      {% if form.name.errors %}
+        <tr>
+          <td></td>
+          <td>
+            <div class="errors">
+              <div class="errors__inner">
+                {% for error in form.name.errors %}
+                  <div class="errors__item">
+                    <p>{{ error }}</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <td>
+          {{ form.locality.label_tag }}
+        </td>
+        <td>
+          <label class="textareaContainer textareaContainer--right8">
+            <input class="content__input" type="text" maxlength="50" name="locality" id="id_locality" value="{{ form.locality.value|default_if_none:"" }}">
+          </label>
+        </td>
+      </tr>
+      {% if form.locality.errors %}
+        <tr>
+          <td></td>
+          <td>
+            <div class="errors">
+              <div class="errors__inner">
+                {% for error in form.locality.errors %}
+                  <div class="errors__item">
+                    <p>{{ error }}</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <td>
           {{ form.latitude.label_tag }}
         </td>
         <td>
@@ -54,7 +106,6 @@
             <input class="content__input" type="number" step="0.1" min="-180" max="180" name="longitude" id="id_longitude" value={{ form.longitude.value|unlocalize }}>
           </label>
         </td>
-
       </tr>
       {% if form.longitude.errors %}
         <tr>
@@ -72,10 +123,11 @@
           </td>
         </tr>
       {% endif %}
+
     </table>
     <div class="content__item content__item--btn-position">
       <button class="button__std">Сохранить</button>
-      <a class="button__std" href="{% url 'fishing:places' water.id %}">Назад</a>
+      <a class="button__std" href="{% url 'fishing:fishing_place_water_select' fishing_id %}">Назад</a>
     </div>
   </form>
 </div>

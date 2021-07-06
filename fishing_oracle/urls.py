@@ -19,5 +19,5 @@ urlpatterns = [
     path('', include('fishing.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('accounts.urls')),
-    path('blog/', include('blog.urls')),
+    path('news/', include('blog.urls')),
 ]

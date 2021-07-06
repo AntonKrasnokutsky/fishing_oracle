@@ -6,17 +6,19 @@ from blog.views import Post
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from django.utils import timezone
 from .getinfo import siteinfo, getuserinfo
 
 class Index(View):
     template = 'fishing/index.html'
 
     def get(self, request, *args, **kwargs):
+        posts = Post.objects.filter(published_date__lte=timezone.now()).order_by('-published_date')
         return render(request,
                       self.template,
                       {'fisherman': getuserinfo(request),
                        'siteinfo': siteinfo(),
-                       'posts': Post.objects.all()})
+                       'news': posts})
 
 
 class FishermanNotes(View):

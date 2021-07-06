@@ -1,7 +1,6 @@
 from django.urls import path
 from fishing.view import views_fishing as views
 
-
 urlpatterns = [
     # Блок рыбалки
     # Список рыбалок
@@ -214,6 +213,18 @@ urlpatterns = [
          name='fishing_report_settings'),
     path('<int:fishing_id>/report_settings/delete',
          views.FishingReportsSettingsDelete.as_view(),
-         name='fishing_report_settings_delete')
+         name='fishing_report_settings_delete'),
     
+    # Добавление водоемов и мест при оформлении рыбалки
+    path('<int:fishing_id>/details/water/select',
+         views.FishingPlaceWaterSelect.as_view(),
+         name="fishing_place_water_select"),
+    
+    path('<int:fishing_id>/details/water/add',
+         views.FishingPlaceWaterAdd.as_view(),
+         name="fishing_place_water_add"),
+    
+    path('<int:fishing_id>/details/water/<int:water_id>/place',
+         views.FishingPlaceWaterPlaceAdd.as_view(),
+         name="fishing_place_water_place_add"),
     ]

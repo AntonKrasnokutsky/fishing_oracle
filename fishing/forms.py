@@ -37,7 +37,8 @@ from django import forms
 import re
 
 no_valid_char_list = ['!', '@', '#', '$', '%', '^', '&', '*', '"',
-                              '№', ';', ':', '?', '<', '>', '/', '|', "'"]
+                      '№', ';', ':', '?', '<', '>', '/', '|', "'",
+                      "`"]
 
 no_valid_char_error_end = ' не может начинаться и заканчиваться символом !@#$%^&*"№;:?<>/|'
 
@@ -693,6 +694,81 @@ class PaceForm(forms.ModelForm):
         return super().clean()
 
 
+class PlaceFullForm(forms.ModelForm):
+    class Meta:
+        model = Place
+        fields = ['locality', 'name', 'latitude', 'longitude']
+    
+    def clean(self):
+        name = self.cleaned_data.get('name')
+        if len(name) == 0:
+            self.add_error('name', name_place_is_empty)
+
+        name = re.sub(r'\s+', ' ', name)
+        
+        locality = self.cleaned_data.get('locality')
+        if len(locality) != 0:
+            locality = re.sub(r'\s+', ' ', locality)
+        
+        locality_errors = False
+        name_errors = False
+        
+        for no_valid_char in no_valid_char_list:
+            if not locality_errors or not name_errors:
+                if not locality_errors and locality.startswith(no_valid_char) or locality.endswith(no_valid_char):
+                    locality_errors = True
+                    self.add_error('locality', locality_place_no_valid_char)
+                if not name_errors and name.startswith(no_valid_char) or name.endswith(no_valid_char):
+                    name_errors = True
+                    self.add_error('name', name_place_no_valid_char)
+            else:
+                break
+        
+        msg1 = 'Широта должа быть в пределах от -90 до 90 градусов'
+        msg2 = 'Долгота должа быть в пределах от -180 до 180 градусов'
+        
+        latitude = self.cleaned_data.get('latitude')
+        longitude = self.cleaned_data.get('longitude')
+        if latitude == None and longitude == None:
+            pass
+        elif latitude == None:
+            self.add_error('latitude', 'Укажите широту')
+        elif latitude < -90 or latitude > 90:
+            self.add_error('latitude', msg1)
+
+        if longitude == None and latitude == None:
+            pass
+        elif longitude == None:
+            self.add_error('longitude', 'Укажите долготу')
+        elif longitude < -180 or longitude > 180:
+            self.add_error('longitude', msg2)
+        return super().clean()
+
+    def save_me(request, *args, **kwargs):
+        try:
+            place = Place.objects.get(id=kwargs['place_id'])
+            if place.owner == request.user:
+                form = PlaceFullForm(request.POST, instance=place)
+            else:
+                form = PlaceFullForm(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        except:
+            form = PlaceFullForm(request.POST)
+        if form.is_valid():
+            place = form.save(commit=False)
+            place.owner = request.user
+            place.water = kwargs['water']
+            if place.unique():
+                place.first_upper()
+                place.save()
+                return place.id
+            else:
+                form.add_error(None, 'Водоём с таким названием и категорией уже добавлен')
+                return form
+        return form
+
+
 class PlaceForm(forms.ModelForm):
     class Meta:
         model = Place
@@ -723,6 +799,30 @@ class PlaceForm(forms.ModelForm):
             else:
                 break
         return super().clean()
+    
+    def save_me(request, *args, **kwargs):
+        try:
+            place = Place.objects.get(id=kwargs['place_id'])
+            if place.owner == request.user:
+                form = PlaceForm(request.POST, instance=place)
+            else:
+                form = PlaceForm(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        except:
+            form = PlaceForm(request.POST)
+        if form.is_valid():
+            place = form.save(commit=False)
+            place.owner = request.user
+            place.water = kwargs['water']
+            if place.unique():
+                place.first_upper()
+                place.save()
+                return place.id
+            else:
+                form.add_error(None, 'Водоём с таким названием и категорией уже добавлен')
+                return form
+        return form
 
 
 class PlaceCoordinatesForm(forms.ModelForm):
@@ -863,7 +963,31 @@ class WaterForm(forms.ModelForm):
                     self.add_error('name', name_water_no_valid_char)
             else:
                 break
+        
         return super().clean()
+    
+    def save_me(request, *args, **kwargs):
+        try:
+            water = Water.objects.get(id=kwargs['water_id'])
+            if water.owner == request.user:
+                form = WaterForm(request.POST, instance=water)
+            else:
+                form = WaterForm(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        except:
+            form = WaterForm(request.POST)
+        if form.is_valid():
+            water = form.save(commit=False)
+            water.owner = request.user
+            if water.unique():
+                water.first_upper()
+                water.save()
+                return water.id
+            else:
+                form.add_error(None, 'Водоём с таким названием и категорией уже добавлен')
+                return form
+        return form
 
 
 class WaterCategoryForm(forms.ModelForm):
