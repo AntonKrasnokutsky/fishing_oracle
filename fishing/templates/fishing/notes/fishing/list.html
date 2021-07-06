@@ -34,8 +34,13 @@
 {% endif %}
 
 <div class="content__item content__item--btn-position">
-  <a class="button__std" href="{% url 'fishing:fishing_add' %}"><img class="button__img" src="{% static 'images/add.png' %}" alt="">Добавить</a>
-  <a class="button__std" href="{% url 'fishing:fisherman_notes' %}">Назад</a>
+  <a class="button__std" href="{% url 'fishing:fishing_add' %}">
+    <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+    Добавить
+  </a>
+  <a class="button__std" href="{% url 'fishing:fisherman_notes' %}">
+    Назад
+  </a>
 </div>
 
 <p>{{ redirect_to }}</p>

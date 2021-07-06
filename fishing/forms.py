@@ -909,6 +909,29 @@ class TackleForm(forms.ModelForm):
             else:
                 break
         return super().clean()
+    
+    def save_me(request, *args, **kwargs):
+        try:
+            tackle = Tackle.objects.get(id=kwargs['tackle_id'])
+            if tackle.owner == request.user:
+                form = TackleForm(request.POST, instance=tackle)
+            else:
+                form = TackleForm(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        except:
+            form = TackleForm(request.POST)
+        if form.is_valid():
+            tackle = form.save(commit=False)
+            tackle.owner = request.user
+            if tackle.unique():
+                tackle.first_upper()
+                tackle.save()
+                return tackle.id
+            else:
+                form.add_error(None, 'Такая снасть уже добавлена')
+        return form
+
 
 
 class TroughForm(forms.ModelForm):

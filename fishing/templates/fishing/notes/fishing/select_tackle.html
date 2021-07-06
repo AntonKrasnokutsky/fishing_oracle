@@ -1,28 +1,34 @@
 {% extends 'fishing/base.html' %}
-{% block content %}
 {% load static %}
+{% block content %}
 
-{% if tackle_list %}
-
-<table>
-  {% for tackle in tackle_list %}
-  <tr>
-    <td>
-      {{tackle}}
-    </td>
-    <td>
-      <a href="{% url 'fishing:fishing_tackle_add' fishing.id tackle.id fishing_tackle.id %}">
-        <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
-      </a>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
-{% else %}
-<p>Снасти еще не добавлены</p>
-{% endif %}
-<div class="content__item content__item--center">
-  <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
+<div class="content__inner">
+  {% if tackle_list %}
+  <table>
+    {% for tackle in tackle_list %}
+    <tr>
+      <td>
+        {{tackle}}
+      </td>
+      <td>
+        <a href="{% url 'fishing:fishing_tackle_add' fishing.id tackle.id fishing_tackle.id %}">
+          <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p>Снасти еще не добавлены</p>
+  {% endif %}
+  <div class="content__item content__item--center">
+    <a class="button__std" href="{% url 'fishing:fishing_new_tackle_add' fishing.id fishing_tackle.id %}">
+      <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+      Снасть
+    </a>
+    <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">
+      Назад
+    </a>
+  </div>
 </div>
-
 {% endblock %}

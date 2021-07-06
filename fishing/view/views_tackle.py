@@ -22,28 +22,16 @@ class TackleAdd(View):
     def dispatch(self, *args, **kwargs):
         return super(TackleAdd, self).dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        form = TackleForm(request.POST)
-        if form.is_valid():
-            tackle = form.save(commit=False)
-            tackle.owner = request.user
-            if tackle.unique():
-                tackle.first_upper()
-                tackle.save()
-                return redirect('fishing:tackle')
-            else:
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'form': form,
-                               'errors': 'Такая снасть уже добавлена'})
+    def post(self, *args, **kwargs):
+        result = TackleForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:tackle')
         else:
-            return render(request,
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
-                           'form': form})
+                           'form': result})
 
     def get(self, request, *args, **kwargs):
         form = TackleForm()
@@ -104,32 +92,15 @@ class TackleEdit(View):
         return super(TackleEdit, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        tackle = get_object_or_404(Tackle, pk=kwargs['tackle_id'])
-        if tackle.owner == request.user:
-            form = TackleForm(request.POST, instance=tackle)
-            if form.is_valid():
-                tackle = form.save(commit=False)
-                tackle.owner = request.user
-                if tackle.unique():
-                    tackle.first_upper()
-                    tackle.save()
-                    return redirect('fishing:tackle')
-                else:
-                    return render(request,
-                                self.template,
-                                {'fisherman': getuserinfo(request),
-                                 'siteinfo': siteinfo(),
-                                 'form': form,
-                                 'tackle': tackle,
-                                 'errors': 'Такая снасть уже добавлена'})
-            else:
-                return render(request,
-                            self.template,
-                            {'fisherman': getuserinfo(request),
-                             'siteinfo': siteinfo(),
-                             'form': form,
-                             'tackle': tackle})
-        return redirect('fishing:tackle')
+        result = TackleForm.save_me(self.request, tackle_id=kwargs['tackle_id'])
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:tackle')
+        else:
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'form': result})
 
     def get(self, request, *args, **kwargs):
         tackle = get_object_or_404(Tackle, pk=kwargs['tackle_id'])

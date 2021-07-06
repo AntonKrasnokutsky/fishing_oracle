@@ -54,7 +54,7 @@ urlpatterns = [
     
     # Снасть использованная в рыбалке
     # Добавпить снасть в рыбалку
-    path('<int:fishing_id>/add/fishingtackle/<int:tackle_id><int:fishing_tackle_id>/',
+    path('<int:fishing_id>/add/fishingtackle/<int:tackle_id>/<int:fishing_tackle_id>/',
          views.FishingTackleAdd.as_view(),
          name='fishing_tackle_add'),
     # Выбор снасти для рыбалки
@@ -65,6 +65,10 @@ urlpatterns = [
     path('<int:fishing_id>/delete/fishingtackle/<int:fishing_tackle_id>/',
          views.FishingTackleDelete.as_view(),
          name='fishing_tackle_delete'),
+    # Добавить новую снасть
+    path('<int:fishing_id>/select/fishingtackle/<int:fishing_tackle_id>/add/',
+         views.FishingNewTackleAdd.as_view(),
+         name='fishing_new_tackle_add'),
     
     # Монтаж использованный в рыбалке
     # Добавить/изменить мотаж в использованный в рыбалке
