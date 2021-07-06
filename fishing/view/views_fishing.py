@@ -36,7 +36,7 @@ from fishing.models import FishingLure
 from fishing.models import Fish
 from fishing.models import FishingReportsSettings
 
-from fishing.forms import FishingForm, PlaceFullForm, TackleForm, WaterForm
+from fishing.forms import FishingForm, MontageForm, PlaceFullForm, TackleForm, WaterForm
 from fishing.forms import WeatherForm
 from fishing.forms import FishingResultForm
 from fishing.forms import FishingTrophyForm
@@ -641,6 +641,45 @@ class FishingMontageAdd(View):
             fishing_montage.save()
             return redirect('fishing:fishing_details', fishing.id)
         return redirect('fishing:fishing')
+
+
+class FishingNewMontageAdd(View):
+
+    template = 'fishing/notes/fishing/montage/add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        result = MontageForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:fishing_montage_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result, kwargs['fishing_montage_id'])
+        else:
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'fishing_montage_id': kwargs['fishing_montage_id'],
+                           'form': result})
+        return render(self.request,
+                      self.template)
+
+    def get(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == self.request.user:
+            form = MontageForm()
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'fishing_montage_id': kwargs['fishing_montage_id'],
+                           'form': form})
+        return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 
 class FishingMontageDelete(View):

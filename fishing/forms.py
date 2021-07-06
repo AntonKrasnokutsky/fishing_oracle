@@ -528,6 +528,28 @@ class MontageForm(forms.ModelForm):
                 break
         return super().clean()
 
+    def save_me(request, *args, **kwargs):
+        try:
+            montage = Montage.objects.get(id=kwargs['montage_id'])
+            if montage.owner == request.user:
+                form = MontageForm(request.POST, instance=montage)
+            else:
+                form = MontageForm(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        except:
+            form = MontageForm(request.POST)
+        if form.is_valid():
+            montage = form.save(commit=False)
+            montage.owner = request.user
+            if montage.unique():
+                montage.first_upper()
+                montage.save()
+                return montage.id
+            else:
+                form.add_error(None, 'Такой монтаж уже добавлен')
+        return form
+
 
 class NozzleForm(forms.ModelForm):
     class Meta:

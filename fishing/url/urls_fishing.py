@@ -80,9 +80,13 @@ urlpatterns = [
          views.FishingMontageDelete.as_view(),
          name='fishing_montage_delete'),
     # Выбрать монтаж использованный в рыбалке
-    path('<int:fishing_id>/select/fishingmontage/<int:fishing_tackle_id><int:fishing_montage_id>/',
+    path('<int:fishing_id>/select/fishingmontage/<int:fishing_tackle_id>/<int:fishing_montage_id>/',
          views.FishingMontageSelect.as_view(),
          name='fishing_montage_select'),
+    # Добавить новый монтаж
+    path('<int:fishing_id>/select/fishingmontage/<int:fishing_tackle_id>/<int:fishing_montage_id>/add/',
+         views.FishingNewMontageAdd.as_view(),
+         name='fishing_new_montage_add'),
     
     # Кормушки использованные в рыбалке
     # Добавить кормушку использованную в рыбалке

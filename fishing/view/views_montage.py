@@ -22,29 +22,16 @@ class MontageAdd(View):
     def dispatch(self, *args, **kwargs):
         return super(MontageAdd, self).dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        form = MontageForm(request.POST)
-        montage = Montage()
-        if form.is_valid():
-            montage = form.save(commit=False)
-            montage.owner = request.user
-            if montage.unique():
-                montage.first_upper()
-                montage.save()
-                return redirect('fishing:montage')
-            else:
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'form': form,
-                               'errors': 'Такой монтаж уже добавлен'})
+    def post(self, *args, **kwargs):
+        result = MontageForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:montage')
         else:
-            return render(request,
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
-                           'form': form})
+                           'form': result})
 
     def get(self, request, *args, **kwargs):
         form = MontageForm()
@@ -104,42 +91,24 @@ class MontageEdit(View):
     def dispatch(self, *args, **kwargs):
         return super(MontageEdit, self).dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        montage = get_object_or_404(Montage, pk=kwargs['montage_id'])
-        if montage.owner == request.user:
-            form = MontageForm(request.POST, instance=montage)
-            if form.is_valid():
-                montage = form.save(commit=False)
-                montage.owner = request.user
-                if montage.unique():
-                    montage.first_upper()
-                    montage.save()
-                    return redirect('fishing:montage')
-                else:
-                    return render(request,
-                                self.template,
-                                {'fisherman': getuserinfo(request),
-                                 'siteinfo': siteinfo(),
-                                 'form': form,
-                                 'montage': montage,
-                                 'errors': 'Такой монтаж уже добавлена'})
-            else:
-                return render(request,
-                            self.template,
-                            {'fisherman': getuserinfo(request),
-                             'siteinfo': siteinfo(),
-                             'form': form,
-                             'montage': montage})
-        return redirect('fishing:montage')
+    def post(self, *args, **kwargs):
+        result = MontageForm.save_me(self.request, montage_id=kwargs['montage_id'])
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:montage')
+        else:
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'form': result})
 
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         montage = get_object_or_404(Montage, pk=kwargs['montage_id'])
-        if montage.owner == request.user:
+        if montage.owner == self.request.user:
             form = MontageForm(instance=montage)
-            return render(request,
+            return render(self.request,
                         self.template,
-                        {'fisherman': getuserinfo(request),
+                        {'fisherman': getuserinfo(self.request),
                          'siteinfo': siteinfo(),
-                         'form': form,
-                         'montage': montage})
+                         'form': form})
         return redirect('fishing:montage')

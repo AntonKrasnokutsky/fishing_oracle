@@ -42,9 +42,9 @@
       </tr>
     {% endif %}
   </table>
-<div class="content__item content__item--btn-position">
+<div class="content__item content__item--center">
   <button class="button__std">Сохранить</button>
-  <a class="button__std" href="{% url 'fishing:montage' %}">Назад</a>
+  <a class="button__std" href="{% url 'fishing:fishing_montage_select' fishing_id fishing_tackle_id fishing_montage_id %}">Назад</a>
 </div>
 </form>
 {% endblock %}
