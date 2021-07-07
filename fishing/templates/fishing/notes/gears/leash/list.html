@@ -4,7 +4,7 @@
 
 {% if leash_list != None %}
 <!-- Поводки -->
-<dic class="content__item">
+<dic class="content__inner">
   {% if leash_list %}
   <table>
     {% for leash in leash_list %}
@@ -26,12 +26,12 @@
     {% endfor %}
   </table>
   {% else %}
-  <div class="content__item-text">
-    <p>Поводки ещё не добавлены</p>
-  </div>
+    <div class="content__text content__text--center">
+      <p>Поводки ещё не добавлены</p>
+    </div>
   {% endif %}
 
-  <div class="content__item content__item--center">
+  <div class="content__item content__item--btn-position">
     <a class="button__std" href="{% url 'fishing:leash_add' %}">
       <img class="button__img" src="{% static 'images/add.png' %}" alt="">
       Добавить

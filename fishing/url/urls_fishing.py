@@ -119,6 +119,10 @@ urlpatterns = [
     path('<int:fishing_id>/select/fishingleash/<int:fishing_tackle_id><int:fishing_leash_id>/',
          views.FishingLeashSelect.as_view(),
          name='fishing_leash_select'),
+    # Добавить поводок использованный в рыбалке
+    path('<int:fishing_id>/select/fishingleash/<int:fishing_tackle_id>/<int:fishing_leash_id>/add/',
+         views.FishingNewLeashAdd.as_view(),
+         name='fishing_new_leash_add'),
     
     # Крючки использованные в рыбалке
     # Добавить крючок в рыбалку

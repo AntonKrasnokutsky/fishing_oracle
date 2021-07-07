@@ -22,29 +22,15 @@ class LeashAdd(View):
     def dispatch(self, *args, **kwargs):
         return super(LeashAdd, self).dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        form = LeashForm(request.POST)
-        leash = Leash()
-        if form.is_valid():
-            leash = form.save(commit=False)
-            leash.owner = request.user
-            if leash.unique():
-                leash.first_upper()
-                leash.save()
-                return redirect('fishing:leash')
-            else:
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'form': form,
-                               'errors': 'Такой поводок уже добавлен'})
-        else:
-            return render(request,
-                          self.template,
-                          {'fisherman': getuserinfo(request),
-                           'siteinfo': siteinfo(),
-                           'form': form})
+    def post(self, *args, **kwargs):
+        result = LeashForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:leash')
+        return render(self.request,
+                        self.template,
+                        {'fisherman': getuserinfo(self.request),
+                        'siteinfo': siteinfo(),
+                        'form': result})
 
     def get(self, request, *args, **kwargs):
         form = LeashForm()
@@ -105,33 +91,14 @@ class LeashEdit(View):
         return super(LeashEdit, self).dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        leash = get_object_or_404(Leash, pk=kwargs['leash_id'])
-        if leash.owner == request.user:
-            form = LeashForm(request.POST, instance=leash)
-            if form.is_valid():
-                leash = form.save(commit=False)
-                leash.owner = request.user
-                if leash.unique():
-                    leash.first_upper()
-                    leash.save()
-                    return redirect('fishing:leash')
-                else:
-                    return render(request,
-                                self.template,
-                                {'fisherman': getuserinfo(request),
-                                 'siteinfo': siteinfo(),
-                                 'form': form,
-                                 'leash': leash,
-                                 'errors': 'Такой поводок уже добавлен'})
-            else:
-                return render(request,
-                            self.template,
-                            {'fisherman': getuserinfo(request),
-                             'siteinfo': siteinfo(),
-                             'form': form,
-                             'leash': leash})
-        else:
+        result = LeashForm.save_me(self.request, leash_id=kwargs['leash_id'])
+        if str(type(result)) == str(type(1)):
             return redirect('fishing:leash')
+        return render(self.request,
+                        self.template,
+                        {'fisherman': getuserinfo(self.request),
+                        'siteinfo': siteinfo(),
+                        'form': result})
 
     def get(self, request, *args, **kwargs):
         leash = get_object_or_404(Leash, pk=kwargs['leash_id'])
