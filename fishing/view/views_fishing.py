@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, resolve_url
 from django.shortcuts import redirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -6,7 +6,7 @@ from django.views import View
 from random import randint
 import datetime
 
-from fishing.models import Fishing, Water, WaterCategory
+from fishing.models import FeedCapacity, Fishing, Water, WaterCategory
 from fishing.models import Place
 from fishing.models import FishingPlace
 from fishing.models import Weather
@@ -36,7 +36,7 @@ from fishing.models import FishingLure
 from fishing.models import Fish
 from fishing.models import FishingReportsSettings
 
-from fishing.forms import FishingForm, MontageForm, PlaceFullForm, TackleForm, WaterForm
+from fishing.forms import FishingForm, MontageForm, PlaceFullForm, TackleForm, TroughForm, WaterForm
 from fishing.forms import WeatherForm
 from fishing.forms import FishingResultForm
 from fishing.forms import FishingTrophyForm
@@ -301,7 +301,7 @@ class FishingPlaceSelect(View):
     """
     Возвращает страницу выбора со списком мест
     """
-    template = 'fishing/notes/fishing/select_place.html'
+    template = 'fishing/notes/fishing/place/select.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -482,7 +482,7 @@ class FishingTackleSelect(View):
     Возращает список снастей для выбора
     """
     
-    template = 'fishing/notes/fishing/select_tackle.html'
+    template = 'fishing/notes/fishing/tackle/select.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -589,7 +589,7 @@ class FishingMontageSelect(View):
     Возращает список монтажей для выбора
     """
     
-    template = 'fishing/notes/fishing/select_montage.html'
+    template = 'fishing/notes/fishing/montage/select.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -703,7 +703,7 @@ class FishingTroughSelect(View):
     Возращает список кормушек для выбора
     """
     
-    template = 'fishing/notes/fishing/select_trough.html'
+    template = 'fishing/notes/fishing/trough/select.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -729,6 +729,45 @@ class FishingTroughSelect(View):
                            'fishing_trough': fishing_trough})
         return redirect('fishing:fishing')
 
+
+class FishingNewTroughAdd(View):
+
+    template = 'fishing/notes/fishing/trough/add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        result = TroughForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:fishing_trough_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result, kwargs['fishing_trough_id'])
+        else:
+            feedcapacitys = FeedCapacity.objects.all()
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'fishing_trough_id':kwargs['fishing_trough_id'],
+                           'feedcapacitys': feedcapacitys,
+                           'form': result})
+
+    def get(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == self.request.user:
+            feedcapacitys = FeedCapacity.objects.all()
+            form = TroughForm()
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'fishing_trough_id':kwargs['fishing_trough_id'],
+                           'feedcapacitys': feedcapacitys,
+                           'form': form})
 
 class FishingTroughAdd(View):
     """

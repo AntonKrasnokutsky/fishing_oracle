@@ -987,6 +987,30 @@ class TroughForm(forms.ModelForm):
                 break
         return super().clean()
 
+    def save_me(request, *args, **kwargs):
+        self_model = Trough
+        self_form = TroughForm
+        try:
+            model = self_model.objects.get(id=kwargs['trough_id'])
+            if model.owner == request.user:
+                form = self_form(request.POST, instance=model)
+            else:
+                form = self_form(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        except:
+            form = self_form(request.POST)
+        if form.is_valid():
+            model = form.save(commit=False)
+            model.owner = request.user
+            if model.unique():
+                model.first_upper()
+                model.save()
+                return model.id
+            else:
+                form.add_error(None, 'Такая кормушка уже добавлена')
+        return form
+
 
 class WaterForm(forms.ModelForm):
     class Meta:

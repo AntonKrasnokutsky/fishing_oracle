@@ -1945,7 +1945,6 @@ class Trough(models.Model):  # Кормушки
             if trough.id != self.id:
                 if (trough.manufacturer.lower() == self.manufacturer.lower() and
                     trough.model_name.lower() == self.model_name.lower() and
-                    trough.length == self.length and
                     trough.plastic == self.plastic and
                     trough.lugs == self.lugs and
                     trough.feed_capacity == self.feed_capacity and

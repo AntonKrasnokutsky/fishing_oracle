@@ -72,7 +72,7 @@ urlpatterns = [
     
     # Монтаж использованный в рыбалке
     # Добавить/изменить мотаж в использованный в рыбалке
-    path('<int:fishing_id>/add/fishingmontage/<int:fishing_tackle_id><int:montage_id><int:fishing_montage_id>/',
+    path('<int:fishing_id>/add/fishingmontage/<int:fishing_tackle_id>/<int:montage_id>/<int:fishing_montage_id>/',
          views.FishingMontageAdd.as_view(),
          name='fishing_montage_add'),
     # Удалить монтаж использованнй в рыбалке
@@ -90,7 +90,7 @@ urlpatterns = [
     
     # Кормушки использованные в рыбалке
     # Добавить кормушку использованную в рыбалке
-    path('<int:fishing_id>/add/fishingtrough/<int:fishing_tackle_id><int:trough_id><int:fishing_trough_id>/',
+    path('<int:fishing_id>/add/fishingtrough/<int:fishing_tackle_id>/<int:trough_id>/<int:fishing_trough_id>/',
          views.FishingTroughAdd.as_view(),
          name='fishing_trough_add'),
     # Удалить кормушку использованную в рыбалке
@@ -98,9 +98,13 @@ urlpatterns = [
          views.FishingTroughDelete.as_view(),
          name='fishing_trough_delete'),
     # Выбрать кормушку использованную в рыбалке
-    path('<int:fishing_id>/select/fishingtrough/<int:fishing_tackle_id><int:fishing_trough_id>/',
+    path('<int:fishing_id>/select/fishingtrough/<int:fishing_tackle_id>/<int:fishing_trough_id>/',
          views.FishingTroughSelect.as_view(),
          name='fishing_trough_select'),
+    # Добавить новую кормушку использованную в рыбалке
+    path('<int:fishing_id>/select/fishingtrough/<int:fishing_tackle_id>/<int:fishing_trough_id>/add/',
+         views.FishingNewTroughAdd.as_view(),
+         name='fishing_new_trough_add'),
     
     # Поводки использованные в рыбалке
     # Добавление поводка использованного в рыбалке

@@ -24,32 +24,16 @@ class TroughAdd(View):
         return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        form = TroughForm(request.POST)
-        trough = Trough()
-        if form.is_valid():
-            trough = form.save(commit=False)
-            trough.owner = request.user
-            if trough.unique():
-                trough.first_upper()
-                trough.save()
-                return redirect('fishing:trough')
-            else:
-                feedcapacitys = FeedCapacity.objects.all()
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'feedcapacitys': feedcapacitys,
-                               'form': form,
-                               'errors': 'Такая кормушка уже добавлена'})
-        else:
-            feedcapacitys = FeedCapacity.objects.all()
-            return render(request,
-                          self.template,
-                          {'fisherman': getuserinfo(request),
-                           'siteinfo': siteinfo(),
-                           'feedcapacitys': feedcapacitys,
-                           'form': form})
+        result = TroughForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:trough')
+        feedcapacitys = FeedCapacity.objects.all()
+        return render(request,
+                        self.template,
+                        {'fisherman': getuserinfo(request),
+                        'siteinfo': siteinfo(),
+                        'feedcapacitys': feedcapacitys,
+                        'form': result})
 
     def get(self, request, *args, **kwargs):
         form = TroughForm()
@@ -111,47 +95,27 @@ class TroughEdit(View):
     def dispatch(self, *args, **kwargs):
         return super(TroughEdit, self).dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        trough = get_object_or_404(Trough, pk=kwargs['trough_id'])
-        if trough.owner == request.user:
-            form = TroughForm(request.POST, instance=trough)
-            if form.is_valid():
-                trough = form.save(commit=False)
-                trough.owner = request.user
-                if trough.unique():
-                    trough.first_upper()
-                    trough.save()
-                    return redirect('fishing:trough')
-                else:
-                    feedcapacitys = FeedCapacity.objects.all()
-                    return render(request,
-                                self.template,
-                                {'fisherman': getuserinfo(request),
-                                 'siteinfo': siteinfo(),
-                                 'feedcapacitys': feedcapacitys,
-                                 'form': form,
-                                 'trough': trough,
-                                 'errors': 'Такая кормушка уже добавлена'})
-            else:
-                feedcapacitys = FeedCapacity.objects.all()
-                return render(request,
-                            self.template,
-                            {'fisherman': getuserinfo(request),
-                             'siteinfo': siteinfo(),
-                             'feedcapacitys': feedcapacitys,
-                             'form': form,
-                             'trough': trough})
+    def post(self, *args, **kwargs):
+        result = TroughForm.save_me(self.request, trough_id=kwargs['trough_id'])
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:trough')
+        feedcapacitys = FeedCapacity.objects.all()
+        return render(self.request,
+                    self.template,
+                    {'fisherman': getuserinfo(self.request),
+                        'siteinfo': siteinfo(),
+                        'feedcapacitys': feedcapacitys,
+                        'form': result})
 
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         trough = get_object_or_404(Trough, pk=kwargs['trough_id'])
-        if trough.owner == request.user:
+        if trough.owner == self.request.user:
             form = TroughForm(instance=trough)
             feedcapacitys = FeedCapacity.objects.all()
-            return render(request,
+            return render(self.request,
                         self.template,
-                        {'fisherman': getuserinfo(request),
+                        {'fisherman': getuserinfo(self.request),
                          'siteinfo': siteinfo(),
                          'feedcapacitys': feedcapacitys,
-                         'form': form,
-                         'trough': trough})
+                         'form': form})
         return redirect('fishing:trough')
