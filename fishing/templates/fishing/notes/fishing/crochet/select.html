@@ -1,0 +1,34 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+{% block content %}
+<div class="content__inner">
+  {% if crochet_list %}
+  <table>
+    {% for crochet in crochet_list %}
+    <tr>
+      <td>
+        {{crochet}}
+      </td>
+      <td>
+        <a href="{% url 'fishing:fishing_crochet_add' fishing.id fishing_tackle.id crochet.id fishing_crochet.id %}">
+          <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    <div class="content__text content__text--center">
+      <p>Крючки еще не добавлены</p>
+    </div>
+  {% endif %}
+  <div class="content__item content__item--btn-position">
+    <a class="button__std" href="{% url 'fishing:fishing_new_crochet_add' fishing.id fishing_tackle.id fishing_crochet.id %}">
+      <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+      Крючок
+    </a>
+    <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
+  </div>
+</div>
+
+{% endblock %}

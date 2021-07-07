@@ -36,7 +36,7 @@ from fishing.models import FishingLure
 from fishing.models import Fish
 from fishing.models import FishingReportsSettings
 
-from fishing.forms import FishingForm, LeashForm, MontageForm, PlaceFullForm, TackleForm, TroughForm, WaterForm
+from fishing.forms import CrochetForm, FishingForm, LeashForm, MontageForm, PlaceFullForm, TackleForm, TroughForm, WaterForm
 from fishing.forms import WeatherForm
 from fishing.forms import FishingResultForm
 from fishing.forms import FishingTrophyForm
@@ -863,7 +863,7 @@ class FishingNewLeashAdd(View):
                            'siteinfo': siteinfo(),
                            'fishing_id': kwargs['fishing_id'],
                            'fishing_tackle_id': kwargs['fishing_tackle_id'],
-                           'fishing_lwash_id':kwargs['fishing_leash_id'],
+                           'fishing_leash_id':kwargs['fishing_leash_id'],
                            'form': result})
 
     def get(self, *args, **kwargs):
@@ -878,7 +878,7 @@ class FishingNewLeashAdd(View):
                            'fishing_tackle_id': kwargs['fishing_tackle_id'],
                            'fishing_leash_id':kwargs['fishing_leash_id'],
                            'form': form})
-            
+
 
 class FishingLeashAdd(View):
     """
@@ -928,7 +928,7 @@ class FishingCrochetSelect(View):
     Возращает список крючков для выбора
     """
     
-    template = 'fishing/notes/fishing/select_crochet.html'
+    template = 'fishing/notes/fishing/crochet/select.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -953,6 +953,42 @@ class FishingCrochetSelect(View):
                            'crochet_list': crochet_list,
                            'fishing_crochet': fishing_crochet})
         return redirect('fishing:fishing')
+
+
+class FishingNewCrochetAdd(View):
+
+    template = 'fishing/notes/fishing/crochet/add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        result = CrochetForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:fishing_crochet_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result, kwargs['fishing_crochet_id'])
+        else:
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'fishing_crochet_id':kwargs['fishing_crochet_id'],
+                           'form': result})
+
+    def get(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == self.request.user:
+            form = CrochetForm()
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'fishing_crochet_id':kwargs['fishing_crochet_id'],
+                           'form': form})
 
 
 class FishingCrochetAdd(View):

@@ -96,7 +96,9 @@
     </table>
     <div class="content__item content__item--btn-position">
       <button class="button__std">Сохранить</button>
-      <a class="button__std" href="{% url 'fishing:crochet' %}">Назад</a>
+      <a class="button__std" href="{% url 'fishing:fishing_crochet_select' fishing_id fishing_tackle_id fishing_crochet_id %}">
+        Назад
+      </a>
     </div>
   </form>
 </div>

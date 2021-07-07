@@ -22,35 +22,21 @@ class CrochetAdd(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        form = CrochetForm(request.POST)
-        crochet = Crochet()
-        if form.is_valid():
-            crochet = form.save(commit=False)
-            crochet.owner = request.user
-            if crochet.unique():
-                crochet.first_upper()
-                crochet.save()
-                return redirect('fishing:crochet')
-            else:
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'form': form,
-                               'errors': 'Такой крючок уже добавлен'})
-        else:
-            return render(request,
-                          self.template,
-                          {'fisherman': getuserinfo(request),
-                           'siteinfo': siteinfo(),
-                           'form': form})
-
-    def get(self, request, *args, **kwargs):
-        form = CrochetForm()
-        return render(request,
+    def post(self, *args, **kwargs):
+        result = CrochetForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:crochet')
+        return render(self.request,
                       self.template,
-                      {'fisherman': getuserinfo(request),
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'form': result})
+
+    def get(self, *args, **kwargs):
+        form = CrochetForm()
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
                        'siteinfo': siteinfo(),
                        'form': form})
 
@@ -104,41 +90,23 @@ class CrochetEdit(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        crochet = get_object_or_404(Crochet, pk=kwargs['crochet_id'])
-        if crochet.owner == request.user:
-            form = CrochetForm(request.POST, instance=crochet)
-            if form.is_valid():
-                crochet = form.save(commit=False)
-                crochet.owner = request.user
-                if crochet.unique():
-                    crochet.first_upper()
-                    crochet.save()
-                    return redirect('fishing:crochet')
-                else:
-                    return render(request,
-                                self.template,
-                                {'fisherman': getuserinfo(request),
-                                 'siteinfo': siteinfo(),
-                                 'form': form,
-                                 'crochet': crochet,
-                                 'errors': 'Такой крючок уже добавлен'})
-            else:
-                return render(request,
-                            self.template,
-                            {'fisherman': getuserinfo(request),
-                             'siteinfo': siteinfo(),
-                             'form': form,
-                             'crochet': crochet})
+    def post(self, *args, **kwargs):
+        result = CrochetForm.save_me(self.request, crochet_id=kwargs['crochet_id'])
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:crochet')
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'form': result})
 
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         crochet = get_object_or_404(Crochet, pk=kwargs['crochet_id'])
-        if crochet.owner == request.user:
+        if crochet.owner == self.request.user:
             form = CrochetForm(instance=crochet)
-            return render(request,
+            return render(self.request,
                         self.template,
-                        {'fisherman': getuserinfo(request),
+                        {'fisherman': getuserinfo(self.request),
                          'siteinfo': siteinfo(),
-                         'form': form,
-                         'crochet': crochet})
+                         'form': form})
         return redirect('fishing:crochet')
