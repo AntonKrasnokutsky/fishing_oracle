@@ -1,0 +1,134 @@
+{% extends 'fishing/base.html' %}
+{% block content %}
+
+<div class="content__inner">
+  <div class="errors">
+    <div class="errors__inner">
+      {% for error in form.non_field_errors %}
+        <div class="errors__item">
+          <p>{{ error }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <form action="" method="post">
+    {% csrf_token %}
+    <table>
+      <tr>
+        <td>
+          {{ form.manufacturer.label_tag }}
+        </td>
+        <td>
+          <label class="textareaContainer textareaContainer--right8">
+            <input class="content__input" type="text" maxlength="100" name="manufacturer" id="id_manufacturer" value="{{ form.manufacturer.value|default_if_none:"" }}">
+          </label>
+        </td>
+      </tr>
+      {% if form.manufacturer.errors %}
+        <tr>
+          <td></td>
+          <td>
+            <div class="errors">
+              <div class="errors__inner">
+                {% for error in form.manufacturer.errors %}
+                  <div class="errors__item">
+                    <p>{{ error }}</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <td>
+          {{ form.name.label_tag }}
+        </td>
+        <td>
+          <label class="textareaContainer textareaContainer--right8">
+            <input class="content__input" type="text" maxlength="100" name="name" id="id_name" value="{{ form.name.value|default_if_none:"" }}">
+          </label>
+        </td>
+      </tr>
+      {% if form.name.errors %}
+        <tr>
+          <td></td>
+          <td>
+            <div class="errors">
+              <div class="errors__inner">
+                {% for error in form.name.errors %}
+                  <div class="errors__item">
+                    <p>{{ error }}</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <td>
+          {{ form.size.label_tag }}
+        </td>
+        <td>
+          <label class="textareaContainer textareaContainer--right8">
+            <input class="content__input" type="number" min="0" step="1" name="size" id="id_size" value="{{ form.size.value|default_if_none:"" }}">
+          </label>
+        </td>
+      </tr>
+      {% if form.size.errors %}
+        <tr>
+          <td></td>
+          <td>
+            <div class="errors">
+              <div class="errors__inner">
+                {% for error in form.size.errors %}
+                  <div class="errors__item">
+                    <p>{{ error }}</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+      <tr>
+        <td>
+          {{ form.ntype.label_tag }}
+        </td>
+        <td>
+          <label class="textareaContainer">
+            <select class="content__input" name="ntype" id="id_ntype">
+              <option value selected></option>
+              {% for nozzletype in nozzletypes %}
+              <option value="{{ nozzletype.id }}" {% if nozzletype.id == form.ntype.value %} selected {% endif %}>{{nozzletype}}</option>
+              {% endfor %}
+            </select>
+          </label>
+        </td>
+      </tr>
+      {% if form.ntype.errors %}
+        <tr>
+          <td></td>
+          <td>
+            <div class="errors">
+              <div class="errors__inner">
+                {% for error in form.ntype.errors %}
+                  <div class="errors__item">
+                    <p>{{ error }}</p>
+                  </div>
+                {% endfor %}
+              </div>
+            </div>
+          </td>
+        </tr>
+      {% endif %}
+    </table>
+    <div class="content__item content__item--btn-position">
+      <button class="button__std">Сохранить</button>
+      <a class="button__std" href="{% url 'fishing:fishing_nozzle_select' fishing_id fishing_tackle_id fishing_nozzle_id %}">Назад</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

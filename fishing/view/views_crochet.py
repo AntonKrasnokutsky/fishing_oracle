@@ -91,14 +91,17 @@ class CrochetEdit(View):
         return super().dispatch(*args, **kwargs)
 
     def post(self, *args, **kwargs):
-        result = CrochetForm.save_me(self.request, crochet_id=kwargs['crochet_id'])
-        if str(type(result)) == str(type(1)):
-            return redirect('fishing:crochet')
-        return render(self.request,
-                      self.template,
-                      {'fisherman': getuserinfo(self.request),
-                       'siteinfo': siteinfo(),
-                       'form': result})
+        crochet = get_object_or_404(Crochet, kwargs['crochet_id'])
+        if crochet.owner == self.request.user:
+            result = CrochetForm.save_me(self.request, crochet_id=kwargs['crochet_id'])
+            if str(type(result)) == str(type(1)):
+                return redirect('fishing:crochet')
+            return render(self.request,
+                        self.template,
+                        {'fisherman': getuserinfo(self.request),
+                        'siteinfo': siteinfo(),
+                        'form': result})
+        return redirect('fishing:crochet')
 
     def get(self, *args, **kwargs):
         crochet = get_object_or_404(Crochet, pk=kwargs['crochet_id'])

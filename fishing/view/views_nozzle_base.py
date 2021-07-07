@@ -129,40 +129,23 @@ class NozzleBaseAdd(View):
     """
     Добавление насадки
     """
-    template = 'fishing/notes/feeds/nozzlebase/renewal_add.html'
+    template = 'fishing/notes/feeds/nozzlebase/edit_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        form = NozzleBaseForm(request.POST)
-        nozzle_base = NozzleBase()
-        if form.is_valid():
-            nozzle_base = form.save(commit=False)
-            nozzle_base.owner = request.user
-            nozzle_base.bait = False
-            if nozzle_base.unique():
-                nozzle_base.first_upper()
-                nozzle_base.save()
-                return redirect('fishing:nozzle_base')
-            else:
-                nozzletypes = NozzleType.objects.all()
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'nozzletypes': nozzletypes,
-                               'form': form,
-                               'errors': 'Такая насадка уже добавлена'})
-        else:
-            nozzletypes = NozzleType.objects.all()
-            return render(request,
-                          self.template,
-                          {'fisherman': getuserinfo(request),
-                           'siteinfo': siteinfo(),
-                           'nozzletypes': nozzletypes,
-                           'form': form})
+    def post(self, *args, **kwargs):
+        result = NozzleBaseForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:nozzle_base')
+        nozzletypes = NozzleType.objects.all()
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'nozzletypes': nozzletypes,
+                       'form': result})
 
     def get(self, request, *args, **kwargs):
         form = NozzleBaseForm()
@@ -221,55 +204,35 @@ class NozzleBaseEdit(View):
     """
     Изменение насадки
     """
-    template = 'fishing/notes/feeds/nozzlebase/renewal_add.html'
+    template = 'fishing/notes/feeds/nozzlebase/edit_add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
-        if nozzle_base.owner == request.user:
-            form = NozzleBaseForm(request.POST, instance=nozzle_base)
-            if form.is_valid():
-                nozzle_base = form.save(commit=False)
-                nozzle_base.owner = request.user
-                if nozzle_base.unique():
-                    nozzle_base.first_upper()
-                    nozzle_base.save()
-                    return redirect('fishing:nozzle_base')
-                else:
-                    nozzletypes = NozzleType.objects.all()
-                    return render(request,
-                                self.template,
-                                {'fisherman': getuserinfo(request),
-                                 'siteinfo': siteinfo(),
-                                 'nozzletypes': nozzletypes,
-                                 'form': form,
-                                 'nozzle_base': nozzle_base,
-                                 'errors': 'Такая насадка уже добавлена'})
-            else:
-                nozzletypes = NozzleType.objects.all()
-                return render(request,
-                            self.template,
-                            {'fisherman': getuserinfo(request),
-                             'siteinfo': siteinfo(),
-                             'nozzletypes': nozzletypes,
-                             'form': form,
-                             'nozle_base': nozzle_base})
+    def post(self, *args, **kwargs):
+        result = NozzleBaseForm.save_me(self.request, nozzle_id=kwargs['nozzle_base_id'])
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:nozzle_base')
+        nozzletypes = NozzleType.objects.all()
+        return render(self.request,
+                    self.template,
+                    {'fisherman': getuserinfo(self.request),
+                    'siteinfo': siteinfo(),
+                    'nozzletypes': nozzletypes,
+                    'form': result})
 
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
-        if nozzle_base.owner == request.user:
+        if nozzle_base.owner == self.request.user:
             form = NozzleBaseForm(instance=nozzle_base)
             nozzletypes = NozzleType.objects.all()
-            return render(request,
+            return render(self.request,
                         self.template,
-                        {'fisherman': getuserinfo(request),
+                        {'fisherman': getuserinfo(self.request),
                          'siteinfo': siteinfo(),
                          'nozzletypes': nozzletypes,
-                         'form': form,
-                         'nozzle_base': nozzle_base})
+                         'form': form})
         return redirect('fishing:nozzle_base')
 
 
@@ -283,36 +246,21 @@ class BaitBaseAdd(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        form = BaitBaseForm(request.POST)
-        nozzle_base = NozzleBase()
-        if form.is_valid():
-            nozzle_base = form.save(commit=False)
-            nozzle_base.owner = request.user
-            nozzle_base.bait = True
-            if nozzle_base.unique():
-                nozzle_base.first_upper()
-                nozzle_base.save()
-                return redirect('fishing:nozzle_base')
-            else:
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'form': form,
-                               'errors': 'Такая наживка уже добавлена'})
-        else:
-            return render(request,
-                          self.template,
-                          {'fisherman': getuserinfo(request),
-                           'siteinfo': siteinfo(),
-                           'form': form})
+    def post(self, *args, **kwargs):
+        result = BaitBaseForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:nozzle_base')
+        return render(self.request,
+                    self.template,
+                    {'fisherman': getuserinfo(self.request),
+                    'siteinfo': siteinfo(),
+                    'form': result})
 
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         form = BaitBaseForm()
-        return render(request,
+        return render(self.request,
                       self.template,
-                      {'fisherman': getuserinfo(request),
+                      {'fisherman': getuserinfo(self.request),
                        'siteinfo': siteinfo(),
                        'form': form})
 
@@ -328,40 +276,22 @@ class BaitBaseEdit(View):
         return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        bait_base = get_object_or_404(NozzleBase, pk=kwargs['bait_base_id'])
-        if bait_base.owner == request.user:
-            form = BaitBaseForm(request.POST, instance=bait_base)
-            if form.is_valid():
-                bait_base = form.save(commit=False)
-                bait_base.owner = request.user
-                if bait_base.unique():
-                    bait_base.first_upper()
-                    bait_base.save()
-                    return redirect('fishing:nozzle_base')
-                else:
-                    return render(request,
-                                self.template,
-                                {'fisherman': getuserinfo(request),
-                                 'siteinfo': siteinfo(),
-                                 'form': form,
-                                 'bait_base': bait_base,
-                                 'errors': 'Такая наживка уже добавлена'})
-            else:
-                return render(request,
-                            self.template,
-                            {'fisherman': getuserinfo(request),
-                             'siteinfo': siteinfo(),
-                             'form': form,
-                             'bait_base': bait_base})
+        result = BaitBaseForm.save_me(self.request, bait_id=kwargs['bait_base_id'])
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:nozzle_base')
+        return render(self.request,
+                    self.template,
+                    {'fisherman': getuserinfo(self.request),
+                    'siteinfo': siteinfo(),
+                    'form': result})
 
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         bait_base = get_object_or_404(NozzleBase, pk=kwargs['bait_base_id'])
-        if bait_base.owner == request.user:
+        if bait_base.owner == self.request.user:
             form = BaitBaseForm(instance=bait_base)
-            return render(request,
-                        self.template,
-                        {'fisherman': getuserinfo(request),
-                         'siteinfo': siteinfo(),
-                         'form': form,
-                         'bait_base': bait_base})
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
         return redirect('fishing:nozzle_base')

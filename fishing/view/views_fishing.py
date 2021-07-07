@@ -6,7 +6,7 @@ from django.views import View
 from random import randint
 import datetime
 
-from fishing.models import FeedCapacity, Fishing, Water, WaterCategory
+from fishing.models import FeedCapacity, Fishing, NozzleType, Water, WaterCategory
 from fishing.models import Place
 from fishing.models import FishingPlace
 from fishing.models import Weather
@@ -36,7 +36,7 @@ from fishing.models import FishingLure
 from fishing.models import Fish
 from fishing.models import FishingReportsSettings
 
-from fishing.forms import CrochetForm, FishingForm, LeashForm, MontageForm, PlaceFullForm, TackleForm, TroughForm, WaterForm
+from fishing.forms import BaitBaseForm, CrochetForm, FishingForm, LeashForm, MontageForm, NozzleBaseForm, PlaceFullForm, TackleForm, TroughForm, WaterForm
 from fishing.forms import WeatherForm
 from fishing.forms import FishingResultForm
 from fishing.forms import FishingTrophyForm
@@ -1039,7 +1039,7 @@ class FishingNozzleSelect(View):
     Возращает список наживок/насадок для выбора
     """
     
-    template = 'fishing/notes/fishing/select_nozzle.html'
+    template = 'fishing/notes/fishing/nozzle/select.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -1064,6 +1064,82 @@ class FishingNozzleSelect(View):
                            'nozzle_list': nozzle_base_list,
                            'fishing_nozzle': fishing_nozzle})
         return redirect('fishing:fishing')
+
+
+class FishingNewNozzleAdd(View):
+
+    template = 'fishing/notes/fishing/nozzle/add_nozzle.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        result = NozzleBaseForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:fishing_nozzle_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result, kwargs['fishing_nozzle_id'])
+        else:
+            nozzletypes = NozzleType.objects.all()
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'fishing_nozzle_id':kwargs['fishing_nozzle_id'],
+                           'nozzletypes': nozzletypes,
+                           'form': result})
+
+    def get(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == self.request.user:
+            form = NozzleBaseForm()
+            nozzletypes = NozzleType.objects.all()
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'fishing_nozzle_id':kwargs['fishing_nozzle_id'],
+                           'nozzletypes': nozzletypes,
+                           'form': form})
+
+
+class FishingNewBaitAdd(View):
+
+    template = 'fishing/notes/fishing/nozzle/add_bait.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        result = BaitBaseForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:fishing_nozzle_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result, kwargs['fishing_nozzle_id'])
+        else:
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'fishing_nozzle_id':kwargs['fishing_nozzle_id'],
+                           'form': result})
+
+    def get(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == self.request.user:
+            form = BaitBaseForm()
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'fishing_nozzle_id':kwargs['fishing_nozzle_id'],
+                           'form': form})
 
 
 class FishingNozzleAdd(View):

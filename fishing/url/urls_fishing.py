@@ -108,7 +108,7 @@ urlpatterns = [
     
     # Поводки использованные в рыбалке
     # Добавление поводка использованного в рыбалке
-    path('<int:fishing_id>/add/fishingleash/<int:fishing_tackle_id><int:leash_id><int:fishing_leash_id>/',
+    path('<int:fishing_id>/add/fishingleash/<int:fishing_tackle_id>/<int:leash_id>/<int:fishing_leash_id>/',
          views.FishingLeashAdd.as_view(),
          name='fishing_leash_add'),
     # Удаление поводка использованного в рыбалке
@@ -116,7 +116,7 @@ urlpatterns = [
          views.FishingLeashDelete.as_view(),
          name='fishing_leash_delete'),
     # Выбор поводка использованного в рыбалке
-    path('<int:fishing_id>/select/fishingleash/<int:fishing_tackle_id><int:fishing_leash_id>/',
+    path('<int:fishing_id>/select/fishingleash/<int:fishing_tackle_id>/<int:fishing_leash_id>/',
          views.FishingLeashSelect.as_view(),
          name='fishing_leash_select'),
     # Добавить поводок использованный в рыбалке
@@ -126,7 +126,7 @@ urlpatterns = [
     
     # Крючки использованные в рыбалке
     # Добавить крючок в рыбалку
-    path('<int:fishing_id>/add/fishingcrochet/<int:fishing_tackle_id><int:crochet_id><int:fishing_crochet_id>/',
+    path('<int:fishing_id>/add/fishingcrochet/<int:fishing_tackle_id>/<int:crochet_id>/<int:fishing_crochet_id>/',
          views.FishingCrochetAdd.as_view(),
          name='fishing_crochet_add'),
     # Удалить крючек из рыбалки
@@ -134,7 +134,7 @@ urlpatterns = [
          views.FishingCrochetDelete.as_view(),
          name='fishing_crochet_delete'),
     # Выбрать крючок в рыбалке
-    path('<int:fishing_id>/select/fishingcrochet/<int:fishing_tackle_id><int:fishing_crochet_id>/',
+    path('<int:fishing_id>/select/fishingcrochet/<int:fishing_tackle_id>/<int:fishing_crochet_id>/',
          views.FishingCrochetSelect.as_view(),
          name='fishing_crochet_select'),
     # Добавить крючок использованный в рыбалке
@@ -152,13 +152,21 @@ urlpatterns = [
          views.FishingNozzleDelete.as_view(),
          name='fishing_nozzle_delete'),
     # Выбрать насадку/наживку для рыбалки
-    path('<int:fishing_id>/select/fishingnozzle/<int:fishing_tackle_id><int:fishing_nozzle_id>/',
+    path('<int:fishing_id>/select/fishingnozzle/<int:fishing_tackle_id>/<int:fishing_nozzle_id>/',
          views.FishingNozzleSelect.as_view(),
          name='fishing_nozzle_select'),
+    # Добавить насадку использованную в рыбалке
+    path('<int:fishing_id>/select/fishingnozzle/<int:fishing_tackle_id>/<int:fishing_nozzle_id>/add/nozzle/',
+         views.FishingNewNozzleAdd.as_view(),
+         name='fishing_new_nozzle_add'),
+    # Добавить наживку использованную в рыбалке
+    path('<int:fishing_id>/select/fishingnozzle/<int:fishing_tackle_id>/<int:fishing_nozzle_id>/add/bait/',
+         views.FishingNewBaitAdd.as_view(),
+         name='fishing_new_bait_add'),
     
     # Темп рыбалки
     # Добаввить темп рыбалки
-    path('<int:fishing_id>/add/fishingpace/<int:fishing_tackle_id><int:pace_id><int:fishing_pace_id>/',
+    path('<int:fishing_id>/add/fishingpace/<int:fishing_tackle_id>/<int:pace_id><int:fishing_pace_id>/',
          views.FishingPaceAdd.as_view(),
          name='fishing_pace_add'),
     # Убрать темп рыбалки
@@ -166,7 +174,7 @@ urlpatterns = [
          views.FishingPaceDelete.as_view(),
          name='fishing_pace_delete'),
     # Выбрать темп рыбалки
-    path('<int:fishing_id>/select/fishingpace/<int:fishing_tackle_id><int:fishing_pace_id>/',
+    path('<int:fishing_id>/select/fishingpace/<int:fishing_tackle_id>/<int:fishing_pace_id>/',
          views.FishingPaceSelect.as_view(),
          name='fishing_pace_select'),
     

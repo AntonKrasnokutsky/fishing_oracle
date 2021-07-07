@@ -1,0 +1,39 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="content__inner">
+  {% if nozzle_list %}
+  <table>
+    {% for nozzle in nozzle_list %}
+    <tr>
+      <td>
+        {{nozzle}}
+      </td>
+      <td>
+        <a href="{% url 'fishing:fishing_nozzle_add' fishing.id fishing_tackle.id nozzle.id fishing_nozzle.id %}">
+          <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    <div class="content__text content__text--center">
+      <p>Насадки и наживки еще не добавлены</p>
+    </div>
+  {% endif %}
+  <div class="content__item content__item--btn-position">
+    <a class="button__std" href="{% url 'fishing:fishing_new_bait_add' fishing.id fishing_tackle.id fishing_nozzle.id %}">
+      <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+      Наживка
+    </a>
+    <a class="button__std" href="{% url 'fishing:fishing_new_nozzle_add' fishing.id fishing_tackle.id fishing_nozzle.id %}">
+      <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+      Насадка
+    </a>
+    <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
+  </div>
+</div>
+
+{% endblock %}

@@ -215,22 +215,22 @@
               <p><strong>Производитель: </strong>
               {{ fishing_tackle.fishingnozzle_set.get.nozzle_base.manufacturer }}</p>
             {% endif %}
-            {% else %}
+          {% else %}
             {% if fishing_tackle.fishingnozzle_set.get.nozzle_base.manufacturer %}
               <p><strong>Производитель: </strong>
               {{ fishing_tackle.fishingnozzle_set.get.nozzle_base.manufacturer }}</p>
             {% endif %}
             {% if fishing_tackle.fishingnozzle_set.get.nozzle_base.name %}
-              <p><strong>Насадка: </strong>
+              <p><strong>Название: </strong>
               {{ fishing_tackle.fishingnozzle_set.get.nozzle_base.name }}</p>
             {% endif %}
-            {% if fishing_tackle.fishingnozzle_set.get.nozzle_base.diameter %}
+            {% if fishing_tackle.fishingnozzle_set.get.nozzle_base.size %}
               <p><strong>Диаметр насадки: </strong>
-              {{ fishing_tackle.fishingnozzle_set.get.nozzle_base.diameter }}</p>
+              {{ fishing_tackle.fishingnozzle_set.get.nozzle_base.size }}</p>
             {% endif %}
-            {% if fishing_tackle.fishingnozzle_set.get.nozzle_base.type %}
+            {% if fishing_tackle.fishingnozzle_set.get.nozzle_base.ntype %}
               <p><strong>Тип насадки: </strong>
-              {{ fishing_tackle.fishingnozzle_set.get.nozzle_base.type }}</p>
+              {{ fishing_tackle.fishingnozzle_set.get.nozzle_base.ntype }}</p>
             {% endif %}
           {% endif %}
         {% endif %}

@@ -640,6 +640,32 @@ class NozzleBaseForm(forms.ModelForm):
                 break
         return super().clean()
 
+    def save_me(request, *args, **kwargs):
+        self_model = NozzleBase
+        self_form = NozzleBaseForm
+        kwargs_field = 'nozzle_id'
+        try:
+            model = self_model.objects.get(id=kwargs[kwargs_field])
+            if model.owner == request.user:
+                form = self_form(request.POST, instance=model)
+            else:
+                form = self_form(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        except:
+            form = self_form(request.POST)
+        if form.is_valid():
+            model = form.save(commit=False)
+            model.owner = request.user
+            model.bait = False
+            if model.unique():
+                model.first_upper()
+                model.save()
+                return model.id
+            else:
+                form.add_error(None, 'Такая насадка уже добавлена')
+        return form
+
 
 class BaitBaseForm(forms.ModelForm):
     class Meta:
@@ -668,6 +694,32 @@ class BaitBaseForm(forms.ModelForm):
             else:
                 break
         return super().clean()
+
+    def save_me(request, *args, **kwargs):
+        self_model = NozzleBase
+        self_form = BaitBaseForm
+        kwargs_field = 'bait_id'
+        try:
+            model = self_model.objects.get(id=kwargs[kwargs_field])
+            if model.owner == request.user:
+                form = self_form(request.POST, instance=model)
+            else:
+                form = self_form(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        except:
+            form = self_form(request.POST)
+        if form.is_valid():
+            model = form.save(commit=False)
+            model.owner = request.user
+            model.bait = True
+            if model.unique():
+                model.first_upper()
+                model.save()
+                return model.id
+            else:
+                form.add_error(None, 'Такая наживка уже добавлена')
+        return form
 
 
 class NozzleStateForm(forms.ModelForm):
