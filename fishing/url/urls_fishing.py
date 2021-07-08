@@ -180,7 +180,7 @@ urlpatterns = [
     
     # Прикормочная смесь для рыбалки
     # Добавить прикормочную смесь
-    path('<int:fishing_id>/add/fishinglure/<int:lure_mix_id><int:fishing_lure_mix_id>/',
+    path('<int:fishing_id>/add/fishinglure/<int:lure_mix_id>/<int:fishing_lure_mix_id>/',
          views.FishingLureMixAdd.as_view(),
          name='fishing_lure_mix_add'),
     # Удалить прикормочную смесь
@@ -194,7 +194,7 @@ urlpatterns = [
     
     # Прикорм для рыбалки
     # Указать часть прикорма в рыбалке
-    path('<int:fishing_id>/change/lure/<int:lure_base_id><int:fishing_lure_id>/',
+    path('<int:fishing_id>/change/lure/<int:lure_base_id>/<int:fishing_lure_id>/',
          views.FishingLureChangeWeight.as_view(),
          name='fishing_lure_change_weight'),
     # Удалить прикорм из рыбалки
@@ -205,6 +205,10 @@ urlpatterns = [
     path('<int:fishing_id>/select/lure/',
          views.FishingLureSelect.as_view(),
          name='fishing_lure_select'),
+    # Добавить прикормпку использованную в рыбалке
+    path('<int:fishing_id>/select/lure/add/',
+         views.FishingNewLureAdd.as_view(),
+         name='fishing_new_lure_add'),
     
     # Результат рыбалки
     # Добавление результата рыбалки

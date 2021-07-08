@@ -36,7 +36,7 @@ from fishing.models import FishingLure
 from fishing.models import Fish
 from fishing.models import FishingReportsSettings
 
-from fishing.forms import BaitBaseForm, CrochetForm, FishingForm, LeashForm, MontageForm, NozzleBaseForm, PlaceFullForm, TackleForm, TroughForm, WaterForm
+from fishing.forms import BaitBaseForm, CrochetForm, FishingForm, LeashForm, LureBaseForm, MontageForm, NozzleBaseForm, PlaceFullForm, TackleForm, TroughForm, WaterForm
 from fishing.forms import WeatherForm
 from fishing.forms import FishingResultForm
 from fishing.forms import FishingTrophyForm
@@ -1190,15 +1190,15 @@ class FishingPaceSelect(View):
     Возращает список темпов для выбора
     """
     
-    template = 'fishing/notes/fishing/select_pace.html'
+    template = 'fishing/notes/fishing/pace/select.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(FishingPaceSelect, self).dispatch(*args, **kwargs)
     
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == request.user:
+        if fishing.owner == self.request.user:
             pace_list = Pace.objects.all
             fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
             if kwargs['fishing_pace_id'] != 0:
@@ -1206,9 +1206,9 @@ class FishingPaceSelect(View):
             else:
                 fishing_pace = FishingPace()
                 fishing_pace.id = 0
-            return render(request,
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
                            'fishing': fishing,
                            'fishing_tackle': fishing_tackle,
@@ -1278,23 +1278,55 @@ class FishingLureSelect(View):
     Выбор прикорма для рыбалки
     """
     
-    template = 'fishing/notes/fishing/select_lure.html'
+    template = 'fishing/notes/fishing/lure/select.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == request.user:
-            lure_base_list = LureBase.objects.filter(owner=request.user)
-            return render(request,
+        if fishing.owner == self.request.user:
+            lure_base_list = LureBase.objects.filter(owner=self.request.user)
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
                            'fishing': fishing,
                            'lure_base_list': lure_base_list})
         return redirect('fishing:fishing')
+
+
+class FishingNewLureAdd(View):
+
+    template = 'fishing/notes/fishing/lure/add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
+        result = LureBaseForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:fishing_lure_change_weight', kwargs['fishing_id'], result, 0)
+        else:
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'form': result})
+
+    def get(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == self.request.user:
+            form = LureBaseForm()
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'form': form})
 
 
 class FishingLureChangeWeight(View):

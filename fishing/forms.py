@@ -530,6 +530,31 @@ class LureBaseForm(forms.ModelForm):
                 break
         return super().clean()
 
+    def save_me(request, *args, **kwargs):
+        self_model = LureBase
+        self_form = LureBaseForm
+        kwargs_field = 'lure_id'
+        try:
+            model = self_model.objects.get(id=kwargs[kwargs_field])
+            if model.owner == request.user:
+                form = self_form(request.POST, instance=model)
+            else:
+                form = self_form(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        except:
+            form = self_form(request.POST)
+        if form.is_valid():
+            model = form.save(commit=False)
+            model.owner = request.user
+            if model.unique():
+                model.first_upper()
+                model.save()
+                return model.id
+            else:
+                form.add_error(None, 'Такой прикорм уже добавлен')
+        return form
+
 
 class LureMixForm(forms.ModelForm):
     class Meta:

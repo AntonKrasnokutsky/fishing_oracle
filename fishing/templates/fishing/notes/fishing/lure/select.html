@@ -1,0 +1,35 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="content__inner">
+  {% if lure_base_list %}
+  <table>
+    {% for lure_base in lure_base_list %}
+    <tr>
+      <td>
+        {{lure_base}}
+      </td>
+      <td>
+        <a href="{% url 'fishing:fishing_lure_change_weight' fishing.id lure_base.id 0 %}">
+          <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    <div class="content__text content__text--center">
+      <p>Прикормы еще не добавлены</p>
+    </div>
+  {% endif %}
+  <div class="content__item content__item--btn-position">
+    <a class="button__std" href="{% url 'fishing:fishing_new_lure_add' fishing.id %}">
+      <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+      Прикорм
+    </a>
+    <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
+  </div>
+</div>
+
+{% endblock %}

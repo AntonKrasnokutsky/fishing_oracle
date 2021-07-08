@@ -21,7 +21,7 @@ function browsersync() {
     browserSync.init({
         notify: false,
         proxy: 'localhost:8000',
-        host: 'localhost:8000',
+        // host: 'localhost:8000',
         open: 'external'
         // server: {
         //     baseDir: 'app/'
