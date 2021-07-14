@@ -13,7 +13,7 @@
             {{aroma_base}}
           </td>
           <td>
-            <a href="{% url 'fishing:add_aroma_to_mix' lure_mix_id aroma_base.id %}">
+            <a href="{% url 'fishing:fishing_new_lure_mix_filling_aroma_volume' fishing_id aroma_base.id %}">
               <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
             </a>
           </td>
@@ -36,16 +36,14 @@
     {% endif %}
   {% endif %}
     <div class="content__item content__item--btn-position">
-      <a class="button__std" href="{% url 'fishing:aroma_base_add_from_mix' lure_mix_id %}">
-        <img class="button__img" src="{% static 'images/add.png' %}" alt="">
-        Добавить
+      <a class="button__std" href="{% url 'fishing:fishing_new_lure_mix_filling_aroma_new' fishing_id %}">
+        <img class="button__img" src="{% static 'images/add.png' %}" alt="Добавить">
+        Арома
       </a>
-      
-      <a class="button__std" href="{% url 'fishing:lure_mix_details' lure_mix_id %}">
+      <a class="button__std" href="{% url 'fishing:fishing_new_lure_mix_filling' fishing_id %}">
         Назад
       </a>
     </div>
   </div>
 </div>
-
 {% endblock %}

@@ -50,7 +50,12 @@
     <button class="button__std">
       Сохранить
     </button>
-    <a class="button__std" href="{% url 'fishing:lure_mix_details' lure_mix.id %}">
+    <a class="button__std" 
+      {% if edit %}
+        href="{% url 'fishing:lure_mix_details' lure_mix_id %}"
+      {% else %}
+        href="{% url 'fishing:select_lure_for_mix' lure_mix_id %}"
+      {% endif %}>
       Назад
     </a>
   </div>

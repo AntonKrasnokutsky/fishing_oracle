@@ -180,17 +180,90 @@ urlpatterns = [
     
     # Прикормочная смесь для рыбалки
     # Добавить прикормочную смесь
-    path('<int:fishing_id>/add/fishinglure/<int:lure_mix_id>/<int:fishing_lure_mix_id>/',
+    path('<int:fishing_id>/add/luremix/<int:lure_mix_id>/',
          views.FishingLureMixAdd.as_view(),
          name='fishing_lure_mix_add'),
     # Удалить прикормочную смесь
-    path('<int:fishing_id>/delete/fishinglure/<int:fishing_lure_mix_id>/',
+    path('<int:fishing_id>/delete/luremix/',
          views.FishingLureMixDelete.as_view(),
          name='fishing_lure_mix_delete'),
     # Выбрать прикормочную смесь
-    path('<int:fishing_id>/select/fishinglure/<int:fishing_lure_mix_id>/',
+    path('<int:fishing_id>/select/luremix/',
          views.FishingLureMixSelect.as_view(),
          name='fishing_lure_mix_select'),
+    # Добавить прикормочную смесь использованную в рыбалке
+    path('<int:fishing_id>/select/luremix/add/',
+         views.FishingNewLureMixAdd.as_view(),
+         name='fishing_new_lure_mix_add'),
+    # Наполнить прикормочную смесь использованную в рыбалке
+    path('<int:fishing_id>/luremix/filling/',
+         views.FishingNewLureMixFilling.as_view(),
+         name='fishing_new_lure_mix_filling'),
+    # Наполнить прикормочную смесь использованную в рыбалке
+    # Выбрать прикорм
+    path('<int:fishing_id>/luremix/filling/lure/select',
+         views.FishingNewLureMixFillingLureSelect.as_view(),
+         name='fishing_new_lure_mix_filling_lure_select'),
+    # Вес прикорм
+    path('<int:fishing_id>/luremix/filling/lure/<int:lure_base_id>/weight',
+         views.FishingNewLureMixFillingLureWeight.as_view(),
+         name='fishing_new_lure_mix_filling_lure_weight'),
+    # Изменить вес прикорма
+    path('<int:fishing_id>/luremix/filling/lure/<int:lure_id>/edit',
+         views.FishingNewLureMixFillingLureWeight.as_view(edit=True),
+         name='fishing_new_lure_mix_filling_lure_edit'),
+    # Удалить прикорм
+    path('<int:fishing_id>/luremix/filling/lure/<int:lure_id>/delete',
+         views.FishingNewLureMixFillingLureDelete.as_view(),
+         name='fishing_new_lure_mix_filling_lure_delete'),
+    # Новый прикорм
+    path('<int:fishing_id>/luremix/filling/lure/add',
+         views.FishingNewLureMixFillingLureNew.as_view(),
+         name='fishing_new_lure_mix_filling_lure_new'),
+    # Выбрать арому
+    path('<int:fishing_id>/luremix/filling/aroma/select',
+         views.FishingNewLureMixFillingAromaSelect.as_view(),
+         name='fishing_new_lure_mix_filling_aroma_select'),
+    # Объем аромы
+    path('<int:fishing_id>/luremix/filling/aroma/<int:aroma_base_id>/volume',
+         views.FishingNewLureMixFillingAromaVolume.as_view(),
+         name='fishing_new_lure_mix_filling_aroma_volume'),
+    # Изменить объем аромы
+    path('<int:fishing_id>/luremix/filling/aroma/<int:aroma_id>/edit',
+         views.FishingNewLureMixFillingAromaVolume.as_view(edit=True),
+         name='fishing_new_lure_mix_filling_aroma_edit'),
+    # Удалить арому
+    path('<int:fishing_id>/luremix/filling/aroma/<int:aroma_id>/delete',
+         views.FishingNewLureMixFillingAromaDelete.as_view(),
+         name='fishing_new_lure_mix_filling_aroma_delete'),
+    # Новая арома
+    path('<int:fishing_id>/luremix/filling/aroma/add',
+         views.FishingNewLureMixFillingAromaNew.as_view(),
+         name='fishing_new_lure_mix_filling_aroma_new'),
+    # Выбрать добавку
+    path('<int:fishing_id>/luremix/filling/nozzle/select',
+         views.FishingNewLureMixFillingNozzleSelect.as_view(),
+         name='fishing_new_lure_mix_filling_nozzle_select'),
+    # Новая насадка
+    path('<int:fishing_id>/luremix/filling/nozzle/addnozzle',
+         views.FishingNewLureMixFillingNozzleNew.as_view(),
+         name='fishing_new_lure_mix_filling_nozzle_new'),
+    # Новая наживка
+    path('<int:fishing_id>/luremix/filling/nozzle/addbait',
+         views.FishingNewLureMixFillingBaitNew.as_view(),
+         name='fishing_new_lure_mix_filling_bait_new'),
+    # Выбрать состояние добавки
+    path('<int:fishing_id>/luremix/filling/nozzle/<int:nozzle_base_id>/state/select',
+         views.FishingNewLureMixFillingNozzleStateSelect.as_view(),
+         name='fishing_new_lure_mix_filling_nozzle_state_select'),
+    # Новое состояние добавки
+    path('<int:fishing_id>/luremix/filling/nozzle/<int:nozzle_base_id>/state/add',
+         views.FishingNewLureMixFillingNozzleStateNew.as_view(),
+         name='fishing_new_lure_mix_filling_nozzle_state_new'),
+    # Добавить наживку в смесь
+    path('<int:fishing_id>/luremix/filling/nozzle/<int:nozzle_base_id>/state/<int:nozzle_state_id>',
+         views.FishingNewLureMixFillingNozzleAdd.as_view(),
+         name='fishing_new_lure_mix_filling_nozzle_add'),
     
     # Прикорм для рыбалки
     # Указать часть прикорма в рыбалке
@@ -205,7 +278,7 @@ urlpatterns = [
     path('<int:fishing_id>/select/lure/',
          views.FishingLureSelect.as_view(),
          name='fishing_lure_select'),
-    # Добавить прикормпку использованную в рыбалке
+    # Добавить прикормку использованную в рыбалке
     path('<int:fishing_id>/select/lure/add/',
          views.FishingNewLureAdd.as_view(),
          name='fishing_new_lure_add'),

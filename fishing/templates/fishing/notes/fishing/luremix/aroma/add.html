@@ -1,13 +1,9 @@
 {% extends 'fishing/base.html' %}
-{% load l10n %}
 {% block content %}
 
-<div class="content__item">
+<div class="content__inner">
   <div class="errors">
     <div class="errors__inner">
-      <div class="errors__item">
-        <p>{{ errors }}</p>
-      </div>
       {% for error in form.non_field_errors %}
         <div class="errors__item">
           <p>{{ error }}</p>
@@ -21,21 +17,21 @@
     <table>
       <tr>
         <td>
-          {{ form.latitude.label_tag }}
+          {{ form.manufacturer.label_tag }}
         </td>
         <td>
           <label class="textareaContainer textareaContainer--right8">
-            <input class="content__input" type="number" step="0.000001" min="-90" max="90" name="latitude" id="id_latitude" value={{ form.latitude.value|unlocalize }}>
+            <input class="content__input" type="text" maxlength="100" name="manufacturer" id="id_manufacturer" value="{{ form.manufacturer.value|default_if_none:"" }}">
           </label>
         </td>
       </tr>
-      {% if form.latitude.errors %}
+      {% if form.manufacturer.errors %}
         <tr>
           <td></td>
           <td>
             <div class="errors">
               <div class="errors__inner">
-                {% for error in form.latitude.errors %}
+                {% for error in form.manufacturer.errors %}
                   <div class="errors__item">
                     <p>{{ error }}</p>
                   </div>
@@ -47,22 +43,21 @@
       {% endif %}
       <tr>
         <td>
-          {{ form.longitude.label_tag }}
+          {{ form.name.label_tag }}
         </td>
         <td>
           <label class="textareaContainer textareaContainer--right8">
-            <input class="content__input" type="number" step="0.000001" min="-180" max="180" name="longitude" id="id_longitude" value={{ form.longitude.value|unlocalize }}>
+            <input class="content__input" type="text" maxlength="100" name="name" id="id_name" value="{{ form.name.value|default_if_none:"" }}">
           </label>
         </td>
-
       </tr>
-      {% if form.longitude.errors %}
+      {% if form.name.errors %}
         <tr>
           <td></td>
           <td>
             <div class="errors">
               <div class="errors__inner">
-                {% for error in form.longitude.errors %}
+                {% for error in form.name.errors %}
                   <div class="errors__item">
                     <p>{{ error }}</p>
                   </div>
@@ -75,7 +70,7 @@
     </table>
     <div class="content__item content__item--btn-position">
       <button class="button__std">Сохранить</button>
-      <a class="button__std" href="{% url 'fishing:places' water.id %}">Назад</a>
+      <a class="button__std" href="{% url 'fishing:fishing_new_lure_mix_filling_aroma_select' fishing_id %}">Назад</a>
     </div>
   </form>
 </div>

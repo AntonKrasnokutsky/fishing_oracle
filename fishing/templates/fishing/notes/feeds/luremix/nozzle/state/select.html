@@ -1,0 +1,42 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+{% block content %}
+<div class="content__inner">
+  {% if nozzle_state_list %}
+  <!-- Состояние насадки для смеси -->
+    <table>
+      {% for nozzle_state in nozzle_state_list %}
+      <tr>
+        <td>
+          {{nozzle_state}}
+        </td>
+        <td>
+          <a href="{% url 'fishing:add_nozzle_to_mix' luremix_id nozzlebase_id nozzle_state.id%}" class="btn btn-secondary" role="button">
+            <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  {% else %}
+    {% if nozzle_state_entery %}
+      <div class="content__text content__text--center">
+        <p>Все состояния насадок и наживок использованны в данной смеси</p>
+      </div>
+    {% else %}
+      <div class="content__text content__text--center">
+        <p>Состояния насадок и наживок ещё не добавлены</p>
+      </div>
+    {% endif %}
+  {% endif %}
+  <div class="content__item content__item--btn-position">
+    <a class="button__std" href="{% url 'fishing:nozzle_state_add_from_mix' luremix_id nozzlebase_id %}">
+      <img class="button__img" src="{% static 'images/add.png' %}" alt="Новое">
+      Состояние
+    </a>
+    <a class="button__std" href="{% url 'fishing:select_nozzle_for_mix' luremix_id %}">
+      Назад
+    </a>
+  </div>
+</div>
+{% endblock %}

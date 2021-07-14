@@ -107,30 +107,3 @@ class LureBaseEdit(View):
                           'siteinfo': siteinfo(),
                           'form': form})
         return redirect('fishing:lure_base')
-
-
-class LureBaseAddFromLureMix(View):
-    template = 'fishing/notes/feeds/luremix/lure_base_add.html'
-    
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-    
-    def post(self, request, *args, **kwargs):
-        result = LureBaseForm.save_me(self.request)
-        if str(type(result)) == str(type(1)):
-            return redirect('fishing:add_lure_to_mix', kwargs['lure_mix_id'], result)
-        return render(self.request,
-                      self.template,
-                      {'fisherman': getuserinfo(self.request),
-                       'siteinfo': siteinfo(),
-                       'luremix_id': kwargs['lure_mix_id'],
-                       'form': result})
-
-    def get(self, request, *args, **kwargs):
-        form = LureBaseForm()
-        return render(request,
-                      self.template,
-                      {'fisherman': getuserinfo(request),
-                       'siteinfo': siteinfo(),
-                       'luremix_id': kwargs['lure_mix_id'],
-                       'form': form})

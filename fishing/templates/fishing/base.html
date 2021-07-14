@@ -36,7 +36,9 @@
         <div class="container">
           <div class="main__inner">
             <div class="content">
-              {% block content %} {% endblock %}
+              <div class="content__inner">
+                {% block content %} {% endblock %}
+              </div>
             </div>
             <div class="main__panel">
                 <div class="info">
@@ -50,9 +52,6 @@
                         {% if user.is_staff %}
                           <a class="button__img" href="{% url 'fishing:settings' %}">
                             <img class="info__image" src="{% static 'images/logo_settings.png' %}" alt="Settings">
-                          </a>
-                          <a class="button__img" href="{% url 'fishing:environments' %}">
-                            <img class="info__image" src="{% static 'images/logo_settings.png' %}" alt="Vars">
                           </a>
                         {% endif %} </p>
                       <ul class="info__list">

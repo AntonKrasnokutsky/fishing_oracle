@@ -6,7 +6,7 @@ from django.views import View
 from django.views.generic import ListView
 from django.views.generic.edit import DeleteView
 
-from fishing.models import Aroma
+from fishing.models import Aroma, NozzleType
 from fishing.models import AromaBase
 from fishing.models import Lure
 from fishing.models import LureBase
@@ -14,7 +14,7 @@ from fishing.models import LureMix
 from fishing.models import Nozzle
 from fishing.models import NozzleBase
 from fishing.models import NozzleState
-from fishing.forms import AromaForm
+from fishing.forms import AromaBaseForm, AromaForm, BaitBaseForm, LureBaseForm, NozzleBaseForm, NozzleStateForm
 from fishing.forms import LureForm
 from fishing.forms import LureMixForm
 from fishing.forms import NozzleForm
@@ -38,27 +38,16 @@ class SelectAromaForMix(View):
 
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        if lure_mix.owner == request.user:
-            aroma_list = Aroma.objects.filter(mix=lure_mix)
-            aroma_base_list = AromaBase.objects.filter(owner=request.user)
-            
-            if aroma_base_list:
-                aroma_base_entery = True
-            else:
-                aroma_base_entery = False
-                
-            for aroma_base in aroma_base_list:
-                for aroma in aroma_list:
-                    if aroma.base == aroma_base:
-                        aroma_base_list = aroma_base_list.exclude(id=aroma.base.id)
-                        
-            return render(request,
-                    self.template,
-                    {'fisherman': getuserinfo(request),
+        if not lure_mix.editable():
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
+        if lure_mix.owner == self.request.user:
+            param = {'fisherman': getuserinfo(self.request),
                      'siteinfo': siteinfo(),
-                     'lure_mix': lure_mix,
-                     'aroma_base_entery': aroma_base_entery,
-                     'aroma_base_list': aroma_base_list})
+                     'lure_mix_id': lure_mix.id}
+            param.update(lure_mix.aroma_for_add())
+            return render(self.request,
+                          self.template,
+                          param)
         return redirect('fishing:lure_mix')
 
 
@@ -72,38 +61,29 @@ class AddAromaToMix(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
-    def post(self, request, *args, **kwargs):
-        lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        aroma_base = get_object_or_404(AromaBase, pk=kwargs['aroma_base_id'])
-        if lure_mix.owner == request.user and lure_mix.owner == aroma_base.owner:
-            form = AromaForm(request.POST)
-            if form.is_valid():
-                aroma = form.save(commit=False)
-                aroma.owner = request.user
-                aroma.mix = lure_mix
-                aroma.base = aroma_base
-                aroma.save()
-                return redirect('fishing:lure_mix_details', lure_mix.id)
-            else:
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'form': form,
-                               'lure_mix': lure_mix})
-        return redirect('fishing:lure_mix')
+    def post(self, *args, **kwargs):
+        result = AromaForm.save_me(self.request, lure_mix_id=kwargs['lure_mix_id'], aroma_base_id=kwargs['aroma_base_id'])            
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'form': result,
+                       'lure_mix': kwargs['lure_mix_id']})
     
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        aroma_base = get_object_or_404(AromaBase, pk=kwargs['aroma_base_id'])
-        if lure_mix.owner == request.user and lure_mix.owner == aroma_base.owner:
+        if not lure_mix.editable():
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
+        if lure_mix.owner == self.request.user:
             form = AromaForm()
-            return render(request,
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
                            'form': form,
-                           'lure_mix': lure_mix})
+                           'lure_mix_id': lure_mix.id})
         return redirect('fishing:lure_mix')
 
 
@@ -117,11 +97,13 @@ class DeleteAromaOfMix(View):
         return super().dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
+        lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
+        if not lure_mix.editable():
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
         aroma = get_object_or_404(Aroma, pk=kwargs['aroma_id'])
         if aroma.owner == request.user:
             aroma.delete()
-            lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-            return redirect ('fishing:lure_mix_details', lure_mix.id)
+            return redirect ('fishing:lure_mix_details', kwargs['lure_mix_id'])
         return redirect('fishing:index')
 
 
@@ -136,37 +118,59 @@ class EditAromaToMix(View):
         return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
-        lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        aroma = get_object_or_404(Aroma, pk=kwargs['aroma_id'])
-        if lure_mix.owner == request.user and aroma.mix == lure_mix:
-            form = AromaForm(request.POST, instance=aroma)
-            if form.is_valid():
-                aroma = form.save(commit=False)
-                aroma.save()
-                return redirect('fishing:lure_mix_details', lure_mix.id)
-            else:
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'form': form,
-                               'lure_mix': lure_mix,
-                               'aroma': aroma})
-        return redirect('fishing:lure_mix')
+        result = AromaForm.save_me(self.request, lure_mix_id=kwargs['lure_mix_id'], aroma_base_id=kwargs['aroma_base_id'], aroma_id=kwargs['aroma_id'])
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'form': result,
+                       'edit': True,
+                       'lure_mix': kwargs['lure_mix_id']})
     
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
+        if not lure_mix.editable():
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
         aroma = get_object_or_404(Aroma, pk=kwargs['aroma_id'])
-        if lure_mix.owner == request.user and aroma.mix == lure_mix:
+        if aroma.owner == self.request.user:
             form = AromaForm(instance=aroma)
-            return render(request,
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
                            'form': form,
-                           'lure_mix': lure_mix,
-                           'aroma': aroma})
+                           'edit': True,
+                           'lure_mix_id': kwargs['lure_mix_id']})
         return redirect('fishing:lure_mix')
+
+
+class AromaBaseAddFromLureMix(View):
+    template = 'fishing/notes/feeds/luremix/aroma_base_add.html'
+    
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def post(self, *args, **kwargs):
+        result = AromaBaseForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:add_aroma_to_mix', kwargs['lure_mix_id'], result)
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'luremix_id': kwargs['lure_mix_id'],
+                       'form': result})
+
+    def get(self, *args, **kwargs):
+        form = AromaBaseForm()
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'luremix_id': kwargs['lure_mix_id'],
+                       'form': form})
 
 
 class LureMixAdd(View):
@@ -179,34 +183,21 @@ class LureMixAdd(View):
     def dispatch(self, *args, **kwargs):
         return super(LureMixAdd, self).dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        form = LureMixForm(request.POST)
-        if form.is_valid():
-            lure_mix = form.save(commit=False)
-            lure_mix.owner = request.user
-            if lure_mix.unique():
-                lure_mix.first_upper()
-                lure_mix.save()
-                return redirect('fishing:lure_mix_details', lure_mix.id)
-            else:
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'form': form,
-                               'errors': 'Такая прикормочная смесь уже добавлена'})
-        else:
-            return render(request,
-                          self.template,
-                          {'fisherman': getuserinfo(request),
-                           'siteinfo': siteinfo(),
-                           'form': form})
-
-    def get(self, request, *args, **kwargs):
-        form = LureMixForm()
-        return render(request,
+    def post(self, *args, **kwargs):
+        result = LureMixForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:lure_mix_details', result)
+        return render(self.request,
                       self.template,
-                      {'fisherman': getuserinfo(request),
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'form': result})
+
+    def get(self, *args, **kwargs):
+        form = LureMixForm()
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
                        'siteinfo': siteinfo(),
                        'form': form})
 
@@ -222,14 +213,11 @@ class LureMixList(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-    def get(self, request, *args, **kwargs):
-        if request.user.is_staff:
-            lure_mix_list = LureMix.objects.all()
-        else:
-            lure_mix_list = LureMix.objects.filter(owner=request.user)
-        return render(request,
+    def get(self, *args, **kwargs):
+        lure_mix_list = LureMix.objects.filter(owner=self.request.user)
+        return render(self.request,
                     self.template,
-                    {'fisherman': getuserinfo(request),
+                    {'fisherman': getuserinfo(self.request),
                      'siteinfo': siteinfo(),
                      'lure_mix_list': lure_mix_list})
 
@@ -245,7 +233,7 @@ class LureMixDelete(View):
 
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        if lure_mix.owner == request.user:
+        if lure_mix.owner == self.request.user and lure_mix.removable():
             lure_mix.delete()
         return redirect('fishing:lure_mix')
 
@@ -260,44 +248,25 @@ class LureMixEdit(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        if lure_mix.owner == request.user:
-            form = LureMixForm(request.POST, instance=lure_mix)
-            if form.is_valid():
-                lure_mix = form.save(commit=False)
-                lure_mix.owner = request.user
-                if lure_mix.unique():
-                    lure_mix.first_upper()
-                    lure_mix.save()
-                    return redirect('fishing:lure_mix')
-                else:
-                    return render(request,
-                                self.template,
-                                {'fisherman': getuserinfo(request),
-                                 'siteinfo': siteinfo(),
-                                 'form': form,
-                                 'lure_mix': lure_mix,
-                                 'errors': 'Такая прикормочная смесь уже добавлена'})
-            else:
-                return render(request,
-                            self.template,
-                            {'fisherman': getuserinfo(request),
-                             'siteinfo': siteinfo(),
-                             'form': form,
-                             'lure_mix': lure_mix})
-        return redirect('fishing:lure_mix')
+    def post(self, *args, **kwargs):
+        result = LureMixForm.save_me(self.request, lure_mix_id=kwargs['lure_mix_id'])
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:lure_mix')
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'form': result})
 
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        if lure_mix.owner == request.user:
+        if lure_mix.owner == self.request.user:
             form = LureMixForm(instance=lure_mix)
-            return render(request,
+            return render(self.request,
                         self.template,
-                        {'fisherman': getuserinfo(request),
+                        {'fisherman': getuserinfo(self.request),
                          'siteinfo': siteinfo(),
-                         'form': form,
-                         'lure_mix': lure_mix})
+                         'form': form})
         return redirect('fishing:lure_mix')
 
 
@@ -314,12 +283,13 @@ class LureMixDetails(View):
 
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        if lure_mix.owner == request.user:
-            return render(request,
+        if lure_mix.owner == self.request.user:
+            return render(self.request,
                     self.template,
-                    {'fisherman': getuserinfo(request),
+                    {'fisherman': getuserinfo(self.request),
                      'siteinfo': siteinfo(),
-                     'lure_mix': lure_mix})
+                     'lure_mix': lure_mix,
+                     'editable': lure_mix.editable()})
         return redirect('fishing:lure_mix')
 
 
@@ -337,26 +307,16 @@ class SelectLureForMix(View):
 
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        if lure_mix.owner == request.user:
-            lure_list = Lure.objects.filter(mix=lure_mix)
-            lure_base_list = LureBase.objects.filter(owner=request.user)
-            if lure_base_list:
-                lure_base_entery = True
-            else:
-                lure_base_entery = False
-            # Убираем из списка уже добавленные корма
-            for lure_base in lure_base_list:
-                for lure in lure_list:
-                    if lure.base == lure_base:
-                        lure_base_list = lure_base_list.exclude(id=lure.base.id)
-
+        if not lure_mix.editable():
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
+        if lure_mix.owner == self.request.user:
+            param = {'fisherman': getuserinfo(self.request),
+                        'siteinfo': siteinfo(),
+                        'lure_mix': lure_mix}
+            param.update(lure_mix.lure_for_add())
             return render(request,
-                          self.template,
-                          {'fisherman': getuserinfo(request),
-                           'siteinfo': siteinfo(),
-                           'lure_mix': lure_mix,
-                           'lure_base_entery': lure_base_entery,
-                           'lure_base_list': lure_base_list})
+                        self.template,
+                        param)
         return redirect('fishing:lure_mix')
 
 
@@ -371,38 +331,29 @@ class AddLureToMix(View):
         return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
-        lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        lure_base = get_object_or_404(LureBase, pk=kwargs['lure_base_id'])
-        if lure_mix.owner == request.user and lure_mix.owner == lure_base.owner:
-            form = LureForm(request.POST)
-            if form.is_valid():
-                lure = form.save(commit=False)
-                lure.owner = request.user
-                lure.mix = lure_mix
-                lure.base = lure_base
-                lure.save()
-                return redirect('fishing:lure_mix_details', lure_mix.id)
-            else:
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'form': form,
-                               'lure_mix': lure_mix,
-                               'lure_base': lure_base})
-        return redirect('fishing:lure_mix')
+        result = LureForm.save_me(self.request, lure_mix_id=kwargs['lure_mix_id'], lure_base_id=kwargs['lure_base_id'])
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
+        return render(self.request,
+                        self.template,
+                        {'fisherman': getuserinfo(self.request),
+                        'siteinfo': siteinfo(),
+                        'form': result,
+                        'lure_mix_id': kwargs['lure_mix_id']})
     
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
+        if not lure_mix.editable():
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
         lure_base = get_object_or_404(LureBase, pk=kwargs['lure_base_id'])
-        if lure_mix.owner == request.user and lure_mix.owner == lure_base.owner:
+        if lure_mix.owner == self.request.user and lure_mix.owner == lure_base.owner:
             form = LureForm()
-            return render(request,
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
                            'form': form,
-                           'lure_mix': lure_mix})
+                           'lure_mix_id': kwargs['lure_mix_id']})
         return redirect('fishing:lure_mix')
 
 
@@ -417,10 +368,12 @@ class DeleteLureOfMix(View):
     
     def get(self, request, *args, **kwargs):
         lure = get_object_or_404(Lure, pk=kwargs['lure_id'])
+        lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
+        if not lure_mix.editable():
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
         if lure.owner == request.user:
             lure.delete()
-            lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-            return redirect ('fishing:lure_mix_details', lure_mix.id)
+            return redirect ('fishing:lure_mix_details', kwargs['lure_mix_id'])
         return redirect('fishing:index')
 
 
@@ -435,26 +388,21 @@ class EditLureToMix(View):
         return super().dispatch(*args, **kwargs)
     
     def post(self, request, *args, **kwargs):
-        lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        lure = get_object_or_404(Lure, pk=kwargs['lure_id'])
-        if lure_mix.owner == request.user and lure.mix == lure_mix:
-            form = LureForm(request.POST, instance=lure)
-            if form.is_valid():
-                lure = form.save(commit=False)
-                lure.save()
-                return redirect('fishing:lure_mix_details', lure_mix.id)
-            else:
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'form': form,
-                               'lure_mix': lure_mix,
-                               'lure': lure})
-        return redirect('fishing:lure_mix')
+        result = LureForm.save_me(self.request, lure_mix_id=kwargs['lure_mix_id'], lure_id=kwargs['lure_id'])
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
+        return render(request,
+                        self.template,
+                        {'fisherman': getuserinfo(request),
+                        'siteinfo': siteinfo(),
+                        'form': result,
+                        'edit': True,
+                        'lure_mix_id': kwargs['lure_mix_id']})
     
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
+        if not lure_mix.editable():
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
         lure = get_object_or_404(Lure, pk=kwargs['lure_id'])
         if lure_mix.owner == request.user and lure.mix == lure_mix:
             form = LureForm(instance=lure)
@@ -463,9 +411,36 @@ class EditLureToMix(View):
                           {'fisherman': getuserinfo(request),
                            'siteinfo': siteinfo(),
                            'form': form,
-                           'lure_mix': lure_mix,
-                           'lure': lure})
+                           'edit': True,
+                           'lure_mix_id': kwargs['lure_mix_id']})
         return redirect('fishing:lure_mix')
+
+
+class LureBaseAddFromLureMix(View):
+    template = 'fishing/notes/feeds/luremix/lure_base_add.html'
+    
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        result = LureBaseForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:add_lure_to_mix', kwargs['lure_mix_id'], result)
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'luremix_id': kwargs['lure_mix_id'],
+                       'form': result})
+
+    def get(self, request, *args, **kwargs):
+        form = LureBaseForm()
+        return render(request,
+                      self.template,
+                      {'fisherman': getuserinfo(request),
+                       'siteinfo': siteinfo(),
+                       'luremix_id': kwargs['lure_mix_id'],
+                       'form': form})
 
 
 class SelectNozzleForMix(View):
@@ -473,7 +448,7 @@ class SelectNozzleForMix(View):
     Возвращает список наживок/насадок для добавления в прикормочную смесь
     """
     
-    template = 'fishing/notes/feeds/luremix/select_nozzle.html'
+    template = 'fishing/notes/feeds/luremix/nozzle/select.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -481,15 +456,75 @@ class SelectNozzleForMix(View):
     
     def get(self, request, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
+        if not lure_mix.editable():
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
         if lure_mix.owner == request.user:
             nozzle_base_list = NozzleBase.objects.filter(owner=request.user)
             return render(request,
                     self.template,
                     {'fisherman': getuserinfo(request),
                      'siteinfo': siteinfo(),
-                     'lure_mix': lure_mix,
+                     'luremix_id': kwargs['lure_mix_id'],
                      'nozzle_base_list': nozzle_base_list})
         return redirect('fishing:lure_mix')
+
+
+class NozzleBaseAddFromLureMix(View):
+    template = 'fishing/notes/feeds/luremix/nozzle/nozzle_add.html'
+    
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def post(self, *args, **kwargs):
+        result = NozzleBaseForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:select_nozzle_state_for_mix', kwargs['lure_mix_id'], result)
+        nozzletypes = NozzleType.objects.all()
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'luremix_id': kwargs['lure_mix_id'],
+                       'form': result,
+                       'nozzletypes': nozzletypes})
+
+    def get(self, *args, **kwargs):
+        form = NozzleBaseForm()
+        nozzletypes = NozzleType.objects.all()
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'luremix_id': kwargs['lure_mix_id'],
+                       'form': form,
+                       'nozzletypes': nozzletypes})
+
+
+class BaitBaseAddFromLureMix(View):
+    template = 'fishing/notes/feeds/luremix/nozzle/bait_add.html'
+    
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def post(self, *args, **kwargs):
+        result = BaitBaseForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:select_nozzle_state_for_mix', kwargs['lure_mix_id'], result)
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'luremix_id': kwargs['lure_mix_id'],
+                       'form': result})
+
+    def get(self, *args, **kwargs):
+        form = BaitBaseForm()
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'luremix_id': kwargs['lure_mix_id'],
+                       'form': form})
 
 
 class SelectNozzleStateForMix(View):
@@ -497,37 +532,54 @@ class SelectNozzleStateForMix(View):
     Возвращает список состояний наживок/насадок для добавления в прикормочную смесь
     """
     
-    template = 'fishing/notes/feeds/luremix/select_nozzle_state.html'
+    template = 'fishing/notes/feeds/luremix/nozzle/state/select.html'
     
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
-        if nozzle_base.owner == request.user and lure_mix.owner == request.user:
-            nozzle_list = Nozzle.objects.filter(mix=lure_mix, base=nozzle_base)
-            nozzle_state_list = NozzleState.objects.filter(owner=request.user)
-            
-            if nozzle_state_list:
-                nozzle_state_entery = True
-            else:
-                nozzle_state_entery = False
-                
-            for nozzle_state in nozzle_state_list:
-                for nozzle in nozzle_list:
-                    if nozzle.state == nozzle_state:
-                        nozzle_state_list = nozzle_state_list.exclude(id=nozzle_state.id)
-                        
-            return render(request,
+        if not lure_mix.editable():
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
+        if lure_mix.owner == self.request.user:
+            param = {'fisherman': getuserinfo(self.request),
+                     'siteinfo': siteinfo(),
+                     'luremix_id': lure_mix.id,
+                     'nozzlebase_id': kwargs['nozzle_base_id']}
+            param.update(lure_mix.state_for_select(nozzle_base_id=kwargs['nozzle_base_id']))
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
-                           'siteinfo': siteinfo(),
-                           'lure_mix': lure_mix,
-                           'nozzle_base': nozzle_base,
-                           'nozzle_state_entery': nozzle_state_entery,
-                           'nozzle_state_list': nozzle_state_list})
+                          param)
         return redirect('fishing:lure_mix')
+
+
+class NozzleStateAddFromLureMix(View):
+    template = 'fishing/notes/feeds/luremix/nozzle/state/add.html'
+    
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def post(self, *args, **kwargs):
+        result = NozzleStateForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:add_nozzle_to_mix', kwargs['lure_mix_id'], kwargs['nozzle_base_id'], result)
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'lure_mix_id': kwargs['lure_mix_id'],
+                       'nozzle_base_id': kwargs['nozzle_base_id'],
+                       'form': result})
+
+    def get(self, *args, **kwargs):
+        form = NozzleStateForm()
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'lure_mix_id': kwargs['lure_mix_id'],
+                       'nozzle_base_id': kwargs['nozzle_base_id'],
+                       'form': form})
 
 
 class AddNozzleToMix(View):
@@ -541,18 +593,9 @@ class AddNozzleToMix(View):
         return super().dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
-        lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
-        nozzle_state = get_object_or_404(NozzleState, pk=kwargs['nozzle_state_id'])
-        if (lure_mix.owner == request.user and lure_mix.owner == nozzle_base.owner and
-            lure_mix.owner == nozzle_state.owner):
-            nozzle = Nozzle()
-            nozzle.owner = request.user
-            nozzle.mix = lure_mix
-            nozzle.base = nozzle_base
-            nozzle.state = nozzle_state
-            nozzle.save()
-            return redirect('fishing:lure_mix_details', lure_mix.id)
+        result = Nozzle.save_me(user=self.request.user, **kwargs)
+        if result:
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
         return redirect('fishing:lure_mix')
 
 
@@ -566,53 +609,11 @@ class DeleteNozzleOfMix(View):
         return super().dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
+        lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
+        if not lure_mix.editable():
+            return redirect('fishing:lure_mix_details', kwargs['lure_mix_id'])
         nozzle = get_object_or_404(Nozzle, pk=kwargs['nozzle_id'])
         if nozzle.owner == request.user:
             nozzle.delete()
-            lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-            return redirect ('fishing:lure_mix_details', lure_mix.id)
+            return redirect ('fishing:lure_mix_details', kwargs['lure_mix_id'])
         return redirect('fishing:index')
-
-
-class EditNozzleToMix(View):
-    """
-    Редактиорвание выбранной насадки или наживки в смеси
-    """
-    template = 'fishing/notes/feeds/luremix/edit_add_nozzle.html'
-    
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-    
-    def post(self, request, *args, **kwargs):
-        lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        nozzle = get_object_or_404(Nozzle, pk=kwargs['nozzle_id'])
-        if lure_mix.owner == request.user and nozzle.mix == lure_mix:
-            form = NozzleForm(request.POST, instance=nozzle)
-            if form.is_valid():
-                nozzle = form.save(commit=False)
-                nozzle.save()
-                return redirect('fishing:lure_mix_details', lure_mix.id)
-            else:
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'form': form,
-                               'lure_mix': lure_mix,
-                               'nozzle': nozzle})
-        return redirect('fishing:lure_mix')
-    
-    def get(self, request, *args, **kwargs):
-        lure_mix = get_object_or_404(LureMix, pk=kwargs['lure_mix_id'])
-        nozzle = get_object_or_404(Nozzle, pk=kwargs['nozzle_id'])
-        if lure_mix.owner == request.user and nozzle.mix == lure_mix:
-            form = NozzleForm(instance=nozzle)
-            return render(request,
-                          self.template,
-                          {'fisherman': getuserinfo(request),
-                           'siteinfo': siteinfo(),
-                           'form': form,
-                           'lure_mix': lure_mix,
-                           'nozzle': nozzle})
-        return redirect('fishing:lure_mix')

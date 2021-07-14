@@ -26,35 +26,21 @@ class NozzleStateAdd(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        form = NozzleStateForm(request.POST)
-        nozzle_state = NozzleState()
-        if form.is_valid():
-            nozzle_state = form.save(commit=False)
-            nozzle_state.owner = request.user
-            if nozzle_state.unique():
-                nozzle_state.first_upper()
-                nozzle_state.save()
-                return redirect('fishing:nozzle_base')
-            else:
-                return render(request,
-                              self.template,
-                              {'fisherman': getuserinfo(request),
-                               'siteinfo': siteinfo(),
-                               'form': form,
-                               'errors': 'Такое состояние уже добавлена'})
-        else:
-            return render(request,
-                          self.template,
-                          {'fisherman': getuserinfo(request),
-                           'siteinfo': siteinfo(),
-                           'form': form})
-
-    def get(self, request, *args, **kwargs):
-        form = NozzleStateForm()
-        return render(request,
+    def post(self, *args, **kwargs):
+        result = NozzleStateForm.save_me(self.request)
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:nozzle_base')
+        return render(self.request,
                       self.template,
-                      {'fisherman': getuserinfo(request),
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'form': result})
+
+    def get(self, *args, **kwargs):
+        form = NozzleStateForm()
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
                        'siteinfo': siteinfo(),
                        'form': form})
 
@@ -69,43 +55,25 @@ class NozzleStateEdit(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        nozzle_state = get_object_or_404(NozzleState, pk=kwargs['nozzle_state_id'])
-        if nozzle_state.owner == request.user:
-            form = NozzleStateForm(request.POST, instance=nozzle_state)
-            if form.is_valid():
-                nozzle_state = form.save(commit=False)
-                nozzle_state.owner = request.user
-                if nozzle_state.unique():
-                    nozzle_state.first_upper()
-                    nozzle_state.save()
-                    return redirect('fishing:nozzle_base')
-                else:
-                    return render(request,
-                                self.template,
-                                {'fisherman': getuserinfo(request),
-                                 'siteinfo': siteinfo(),
-                                 'form': form,
-                                 'nozzle_state': nozzle_state,
-                                 'errors': 'Такое сосотояние наживки или насадки уже добавлена'})
-            else:
-                return render(request,
-                            self.template,
-                            {'fisherman': getuserinfo(request),
-                             'siteinfo': siteinfo(),
-                             'form': form,
-                             'nozzle_state': nozzle_state})
+    def post(self, *args, **kwargs):
+        result = NozzleStateForm.save_me(self.request, nozzle_state_id=kwargs['nozzle_state_id'])
+        if str(type(result)) == str(type(1)):
+            return redirect('fishing:nozzle_base')
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'form': result})
 
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         nozzle_state = get_object_or_404(NozzleState, pk=kwargs['nozzle_state_id'])
-        if nozzle_state.owner == request.user:
+        if nozzle_state.owner == self.request.user:
             form = NozzleStateForm(instance=nozzle_state)
-            return render(request,
+            return render(self.request,
                         self.template,
-                        {'fisherman': getuserinfo(request),
+                        {'fisherman': getuserinfo(self.request),
                          'siteinfo': siteinfo(),
-                         'form': form,
-                         'nozzle_state': nozzle_state})
+                         'form': form})
         return redirect('fishing:nozzle_base')
 
 

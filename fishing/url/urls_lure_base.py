@@ -20,8 +20,4 @@ urlpatterns = [
     path('<int:lure_base_id>/delete/',
          views.LureBaseDelete.as_view(),
          name='lure_base_delete'),
-    # Добавление прикорма при создании смеси
-    path('add/<int:lure_mix_id>/',
-         views.LureBaseAddFromLureMix.as_view(),
-         name='lure_base_add_from_mix'),
     ]

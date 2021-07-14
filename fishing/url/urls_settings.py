@@ -8,10 +8,6 @@ urlpatterns = [
          views.Settings.as_view(),
          name='settings'),
     
-    # Переменные среды
-    path('environments/',
-         views.EnvironmentVariables.as_view(),
-         name='environments'),
     # Блок грунта
     # Список вариантов грунта
     path('primings/',
@@ -158,4 +154,12 @@ urlpatterns = [
     path('watercategory/<int:water_category_id>/delete/',
          views.WaterCategoryDelete.as_view(),
          name='water_category_delete'),
+    # Переменные среды
+    path('environments/',
+         views.EnvironmentVariables.as_view(),
+         name='environments'),
+    # Список пользователей
+    path('users/',
+         views.UsersList.as_view(),
+         name='fishermans'),
     ]

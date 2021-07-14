@@ -305,30 +305,30 @@
   <tr>
     <td>
       {% if fishing.fishingluremix_set.get %}
-      <strong>Прикормочная смесь: </strong>
-      {{ fishing.fishingluremix_set.get.lure_mix.name }}
-      <a href="{% url 'fishing:fishing_lure_mix_select' fishing.id fishing.fishingluremix_set.get.id %}">
-        <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
-      </a>
-      <a href="{% url 'fishing:fishing_lure_mix_delete' fishing.id fishing.fishingluremix_set.get.id %}">
-        <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
-      </a>
-      {% else %}
-      {% if fishing.fishinglure_set.get %}
-        <strong>Прикорм:</strong>
-        <a href="{% url 'fishing:fishing_lure_change_weight' fishing.id fishing.fishinglure_set.get.lure_base.id fishing.fishinglure_set.get.id %}">
+        <strong>Прикормочная смесь: </strong>
+        {{ fishing.fishingluremix_set.get.lure_mix.name }}
+        <a href="{% url 'fishing:fishing_lure_mix_select' fishing.id %}">
           <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
         </a>
-        <a href="{% url 'fishing:fishing_lure_delete' fishing.id fishing.fishinglure_set.get.id %}">
+        <a href="{% url 'fishing:fishing_lure_mix_delete' fishing.id %}">
           <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
         </a>
+      {% else %}
+        {% if fishing.fishinglure_set.get %}
+          <strong>Прикорм:</strong>
+          <a href="{% url 'fishing:fishing_lure_change_weight' fishing.id fishing.fishinglure_set.get.lure_base.id fishing.fishinglure_set.get.id %}">
+            <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
+          </a>
+          <a href="{% url 'fishing:fishing_lure_delete' fishing.id fishing.fishinglure_set.get.id %}">
+            <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
+          </a>
         {% else %}
-            <a href="{% url 'fishing:fishing_lure_mix_select' fishing.id 0 %}">
-              <img class="button__img" src="{% static 'images/add.png' %}" alt="">Указать смесь
-            </a>
-            <a href="{% url 'fishing:fishing_lure_select' fishing.id %}">
-              <img class="button__img" src="{% static 'images/add.png' %}" alt="">Указать прикорм
-            </a>
+          <a href="{% url 'fishing:fishing_lure_mix_select' fishing.id %}">
+            <img class="button__img" src="{% static 'images/add.png' %}" alt="">Указать смесь
+          </a>
+          <a href="{% url 'fishing:fishing_lure_select' fishing.id %}">
+            <img class="button__img" src="{% static 'images/add.png' %}" alt="">Указать прикорм
+          </a>
         {% endif %}
       {% endif %}
     </td>
@@ -363,7 +363,7 @@
           </table>
         </tr>
       {% endif %}
-      {% if fishing.fishingluremix_set.get.lure_mix.aroma_set.get %}
+      {% if fishing.fishingluremix_set.get.lure_mix.aroma_set %}
         <tr>
           <td>
             <strong>Аромы:</strong>
@@ -392,7 +392,7 @@
           </table>
         </tr>
       {% endif %}
-      {% if fishing.fishingluremix_set.get.lure_mix.nozzle_set.get %}
+      {% if fishing.fishingluremix_set.get.lure_mix.nozzle_set %}
       <tr>
         <td>
           <p><strong>Добавки в состав:</strong></p>

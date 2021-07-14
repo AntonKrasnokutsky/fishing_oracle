@@ -5,15 +5,15 @@
 
   <table>
     <header>
-      <th>Переменная</th>
-      <th>Значение</th>
-      <th>Тип</th>
+      <th>Ник</th>
+      <th>Почта</th>
+      <th>Дата регистрации</th>
     </header>
-    {% for i in environments|get_len %}
+    {% for i in users|get_len %}
       <tr>
-        <td>{{ environments.variables|get_element:i }}</td>
-        <td>{{ environments.value|get_element:i }}</td>
-        <td>{{ environments.type|get_element:i }}</td>
+        <td>{{ users.nick|get_element:i }}</td>
+        <td>{{ users.email|get_element:i }}</td>
+        <td>{{ users.date_joined|get_element:i }}</td>
       </tr>
     {% endfor %}
   </table>
@@ -22,4 +22,5 @@
 <div class="content__item content__item--btn-position">
   <a class="button__std" href="{% url 'fishing:settings' %}">Назад</a>
 </div>
+
 {% endblock %}

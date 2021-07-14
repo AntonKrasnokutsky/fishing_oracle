@@ -2,164 +2,177 @@
 {% load static %}
 {% block content %}
 
-{% if lure_mix != None %}
-<!-- Прикормочная смесь -->
-<div class="content__item">
-  <div class="content__item content__item--title content__item--center">
-    <p>Прикормочная смесь {{ lure_mix.name }}</p>
-  </div>
+<div class="content__inner">
+  {% if lure_mix != None %}
+  <!-- Прикормочная смесь -->
 
-<table>
-  <tr>
-    <th>Прикормы</th>
-    <th>Аромы</th>
-  </tr>
-  <tr>
-    <td>
-    {% if lure_mix.lure_set.all %}
+    <div class="content__item content__item--title content__item--center">
+      <p>Прикормочная смесь {{ lure_mix.name }}</p>
+    </div>
+
     <table>
-        {% for lure in lure_mix.lure_set.all %}
-          <tr>
-            <td>
-              <p><strong>Прикорм: </strong> {{ lure.base }}</p>
-              <p><strong>Доля прикорма: </strong>{{ lure.weight }}</p>
-            </td>
-            <td>
-              <a href="{% url 'fishing:edit_lure_to_mix' lure_mix.id lure.id %}">
-                <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
-              </a>
-              <a href="{% url 'fishing:delete_lure_of_mix' lure_mix.id lure.id %}">
-                <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
-              </a>
-            </td>
-          </tr>
-        {% endfor %}
-      </table>
-      {% else %}
-        <div class="content__item-text content__item-text--center">
-          <p>Прикормы не использованы</p>
-        </div>
-      {% endif %}
-    </td>
-    <td>
-        {% if lure_mix.aroma_set.all %}
+      <tr>
+        <th>Прикормы</th>
+        <th>Аромы</th>
+      </tr>
+      <tr>
+        <td>
+        {% if lure_mix.lure_set.all %}
         <table>
-            {% for aroma in lure_mix.aroma_set.all %}
-              <tr>
-                <td>
-                  <p><strong>Арома: </strong> {{ aroma.base }}</p>
-                  <p><strong>Доля аромы: </strong>{{ aroma.volume }}</p>
-                </td>
-                <td>
-                  <a href="{% url 'fishing:edit_aroma_to_mix' lure_mix.id aroma.id %}">
+          {% for lure in lure_mix.lure_set.all %}
+            <tr>
+              <td>
+                <p><strong>Прикорм: </strong> {{ lure.base }}</p>
+                <p><strong>Доля прикорма: </strong>{{ lure.weight }}</p>
+              </td>
+              <td>
+                {% if editable %}
+                  <a href="{% url 'fishing:edit_lure_to_mix' lure_mix.id lure.id %}">
                     <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
                   </a>
-                  <a href="{% url 'fishing:delete_aroma_of_mix' lure_mix.id aroma.id %}">
+                  <a href="{% url 'fishing:delete_lure_of_mix' lure_mix.id lure.id %}">
                     <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
                   </a>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+          {% else %}
+            <div class="content__item-text content__item-text--center">
+              <p>Прикормы не использованы</p>
+            </div>
+          {% endif %}
+        </td>
+        <td>
+          {% if lure_mix.aroma_set.all %}
+            <table>
+              {% for aroma in lure_mix.aroma_set.all %}
+                <tr>
+                  <td>
+                    <p><strong>Арома: </strong> {{ aroma.base }}</p>
+                    <p><strong>Доля аромы: </strong>{{ aroma.volume }}</p>
+                  </td>
+                  <td>
+                    {% if editable %}
+                      <a href="{% url 'fishing:edit_aroma_to_mix' lure_mix.id aroma.id %}">
+                        <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">
+                      </a>
+                      <a href="{% url 'fishing:delete_aroma_of_mix' lure_mix.id aroma.id %}">
+                        <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
+                      </a>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+          {% else %}
+            <div class="content__item-text content__item-text--center">
+              <p>Аромы не использованы</p>
+            </div>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {% if editable %}
+            <div class="content__item content__item--btn-position">
+              <a class="button__std" href="{% url 'fishing:select_lure_for_mix' lure_mix.id %}">
+                <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+                Добавить
+              </a>
+            </div>
+          {% endif %}
+        </td>
+        <td>
+          {% if editable %}
+            <div class="content__item content__item--btn-position">
+              <a class="button__std" href="{% url 'fishing:select_aroma_for_mix' lure_mix.id %}">
+                <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+                Добавить
+              </a>
+            </div>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th>Добавки</th>
+        <th>Рыбалки</th>
+      </tr>
+      <tr>
+        <td>
+          {% if lure_mix.nozzle_set.all %}
+          <table>
+              {% for nozzle in lure_mix.nozzle_set.all %}
+                <tr>
+                  <td>
+                    {% if nozzle.base.bait %}
+                      <p><strong>Живой компонент: </strong> {{ nozzle.base }}</p>
+                      {% if nozzle.state %}
+                        <p><strong>Состояние: </strong>{{ nozzle.state }}</p>
+                      {% endif %}
+                    {% else %}
+                      <p><strong>Добавка: </strong> {{ nozzle.base }}</p>
+                      {% if nozzle.state %}
+                        <p><strong>Состояние: </strong>{{ nozzle.state }}</p>
+                      {% endif %}
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if editable %}
+                      <a href="{% url 'fishing:delete_nozzle_of_mix' lure_mix.id nozzle.id %}">
+                        <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
+                      </a>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </table>
+            {% else %}
+              <div class="content__item-text content__item-text--center">
+                <p>Добавки не использованы</p>
+              </div>
+            {% endif %}
+          </td>
+        <td>
+          {% if lure_mix.fishingluremix_set.all %}
+          <table>
+            {% for fishingluremix in lure_mix.fishingluremix_set.all %}
+              <tr>
+                <td>
+                  <a href="{% url 'fishing:fishing_details' fishingluremix.fishing.id %}">{{ fishingluremix.fishing }}</a>
                 </td>
               </tr>
             {% endfor %}
           </table>
           {% else %}
             <div class="content__item-text content__item-text--center">
-              <p>Аромы не использованы</p>
+              <p>В рыбалках не использован</p>
             </div>
           {% endif %}
-    </td>
-  </tr>
-  <tr>
-      <td>
-        <div class="content__item content__item--btn-position">
-          <a class="button__std" href="{% url 'fishing:select_lure_for_mix' lure_mix.id %}">
-            <img class="button__img" src="{% static 'images/add.png' %}" alt="">
-            Добавить
-          </a>
-        </div>
-      </td>
-      <td>
-        <div class="content__item content__item--btn-position">
-          <a class="button__std" href="{% url 'fishing:select_aroma_for_mix' lure_mix.id %}">
-            <img class="button__img" src="{% static 'images/add.png' %}" alt="">
-            Добавить
-          </a>
-        </div>
-      </td>
-  </tr>
-  <tr>
-    <th>Добавки</th>
-    <th>Рыбалки</th>
-  </tr>
-  <tr>
-    <td>
-      {% if lure_mix.nozzle_set.all %}
-      <table>
-          {% for nozzle in lure_mix.nozzle_set.all %}
-            <tr>
-              <td>
-                {% if nozzle.base.bait %}
-                  <p><strong>Живой компонент: </strong> {{ nozzle.base }}</p>
-                  {% if nozzle.state %}
-                    <p><strong>Состояние: </strong>{{ nozzle.state }}</p>
-                  {% endif %}
-                {% else %}
-                  <p><strong>Добавка: </strong> {{ nozzle.base }}</p>
-                  {% if nozzle.state %}
-                    <p><strong>Состояние: </strong>{{ nozzle.state }}</p>
-                  {% endif %}
-                {% endif %}
-                </td>
-                <td>
-                  <a href="{% url 'fishing:delete_nozzle_of_mix' lure_mix.id nozzle.id %}">
-                    <img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete">
-                  </a>
-                </td>
-              </tr>
-              {% endfor %}
-        </table>
-        {% else %}
-          <div class="content__item-text content__item-text--center">
-            <p>Добавки не использованы</p>
-          </div>
-        {% endif %}
-      </td>
-    <td>
-      {% if lure_mix.fishingluremix_set.all %}
-      <table>
-        {% for fishingluremix in lure_mix.fishingluremix_set.all %}
-          <tr>
-            <td>
-              <a href="{% url 'fishing:fishing_details' fishingluremix.fishing.id %}">{{ fishingluremix.fishing }}</a>
-            </td>
-          </tr>
-        {% endfor %}
-      </table>
-      {% else %}
-      <div class="content__item-text content__item-text--center">
-        <p>В рыбалках не использован</p>
-      </div>
-      {% endif %}
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <div class="content__item content__item--btn-position">
-        <a class="button__std" href="{% url 'fishing:select_nozzle_for_mix' lure_mix.id %}">
-          <img class="button__img" src="{% static 'images/add.png' %}" alt="">
-          Добавить
-        </a>
-      </div>
-    </td>
-    <td></td>
-  </tr>
-</table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          {% if editable %}
+            <div class="content__item content__item--btn-position">
+              <a class="button__std" href="{% url 'fishing:select_nozzle_for_mix' lure_mix.id %}">
+                <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+                Добавить
+              </a>
+            </div>
+          {% endif %}
+        </td>
+        <td></td>
+      </tr>
+    </table>
 
-<div class="content__item content__item--btn-position">
-  <a class="button__std" href="{% url 'fishing:lure_mix' %}">
-    Назад
-  </a>
+  <div class="content__item content__item--btn-position">
+    <a class="button__std" href="{% url 'fishing:lure_mix' %}">
+      Назад
+    </a>
+  </div>
+  {% endif %}
 </div>
-</div>
-{% endif %}
 
 {% endblock %}

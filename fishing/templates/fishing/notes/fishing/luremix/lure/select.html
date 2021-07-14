@@ -1,0 +1,48 @@
+{% extends 'fishing/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="content__inner">
+  {% if lure_base_list %}
+  <!-- Прикорм для смеси -->
+    <table>
+      {% for lure_base in lure_base_list %}
+        <tr>
+          <td>
+            {{lure_base}}
+          </td>
+          <td>
+            <a href="{% url 'fishing:fishing_new_lure_mix_filling_lure_weight' fishing_id lure_base.id %}">
+              <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+  </table>
+  {% else %}
+    {% if lure_base_entery %}
+      <tr>
+        <div class="content__item-text content__item-text--center">
+          <p>Все прикормы использованны в данной смеси</p>
+        </div>
+      </tr>
+    {% else %}
+      <tr>
+        <div class="content__item-text content__item-text--center">
+          <p>Прикормы ещё не добавлены</p>
+        </div>
+      </tr>
+    {% endif %}
+  {% endif %}
+  <div class="content__item content__item--btn-position">
+    <a class="button__std" href="{% url 'fishing:fishing_new_lure_mix_filling_lure_new' fishing_id %}">
+      <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+      Добавить
+    </a>
+    <a class="button__std" href="{% url 'fishing:fishing_new_lure_mix_filling' fishing_id %}">
+      Назад
+    </a>
+  </div>
+</div>
+
+{% endblock %}

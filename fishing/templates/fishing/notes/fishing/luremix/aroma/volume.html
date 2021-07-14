@@ -53,9 +53,9 @@
       </button>
         <a class="button__std" 
           {% if edit %}
-            href="{% url 'fishing:lure_mix_details' lure_mix_id %}"
+            href="{% url 'fishing:fishing_new_lure_mix_filling' fishing_id %}"
           {% else %}
-            href="{% url 'fishing:select_aroma_for_mix' lure_mix_id %}"
+            href="{% url 'fishing:fishing_new_lure_mix_filling_aroma_select' fishing_id %}"
           {% endif %} >
           Назад
         </a>

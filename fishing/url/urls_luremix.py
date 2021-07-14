@@ -42,6 +42,10 @@ urlpatterns = [
     path('<int:lure_mix_id>/details/editlure/<int:lure_id>',
          views.EditLureToMix.as_view(),
          name='edit_lure_to_mix'),
+    # Добавление прикорма при создании смеси
+    path('<int:lure_mix_id>/details/addlure/',
+         views.LureBaseAddFromLureMix.as_view(),
+         name='lure_base_add_from_mix'),
     
     # Аромы в прикормочной смеси
     # Выбор аромы для смеси
@@ -60,6 +64,10 @@ urlpatterns = [
     path('<int:lure_mix_id>/deletearoma/<int:aroma_id>',
          views.DeleteAromaOfMix.as_view(),
          name='delete_aroma_of_mix'),
+    # Добавление арому при создании смеси
+    path('<int:lure_mix_id>/details/addaroma/',
+         views.AromaBaseAddFromLureMix.as_view(),
+         name='aroma_base_add_from_mix'),
 
     # Добавки в прикорм
     # Выбор добавки в прикорм
@@ -71,15 +79,27 @@ urlpatterns = [
          views.SelectNozzleStateForMix.as_view(),
          name='select_nozzle_state_for_mix'),
     # Добавление добавки в прикорм
-    path('<int:lure_mix_id>/details/addnozzle/<int:nozzle_base_id><int:nozzle_state_id>',
+    path('<int:lure_mix_id>/details/addnozzle/<int:nozzle_base_id>/<int:nozzle_state_id>',
          views.AddNozzleToMix.as_view(),
          name='add_nozzle_to_mix'),
     # Редактирование насадки или наживки в прикорме
-    path('<int:lure_mix_id>/details/editnozzle/<int:nozzle_id>',
-         views.EditNozzleToMix.as_view(),
-         name='edit_nozzle_to_mix'),
+#     path('<int:lure_mix_id>/details/editnozzle/<int:nozzle_id>',
+#          views.EditNozzleToMix.as_view(),
+#          name='edit_nozzle_to_mix'),
     # Удаление насадки или наживки из прикорма
     path('<int:lure_mix_id>/deletenozzle/<int:nozzle_id>',
          views.DeleteNozzleOfMix.as_view(),
          name='delete_nozzle_of_mix'),
+    # Добавление насадки при создании смеси
+    path('<int:lure_mix_id>/details/addnozzle/',
+         views.NozzleBaseAddFromLureMix.as_view(),
+         name='nozzle_base_add_from_mix'),
+    # Добавление наживки при создании смеси
+    path('<int:lure_mix_id>/details/addbait/',
+         views.BaitBaseAddFromLureMix.as_view(),
+         name='bait_base_add_from_mix'),
+    # Добавление состояния насадки при создании смеси
+    path('<int:lure_mix_id>/details/addnozzlestate/<int:nozzle_base_id>/',
+         views.NozzleStateAddFromLureMix.as_view(),
+         name='nozzle_state_add_from_mix'),
     ]

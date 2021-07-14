@@ -22,7 +22,7 @@ class Index(View):
 
 
 class FishermanNotes(View):
-    template = 'fishing/notes.html'
+    template = 'fishing/notes/notes.html'
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
@@ -35,7 +35,7 @@ class FishermanNotes(View):
 
 
 class FishermanGear(View):
-    template = 'fishing/gear.html'
+    template = 'fishing/notes/gears/gear.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -49,7 +49,7 @@ class FishermanGear(View):
 
 
 class FishermanFeed(View):
-    template = 'fishing/feed.html'
+    template = 'fishing/notes/feeds/feed.html'
     
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):

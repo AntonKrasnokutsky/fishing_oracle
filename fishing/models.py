@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, reset_queries
 from django.core.validators import MinValueValidator
 from django.core.validators import MaxValueValidator
 from datetime import datetime
@@ -410,6 +410,19 @@ class Fishing(models.Model):  # Рыбалки
                     result['weight'].append(str(fishing_trophy.fish_trophy_weight))
                     result['fishing'].append(fishing_trophy.fishing.id)
         return result
+
+    def get_luremix(*args, **kwargs):
+        try:
+            fishing = Fishing.objects.get(id=kwargs['fishing_id'])
+            if fishing.owner != kwargs['user']:
+                return False
+        except:
+            return False
+        try:
+            fishing_lure_mix = FishingLureMix.objects.get(fishing=fishing)
+        except:
+            return False
+        return fishing_lure_mix.lure_mix
 
 
 class FishingReportsSettings(models.Model):
@@ -888,6 +901,24 @@ class FishingLureMix(models.Model):  # Прикормочный состав д�
                                  on_delete=models.PROTECT,
                                  verbose_name='Прикормочная смесь')
 
+    def save_me(*args, **kwargs):
+        try:
+            fishing = Fishing.objects.get(id=kwargs['fishing_id'])
+            lure_mix = LureMix.objects.get(id=kwargs['lure_mix_id'])
+            if fishing.owner != lure_mix.owner and fishing.owner != kwargs['user']:
+                return False
+        except:
+            return False
+        try:
+            fishing_lure_mix = FishingLureMix.objects.get(fishing=fishing)
+        except:
+            fishing_lure_mix = FishingLureMix()
+            fishing_lure_mix.owner = kwargs['user']
+            fishing_lure_mix.fishing = fishing
+        fishing_lure_mix.lure_mix = lure_mix
+        fishing_lure_mix.save()
+        return fishing_lure_mix.id
+
 
 class FishingMontage(models.Model):  # Монтажи в рыбалке
     """
@@ -1333,9 +1364,12 @@ class LureMix(models.Model):  # Смеси прикромов
     name = models.CharField(max_length=100,
                             blank=True,
                             verbose_name='Название состава')
+    # Описание и способы приготовления
     description = models.TextField(blank=True,
                                    verbose_name='Описание состава')
 
+    finished = models.BooleanField(default=False,
+                                   verbose_name='Окончательный состав')
     
     def __str__(self):
         return self.name
@@ -1359,6 +1393,62 @@ class LureMix(models.Model):  # Смеси прикромов
         else:
             return True
 
+    def lure_for_add(self, *args, **kwargs):
+        result = {'lure_base_entery': False,
+                  'lure_base_list': None}
+        lure_list = Lure.objects.filter(mix=self)
+        lure_base_list = LureBase.objects.filter(owner=self.owner)
+        if lure_base_list:
+            result['lure_base_entery'] = True
+        for lure_base in lure_base_list:
+            for lure in lure_list:
+                if lure.base == lure_base:
+                    lure_base_list = lure_base_list.exclude(id=lure.base.id)
+        result['lure_base_list'] = lure_base_list
+        return result
+    
+    def aroma_for_add(self, *args, **kwargs):
+        result = {'aroma_base_entery': False,
+                  'aroma_base_list': None}
+        aroma_list = Aroma.objects.filter(mix=self)
+        aroma_base_list = AromaBase.objects.filter(owner=self.owner)
+        if aroma_base_list:
+            result['aroma_base_entery'] = True
+        for aroma_base in aroma_base_list:
+            for aroma in aroma_list:
+                if aroma.base == aroma_base:
+                    aroma_base_list = aroma_base_list.exclude(id=aroma.base.id)
+        result['aroma_base_list'] = aroma_base_list
+        return result
+    
+    def state_for_select(self, *args, **kwargs):
+        result = {'nozzle_state_entery': False,
+                  'nozzle_state_list': None}
+        nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_base_id'])
+        nozzle_list = Nozzle.objects.filter(mix=self, base=nozzle_base)
+        nozzle_state_list = NozzleState.objects.filter(owner=self.owner)
+        
+        if nozzle_state_list:
+            result['nozzle_state_entery'] = True
+            
+        for nozzle_state in nozzle_state_list:
+            for nozzle in nozzle_list:
+                if nozzle.state == nozzle_state:
+                    nozzle_state_list = nozzle_state_list.exclude(id=nozzle_state.id)
+        result['nozzle_state_list'] = nozzle_state_list
+        return result
+
+    def editable(self, *args, **kwargs):
+        fishing_lurs = FishingLureMix.objects.filter(lure_mix=self)
+        if len(fishing_lurs) > 1:
+            return False
+        return True
+    
+    def removable(self, *args, **kwargs):
+        fishing_lurs = FishingLureMix.objects.filter(lure_mix=self)
+        if len(fishing_lurs) > 0:
+            return False
+        return True
 
 class Montage(models.Model):  # Монтажи
     """
@@ -1430,6 +1520,47 @@ class Nozzle(models.Model):  # Добавки в прикормочную сме
     
     def __str__(self):
         return str(self.base) + ' ' + str(self.state)
+
+    def save_me(*args, **kwargs):
+        try:
+            user = kwargs['user']
+        except:
+            return False
+        try:
+            lure_mix = Fishing.get_luremix(fishing_id=kwargs['fishing_id'], user=user)
+        except:
+            try:
+                lure_mix = LureMix.objects.get(id=kwargs['lure_mix_id'])
+                if lure_mix.owner != user:
+                    return False
+            except:
+                return False
+        if not lure_mix.editable():
+            return False
+        try:
+            nozzle_base = NozzleBase.objects.get(id=kwargs['nozzle_base_id'])
+            if nozzle_base.owner != user:
+                return False
+        except:
+            return False
+        try:
+            nozzle_state = NozzleState.objects.get(id=kwargs['nozzle_state_id'])
+            if nozzle_state.owner != user:
+                return False
+        except:
+            return False
+        try:
+            nozzle = Nozzle.objects.get(id=kwargs['nozzle_id'])
+        except:
+            nozzle = Nozzle()
+            nozzle.owner = user
+            nozzle.mix = lure_mix
+        nozzle.base = nozzle_base
+        nozzle.state = nozzle_state
+        nozzle.save()
+        return True
+        
+
 
 
 class NozzleBase(models.Model):  # Насдаки и наживки

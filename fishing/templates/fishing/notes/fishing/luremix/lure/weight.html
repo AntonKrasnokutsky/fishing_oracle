@@ -1,14 +1,9 @@
 {% extends 'fishing/base.html' %}
-{% block content %}
 {% load l10n %}
-
-<div class="content__item">
+{% block content %}
 
   <div class="errors">
     <div class="errors__inner">
-      <div class="errors__item">
-        <p>{{ errors }}</p>
-      </div>
       {% for error in form.non_field_errors %}
         <div class="errors__item">
           <p>{{ error }}</p>
@@ -26,9 +21,9 @@
         </td>
         <td>
           <label class="textareaContainer textareaContainer--right8">
-            <input class="content__input" min="0" step="0.01" type="number" name="weight" autocomplete="off" id="id_weight" value={{ form.weight.value|unlocalize|default_if_none:"0" }}>
+            <input class="content__input" type="number" min="0" step="0.01" name="weight" id="id_weight" value={{ form.weight.value|unlocalize }}>
           </label>
-        </td>
+          </td>
       </tr>
       {% if form.weight.errors %}
       <tr>
@@ -45,12 +40,22 @@
           </div>
         </td>
       </tr>
+      </tr>
       {% endif %}
     </table>
-    <div class="content__item content__item--center">
-      <button class="button__std button__std--center">Сохранить</button>
-      <a class="button__std button__std--center" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
+    <div class="content__item content__item--btn-position">
+      <button class="button__std">
+        Сохранить
+      </button>
+      <a class="button__std"
+        {% if edit %}
+          href="{% url 'fishing:fishing_new_lure_mix_filling' fishing_id %}"
+        {% else %}
+          href="{% url 'fishing:fishing_new_lure_mix_filling_lure_select' fishing_id %}"
+        {% endif %}>
+        Назад
+      </a>
     </div>
   </form>
-</div>
+
 {% endblock %}

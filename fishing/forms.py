@@ -1,5 +1,5 @@
 from django.db.models import fields
-from .models import Aroma
+from .models import Aroma, FishingLureMix
 from .models import AromaBase
 # from .models import BottomMap
 from .models import Conditions
@@ -155,6 +155,50 @@ class AromaForm(forms.ModelForm):
         
         return super().clean()
 
+    def save_me(request, *args, **kwargs):
+        self_model = Aroma
+        self_form = AromaForm
+        try:
+            fishing = Fishing.objects.get(id=kwargs['fishing_id'])
+            fishing_lure_mix = FishingLureMix.objects.get(fishing=fishing)
+            lure_mix = fishing_lure_mix.lure_mix
+        except:
+            try:
+                lure_mix = LureMix.objects.get(id=kwargs['lure_mix_id'])
+            except:
+                form = self_form(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        if not lure_mix.editable():
+            form = self_form(request.POST)
+            form.add_error(None, 'Состав нельзя изменять')
+            return form
+        try:
+            model = self_model.objects.get(id=kwargs['aroma_id'])
+            if model.owner == request.user:
+                aroma_base = model.base
+                form = self_form(request.POST, instance=model)
+            else:
+                form = self_form(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        except:
+            aroma_base = AromaBase.objects.get(id=kwargs['aroma_base_id'])
+            form = self_form(request.POST)
+        if lure_mix.owner == aroma_base.owner:
+            if form.is_valid():
+                model = form.save(commit=False)
+                model.owner = request.user
+                model.mix = lure_mix
+                model.base = aroma_base
+                model.save()
+                return model.id
+        else:
+            form = self_form(request.POST)
+            form.add_error(None, 'Что-то пошло не так')
+        return form
+
+
 class AromaBaseForm(forms.ModelForm):
     class Meta:
         model = AromaBase
@@ -182,6 +226,31 @@ class AromaBaseForm(forms.ModelForm):
             else:
                 break
         return super().clean()
+    
+    def save_me(request, *args, **kwargs):
+        self_model = AromaBase
+        self_form = AromaBaseForm
+        kwargs_field = 'aroma_id'
+        try:
+            model = self_model.objects.get(id=kwargs[kwargs_field])
+            if model.owner == request.user:
+                form = self_form(request.POST, instance=model)
+            else:
+                form = self_form(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        except:
+            form = self_form(request.POST)
+        if form.is_valid():
+            model = form.save(commit=False)
+            model.owner = request.user
+            if model.unique():
+                model.first_upper()
+                model.save()
+                return model.id
+            else:
+                form.add_error(None, 'Такая арома уже добавлен')
+        return form
 
 
 # class BottomMapForm(forms.ModelForm):
@@ -503,6 +572,49 @@ class LureForm(forms.ModelForm):
         
         return super().clean()
 
+    def save_me(request, *args, **kwargs):
+        self_model = Lure
+        self_form = LureForm
+        try:
+            fishing = Fishing.objects.get(id=kwargs['fishing_id'])
+            fishing_lure_mix = FishingLureMix.objects.get(fishing=fishing)
+            lure_mix = fishing_lure_mix.lure_mix
+        except:
+            try:
+                lure_mix = LureMix.objects.get(id=kwargs['lure_mix_id'])
+            except:
+                form = self_form(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        if not lure_mix.editable():
+            form = self_form(request.POST)
+            form.add_error(None, 'Состав нельзя изменить')
+            return form
+        try:
+            model = self_model.objects.get(id=kwargs['lure_id'])
+            if model.owner == request.user:
+                lure_base = model.base
+                form = self_form(request.POST, instance=model)
+            else:
+                form = self_form(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        except:
+            lure_base = LureBase.objects.get(id=kwargs['lure_base_id'])
+            form = self_form(request.POST)
+        if lure_mix.owner == lure_base.owner:
+            if form.is_valid():
+                model = form.save(commit=False)
+                model.owner = request.user
+                model.mix = lure_mix
+                model.base = lure_base
+                model.save()
+                return model.id
+        else:
+            form = self_form(request.POST)
+            form.add_error(None, 'Что-то пошло не так')
+        return form
+
 
 class LureBaseForm(forms.ModelForm):
     class Meta:
@@ -577,6 +689,31 @@ class LureMixForm(forms.ModelForm):
             else:
                 break
         return super().clean()
+
+    def save_me(request, *args, **kwargs):
+        self_model = LureMix
+        self_form = LureMixForm
+        kwargs_field = 'lure_mix_id'
+        try:
+            model = self_model.objects.get(id=kwargs[kwargs_field])
+            if model.owner == request.user:
+                form = self_form(request.POST, instance=model)
+            else:
+                form = self_form(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        except:
+            form = self_form(request.POST)
+        if form.is_valid():
+            model = form.save(commit=False)
+            model.owner = request.user
+            if model.unique():
+                model.first_upper()
+                model.save()
+                return model.id
+            else:
+                form.add_error(None, 'Такая прикормочная смесь уже добавлена')
+        return form
 
 
 class MontageForm(forms.ModelForm):
@@ -767,6 +904,31 @@ class NozzleStateForm(forms.ModelForm):
             else:
                 break
         return super().clean()
+
+    def save_me(request, *args, **kwargs):
+        self_model = NozzleState
+        self_form = NozzleStateForm
+        kwargs_field = 'nozzle_state_id'
+        try:
+            model = self_model.objects.get(id=kwargs[kwargs_field])
+            if model.owner == request.user:
+                form = self_form(request.POST, instance=model)
+            else:
+                form = self_form(request.POST)
+                form.add_error(None, 'Что-то пошло не так')
+                return form
+        except:
+            form = self_form(request.POST)
+        if form.is_valid():
+            model = form.save(commit=False)
+            model.owner = request.user
+            if model.unique():
+                model.first_upper()
+                model.save()
+                return model.id
+            else:
+                form.add_error(None, 'Такое состояние уже добавлено')
+        return form
 
 
 class NozzleTypeForm(forms.ModelForm):

@@ -1,3 +1,4 @@
+from users.models import CustomUser
 from fishing_oracle.settings import DEFAULT_FROM_EMAIL, EMAIL_HOST, EMAIL_HOST_PASSWORD, EMAIL_HOST_USER, EMAIL_PORT, EMAIL_USE_TLS
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
@@ -30,15 +31,15 @@ class Settings(View):
     """
     Страница администратора
     """
-    template = 'fishing/settings.html'
+    template = 'fishing/settings/settings.html'
     @method_decorator(staff_member_required(login_url='login'))
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
-    def get(self, request, *args, **kwargs):
-        return render(request,
+    def get(self, *args, **kwargs):
+        return render(self.request,
                       self.template,
-                      {'fisherman': getuserinfo(request),
+                      {'fisherman': getuserinfo(self.request),
                        'siteinfo': siteinfo(),})
 
 
@@ -947,3 +948,31 @@ class EnvironmentVariables(View):
                       {'fisherman': getuserinfo(self.request),
                        'siteinfo': siteinfo(),
                        'environments': result})
+
+
+class UsersList(View):
+    """
+    Описание класса
+    """
+
+    template = 'fishing/settings/users.html'
+
+    @method_decorator(staff_member_required(login_url='login'))
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get(self, *args, **kwargs):
+        result = {'nick': [],
+                  'email': [],
+                  'date_joined':[]}
+        users = CustomUser.objects.all()
+        for user in users:
+            if not user.is_staff:
+                result['nick'].append(str(user.nick))
+                result['email'].append(str(user.email))
+                result['date_joined'].append(user.date_joined)
+        return render(self.request,
+                      self.template,
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'users': result})
