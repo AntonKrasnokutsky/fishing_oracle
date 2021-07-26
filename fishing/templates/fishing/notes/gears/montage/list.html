@@ -5,7 +5,6 @@
 {% if montage_list != None %}
 <!-- Монтажи -->
 {% if montage_list %}
-<div class="content__item">
   <table>
     {% for montage in montage_list %}
     <tr>
@@ -31,7 +30,7 @@
   </div>
   {% endif %}
   
-  <div class="content__item content__item--center">
+  <div class="content__item content__item--btn-position">
     <a class="button__std" href="{% url 'fishing:montage_add' %}">
       <img class="button__img" src="{% static 'images/add.png' %}" alt="">
       Добавить
@@ -40,7 +39,7 @@
       Назад
     </a>
   </div>
-</div>
+
 {% endif %}
 
 {% endblock %}
