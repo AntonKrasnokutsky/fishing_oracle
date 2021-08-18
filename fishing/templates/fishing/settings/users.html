@@ -8,12 +8,14 @@
       <th>Ник</th>
       <th>Почта</th>
       <th>Дата регистрации</th>
+      <th>Рыбалок</th>
     </header>
     {% for i in users|get_len %}
       <tr>
         <td>{{ users.nick|get_element:i }}</td>
         <td>{{ users.email|get_element:i }}</td>
         <td>{{ users.date_joined|get_element:i }}</td>
+        <td>{{ users.fishings|get_element:i }}</td>
       </tr>
     {% endfor %}
   </table>

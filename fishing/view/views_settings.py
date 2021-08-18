@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views import View
 
-from fishing.models import Priming
+from fishing.models import Fishing, Priming
 from fishing.models import Conditions
 from fishing.models import Overcast
 from fishing.models import Pace
@@ -964,13 +964,16 @@ class UsersList(View):
     def get(self, *args, **kwargs):
         result = {'nick': [],
                   'email': [],
-                  'date_joined':[]}
+                  'date_joined':[],
+                  'fishings': []}
         users = CustomUser.objects.all()
         for user in users:
             if not user.is_staff:
                 result['nick'].append(str(user.nick))
                 result['email'].append(str(user.email))
                 result['date_joined'].append(user.date_joined)
+                fishings = Fishing.objects.filter(owner=user)
+                result['fishings'].append(len(fishings))
         return render(self.request,
                       self.template,
                       {'fisherman': getuserinfo(self.request),
