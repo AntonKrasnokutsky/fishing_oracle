@@ -95,8 +95,16 @@
         </td>
       </tr>
     {% endif %}
+    <tr>
+      <td>{{ form.target.label_tag }}</td>
+      <td>
+        <label class="textareaContainer textareaContainer--right8">
+          <input class="content__input" type="checkbox" name="target" id="id_target" {% if form.target.value %} checked {% endif %}>
+        </label>
+      </td>
+    </tr>
   </table>
-  <div class="content__item content__item--center">
+  <div class="content__item content__item--btn-position">
     <button class="button__std">Сохранить</button>
     <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
   </div>

@@ -473,7 +473,7 @@ class FishingLureForm(forms.ModelForm):
 class FishingResultForm(forms.ModelForm):
     class Meta:
         model = FishingResult
-        fields = ['fish', 'number_of_fish', 'fish_weight', ]
+        fields = ['fish', 'number_of_fish', 'fish_weight', 'target', ]
     
     def clean(self):
         fish = self.cleaned_data.get('fish')

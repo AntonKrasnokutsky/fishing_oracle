@@ -192,12 +192,14 @@ class FishingDetails(View):
         if fishing.owner == request.user:
             try:
                 fishing_report_settings = FishingReportsSettings.objects.get(fishing_id=fishing.id)
+                fishing_report_settings = True
             except:
-                fishing_report_settings = None
+                fishing_report_settings = False
             return render(request,
                           self.template,
                           {'fisherman': getuserinfo(request),
                            'siteinfo': siteinfo(),
+                           'fishing_trophy': fishing.get_trophy(),
                            'fishing_report_settings': fishing_report_settings,
                            'fishing': fishing})
         else:
@@ -215,19 +217,9 @@ class FishingReportSetingsView(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
-    def generate_self_id(self, *args, **kwargs):
-        items = 1
-        result = ''
-        while (items < 51):
-            item = randint(48, 122)
-            if not ((item > 57 and item < 65) or (item > 90 and item < 97)):
-                result += chr(item)
-                items += 1
-        return result
-    
     def get_self_id(self, *args, **kwargs):
         while (True):
-            self_id = self.generate_self_id()
+            self_id = FishingReportsSettings.generate_self_id()
             try:
                 FishingReportsSettings.objects.get(self_id=self_id)
             except:
@@ -263,7 +255,7 @@ class FishingReportSetingsView(View):
                 fishing_report_settings = form.save(commit=False)
                 if not fishing_report_settings.fishing_id:
                     fishing_report_settings.fishing_id = fishing.id
-                    fishing_report_settings.self_id = self.get_self_id()
+                    fishing_report_settings.self_id = FishingReportsSettings.get_self_id()
                     fishing.report = request.build_absolute_uri(reverse('fishing:fishing_report', args=(fishing_report_settings.self_id, )))
                     fishing.save()
                 fishing_report_settings.save()
@@ -2076,7 +2068,8 @@ class FishingTrophyAdd(View):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
         if fishing.owner == request.user:
             form = FishingTrophyForm()
-            fishs = Fish.objects.all()
+            # fishs = Fish.objects.all()
+            fishs = fishing.get_fish_for_trophy()
             return render(request,
                           self.template,
                           {'fisherman': getuserinfo(request),

@@ -1,9 +1,10 @@
 {% extends 'fishing/base.html' %}
 {% load static %}
 {% load verbose_names %}
-
+{% load len_element %}
+{% load element_by_key %}
 {% block content %}
-<div class="content__inner">
+
 <table>
   <tr>
     <td colspan="2">
@@ -447,7 +448,11 @@
     <p><strong>Улов:</strong><a href="{% url 'fishing:fishing_result_add' fishing.id %}"><img class="button__img" src="{% static 'images/add.png' %}" alt="Add"></a></p>
     {% for fishing_result in fishing.fishingresult_set.all %}
     <p>
-        {{ forloop.counter }}. {{ fishing_result.fish }}:
+        {{ forloop.counter }}. 
+        {% if fishing_result.target %}
+          <img class="content__img" src="{% static 'images/target.png' %}" alt="Целевая" title="Целевая рыба">
+        {% endif %}
+        {{ fishing_result.fish }}:
         {{ fishing_result.number_of_fish }} шт.
         {% if fishing_result.fish_weight %}
         общим весом:
@@ -460,13 +465,15 @@
     
     
     <p><strong>Трофеи:</strong><a href="{% url 'fishing:fish_trophy_add' fishing.id %}"><img class="button__img" src="{% static 'images/add.png' %}" alt="Add"></a></p>
-    {% for fish_trophy in fishing.fishingtrophy_set.all %}
-    <p>
-        {{ forloop.counter }}. {{ fish_trophy.fish }}: вес трофея
-        {{fish_trophy.fish_trophy_weight}} кг.
-        <a href="{% url 'fishing:fish_trophy_edit' fishing.id fish_trophy.id %}"><img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit"></a>
-        <a href="{% url 'fishing:fish_trophy_delete' fishing.id fish_trophy.id %}"><img class="button__img" src="{% static 'images/delete.png' %}" alt="Delete"></a>
-    </p>
+    {% for key_element in fishing_trophy|get_len %}
+      <p>
+        {{ forloop.counter }}.
+        {% if fishing_trophy.target|get_element:key_element %}
+          <img class="content__img" src="{% static 'images/target.png' %}" alt="Целевая" title="Целевая рыба">
+        {% endif %}
+        {{fishing_trophy.fish|get_element:key_element}}: вес трофея
+        {{fishing_trophy.weight|get_element:key_element}} кг.
+      </p>
     {% endfor %}
 
     <div class="content__item-text">
@@ -506,5 +513,4 @@
     <div class="content__item content__item--btn-position">
       <a class="button__std" href="{% url 'fishing:fishing' %}">Назад</a>
     </div>
-  </div>
 {% endblock %}

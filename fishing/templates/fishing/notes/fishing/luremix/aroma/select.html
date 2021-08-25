@@ -2,48 +2,46 @@
 {% load static %}
 {% block content %}
 
-<div class="content__inner">
-  {% if aroma_base_list %}
-  <!-- Аромы для смеси -->
-  <div>
-    <table>
-        {% for aroma_base in aroma_base_list %}
-        <tr>
-          <td>
-            {{aroma_base}}
-          </td>
-          <td>
-            <a href="{% url 'fishing:fishing_new_lure_mix_filling_aroma_volume' fishing_id aroma_base.id %}">
-              <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
-            </a>
-          </td>
-        </tr>
-      {% endfor %}
-    </table>
+
+{% if aroma_base_list %}
+<!-- Аромы для смеси -->
+  <table>
+      {% for aroma_base in aroma_base_list %}
+      <tr>
+        <td>
+          {{aroma_base}}
+        </td>
+        <td>
+          <a href="{% url 'fishing:fishing_new_lure_mix_filling_aroma_volume' fishing_id aroma_base.id %}">
+            <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+{% else %}
+  {% if aroma_base_entery %}
+    <tr>
+      <div class="content__item-text content__item-text--center">
+        <p>Все аромы использованны в данной смеси</p>
+      </div>
+    </tr>
   {% else %}
-    {% if aroma_base_entery %}
-      <tr>
-        <div class="content__item-text content__item-text--center">
-          <p>Все аромы использованны в данной смеси</p>
-        </div>
-      </tr>
-    {% else %}
-      <tr>
-        <div class="content__item-text content__item-text--center">
-          <p>Аромы ещё не добавлены</p>
-        </div>
-      </tr>
-    {% endif %}
+    <tr>
+      <div class="content__item-text content__item-text--center">
+        <p>Аромы ещё не добавлены</p>
+      </div>
+    </tr>
   {% endif %}
-    <div class="content__item content__item--btn-position">
-      <a class="button__std" href="{% url 'fishing:fishing_new_lure_mix_filling_aroma_new' fishing_id %}">
-        <img class="button__img" src="{% static 'images/add.png' %}" alt="Добавить">
-        Арома
-      </a>
-      <a class="button__std" href="{% url 'fishing:fishing_new_lure_mix_filling' fishing_id %}">
-        Назад
-      </a>
-    </div>
-  </div>
+{% endif %}
+<div class="content__item content__item--btn-position">
+  <a class="button__std" href="{% url 'fishing:fishing_new_lure_mix_filling_aroma_new' fishing_id %}">
+    <img class="button__img" src="{% static 'images/add.png' %}" alt="Добавить">
+    Арома
+  </a>
+  <a class="button__std" href="{% url 'fishing:fishing_new_lure_mix_filling' fishing_id %}">
+    Назад
+  </a>
 </div>
+
 {% endblock %}

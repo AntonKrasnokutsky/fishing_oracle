@@ -217,7 +217,6 @@
                 border-bottom: none;
             }
         }
-
     }
     &__grid-3-column{
         display: grid;
@@ -328,7 +327,6 @@
     &__text--weight{
         width: 100%;
         max-width: 140px;
-
     }
     &__form{
         width: inherit;
@@ -392,6 +390,12 @@
         max-width: 280px;
         width: 30%;
         vertical-align: middle;
+    }
+    &__img{
+        background-color: transparent;
+        border: none;
+        height: 16px;
+        margin-bottom: -3px;
     }
 }
 

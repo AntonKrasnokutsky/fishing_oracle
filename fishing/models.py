@@ -1,3 +1,4 @@
+from random import randint
 from django.db import models, reset_queries
 from django.core.validators import MinValueValidator
 from django.core.validators import MaxValueValidator
@@ -393,12 +394,12 @@ class Fishing(models.Model):  # Рыбалки
                 break
         return True
 
-    def get_trophys(request):
+    def get_trophys_report(user):
         result = {}
         result['fish'] = []
         result['weight'] = []
         result['fishing'] = []
-        fishings = Fishing.objects.filter(owner=request.user)
+        fishings = Fishing.objects.filter(owner=user)
         for fishing in fishings:
             try:
                 fishing_trophys = FishingTrophy.objects.filter(fishing=fishing)
@@ -423,6 +424,29 @@ class Fishing(models.Model):  # Рыбалки
         except:
             return False
         return fishing_lure_mix.lure_mix
+
+    def get_fish_for_trophy(self, *args, **kwargs):
+        result = []
+        fishing_results = FishingResult.objects.filter(fishing=self)
+        for fishing_result in fishing_results:
+            result.append(fishing_result.fish)
+        return result
+    
+    def get_trophy(self, *args, **kwargs):
+        result = {'fish': [],
+                  'weight': [],
+                  'target': []}
+        fishing_trophys = FishingTrophy.objects.filter(fishing=self)
+        fishing_results = FishingResult.objects.filter(fishing=self)
+        for fishing_trophy in fishing_trophys:
+            fish = fishing_trophy.fish
+            result['fish'].append(str(fish))
+            result['weight'].append(str(fishing_trophy.fish_trophy_weight))
+            for fishing_result in fishing_results:
+                if fishing_result.fish == fish:
+                    result['target'].append(fishing_result.target)
+                    break
+        return result
 
 
 class FishingReportsSettings(models.Model):
@@ -468,6 +492,25 @@ class FishingReportsSettings(models.Model):
     note = models.BooleanField(default=True,
                                verbose_name='Заметки')
 
+    def generate_self_id(*args, **kwargs):
+        items = 1
+        result = ''
+        while (items < 51):
+            item = randint(48, 122)
+            if not ((item > 57 and item < 65) or (item > 90 and item < 97)):
+                result += chr(item)
+                items += 1
+        return result
+    
+    def get_self_id(*args, **kwargs):
+        while (True):
+            self_id = FishingReportsSettings.generate_self_id()
+            try:
+                FishingReportsSettings.objects.get(self_id=self_id)
+            except:
+                break
+        return self_id
+    
     def report_place(self, *args, **kwargs):
         try:
             fishing_place = FishingPlace.objects.get(fishing=kwargs['fishing'])
@@ -689,24 +732,34 @@ class FishingReportsSettings(models.Model):
         try:
             fishing_results = FishingResult.objects.filter(fishing=kwargs['fishing'])
             report = kwargs['report']
-            report['fishs'] = []
+            report['fishs'] = {'fish': [],
+                               'target': []}
         except:
             fishing_results = False
         if fishing_results:
             for fishing_result in fishing_results:
-                report['fishs'].append(fishing_result.__str__())
+                report['fishs']['fish'].append(fishing_result.__str__())
+                if fishing_result.target:
+                    report['fishs']['target'].append(True)
+                report['fishs']['target'].append(False)
         del(fishing_results)
     
     def report_trophys(self, *agrs, **kwargs):
         try:
+            fishing_results = FishingResult.objects.filter(fishing=kwargs['fishing'])
             fishing_trophys = FishingTrophy.objects.filter(fishing=kwargs['fishing'])
             report = kwargs['report']
-            report['trophys'] = []
+            report['trophys'] = {'fish': [],
+                                 'target': []}
         except:
             fishing_trophys = False
         if fishing_trophys:
             for fishing_trophy in fishing_trophys:
-                report['trophys'].append(fishing_trophy.__str__())
+                report['trophys']['fish'].append(fishing_trophy.__str__())
+                for fishing_result in fishing_results:
+                    if fishing_result.fish == fishing_trophy.fish:
+                        report['trophys']['target'].append(fishing_result.target)
+                        break
         del(fishing_trophys)
     
     def report(self, *args, **kwargs):
@@ -739,7 +792,7 @@ class FishingReportsSettings(models.Model):
             report['note'] = str(fishing.note)
         return report
 
-    def get_trophy(request):
+    def get_trophy_report(request):
         def combine_result(*args, **kwargs):
             if pre_result['fish'] in result['fish']:
                 pos = result['fish'].index(pre_result['fish'])
@@ -1098,7 +1151,10 @@ class FishingResult(models.Model):  # Результат рыбалки
                                       blank=True,
                                       null=True,
                                       verbose_name="Вес улова, кг.")
-
+    # Целевая рыба
+    target = models.BooleanField(default=False,
+                                 verbose_name='Это целевая рыба')
+    
     def __str__(self):
         return (str(self.fish) + ': ' + ((str(self.number_of_fish) + 'шт. ') if self.number_of_fish else '') +
                 ((str(self.fish_weight) + 'кг.') if self.fish_weight else ''))
@@ -1157,7 +1213,7 @@ class FishingTrophy(models.Model):  # Трофей рыбалки
     #fish_trophy_photo=models.ImageField(verbose_name="Фото трофея")
 
     def __str__(self):
-        return 'Трофей: ' + str(self.fish) + ' ' + str(self.fish_trophy_weight) + 'кг.'
+        return str(self.fish) + ' ' + str(self.fish_trophy_weight) + 'кг.'
 
 
 class FishingTrough(models.Model):  # Кормушки использованные в рыбалке
@@ -1559,8 +1615,6 @@ class Nozzle(models.Model):  # Добавки в прикормочную сме
         nozzle.state = nozzle_state
         nozzle.save()
         return True
-        
-
 
 
 class NozzleBase(models.Model):  # Насдаки и наживки

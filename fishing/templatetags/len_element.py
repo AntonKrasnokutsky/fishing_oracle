@@ -3,6 +3,7 @@ register = template.Library()
 
 @register.filter
 def get_len(element):
+    print(element)
     for i in element:
         len_element = (len(element[i]))
         break

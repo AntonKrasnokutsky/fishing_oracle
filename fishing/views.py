@@ -83,8 +83,8 @@ class TrophtReport(View):
         trophys = {}
         # Трофеи пользователя
         if self.request.user.is_authenticated:
-            trophys['fisherman'] = Fishing.get_trophys(self.request)
-        trophys['reports'] = FishingReportsSettings.get_trophy(request=self.request)
+            trophys['fisherman'] = Fishing.get_trophys_report(self.request.user)
+        trophys['reports'] = FishingReportsSettings.get_trophy_report(request=self.request)
         return render(self.request,
                       self.template,
                       {'fisherman': getuserinfo(self.request),
