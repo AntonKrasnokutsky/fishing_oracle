@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 
-<div class="content__inner">
+
   {% if nozzle_list %}
   <table>
     {% for nozzle in nozzle_list %}
@@ -11,7 +11,7 @@
         {{nozzle}}
       </td>
       <td>
-        <a href="{% url 'fishing:fishing_nozzle_add' fishing.id fishing_tackle.id nozzle.id fishing_nozzle.id %}">
+        <a href="{% url 'fishing:fishing_nozzle_add' fishing_id fishing_tackle_id nozzle_position nozzle.id %}">
           <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
         </a>
       </td>
@@ -24,16 +24,15 @@
     </div>
   {% endif %}
   <div class="content__item content__item--btn-position">
-    <a class="button__std" href="{% url 'fishing:fishing_new_bait_add' fishing.id fishing_tackle.id fishing_nozzle.id %}">
+    <a class="button__std" href="{% url 'fishing:fishing_new_bait_add' fishing_id fishing_tackle_id nozzle_position %}">
       <img class="button__img" src="{% static 'images/add.png' %}" alt="">
       Наживка
     </a>
-    <a class="button__std" href="{% url 'fishing:fishing_new_nozzle_add' fishing.id fishing_tackle.id fishing_nozzle.id %}">
+    <a class="button__std" href="{% url 'fishing:fishing_new_nozzle_add' fishing_id fishing_tackle_id nozzle_position %}">
       <img class="button__img" src="{% static 'images/add.png' %}" alt="">
       Насадка
     </a>
-    <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
+    <a class="button__std" href="{% url 'fishing:fishing_details' fishing_id %}">Назад</a>
   </div>
-</div>
 
 {% endblock %}

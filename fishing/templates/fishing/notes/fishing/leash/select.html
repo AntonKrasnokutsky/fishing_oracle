@@ -2,36 +2,35 @@
 {% load static %}
 {% block content %}
 
-<div class="content__inner">
-  {% if leash_list %}
-    <table>
-      {% for leash in leash_list %}
-      <tr>
-        <td>
-          {{leash}}
-        </td>
-        <td>
-          <a href="{% url 'fishing:fishing_leash_add' fishing.id fishing_tackle.id leash.id fishing_leash.id %}">
-            <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
-          </a>
-        </td>
-      </tr>
-      {% endfor %}
-    </table>
-  {% else %}
-    <div class="content__text content__text--center">
-      <p>Поводков еще не добавлено</p>
-    </div>
-  {% endif %}
-  <div class="content__item content__item--btn-position">
-    <a class="button__std" href="{% url 'fishing:fishing_new_leash_add' fishing.id fishing_tackle.id fishing_leash.id %}">
-      <img class="button__img" src="{% static 'images/add.png' %}" alt="">
-      Поводок
-    </a>
-    <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">
-      Назад
-    </a>
+
+{% if leash_list %}
+  <table>
+    {% for leash in leash_list %}
+    <tr>
+      <td>
+        {{leash}}
+      </td>
+      <td>
+        <a href="{% url 'fishing:fishing_leash_add' fishing_id fishing_tackle_id leash.id %}">
+          <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+{% else %}
+  <div class="content__text content__text--center">
+    <p>Поводков еще не добавлено</p>
   </div>
+{% endif %}
+<div class="content__item content__item--btn-position">
+  <a class="button__std" href="{% url 'fishing:fishing_new_leash_add' fishing_id fishing_tackle_id %}">
+    <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+    Поводок
+  </a>
+  <a class="button__std" href="{% url 'fishing:fishing_details' fishing_id %}">
+    Назад
+  </a>
 </div>
 
 {% endblock %}

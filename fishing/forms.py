@@ -1,5 +1,5 @@
 from django.db.models import fields
-from .models import Aroma, FishingLureMix
+from .models import Aroma, FishingLureMix, FishingNozzle
 from .models import AromaBase
 # from .models import BottomMap
 from .models import Conditions
@@ -436,6 +436,21 @@ class FishingNoteForm(forms.ModelForm):
         model = Fishing
         fields = ['note']
 
+
+class FishingNozzleForm(forms.ModelForm):
+    class Meta:
+        model = FishingNozzle
+        fields = ['nozzle_state', 'number', ]
+
+    def clean(self):
+        super().clean()
+        nozzle_state = self.cleaned_data.get('nozzle_state')
+        number = self.cleaned_data.get('number')
+        if nozzle_state == None:
+            self.add_error('nozzle_state', 'Выберите состояние')
+        if number == None or number < 1:
+            self.add_error('number', 'Количество должно быть хотя бы 1')
+        return super().clean()
 
 class FishingReportsSettingsForm(forms.ModelForm):
     class Meta:

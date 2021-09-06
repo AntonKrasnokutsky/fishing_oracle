@@ -5,9 +5,6 @@
 
 <div class="errors">
   <div class="errors__inner">
-    <div class="errors__item">
-      <p>{{ errors }}</p>
-    </div>
     {% for error in form.non_field_errors %}
       <div class="errors__item">
         <p>{{ error }}</p>
@@ -200,9 +197,11 @@
       </tr>
     {% endif %}
   </table>
-  <div class="content__item content__item--center">
+  <div class="content__item content__item--btn-position">
     <button class="button__std button__std--center">Сохранить</button>
-    <a class="button__std button__std--center" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
+    <a class="button__std button__std--center" href="{% url 'fishing:fishing_details' fishing_id %}">
+      Назад
+    </a>
   </div>
 </form>
 {% endblock %}

@@ -10,7 +10,7 @@
       {{pace}}
     </td>
     <td>
-      <a href="{% url 'fishing:fishing_pace_add' fishing.id fishing_tackle.id pace.id fishing_pace.id %}">
+      <a href="{% url 'fishing:fishing_pace_add' fishing_id fishing_tackle_id pace.id %}">
         <img class="button__img" src="{% static 'images/check.png' %}" alt="">
       </a>
     </td>
@@ -20,8 +20,8 @@
 {% else %}
 <p>Варианты темпа еще не добавлены</p>
 {% endif %}
-<div class="content__item content__item--center">
-  <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
+<div class="content__item content__item--btn-position">
+  <a class="button__std" href="{% url 'fishing:fishing_details' fishing_id %}">Назад</a>
 </div>
 
 {% endblock %}

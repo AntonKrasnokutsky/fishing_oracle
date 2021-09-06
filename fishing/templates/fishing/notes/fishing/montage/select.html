@@ -2,9 +2,8 @@
 {% block content %}
 {% load static %}
 
-<div class="content__inner">
-  {% if montage_list %}
-  <!-- Место рыбалки -->
+
+{% if montage_list %}
   <table>
     {% for montage in montage_list %}
     <tr>
@@ -12,26 +11,26 @@
         {{montage}}
       </td>
       <td>
-        <a href="{% url 'fishing:fishing_montage_add' fishing.id fishing_tackle.id montage.id fishing_montage.id %}">
+        <a href="{% url 'fishing:fishing_montage_add' fishing_id fishing_tackle_id montage.id %}">
           <img class="button__img" src="{% static 'images/check.png' %}" alt="Выбрать">
         </a>
       </td>
     </tr>
     {% endfor %}
   </table>
-  {% else %}
-    <div class="content__item">
-      <p>Монтажей еще не добавлено</p>
-    </div>
-  {% endif %}
-  <div class="content__item content__item--btn-position">
-    <a class="button__std" href="{% url 'fishing:fishing_new_montage_add' fishing.id fishing_tackle.id fishing_montage.id %}">
-      <img class="button__img" src="{% static 'images/add.png' %}" alt="">
-      Монтаж
-    </a>
-    <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">
-      Назад
-    </a>
+{% else %}
+  <div class="content__item">
+    <p>Монтажей еще не добавлено</p>
   </div>
+{% endif %}
+<div class="content__item content__item--btn-position">
+  <a class="button__std" href="{% url 'fishing:fishing_new_montage_add' fishing_id fishing_tackle_id %}">
+    <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+    Монтаж
+  </a>
+  <a class="button__std" href="{% url 'fishing:fishing_details' fishing_id %}">
+    Назад
+  </a>
 </div>
+
 {% endblock %}

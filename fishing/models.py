@@ -1,3 +1,4 @@
+from math import exp
 from random import randint
 from django.db import models, reset_queries
 from django.core.validators import MinValueValidator
@@ -360,9 +361,9 @@ class Fishing(models.Model):  # Рыбалки
                               verbose_name="Отчет по рыбалке")
 
     def date_to_str(self):
-        result = str(self.date)[8:10] + ' ' + months[int(str(self.date)[5:7])-1] + ' ' + str(self.date)[:4]
+        result = str(self.date)[8:10] + ' ' + months[int(str(self.date)[5:7])-1] + ' ' + str(self.date)[:4] + ' г.'
         return result
-    
+
     def __str__(self):
         fp = FishingPlace.objects.filter(fishing=self)
         try:
@@ -381,7 +382,7 @@ class Fishing(models.Model):  # Рыбалки
             self.planned = True
         else:
             self.planned = False
-    
+
     def unique(self):
         fishing_list = Fishing.objects.filter(owner=self.owner)
         for fishing in fishing_list:
@@ -431,7 +432,7 @@ class Fishing(models.Model):  # Рыбалки
         for fishing_result in fishing_results:
             result.append(fishing_result.fish)
         return result
-    
+
     def get_trophy(self, *args, **kwargs):
         result = {'fish': [],
                   'weight': [],
@@ -446,6 +447,229 @@ class Fishing(models.Model):  # Рыбалки
                 if fishing_result.fish == fish:
                     result['target'].append(fishing_result.target)
                     break
+        return result
+
+    def __get_date_time(self, *args, **kwargs):
+        result = kwargs['result']
+        result['date_time'] = {}
+        result['date_time']['date'] = self.date_to_str()
+        result['date_time']['time_start'] = str(self.time_start)[:5]
+        result['date_time']['time_end'] = str(self.time_end)[:5]
+    
+    def __get_place(self, *args, **kwargs):
+        result = kwargs['result']
+        result['place'] = {}
+        try:
+            fishing_place = FishingPlace.objects.get(fishing=self)
+            result['place']['water'] = str(fishing_place.place.water)
+            result['place']['locality'] = None if len(fishing_place.place.locality)==0 else fishing_place.place.locality
+            result['place']['name'] = None if len(fishing_place.place.name) == 0 else fishing_place.place.name
+            result['place']['latitude'] = fishing_place.place.latitude
+            result['place']['longitude'] = fishing_place.place.longitude
+        except:
+            result['place'] = None
+
+    def __get_weather(self, *args, **kwargs):
+        result = kwargs['result']
+        result['weather'] = {}
+        try:
+            fishing_weather = FishingWeather.objects.get(fishing=self)
+            result['weather']['overcast'] = str(fishing_weather.weather.overcast) if fishing_weather.weather.overcast != None else fishing_weather.weather.overcast
+            result['weather']['conditions'] = str(fishing_weather.weather.conditions) if fishing_weather.weather.conditions != None else fishing_weather.weather.conditions
+            result['weather']['temperature'] = str(fishing_weather.weather.temperature) if fishing_weather.weather.temperature != None else fishing_weather.weather.temperature
+            result['weather']['pressure'] = str(fishing_weather.weather.pressure) if fishing_weather.weather.pressure != None else fishing_weather.weather.pressure
+            result['weather']['direction_wind'] = None if len(fishing_weather.weather.direction_wind) == 0 else fishing_weather.weather.direction_wind
+            result['weather']['wind_speed'] = str(fishing_weather.weather.wind_speed) if fishing_weather.weather.wind_speed != None else fishing_weather.weather.wind_speed
+            result['weather']['lunar_day'] = str(fishing_weather.weather.lunar_day) if fishing_weather.weather.lunar_day != None else fishing_weather.weather.lunar_day
+        except:
+            result['weather'] = None
+
+    def __get_tackles(self, *args, **kwargs):
+        result = kwargs['result']
+        result['tackles'] = []
+        fishing_tackles = FishingTackle.objects.filter(fishing=self)
+        if fishing_tackles:
+            for fishing_tackle in fishing_tackles:
+                result['tackles'].append({'tackle': {}})
+                result['tackles'][len(result['tackles'])-1]['tackle']['id'] = fishing_tackle.id
+                result['tackles'][len(result['tackles'])-1]['tackle']['manufacturer'] = None if  len(fishing_tackle.tackle.manufacturer) == 0 else fishing_tackle.tackle.manufacturer
+                result['tackles'][len(result['tackles'])-1]['tackle']['model_tackle'] = None if  len(fishing_tackle.tackle.model_tackle) == 0 else fishing_tackle.tackle.model_tackle
+                result['tackles'][len(result['tackles'])-1]['tackle']['length'] = (str(fishing_tackle.tackle.length) + " м.") if fishing_tackle.tackle.length else None
+                result['tackles'][len(result['tackles'])-1]['tackle']['casting_weight'] = (str(fishing_tackle.tackle.casting_weight) + " гр.") if fishing_tackle.tackle.casting_weight else None
+                try:
+                    fishing_montage = FishingMontage.objects.get(fishing_tackle=fishing_tackle)
+                    result['tackles'][len(result['tackles'])-1]['montage'] = {}
+                    result['tackles'][len(result['tackles'])-1]['montage']['name'] = None if len(fishing_montage.montage.name) == 0 else str(fishing_montage.montage)
+                except:
+                    result['tackles'][len(result['tackles'])-1]['montage'] = None
+                try:
+                    fishing_trough = FishingTrough.objects.get(fishing_tackle=fishing_tackle)
+                    result['tackles'][len(result['tackles'])-1]['trough'] = {}
+                    result['tackles'][len(result['tackles'])-1]['trough']['manufacturer'] = None if len(fishing_trough.trough.manufacturer) == 0 else fishing_trough.trough.manufacturer
+                    result['tackles'][len(result['tackles'])-1]['trough']['model_name'] = None if len(fishing_trough.trough.model_name) == 0 else fishing_trough.trough.model_name
+                    result['tackles'][len(result['tackles'])-1]['trough']['plastic'] = fishing_trough.trough.plastic
+                    result['tackles'][len(result['tackles'])-1]['trough']['lugs'] = fishing_trough.trough.lugs
+                    result['tackles'][len(result['tackles'])-1]['trough']['feed_capacity'] = str(fishing_trough.trough.feed_capacity) if fishing_trough.trough.feed_capacity else None
+                    result['tackles'][len(result['tackles'])-1]['trough']['weight'] = str(fishing_trough.trough.weight) if fishing_trough.trough.weight else None
+                except:
+                    result['tackles'][len(result['tackles'])-1]['trough'] = False
+                try:
+                    fishing_leash = FishingLeash.objects.get(fishing_tackle=fishing_tackle)
+                    result['tackles'][len(result['tackles'])-1]['leash'] = {}
+                    result['tackles'][len(result['tackles'])-1]['leash']['material'] = None if len(fishing_leash.leash.material) ==0 else str(fishing_leash.leash.material)
+                    result['tackles'][len(result['tackles'])-1]['leash']['diameter'] = str(fishing_leash.leash.diameter) + " мм."
+                    result['tackles'][len(result['tackles'])-1]['leash']['length'] = str(fishing_leash.leash.length) + " см."
+                except:
+                    result['tackles'][len(result['tackles'])-1]['leash'] = None
+                try:
+                    fishing_crochet = FishingCrochet.objects.get(fishing_tackle=fishing_tackle)
+                    result['tackles'][len(result['tackles'])-1]['crochet'] = {}
+                    result['tackles'][len(result['tackles'])-1]['crochet']['manufacturer'] = None if len(fishing_crochet.crochet.manufacturer) == 0 else fishing_crochet.crochet.manufacturer
+                    result['tackles'][len(result['tackles'])-1]['crochet']['model'] = None if len(fishing_crochet.crochet.model) == 0 else fishing_crochet.crochet.model
+                    result['tackles'][len(result['tackles'])-1]['crochet']['size'] = str(fishing_crochet.crochet.size)
+                except:
+                    result['tackles'][len(result['tackles'])-1]['crochet'] = None
+                fishing_nozzles = FishingNozzle.objects.filter(fishing_tackle=fishing_tackle)
+                if fishing_nozzles:
+                    result['tackles'][len(result['tackles'])-1]['nozzles'] = []
+                    for fishing_nozzle in fishing_nozzles:
+                        result['tackles'][len(result['tackles'])-1]['nozzles'].append({})
+                        result['tackles'][len(result['tackles'])-1]['nozzles'][len(result['tackles'][len(result['tackles'])-1]['nozzles'])-1]['position'] = str(int(fishing_nozzle.position))
+                        result['tackles'][len(result['tackles'])-1]['nozzles'][len(result['tackles'][len(result['tackles'])-1]['nozzles'])-1]['bait'] = fishing_nozzle.nozzle_base.bait
+                        result['tackles'][len(result['tackles'])-1]['nozzles'][len(result['tackles'][len(result['tackles'])-1]['nozzles'])-1]['manufacturer'] = None if len(fishing_nozzle.nozzle_base.manufacturer) == 0 else fishing_nozzle.nozzle_base.manufacturer
+                        result['tackles'][len(result['tackles'])-1]['nozzles'][len(result['tackles'][len(result['tackles'])-1]['nozzles'])-1]['name'] = None if len(fishing_nozzle.nozzle_base.name) == 0 else fishing_nozzle.nozzle_base.name
+                        result['tackles'][len(result['tackles'])-1]['nozzles'][len(result['tackles'][len(result['tackles'])-1]['nozzles'])-1]['size'] = str(fishing_nozzle.nozzle_base.size) if fishing_nozzle.nozzle_base.size else None
+                        result['tackles'][len(result['tackles'])-1]['nozzles'][len(result['tackles'][len(result['tackles'])-1]['nozzles'])-1]['ntype'] = fishing_nozzle.nozzle_base.ntype.name if fishing_nozzle.nozzle_base.ntype else None
+                        result['tackles'][len(result['tackles'])-1]['nozzles'][len(result['tackles'][len(result['tackles'])-1]['nozzles'])-1]['number'] = str(fishing_nozzle.number) + ' шт.'
+                        result['tackles'][len(result['tackles'])-1]['nozzles'][len(result['tackles'][len(result['tackles'])-1]['nozzles'])-1]['state'] = fishing_nozzle.nozzle_state.state if fishing_nozzle.nozzle_state else None
+                else:
+                    result['tackles'][len(result['tackles'])-1]['nozzles'] = None
+                try:
+                    fishing_pace = FishingPace.objects.get(fishing_tackle=fishing_tackle)
+                    result['tackles'][len(result['tackles'])-1]['pace'] = {}
+                    result['tackles'][len(result['tackles'])-1]['pace']['pace'] = fishing_pace.pace.interval
+                except:
+                    result['tackles'][len(result['tackles'])-1]['pace'] = None
+        else:
+            result['tackles'] = None
+    
+    def __get_lure(self, *args, **kwargs):
+        result = kwargs['result']
+        try:
+            fishing_lure = FishingLure.objects.get(fishing=self)
+            result['lure'] = {'lure': {}}
+            result['lure']['lure']['manufacturer'] = None if len(fishing_lure.lure_base.manufacturer) == 0 else fishing_lure.lure_base.manufacturer
+            result['lure']['lure']['name'] = None if len(fishing_lure.lure_base.name) == 0 else fishing_lure.lure_base.name
+            result['lure']['weight'] = str(fishing_lure.weight)
+        except:
+            result['lure'] = None
+
+    def __get_lure_mix(self, *args, **kwargs):
+        result = kwargs['result']
+        try:
+            fishing_lure_mix = FishingLureMix.objects.get(fishing=self)
+            result['lure_mix'] = {}
+            result['lure_mix']['name'] = fishing_lure_mix.lure_mix.name
+            result['lure_mix']['description'] = None if len(fishing_lure_mix.lure_mix.description) == 0 else fishing_lure_mix.lure_mix.description
+        except:
+            result['lure_mix'] = None
+            fishing_lure_mix = None
+            
+        if fishing_lure_mix:
+            lures = Lure.objects.filter(mix=fishing_lure_mix.lure_mix)
+            if lures:
+                # print(result['lure_mix'])
+                result['lure_mix']['lures'] = []
+                for lure in lures:
+                    result['lure_mix']['lures'].append({})
+                    result['lure_mix']['lures'][len(result['lure_mix']['lures'])-1]['lure'] = {}
+                    result['lure_mix']['lures'][len(result['lure_mix']['lures'])-1]['lure']['manufacturer'] = None if len(lure.base.manufacturer) == 0 else lure.base.manufacturer
+                    result['lure_mix']['lures'][len(result['lure_mix']['lures'])-1]['lure']['name'] = None if len(lure.base.name) == 0 else lure.base.name
+                    result['lure_mix']['lures'][len(result['lure_mix']['lures'])-1]['weight'] = str(lure.weight)
+            else:
+                result['lure_mix']['lures'] = None
+            aromas = Aroma.objects.filter(mix=fishing_lure_mix.lure_mix)
+            if aromas:
+                result['lure_mix']['aromas'] = []
+                for aroma in aromas:
+                    result['lure_mix']['aromas'].append({})
+                    result['lure_mix']['aromas'][len(result['lure_mix']['aromas'])-1]['aroma'] = {}
+                    result['lure_mix']['aromas'][len(result['lure_mix']['aromas'])-1]['aroma']['manufacturer'] = None if len(aroma.base.manufacturer) == 0 else aroma.base.manufacturer
+                    result['lure_mix']['aromas'][len(result['lure_mix']['aromas'])-1]['aroma']['name'] = None if len(aroma.base.name) == 0 else aroma.base.name
+                    result['lure_mix']['aromas'][len(result['lure_mix']['aromas'])-1]['volume'] = str(aroma.volume)
+            else:
+                result['lure_mix']['aromas'] = None
+            fillings = Nozzle.objects.filter(mix=fishing_lure_mix.lure_mix)
+            if fillings:
+                result['lure_mix']['filling'] = []
+                for filling in fillings:
+                    result['lure_mix']['filling'].append({})
+                    result['lure_mix']['filling'][len(result['lure_mix']['filling'])-1]['bait'] = filling.base.bait
+                    result['lure_mix']['filling'][len(result['lure_mix']['filling'])-1]['manufacturer'] = None if len(filling.base.manufacturer) == 0 else filling.base.manufacturer
+                    result['lure_mix']['filling'][len(result['lure_mix']['filling'])-1]['name'] = None if len(filling.base.name) == 0 else filling.base.name
+                    result['lure_mix']['filling'][len(result['lure_mix']['filling'])-1]['size'] = str(filling.base.size) if filling.base.size else None
+                    result['lure_mix']['filling'][len(result['lure_mix']['filling'])-1]['ntype'] = filling.base.ntype.name if filling.base.ntype else None
+                    result['lure_mix']['filling'][len(result['lure_mix']['filling'])-1]['state'] = filling.state.state if filling.state else None
+            else:
+                result['lure_mix']['filling'] = None
+    
+    def __get_results(self, *args, **kwargs):
+        result = kwargs['result']
+        fishing_results = FishingResult.objects.filter(fishing=self)
+        if fishing_results:
+            result['results'] = []
+            for fishing_result in fishing_results:
+                result['results'].append({})
+                result['results'][len(result['results'])-1]['id'] = fishing_result.id
+                result['results'][len(result['results'])-1]['fish'] = str(fishing_result.fish)
+                result['results'][len(result['results'])-1]['number_of_fish'] = str(fishing_result.number_of_fish) if fishing_result.number_of_fish else None
+                result['results'][len(result['results'])-1]['fish_weight'] = str(fishing_result.fish_weight) if fishing_result.fish_weight else None
+                result['results'][len(result['results'])-1]['target'] = fishing_result.target
+        else:
+            result['results'] = None
+    
+    def __get_trophys(self, *args, **kwargs):
+        result = kwargs['result']
+        fishing_trophys = FishingTrophy.objects.filter(fishing=self)
+        fishing_results = FishingResult.objects.filter(fishing=self)
+        if fishing_trophys:
+            result['trophys'] = []
+            for fishing_trophy in fishing_trophys:
+                fish = fishing_trophy.fish
+                result['trophys'].append({})
+                result['trophys'][len(result['trophys'])-1]['id'] = fishing_trophy.id
+                result['trophys'][len(result['trophys'])-1]['fish'] = str(fish)
+                result['trophys'][len(result['trophys'])-1]['weight'] = str(fishing_trophy.fish_trophy_weight)
+                for fishing_result in fishing_results:
+                    if fishing_result.fish == fish:
+                        result['trophys'][len(result['trophys'])-1]['target'] = fishing_result.target
+                        break
+        else:
+            result['trophys'] = None
+    
+    def __get_report(self, *args, **kwargs):
+        result = kwargs['result']
+        try:
+            FishingReportsSettings.objects.get(fishing_id=self.id)
+            result['report'] = {}
+            result['report']['url'] = self.report
+        except:
+            result['report'] = None
+        pass
+    
+    def get_details(self, *args, **kwargs):
+        result = {'id': self.id}
+        result['note'] = None if len(self.note) == 0 else self.note
+        result['planned'] = self.planned
+        self.__get_date_time(result=result)
+        self.__get_place(result=result)
+        self.__get_weather(result=result)
+        self.__get_tackles(result=result)
+        self.__get_lure(result=result)
+        self.__get_lure_mix(result=result)
+        self.__get_results(result=result)
+        self.__get_trophys(result=result)
+        self.__get_report(result=result)
         return result
 
 
@@ -1006,7 +1230,7 @@ class FishingNozzle(models.Model):  # Наживки\насадки исполь
     class Meta:
         verbose_name = 'Наживка использованная в рыбалке'
         verbose_name_plural = 'Наживки использованная в рыбалке'
-        ordering = ['id', ]
+        ordering = ['position', ]
     # Владелец записи
     owner = models.ForeignKey(
         CustomUser,
@@ -1022,10 +1246,97 @@ class FishingNozzle(models.Model):  # Наживки\насадки исполь
     nozzle_base = models.ForeignKey('NozzleBase',
                                     on_delete=models.PROTECT,
                                     verbose_name='Наживка')
+    number = models.PositiveSmallIntegerField(default=1,
+                                              verbose_name='Количество')
+    position = models.PositiveSmallIntegerField(default=0,
+                                                verbose_name='Порядок насадки')
     # Связь с состоянием наживки
-    # nozzle_state= models.ForeignKey('NozzleState',
-    #                            on_delete=models.PROTECT,
-    #                            verbose_name='Состояние наживки')
+    nozzle_state= models.ForeignKey('NozzleState',
+                                    blank=True,
+                                    null=True,
+                                    on_delete=models.PROTECT,
+                                    verbose_name='Состояние наживки')
+
+    def set_position(self, *args, **kwargs):
+        if self.position == 0:
+            self.position = len(FishingNozzle.objects.filter(fishing_tackle=self.fishing_tackle))+1
+    
+    def position_up(self, *args, **kwargs):
+        if self.position > 1:
+            self.position_reindexing()
+            fishing_nozzle = FishingNozzle.objects.get(fishing_tackle=self.fishing_tackle,
+                                                       position=self.position-1)
+            fishing_nozzle.position = self.position
+            fishing_nozzle.save()
+            self.position -= 1
+            self.save()
+        elif self.position == 0:
+            self.set_position()
+            self.save()
+    
+    def position_down(self, *args, **kwargs):
+        fishing_nozzles = FishingNozzle.objects.filter(fishing_tackle=self.fishing_tackle)
+        if self.position < len(fishing_nozzles):
+            self.position_reindexing()
+            fishing_nozzle = FishingNozzle.objects.get(fishing_tackle=self.fishing_tackle,
+                                                       position=self.position+1)
+            fishing_nozzle.position = self.position
+            fishing_nozzle.save()
+            self.position += 1
+            self.save()
+        elif self.position == 0:
+            self.set_position()
+            self.save()
+    
+    def position_reindexing(self, *args, **kwargs):
+        fishing_nozzles = FishingNozzle.objects.filter(fishing_tackle=self.fishing_tackle)
+        pre_result = []
+        for fishing_nozzle in fishing_nozzles:
+            pre_result.append(fishing_nozzle.position)
+        result = {}
+        position = 1
+        sought = 1
+        while len(pre_result) > 0:
+            try:
+                index = pre_result.index(sought)
+                result[pre_result[index]] = position
+                position += 1
+                sought += 1
+                pre_result.pop(index)
+            except ValueError:
+                sought += 1
+                
+        for position in result.keys():
+            fishing_nozzle = FishingNozzle.objects.get(fishing_tackle=self.fishing_tackle,
+                                                       position=position)
+            fishing_nozzle.position = result[position]
+            fishing_nozzle.save()
+
+    def get_nozzle_state_list(self, *args, **kwargs):
+        fishing_tackle = self.fishing_tackle
+        result = NozzleState.objects.filter(owner=self.owner)
+        fishing_nozzles = FishingNozzle.objects.filter(fishing_tackle=fishing_tackle)
+        if fishing_nozzles:
+            if self.position == 0:
+                if len(fishing_nozzles) > 0:
+                    fishing_nozzle_upper = FishingNozzle.objects.get(fishing_tackle=fishing_tackle,
+                                                                        position=len(fishing_nozzles))
+                    if fishing_nozzle_upper.nozzle_base == self.nozzle_base:
+                        result = result.exclude(state = fishing_nozzle_upper.nozzle_state.state)
+            else:
+                if len(fishing_nozzles) > 1:
+                    fishing_nozzle_upper = FishingNozzle.objects.get(fishing_tackle=fishing_tackle,
+                                                                        position=self.position-1)
+                    if fishing_nozzle_upper.nozzle_base == self.nozzle_base:
+                        result = result.exclude(state=fishing_nozzle_upper.nozzle_state.state)
+                if len(fishing_nozzles) > self.position:
+                    fishing_nozzle_down = FishingNozzle.objects.get(fishing_tackle=fishing_tackle,
+                                                                    position=self.position+1)
+                    if fishing_nozzle_down.nozzle_base == self.nozzle_base:
+                        result = result.exclude(state=fishing_nozzle_down.nozzle_state.state)
+        else:
+            return result
+        return result
 
 
 class FishingPace(models.Model):  # Темп рыбалки
@@ -1506,6 +1817,7 @@ class LureMix(models.Model):  # Смеси прикромов
             return False
         return True
 
+
 class Montage(models.Model):  # Монтажи
     """
     Содержит в себе варианты монтажей с вариантом выбора
@@ -1797,7 +2109,7 @@ class Pace(models.Model):  # Темп
     class Meta:
         verbose_name = "Темп"
         verbose_name_plural = "Темп"
-        ordering = ['interval', ]
+        ordering = ['id', ]
     # Темп
     interval = models.CharField(
         max_length=30,

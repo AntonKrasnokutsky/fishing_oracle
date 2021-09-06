@@ -1,3 +1,4 @@
+import fishing
 from django.shortcuts import get_object_or_404, resolve_url
 from django.shortcuts import redirect
 from django.shortcuts import render
@@ -36,7 +37,7 @@ from fishing.models import FishingLure
 from fishing.models import Fish
 from fishing.models import FishingReportsSettings
 
-from fishing.forms import AromaBaseForm, AromaForm, BaitBaseForm, CrochetForm, FishingForm, LeashForm, LureBaseForm, LureForm, LureMixForm, MontageForm, NozzleBaseForm, NozzleStateForm, PlaceFullForm, TackleForm, TroughForm, WaterForm
+from fishing.forms import AromaBaseForm, AromaForm, BaitBaseForm, CrochetForm, FishingForm, FishingNozzleForm, LeashForm, LureBaseForm, LureForm, LureMixForm, MontageForm, NozzleBaseForm, NozzleStateForm, PlaceFullForm, TackleForm, TroughForm, WaterForm
 from fishing.forms import WeatherForm
 from fishing.forms import FishingResultForm
 from fishing.forms import FishingTrophyForm
@@ -91,14 +92,18 @@ class FishingAdd(View):
                 fishing.save()
                 return redirect('fishing:fishing_details', fishing.id)
             else:
-                return render(request,
+                return render(self.request,
                               self.template,
-                              {'form': form,
+                              {'fisherman': getuserinfo(self.request),
+                               'siteinfo': siteinfo(),
+                               'form': form,
                                'errors': 'Рыбалка на эти дату и время уже добавлена'})
         else:
-            return render(request,
+            return render(self.request,
                           self.template,
-                          {'form': form})
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'form': form})
     
     def get(self, request, *args, **kwargs):
         fishing = Fishing()
@@ -107,9 +112,11 @@ class FishingAdd(View):
         fishing.time_start = time.strftime("%H:%M")
         fishing.time_end = time.strftime("%H:%M")
         form = FishingForm(instance=fishing)
-        return render(request,
+        return render(self.request,
                       self.template,
-                      {'form': form})
+                      {'fisherman': getuserinfo(self.request),
+                       'siteinfo': siteinfo(),
+                       'form': form})
 
 
 class FishingDelete(View):
@@ -140,10 +147,10 @@ class FishingEdit(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingEdit, self).dispatch(*args, **kwargs)
     
-    def post(self, request, *args, **kwargs):
+    def post(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == request.user:
-            form = FishingForm(request.POST, instance=fishing)
+        if fishing.owner == self.request.user:
+            form = FishingForm(self.request.POST, instance=fishing)
             if form.is_valid():
                 fishing = form.save(commit=False)
                 fishing.set_planned()
@@ -151,26 +158,32 @@ class FishingEdit(View):
                     fishing.save()
                     return redirect('fishing:fishing')
                 else:
-                    return render(request,
+                    return render(self.request,
                                 self.template,
-                                {'form': form,
+                                {'fisherman': getuserinfo(self.request),
+                                 'siteinfo': siteinfo(),
+                                 'form': form,
                                  'fishing': fishing,
-                                'errors': 'Рыбалка на эти дату и время уже добавлена'})
+                                 'errors': 'Рыбалка на эти дату и время уже добавлена'})
             else:
-                return render(request,
+                return render(self.request,
                             self.template,
-                            {'form': form,
+                            {'fisherman': getuserinfo(self.request),
+                             'siteinfo': siteinfo(),
+                             'form': form,
                              'fishing': fishing})
         else:
             return redirect('fishing:fishing')
     
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == request.user:
+        if fishing.owner == self.request.user:
             form = FishingForm(instance=fishing)
-            return render(request,
+            return render(self.request,
                         self.template,
-                        {'form': form,
+                        {'fisherman': getuserinfo(self.request),
+                         'siteinfo': siteinfo(),
+                         'form': form,
                          'fishing': fishing})
         else:
             return redirect('fishing:fishing')
@@ -201,7 +214,8 @@ class FishingDetails(View):
                            'siteinfo': siteinfo(),
                            'fishing_trophy': fishing.get_trophy(),
                            'fishing_report_settings': fishing_report_settings,
-                           'fishing': fishing})
+                           'fishing': fishing,
+                           'details': fishing.get_details()})
         else:
             return redirect('fishing:fishing')
 
@@ -301,13 +315,13 @@ class FishingPlaceSelect(View):
     
     def get(self, request, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        place_list = Place.objects.filter(owner=request.user)
-        if fishing.owner == request.user:
+        place_list = Place.objects.filter(owner=self.request.user)
+        if fishing.owner == self.request.user:
             return render(request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
-                           'fishing': fishing,
+                           'fishing_id': kwargs['fishing_id'],
                            'place_list': place_list})
         return redirect('fishing:fishing')
 
@@ -324,17 +338,114 @@ class FishingPlaceAdd(View):
     def get(self, request, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
         place = get_object_or_404(Place, pk=kwargs['place_id'])
-        if fishing.owner == request.user and place.owner == request.user:
+        if (fishing.owner and place.owner) == self.request.user:
             try:
                 fishing_place = FishingPlace.objects.get(fishing=fishing)
             except FishingPlace.DoesNotExist:
                 fishing_place = FishingPlace()
-                fishing_place.owner = request.user
+                fishing_place.owner = self.request.user
                 fishing_place.fishing = fishing
             fishing_place.place = place
             fishing_place.save()
             return redirect('fishing:fishing_details', fishing.id)
         return redirect('fishing:fishing')
+
+
+class FishingPlaceWaterSelect(View):
+    
+    template = 'fishing/notes/fishing/place/water/select.html'
+    
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def get(self, *args, **kwargs):
+        water_list = Water.objects.filter(owner=self.request.user)
+        return render(self.request,
+                self.template,
+                {'fisherman': getuserinfo(self.request),
+                 'siteinfo': siteinfo(),
+                 'fishing_id': kwargs['fishing_id'],
+                 'water_list': water_list})
+
+
+class FishingPlaceWaterAdd(View):
+    
+    template = 'fishing/notes/fishing/place/water/add.html'
+    @method_decorator(login_required)
+    def dispatch(self,*args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def post(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == self.request.user:
+            result = WaterForm.save_me(self.request)
+            if str(type(result)) == str(type(1)):
+                return redirect('fishing:fishing_place_water_place_add', kwargs['fishing_id'], result)
+            else:
+                watercategorys = WaterCategory.objects.all()
+                return render(self.request,
+                            self.template,
+                            {'fisherman': getuserinfo(self.request),
+                            'siteinfo': siteinfo(),
+                            'watercategorys': watercategorys,
+                            'fishing_id': kwargs['fishing_id'],
+                            'form': result})
+        return redirect('fishing:fishing_details', fishing.id)
+    
+    def get (self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == self.request.user:
+            form = WaterForm()
+            watercategorys = WaterCategory.objects.all()
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'watercategorys': watercategorys,
+                           'form': form})
+        return redirect('fishing:fishing_details', fishing.id)
+
+
+class FishingPlaceWaterPlaceAdd(View):
+    
+    template = 'fishing/notes/fishing/place/add.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+    
+    def post(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        water = get_object_or_404(Water, pk=kwargs['water_id'])
+        if fishing.owner == self.request.user and water.owner == self.request.user:
+            result = PlaceFullForm.save_me(self.request, water=water)
+            if str(type(result)) == str(type(1)):
+                return redirect('fishing:fishing_place_add', kwargs['fishing_id'], result)
+            else:
+                return render(self.request,
+                            self.template,
+                            {'fisherman': getuserinfo(self.request),
+                            'siteinfo': siteinfo(),
+                            'water_id': kwargs['water_id'],
+                            'fishing_id': kwargs['fishing_id'],
+                            'form': result})
+        return redirect('fishing:fishing_details', fishing.id)
+    
+    def get(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        water = get_object_or_404(Water, pk=kwargs['water_id'])
+        if fishing.owner == self.request.user and water.owner == self.request.user:
+            form = PlaceFullForm()
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'form': form,
+                           'water_id': kwargs['water_id'],
+                           'fishing_id': kwargs['fishing_id']})
+        return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
 
 class FishingPlaceDelete(View):
@@ -346,10 +457,13 @@ class FishingPlaceDelete(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingPlaceDelete, self).dispatch(*args, **kwargs)
     
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        fishing_place = get_object_or_404(FishingPlace, pk=kwargs['fishing_place_id'])
-        if fishing.owner == request.user and fishing_place.fishing == fishing:
+        if fishing.owner == self.request.user:
+            try:
+                fishing_place = FishingPlace.objects.get(fishing=fishing)
+            except:
+                return redirect('fishing:fishing')
             fishing_place.delete()
         return redirect('fishing:fishing_details', fishing.id)
 
@@ -360,10 +474,14 @@ class FishingWeatherDelete(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingWeatherDelete, self).dispatch(*args, **kwargs)
 
-    def get(self, request, *args, **kwargs):
-        fishing_weather = get_object_or_404(FishingWeather, pk=kwargs['fishing_weather_id'])
-        weather = Weather.objects.filter(id=fishing_weather.weather.id)
-        if fishing_weather.owner == request.user:
+    def get(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == self.request.user:
+            try:
+                fishing_weather = FishingWeather.objects.get(fishing=fishing)
+            except:
+                return redirect('fishing:fishing')
+            weather = fishing_weather.weather
             fishing_weather.delete()
             weather.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
@@ -380,92 +498,59 @@ class FishingWeatherAdd(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingWeatherAdd, self).dispatch(*args, **kwargs)
     
-    def post(self, request, *args, **kwargs):
-        form = WeatherForm(request.POST)
+    def post(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if form.is_valid():
-            weather = form.save(commit=False)
-            weather.date = fishing.date
-            weather.save()
-            fishing_weather = FishingWeather()
-            fishing_weather.owner = request.user
-            fishing_weather.fishing = fishing
-            fishing_weather.weather = weather
-            fishing_weather.save()
-            return redirect('fishing:fishing_details', fishing.id)
-        overcasts = Overcast.objects.all()
-        conditions = Conditions.objects.all()
-        return render(request,
-                      self.template,
-                      {'fisherman': getuserinfo(request),
-                       'siteinfo': siteinfo(),
-                       'overcasts': overcasts,
-                       'conditions': conditions,
-                       'form': form,
-                       'fishing': fishing})
-    
-    def get(self, request, *args, **kwargs):
-        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == request.user:
-            form = WeatherForm()
+        if fishing.owner == self.request.user:
+            try:
+                fishing_weather = FishingWeather.objects.get(fishing=fishing)
+                weather = fishing_weather.weather
+                form = WeatherForm(self.request.POST, instance=weather)
+                new_weather = False
+            except:
+                form = WeatherForm(self.request.POST)
+                new_weather = True
+            if form.is_valid():
+                weather = form.save(commit=False)
+                weather.date = fishing.date
+                weather.save()
+                if new_weather:
+                    fishing_weather = FishingWeather()
+                    fishing_weather.owner = self.request.user
+                    fishing_weather.fishing = fishing
+                    fishing_weather.weather = weather
+                    fishing_weather.save()
+                return redirect('fishing:fishing_details', fishing.id)
             overcasts = Overcast.objects.all()
             conditions = Conditions.objects.all()
-            return render(request,
-                          self.template,
-                          {'fisherman': getuserinfo(request),
-                           'siteinfo': siteinfo(),
-                           'overcasts': overcasts,
-                           'conditions': conditions,
-                           'form': form,
-                           'fishing': fishing})
+            return render(self.request,
+                        self.template,
+                        {'fisherman': getuserinfo(self.request),
+                        'siteinfo': siteinfo(),
+                        'overcasts': overcasts,
+                        'conditions': conditions,
+                        'form': form,
+                        'fishing_id': kwargs['fishing_id']})
         return redirect('fishing:fishing')
-
-
-class FishingWeatherEdit(View):
-    """
-    Редактирование информации о погоде на рыбалки (ручной ввод)
-    """
     
-    template = 'fishing/notes/fishing/edit_add_weather.html'
-    
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(FishingWeatherEdit, self).dispatch(*args, **kwargs)
-    
-    def post(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        fishing_weather = FishingWeather.objects.filter(fishing=fishing)
-        form = WeatherForm(request.POST, instance=fishing_weather[0].weather)
-        if form.is_valid():
-            weather = form.save(commit=False)
-            weather.save()
-            return redirect('fishing:fishing_details', fishing.id)
-        overcasts = Overcast.objects.all()
-        conditions = Conditions.objects.all()
-        return render(request,
-                      self.template,
-                      {'fisherman': getuserinfo(request),
-                       'siteinfo': siteinfo(),
-                       'overcasts': overcasts,
-                       'conditions': conditions,
-                       'form': form,
-                       'fishing': fishing})
-    
-    def get(self, request, *args, **kwargs):
-        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == request.user:
-            fishing_weather = FishingWeather.objects.filter(fishing=fishing)
-            form = WeatherForm(instance=fishing_weather[0].weather)
+        if fishing.owner == self.request.user:
+            try:
+                fishing_weather = FishingWeather.objects.get(fishing=fishing)
+                weather = fishing_weather.weather
+                form = WeatherForm(instance=weather)
+            except:
+                form = WeatherForm()
             overcasts = Overcast.objects.all()
             conditions = Conditions.objects.all()
-            return render(request,
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
                            'overcasts': overcasts,
                            'conditions': conditions,
                            'form': form,
-                           'fishing': fishing})
+                           'fishing_id': kwargs['fishing_id']})
         return redirect('fishing:fishing')
 
 
@@ -587,24 +672,18 @@ class FishingMontageSelect(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingMontageSelect, self).dispatch(*args, **kwargs)
     
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == request.user:
-            montage_list = Montage.objects.filter(owner=request.user)
-            fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
-            if kwargs['fishing_montage_id'] != 0:
-                fishing_montage = get_object_or_404(FishingMontage, pk=kwargs['fishing_montage_id'])
-            else:
-                fishing_montage = FishingMontage()
-                fishing_montage.id = 0
-            return render(request,
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing.owner and fishing_tackle.owner) == self.request.user:
+            montage_list = Montage.objects.filter(owner=self.request.user)
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
-                           'fishing': fishing,
-                           'fishing_tackle': fishing_tackle,
-                           'montage_list': montage_list,
-                           'fishing_montage': fishing_montage})
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'montage_list': montage_list})
         return redirect('fishing:fishing')
 
 
@@ -617,21 +696,20 @@ class FishingMontageAdd(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingMontageAdd, self).dispatch(*args, **kwargs)
     
-    def get(self, request, *args, **kwargs):
+    def get(self,  *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
         montage = get_object_or_404(Montage, pk=kwargs['montage_id'])
-        fishing_montage_id = kwargs['fishing_montage_id']
-        if fishing.owner == request.user and montage.owner == fishing.owner:
-            if fishing_montage_id != 0:
-                fishing_montage = get_object_or_404(FishingMontage, pk=kwargs['fishing_montage_id'])
-            else:
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing.owner and montage.owner and fishing_tackle.owner) == self.request.user:
+            try:
+                fishing_montage = get_object_or_404(FishingMontage, fishing_tackle=fishing_tackle)
+            except:
                 fishing_montage = FishingMontage()
-                fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
-                fishing_montage.owner = request.user
+                fishing_montage.owner = self.request.user
                 fishing_montage.fishing_tackle = fishing_tackle
             fishing_montage.montage = montage
             fishing_montage.save()
-            return redirect('fishing:fishing_details', fishing.id)
+            return redirect('fishing:fishing_details', kwargs['fishing_id'])
         return redirect('fishing:fishing')
 
 
@@ -646,7 +724,7 @@ class FishingNewMontageAdd(View):
     def post(self, *args, **kwargs):
         result = MontageForm.save_me(self.request)
         if str(type(result)) == str(type(1)):
-            return redirect('fishing:fishing_montage_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result, kwargs['fishing_montage_id'])
+            return redirect('fishing:fishing_montage_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result)
         else:
             return render(self.request,
                           self.template,
@@ -654,10 +732,7 @@ class FishingNewMontageAdd(View):
                            'siteinfo': siteinfo(),
                            'fishing_id': kwargs['fishing_id'],
                            'fishing_tackle_id': kwargs['fishing_tackle_id'],
-                           'fishing_montage_id': kwargs['fishing_montage_id'],
                            'form': result})
-        return render(self.request,
-                      self.template)
 
     def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
@@ -669,7 +744,6 @@ class FishingNewMontageAdd(View):
                            'siteinfo': siteinfo(),
                            'fishing_id': kwargs['fishing_id'],
                            'fishing_tackle_id': kwargs['fishing_tackle_id'],
-                           'fishing_montage_id': kwargs['fishing_montage_id'],
                            'form': form})
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -683,9 +757,15 @@ class FishingMontageDelete(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingMontageDelete, self).dispatch(*args, **kwargs)
     
-    def get(self, request, *args, **kwargs):
-        fishing_montage = get_object_or_404(FishingMontage, pk=kwargs['fishing_montage_id'])
-        if fishing_montage.owner == request.user:
+    def get(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        
+        if (fishing_tackle.fishing == fishing) and (fishing.owner and fishing_tackle.owner) == self.request.user:
+            try:
+                fishing_montage = FishingMontage.objects.get(fishing_tackle=fishing_tackle)
+            except:
+                return redirect('fishing:fishing')
             fishing_montage.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -701,24 +781,18 @@ class FishingTroughSelect(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingTroughSelect, self).dispatch(*args, **kwargs)
     
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == request.user:
-            trough_list = Trough.objects.filter(owner=request.user)
-            fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
-            if kwargs['fishing_trough_id'] != 0:
-                fishing_trough = get_object_or_404(FishingTrough, pk=kwargs['fishing_trough_id'])
-            else:
-                fishing_trough = FishingTrough()
-                fishing_trough.id = 0
-            return render(request,
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner and fishing_tackle.owner) == self.request.user:
+            trough_list = Trough.objects.filter(owner=self.request.user)
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
-                           'fishing': fishing,
-                           'fishing_tackle': fishing_tackle,
-                           'trough_list': trough_list,
-                           'fishing_trough': fishing_trough})
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'trough_list': trough_list})
         return redirect('fishing:fishing')
 
 
@@ -733,7 +807,7 @@ class FishingNewTroughAdd(View):
     def post(self, *args, **kwargs):
         result = TroughForm.save_me(self.request)
         if str(type(result)) == str(type(1)):
-            return redirect('fishing:fishing_trough_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result, kwargs['fishing_trough_id'])
+            return redirect('fishing:fishing_trough_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result)
         else:
             feedcapacitys = FeedCapacity.objects.all()
             return render(self.request,
@@ -742,13 +816,13 @@ class FishingNewTroughAdd(View):
                            'siteinfo': siteinfo(),
                            'fishing_id': kwargs['fishing_id'],
                            'fishing_tackle_id': kwargs['fishing_tackle_id'],
-                           'fishing_trough_id':kwargs['fishing_trough_id'],
                            'feedcapacitys': feedcapacitys,
                            'form': result})
 
     def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == self.request.user:
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner == self.request.user):
             feedcapacitys = FeedCapacity.objects.all()
             form = TroughForm()
             return render(self.request,
@@ -757,9 +831,9 @@ class FishingNewTroughAdd(View):
                            'siteinfo': siteinfo(),
                            'fishing_id': kwargs['fishing_id'],
                            'fishing_tackle_id': kwargs['fishing_tackle_id'],
-                           'fishing_trough_id':kwargs['fishing_trough_id'],
                            'feedcapacitys': feedcapacitys,
                            'form': form})
+        return redirect('fishing:fishing')
 
 
 class FishingTroughAdd(View):
@@ -774,18 +848,17 @@ class FishingTroughAdd(View):
     def get(self, request, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
         trough = get_object_or_404(Trough, pk=kwargs['trough_id'])
-        fishing_trough_id = kwargs['fishing_trough_id']
-        if fishing.owner == request.user and trough.owner == fishing.owner:
-            if fishing_trough_id != 0:
-                fishing_trough = get_object_or_404(FishingTrough, pk=kwargs['fishing_trough_id'])
-            else:
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner and trough.owner) == fishing.owner:
+            try:
+                fishing_trough = FishingTrough.objects.get(fishing_tackle=fishing_tackle)
+            except:
                 fishing_trough = FishingTrough()
-                fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
                 fishing_trough.owner = request.user
                 fishing_trough.fishing_tackle = fishing_tackle
             fishing_trough.trough = trough
             fishing_trough.save()
-            return redirect('fishing:fishing_details', fishing.id)
+            return redirect('fishing:fishing_details', kwargs['fishing_id'])
         return redirect('fishing:fishing')
 
 
@@ -799,8 +872,13 @@ class FishingTroughDelete(View):
         return super(FishingTroughDelete, self).dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
-        fishing_trough = get_object_or_404(FishingTrough, pk=kwargs['fishing_trough_id'])
-        if fishing_trough.owner == request.user:
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner == self.request.user):
+            try:
+                fishing_trough = FishingTrough.objects.get(fishing_tackle=fishing_tackle)
+            except:
+                return redirect('fishing:fishing')
             fishing_trough.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -818,22 +896,16 @@ class FishingLeashSelect(View):
     
     def get(self, request, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == request.user:
-            leash_list = Leash.objects.filter(owner=request.user)
-            fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
-            if kwargs['fishing_leash_id'] != 0:
-                fishing_leash = get_object_or_404(FishingLeash, pk=kwargs['fishing_leash_id'])
-            else:
-                fishing_leash = FishingLeash()
-                fishing_leash.id = 0
-            return render(request,
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner == self.request.user):
+            leash_list = Leash.objects.filter(owner=self.request.user)
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
-                           'fishing': fishing,
-                           'fishing_tackle': fishing_tackle,
-                           'leash_list': leash_list,
-                           'fishing_leash': fishing_leash})
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'leash_list': leash_list})
         return redirect('fishing:fishing')
 
 
@@ -848,7 +920,7 @@ class FishingNewLeashAdd(View):
     def post(self, *args, **kwargs):
         result = LeashForm.save_me(self.request)
         if str(type(result)) == str(type(1)):
-            return redirect('fishing:fishing_leash_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result, kwargs['fishing_leash_id'])
+            return redirect('fishing:fishing_leash_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result)
         else:
             return render(self.request,
                           self.template,
@@ -856,12 +928,12 @@ class FishingNewLeashAdd(View):
                            'siteinfo': siteinfo(),
                            'fishing_id': kwargs['fishing_id'],
                            'fishing_tackle_id': kwargs['fishing_tackle_id'],
-                           'fishing_leash_id':kwargs['fishing_leash_id'],
                            'form': result})
 
     def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == self.request.user:
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner == self.request.user):
             form = LeashForm()
             return render(self.request,
                           self.template,
@@ -869,7 +941,6 @@ class FishingNewLeashAdd(View):
                            'siteinfo': siteinfo(),
                            'fishing_id': kwargs['fishing_id'],
                            'fishing_tackle_id': kwargs['fishing_tackle_id'],
-                           'fishing_leash_id':kwargs['fishing_leash_id'],
                            'form': form})
 
 
@@ -882,21 +953,20 @@ class FishingLeashAdd(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingLeashAdd, self).dispatch(*args, **kwargs)
     
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
         leash = get_object_or_404(Leash, pk=kwargs['leash_id'])
-        fishing_leash_id = kwargs['fishing_leash_id']
-        if fishing.owner == request.user and leash.owner == fishing.owner:
-            if fishing_leash_id != 0:
-                fishing_leash = get_object_or_404(FishingLeash, pk=kwargs['fishing_leash_id'])
-            else:
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner and leash.owner) == self.request.user:
+            try:
+                fishing_leash = FishingLeash.objects.get(fishing_tackle=fishing_tackle)
+            except:
                 fishing_leash = FishingLeash()
-                fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
-                fishing_leash.owner = request.user
+                fishing_leash.owner = self.request.user
                 fishing_leash.fishing_tackle = fishing_tackle
             fishing_leash.leash = leash
             fishing_leash.save()
-            return redirect('fishing:fishing_details', fishing.id)
+            return redirect('fishing:fishing_details', kwargs['fishing_id'])
         return redirect('fishing:fishing')
 
 
@@ -910,8 +980,13 @@ class FishingLeashDelete(View):
         return super(FishingLeashDelete, self).dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
-        fishing_leash = get_object_or_404(FishingLeash, pk=kwargs['fishing_leash_id'])
-        if fishing_leash.owner == request.user:
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and fishing.owner == self.request.user:
+            try:
+                fishing_leash = FishingLeash.objects.get(fishing_tackle=fishing_tackle)
+            except:
+                return redirect('fishing:fishing')
             fishing_leash.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -927,24 +1002,18 @@ class FishingCrochetSelect(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingCrochetSelect, self).dispatch(*args, **kwargs)
     
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == request.user:
-            crochet_list = Crochet.objects.filter(owner=request.user)
-            fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
-            if kwargs['fishing_crochet_id'] != 0:
-                fishing_crochet = get_object_or_404(FishingCrochet, pk=kwargs['fishing_crochet_id'])
-            else:
-                fishing_crochet = FishingCrochet()
-                fishing_crochet.id = 0
-            return render(request,
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner == self.request.user):
+            crochet_list = Crochet.objects.filter(owner=self.request.user)
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
-                           'fishing': fishing,
-                           'fishing_tackle': fishing_tackle,
-                           'crochet_list': crochet_list,
-                           'fishing_crochet': fishing_crochet})
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'crochet_list': crochet_list})
         return redirect('fishing:fishing')
 
 
@@ -959,7 +1028,7 @@ class FishingNewCrochetAdd(View):
     def post(self, *args, **kwargs):
         result = CrochetForm.save_me(self.request)
         if str(type(result)) == str(type(1)):
-            return redirect('fishing:fishing_crochet_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result, kwargs['fishing_crochet_id'])
+            return redirect('fishing:fishing_crochet_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result)
         else:
             return render(self.request,
                           self.template,
@@ -967,12 +1036,12 @@ class FishingNewCrochetAdd(View):
                            'siteinfo': siteinfo(),
                            'fishing_id': kwargs['fishing_id'],
                            'fishing_tackle_id': kwargs['fishing_tackle_id'],
-                           'fishing_crochet_id':kwargs['fishing_crochet_id'],
                            'form': result})
 
     def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == self.request.user:
+        fisihng_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fisihng_tackle.fishing == fishing) and (fishing.owner == self.request.user):
             form = CrochetForm()
             return render(self.request,
                           self.template,
@@ -980,7 +1049,6 @@ class FishingNewCrochetAdd(View):
                            'siteinfo': siteinfo(),
                            'fishing_id': kwargs['fishing_id'],
                            'fishing_tackle_id': kwargs['fishing_tackle_id'],
-                           'fishing_crochet_id':kwargs['fishing_crochet_id'],
                            'form': form})
 
 
@@ -996,18 +1064,17 @@ class FishingCrochetAdd(View):
     def get(self, request, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
         crochet = get_object_or_404(Crochet, pk=kwargs['crochet_id'])
-        fishing_crochet_id = kwargs['fishing_crochet_id']
-        if fishing.owner == request.user and crochet.owner == fishing.owner:
-            if fishing_crochet_id != 0:
-                fishing_crochet = get_object_or_404(FishingCrochet, pk=kwargs['fishing_crochet_id'])
-            else:
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner and crochet.owner) == request.user and crochet.owner == fishing.owner:
+            try:
+                fishing_crochet = FishingCrochet.objects.get(fishing_tackle=fishing_tackle)
+            except:
                 fishing_crochet = FishingCrochet()
-                fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
                 fishing_crochet.owner = request.user
                 fishing_crochet.fishing_tackle = fishing_tackle
             fishing_crochet.crochet = crochet
             fishing_crochet.save()
-            return redirect('fishing:fishing_details', fishing.id)
+            return redirect('fishing:fishing_details', kwargs['fishing_id'])
         return redirect('fishing:fishing')
 
 
@@ -1021,8 +1088,13 @@ class FishingCrochetDelete(View):
         return super(FishingCrochetDelete, self).dispatch(*args, **kwargs)
     
     def get(self, request, *args, **kwargs):
-        fishing_crochet = get_object_or_404(FishingCrochet, pk=kwargs['fishing_crochet_id'])
-        if fishing_crochet.owner == request.user:
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner == self.request.user):
+            try:
+                fishing_crochet = FishingCrochet.objects.get(fishing_tackle=fishing_tackle)
+            except:
+                return redirect('fishing:fishing')
             fishing_crochet.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -1038,24 +1110,19 @@ class FishingNozzleSelect(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingNozzleSelect, self).dispatch(*args, **kwargs)
     
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == request.user:
-            nozzle_base_list = NozzleBase.objects.filter(owner=request.user)
-            fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
-            if kwargs['fishing_nozzle_id'] != 0:
-                fishing_nozzle = get_object_or_404(FishingNozzle, pk=kwargs['fishing_nozzle_id'])
-            else:
-                fishing_nozzle = FishingNozzle()
-                fishing_nozzle.id = 0
-            return render(request,
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and fishing.owner == self.request.user:
+            nozzle_base_list = NozzleBase.objects.filter(owner=self.request.user)
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
-                           'fishing': fishing,
-                           'fishing_tackle': fishing_tackle,
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
                            'nozzle_list': nozzle_base_list,
-                           'fishing_nozzle': fishing_nozzle})
+                           'nozzle_position': kwargs['nozzle_position']})
         return redirect('fishing:fishing')
 
 
@@ -1068,8 +1135,9 @@ class FishingNewNozzleAdd(View):
         return super().dispatch(*args, **kwargs)
 
     def post(self, *args, **kwargs):
+        
         result = NozzleBaseForm.save_me(self.request)
-        if str(type(result)) == str(type(1)):
+        if isinstance(result, int):
             return redirect('fishing:fishing_nozzle_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result, kwargs['fishing_nozzle_id'])
         else:
             nozzletypes = NozzleType.objects.all()
@@ -1079,13 +1147,14 @@ class FishingNewNozzleAdd(View):
                            'siteinfo': siteinfo(),
                            'fishing_id': kwargs['fishing_id'],
                            'fishing_tackle_id': kwargs['fishing_tackle_id'],
-                           'fishing_nozzle_id':kwargs['fishing_nozzle_id'],
+                           'nozzle_position':kwargs['nozzle_position'],
                            'nozzletypes': nozzletypes,
                            'form': result})
 
     def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == self.request.user:
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner == self.request.user):
             form = NozzleBaseForm()
             nozzletypes = NozzleType.objects.all()
             return render(self.request,
@@ -1094,7 +1163,7 @@ class FishingNewNozzleAdd(View):
                            'siteinfo': siteinfo(),
                            'fishing_id': kwargs['fishing_id'],
                            'fishing_tackle_id': kwargs['fishing_tackle_id'],
-                           'fishing_nozzle_id':kwargs['fishing_nozzle_id'],
+                           'nozzle_position':kwargs['nozzle_position'],
                            'nozzletypes': nozzletypes,
                            'form': form})
 
@@ -1109,7 +1178,7 @@ class FishingNewBaitAdd(View):
 
     def post(self, *args, **kwargs):
         result = BaitBaseForm.save_me(self.request)
-        if str(type(result)) == str(type(1)):
+        if isinstance(result, int):
             return redirect('fishing:fishing_nozzle_add', kwargs['fishing_id'], kwargs['fishing_tackle_id'], result, kwargs['fishing_nozzle_id'])
         else:
             return render(self.request,
@@ -1118,12 +1187,13 @@ class FishingNewBaitAdd(View):
                            'siteinfo': siteinfo(),
                            'fishing_id': kwargs['fishing_id'],
                            'fishing_tackle_id': kwargs['fishing_tackle_id'],
-                           'fishing_nozzle_id':kwargs['fishing_nozzle_id'],
+                           'nozzle_position':kwargs['nozzle_position'],
                            'form': result})
 
     def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == self.request.user:
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner == self.request.user):
             form = BaitBaseForm()
             return render(self.request,
                           self.template,
@@ -1131,34 +1201,81 @@ class FishingNewBaitAdd(View):
                            'siteinfo': siteinfo(),
                            'fishing_id': kwargs['fishing_id'],
                            'fishing_tackle_id': kwargs['fishing_tackle_id'],
-                           'fishing_nozzle_id':kwargs['fishing_nozzle_id'],
+                           'nozzle_position':kwargs['nozzle_position'],
                            'form': form})
 
 
 class FishingNozzleAdd(View):
     """
-    Добавляет выбраную наживку/насадку в рыбалку
+    Выбор состояния наживки и её количества и окончательное доавбление в снасти
     """
+
+    template = 'fishing/notes/fishing/nozzle/add.html'
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(FishingNozzleAdd, self).dispatch(*args, **kwargs)
-    
-    def get(self, request, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_id'])
-        fishing_nozzle_id = kwargs['fishing_nozzle_id']
-        if fishing.owner == request.user and nozzle_base.owner == fishing.owner:
-            if fishing_nozzle_id != 0:
-                fishing_nozzle = get_object_or_404(FishingNozzle, pk=kwargs['fishing_nozzle_id'])
-            else:
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner == self.request.user):
+            try:
+                fishing_nozzle = FishingNozzle.objects.get(fishing_tackle=fishing_tackle, position=kwargs['nozzle_position'])
+                form = FishingNozzleForm(self.request.POST, instance=fishing_nozzle)
+            except:
                 fishing_nozzle = FishingNozzle()
-                fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
-                fishing_nozzle.owner = request.user
+                form = FishingNozzleForm(self.request.POST)
+            if form.is_valid():
+                fishing_nozzle = form.save(commit=False)
+                fishing_nozzle.owner = self.request.user
                 fishing_nozzle.fishing_tackle = fishing_tackle
-            fishing_nozzle.nozzle_base = nozzle_base
-            fishing_nozzle.save()
-            return redirect('fishing:fishing_details', fishing.id)
+                fishing_nozzle.nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_id'])
+                fishing_nozzle.set_position()
+                fishing_nozzle.save()
+                return redirect('fishing:fishing_details', kwargs['fishing_id'])
+            else:
+                fishing_nozzle.owner = self.request.user
+                fishing_nozzle.fishing_tackle = fishing_tackle
+                fishing_nozzle.nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_id'])
+                nozzle_states = fishing_nozzle.get_nozzle_state_list()
+                return render(self.request,
+                              self.template,
+                              {'fisherman': getuserinfo(self.request),
+                               'siteinfo': siteinfo(),
+                               'fishing_id': kwargs['fishing_id'],
+                               'nozzle_position': kwargs['nozzle_position'],
+                               'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                               'nozzle_id': kwargs['nozzle_id'],
+                               'nozzle_states': nozzle_states,
+                               'form': form})
+        return redirect('fishing:fishing')
+
+    def get(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner == self.request.user):
+            try:
+                fishing_nozzle = FishingNozzle.objects.get(fishing_tackle=fishing_tackle, position=kwargs['nozzle_position'])
+                form = FishingNozzleForm(instance=fishing_nozzle)
+            except:
+                fishing_nozzle = FishingNozzle()
+                fishing_nozzle.owner = self.request.user
+                fishing_nozzle.fishing_tackle = fishing_tackle
+                fishing_nozzle.nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_id'])
+                form = FishingNozzleForm()
+            
+            nozzle_states = fishing_nozzle.get_nozzle_state_list()
+            return render(self.request,
+                          self.template,
+                          {'fisherman': getuserinfo(self.request),
+                           'siteinfo': siteinfo(),
+                           'fishing_id': kwargs['fishing_id'],
+                           'nozzle_position': kwargs['nozzle_position'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'nozzle_id': kwargs['nozzle_id'],
+                           'nozzle_states': nozzle_states,
+                           'form': form})
         return redirect('fishing:fishing')
 
 
@@ -1171,11 +1288,18 @@ class FishingNozzleDelete(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingNozzleDelete, self).dispatch(*args, **kwargs)
     
-    def get(self, request, *args, **kwargs):
-        fishing_nozzle = get_object_or_404(FishingNozzle, pk=kwargs['fishing_nozzle_id'])
-        if fishing_nozzle.owner == request.user:
+    def get(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner == self.request.user):
+            try:
+                fishing_nozzle = FishingNozzle.objects.get(fishing_tackle=fishing_tackle, position=kwargs['nozzle_position'])
+            except:
+                return redirect('fishing:fishing')
             fishing_nozzle.delete()
-        return redirect('fishing:fishing_details', kwargs['fishing_id'])
+            fishing_nozzle.position_reindexing()
+            return redirect('fishing:fishing_details', kwargs['fishing_id'])
+        return redirect('fishing:fishing')
 
 
 class FishingPaceSelect(View):
@@ -1191,22 +1315,16 @@ class FishingPaceSelect(View):
     
     def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == self.request.user:
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner == self.request.user):
             pace_list = Pace.objects.all
-            fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
-            if kwargs['fishing_pace_id'] != 0:
-                fishing_pace = get_object_or_404(FishingPace, pk=kwargs['fishing_pace_id'])
-            else:
-                fishing_pace = FishingPace()
-                fishing_pace.id = 0
             return render(self.request,
                           self.template,
                           {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
-                           'fishing': fishing,
-                           'fishing_tackle': fishing_tackle,
-                           'pace_list': pace_list,
-                           'fishing_pace': fishing_pace})
+                           'fishing_id': kwargs['fishing_id'],
+                           'fishing_tackle_id': kwargs['fishing_tackle_id'],
+                           'pace_list': pace_list})
         return redirect('fishing:fishing')
 
 
@@ -1219,21 +1337,20 @@ class FishingPaceAdd(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingPaceAdd, self).dispatch(*args, **kwargs)
     
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
         pace = get_object_or_404(Pace, pk=kwargs['pace_id'])
-        fishing_pace_id = kwargs['fishing_pace_id']
-        if fishing.owner == request.user:
-            if fishing_pace_id != 0:
-                fishing_pace = get_object_or_404(FishingPace, pk=kwargs['fishing_pace_id'])
-            else:
+        if (fishing_tackle.fishing == fishing) and  fishing.owner == self.request.user:
+            try:
+                fishing_pace = FishingPace.objects.get(fishing_tackle=fishing_tackle)
+            except:
                 fishing_pace = FishingPace()
-                fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
-                fishing_pace.owner = request.user
+                fishing_pace.owner = self.request.user
                 fishing_pace.fishing_tackle = fishing_tackle
             fishing_pace.pace = pace
             fishing_pace.save()
-            return redirect('fishing:fishing_details', fishing.id)
+            return redirect('fishing:fishing_details', kwargs['fishing_id'])
         return redirect('fishing:fishing')
 
 
@@ -1246,9 +1363,14 @@ class FishingPaceDelete(View):
     def dispatch(self, *args, **kwargs):
         return super(FishingPaceDelete, self).dispatch(*args, **kwargs)
     
-    def get(self, request, *args, **kwargs):
-        fishing_pace = get_object_or_404(FishingPace, pk=kwargs['fishing_pace_id'])
-        if fishing_pace.owner == request.user:
+    def get(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        fishing_tackle = get_object_or_404(FishingTackle, pk=kwargs['fishing_tackle_id'])
+        if (fishing_tackle.fishing == fishing) and (fishing.owner == self.request.user):
+            try:
+                fishing_pace = FishingPace.objects.get(fishing_tackle=fishing_tackle)
+            except:
+                return redirect('fishing:fishing')
             fishing_pace.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -1260,8 +1382,12 @@ class FishingLureDelete(View):
         return super().dispatch(*args, **kwargs)
     
     def get(self, request,*args, **kwargs):
-        fishing_lure = get_object_or_404(FishingLure, pk=kwargs['fishing_lure_id'])
-        if fishing_lure.owner == request.user:
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == request.user:
+            try:
+                fishing_lure = FishingLure.objects.get(fishing=fishing)
+            except:
+                return redirect('fishing:fishing')
             fishing_lure.delete()
         return redirect('fishing:fishing_details', kwargs['fishing_id'])
 
@@ -1285,7 +1411,7 @@ class FishingLureSelect(View):
                           self.template,
                           {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
-                           'fishing': fishing,
+                           'fishing_id': kwargs['fishing_id'],
                            'lure_base_list': lure_base_list})
         return redirect('fishing:fishing')
 
@@ -1330,48 +1456,48 @@ class FishingLureChangeWeight(View):
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
     
-    def get_fishing(self, *args, **kwargs):
-        return get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-    
-    def get(self, request, *args, **kwargs):
-        fishing = self.get_fishing(*args, **kwargs)
-        if fishing.owner == request.user:
-            if kwargs['fishing_lure_id'] != 0:
-                fishing_lure = get_object_or_404(FishingLure, pk=kwargs['fishing_lure_id'])
+    def get(self, *args, **kwargs):
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == self.request.user:
+            try:
+                fishing_lure = FishingLure.objects.get(fishing=fishing)
                 form = FishingLureForm(instance=fishing_lure)
-            else:
+            except:
                 form = FishingLureForm()
-            return render(request,
+            return render(self.request,
                           self.template,
-                          {'fisherman': getuserinfo(request),
+                          {'fisherman': getuserinfo(self.request),
                            'siteinfo': siteinfo(),
-                           'fishing': fishing,
+                           'fishing_id': kwargs['fishing_id'],
                            'form': form})
         return redirect('fishing:fishing')
     
     def post(self, request, *args, **kwargs):
-        fishing = self.get_fishing(*args, **kwargs)
-        if fishing.owner == request.user:
-            if kwargs['fishing_lure_id'] != 0:
-                fishing_lure = get_object_or_404(FishingLure, pk=kwargs['fishing_lure_id'])
-                form = FishingLureForm(request.POST, instance=fishing_lure)
-            else:
-                form = FishingLureForm(request.POST)
+        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
+        if fishing.owner == self.request.user:
+            try:
+                fishing_lure = FishingLure.objects.get(fishing=fishing)
+                form = FishingLureForm(self.request.POST, instance=fishing_lure)
+            except:
+                form = FishingLureForm(self.request.POST)
             if form.is_valid():
                 fishing_lure = form.save(commit=False)
-                fishing_lure.owner = request.user
+                fishing_lure.owner = self.request.user
                 fishing_lure.fishing = fishing
                 lure_base = get_object_or_404(LureBase, pk=kwargs['lure_base_id'])
-                fishing_lure.lure_base = lure_base
-                fishing_lure.save()
-                return redirect('fishing:fishing_details', fishing.id)
+                if lure_base.owner == self.request.user:
+                    fishing_lure.lure_base = lure_base
+                    fishing_lure.save()
+                    return redirect('fishing:fishing_details', fishing.id)
+                else:
+                    return redirect('fishing:fishing')
             else:
-                return render(request,
+                return render(self.request,
                               self.template,
-                              {'fisherman': getuserinfo(request),
+                              {'fisherman': getuserinfo(self.request),
                                'siteinfo': siteinfo(),
                                'form': form,
-                               'fishing': fishing})
+                               'fishing_id': kwargs['fishing_id']})
         return redirect('fishing:fishing')
 
 
@@ -2179,100 +2305,3 @@ class FishingNoteAddEdit(View):
                            'form': form,
                            'fishing': fishing})
         return redirect('fishing:fishing')
-
-
-class FishingPlaceWaterSelect(View):
-    
-    template = 'fishing/notes/fishing/place/water/select.html'
-    
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-    
-    def get(self, *args, **kwargs):
-        water_list = Water.objects.filter(owner=self.request.user)
-        return render(self.request,
-                self.template,
-                {'fisherman': getuserinfo(self.request),
-                 'siteinfo': siteinfo(),
-                 'fishing_id': kwargs['fishing_id'],
-                 'water_list': water_list})
-
-
-class FishingPlaceWaterAdd(View):
-    
-    template = 'fishing/notes/fishing/place/water/add.html'
-    @method_decorator(login_required)
-    def dispatch(self,*args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-    
-    def post(self, *args, **kwargs):
-        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == self.request.user:
-            result = WaterForm.save_me(self.request)
-            if str(type(result)) == str(type(1)):
-                return redirect('fishing:fishing_place_water_place_add', kwargs['fishing_id'], result)
-            else:
-                watercategorys = WaterCategory.objects.all()
-                return render(self.request,
-                            self.template,
-                            {'fisherman': getuserinfo(self.request),
-                            'siteinfo': siteinfo(),
-                            'watercategorys': watercategorys,
-                            'fishing_id': kwargs['fishing_id'],
-                            'form': result})
-        return redirect('fishing:fishing_details', fishing.id)
-    
-    def get (self, *args, **kwargs):
-        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        if fishing.owner == self.request.user:
-            form = WaterForm()
-            watercategorys = WaterCategory.objects.all()
-            return render(self.request,
-                          self.template,
-                          {'fisherman': getuserinfo(self.request),
-                           'siteinfo': siteinfo(),
-                           'fishing_id': kwargs['fishing_id'],
-                           'watercategorys': watercategorys,
-                           'form': form})
-        return redirect('fishing:fishing_details', fishing.id)
-
-
-class FishingPlaceWaterPlaceAdd(View):
-    
-    template = 'fishing/notes/fishing/place/add.html'
-
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-    
-    def post(self, *args, **kwargs):
-        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        water = get_object_or_404(Water, pk=kwargs['water_id'])
-        if fishing.owner == self.request.user and water.owner == self.request.user:
-            result = PlaceFullForm.save_me(self.request, water=water)
-            if str(type(result)) == str(type(1)):
-                return redirect('fishing:fishing_place_add', kwargs['fishing_id'], result)
-            else:
-                return render(self.request,
-                            self.template,
-                            {'fisherman': getuserinfo(self.request),
-                            'siteinfo': siteinfo(),
-                            'water_id': kwargs['water_id'],
-                            'fishing_id': kwargs['fishing_id'],
-                            'form': result})
-        return redirect('fishing:fishing_details', fishing.id)
-    
-    def get(self, *args, **kwargs):
-        fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
-        water = get_object_or_404(Water, pk=kwargs['water_id'])
-        if fishing.owner == self.request.user and water.owner == self.request.user:
-            form = PlaceFullForm()
-            return render(self.request,
-                          self.template,
-                          {'fisherman': getuserinfo(self.request),
-                           'siteinfo': siteinfo(),
-                           'form': form,
-                           'water_id': kwargs['water_id'],
-                           'fishing_id': kwargs['fishing_id']})
-        return redirect('fishing:fishing_details', kwargs['fishing_id'])

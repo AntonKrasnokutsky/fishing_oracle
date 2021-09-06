@@ -2,8 +2,8 @@
 {% load static %}
 {% block content %}
 
-<div class="content__inner">
-  {% if tackle_list %}
+
+{% if tackle_list %}
   <table>
     {% for tackle in tackle_list %}
     <tr>
@@ -18,17 +18,17 @@
     </tr>
     {% endfor %}
   </table>
-  {% else %}
+{% else %}
   <p>Снасти еще не добавлены</p>
-  {% endif %}
-  <div class="content__item content__item--center">
-    <a class="button__std" href="{% url 'fishing:fishing_new_tackle_add' fishing.id fishing_tackle.id %}">
-      <img class="button__img" src="{% static 'images/add.png' %}" alt="">
-      Снасть
-    </a>
-    <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">
-      Назад
-    </a>
-  </div>
+{% endif %}
+<div class="content__item content__item--center">
+  <a class="button__std" href="{% url 'fishing:fishing_new_tackle_add' fishing.id fishing_tackle.id %}">
+    <img class="button__img" src="{% static 'images/add.png' %}" alt="">
+    Снасть
+  </a>
+  <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">
+    Назад
+  </a>
 </div>
+
 {% endblock %}

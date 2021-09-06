@@ -12,7 +12,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(verbose_name='Электронная почта',
                               unique=True)
-    nick = models.CharField(max_length=50,
+    nick = models.CharField(max_length=14,
                             unique=True,
                             verbose_name='Ник')
     is_staff = models.BooleanField(default=False)

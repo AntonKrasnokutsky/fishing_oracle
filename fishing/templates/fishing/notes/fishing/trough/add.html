@@ -2,12 +2,9 @@
 {% load static %}
 {% block content %}
 
-<div class="content__inner">
+
   <div class="errors">
     <div class="errors__inner">
-      <div class="errors__item">
-        <p>{{ errors }}</p>
-      </div>
       {% for error in form.non_field_errors %}
         <div class="errors__item">
           <p>{{ error }}</p>
@@ -118,8 +115,8 @@
     </table>
     <div class="content__item content__item--btn-position">
       <button class="button__std">Сохранить</button>
-      <a class="button__std" href="{% url 'fishing:fishing_trough_select' fishing_id fishing_tackle_id fishing_trough_id %}">Назад</a>
+      <a class="button__std" href="{% url 'fishing:fishing_trough_select' fishing_id fishing_tackle_id %}">Назад</a>
     </div>
   </form>
-</div>
+
 {% endblock %}

@@ -11,3 +11,10 @@ def get_len(element):
     for i in range(len_element):
         result.append(i) 
     return result
+
+@register.filter
+def get_list_len(element):
+    result = []
+    for i in range(len(element)):
+        result.append(i)
+    return result
