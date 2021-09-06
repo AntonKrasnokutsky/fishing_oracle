@@ -205,7 +205,10 @@
           {% endif %}
           {% if report.tackles.nozzle %}
             <td>
-              {{report.tackles.nozzle|get_element:id_element}}
+              {% for nozzle in report.tackles.nozzle|get_element:id_element %}
+                <p>{{nozzle}}</p>
+              {% endfor %}
+              
             </td>
           {% endif %}
           {% if report.tackles.pace %}
@@ -312,9 +315,6 @@
               {% endif %}
               {{report.trophys.fish|get_element:id_element}}
             </p>
-          {% endfor %}
-          {% for trophy in report.trophys %}
-            <p>{{ trophy }}</p>
           {% endfor %}
         </td>
       {% endif %}

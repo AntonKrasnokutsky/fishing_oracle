@@ -321,6 +321,19 @@ class FishingDetailsTestCase(TestCase):
         self.assertEqual(fishing.get_details(), result)
 
 
+class FishingReportsSettingsTestCase(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        pass
+    
+    def setUp(self):
+        pass
+    
+    def test_report(self):
+        print('FishingReportsSettingsTestCase FishingReportsSettings.report()')
+        pass
+
+
 class FishingTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):

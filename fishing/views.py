@@ -73,7 +73,8 @@ class FishingReportView(View):
                       self.template,
                       {'fisherman': getuserinfo(request),
                        'siteinfo': siteinfo(),
-                       'report': report})
+                       'report': report,
+                       'title': 'Отчет о рыбалке'})
 
 
 class TrophtReport(View):

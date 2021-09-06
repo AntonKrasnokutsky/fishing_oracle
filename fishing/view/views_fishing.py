@@ -1262,9 +1262,8 @@ class FishingNozzleAdd(View):
                 fishing_nozzle = FishingNozzle()
                 fishing_nozzle.owner = self.request.user
                 fishing_nozzle.fishing_tackle = fishing_tackle
-                fishing_nozzle.nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_id'])
                 form = FishingNozzleForm()
-            
+            fishing_nozzle.nozzle_base = get_object_or_404(NozzleBase, pk=kwargs['nozzle_id'])            
             nozzle_states = fishing_nozzle.get_nozzle_state_list()
             return render(self.request,
                           self.template,

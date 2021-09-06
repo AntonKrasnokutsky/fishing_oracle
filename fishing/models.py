@@ -578,7 +578,7 @@ class Fishing(models.Model):  # Рыбалки
         if fishing_lure_mix:
             lures = Lure.objects.filter(mix=fishing_lure_mix.lure_mix)
             if lures:
-                # print(result['lure_mix'])
+
                 result['lure_mix']['lures'] = []
                 for lure in lures:
                     result['lure_mix']['lures'].append({})
@@ -735,7 +735,7 @@ class FishingReportsSettings(models.Model):
                 break
         return self_id
     
-    def report_place(self, *args, **kwargs):
+    def __report_place(self, *args, **kwargs):
         try:
             fishing_place = FishingPlace.objects.get(fishing=kwargs['fishing'])
             report=kwargs['report']
@@ -753,7 +753,7 @@ class FishingReportsSettings(models.Model):
                 report['place']['coordinate'] = fishing_place.place.coordinates()
             del(fishing_place)
     
-    def report_weather(self, *args, **kwargs):
+    def __report_weather(self, *args, **kwargs):
         try:
             fishing_weather = FishingWeather.objects.get(fishing=kwargs['fishing'])
             weather = fishing_weather.weather
@@ -779,7 +779,7 @@ class FishingReportsSettings(models.Model):
                 report['weather']['lunar_day'] = weather.lunar_day.__str__()
         del(weather)
     
-    def report_montage(self, *args, **kwargs):
+    def __report_montage(self, *args, **kwargs):
         report = kwargs['report']
         report['tackles']['montage'] = []
         fishing_tackles = kwargs['fishing_tackles']
@@ -798,7 +798,7 @@ class FishingReportsSettings(models.Model):
         if for_delete:
             report['tackles'].pop('montage')
     
-    def report_trough(self, *args, **kwargs):
+    def __report_trough(self, *args, **kwargs):
         report = kwargs['report']
         report['tackles']['trough'] = []
         fishing_tackles = kwargs['fishing_tackles']
@@ -816,7 +816,7 @@ class FishingReportsSettings(models.Model):
         if for_delete:
             report['tackles'].pop('trough')
     
-    def report_leash(self, *args, **kwargs):
+    def __report_leash(self, *args, **kwargs):
         report = kwargs['report']
         report['tackles']['leash'] = []
         fishing_tackles = kwargs['fishing_tackles']
@@ -834,7 +834,7 @@ class FishingReportsSettings(models.Model):
         if for_delete:
             report['tackles'].pop('leash')
     
-    def report_crochet(self, *args, **kwargs):
+    def __report_crochet(self, *args, **kwargs):
         report = kwargs['report']
         report['tackles']['crochet'] = []
         fishing_tackles = kwargs['fishing_tackles']
@@ -852,17 +852,19 @@ class FishingReportsSettings(models.Model):
         if for_delete:
             report['tackles'].pop('crochet')
     
-    def report_nozzle(self, *args, **kwargs):
+    def __report_nozzle(self, *args, **kwargs):
         report = kwargs['report']
         report['tackles']['nozzle'] = []
         fishing_tackles = kwargs['fishing_tackles']
         for fishing_tackle in fishing_tackles:
+            report['tackles']['nozzle'].append([])
             try:
-                fishing_nozzle = FishingNozzle.objects.get(fishing_tackle=fishing_tackle)
+                fishing_nozzles = FishingNozzle.objects.filter(fishing_tackle=fishing_tackle)
             except:
-                report['tackles']['nozzle'].append('')
+                report['tackles']['nozzle'][len(report['tackles']['nozzle'])-1].append('')
                 continue
-            report['tackles']['nozzle'].append(fishing_nozzle.nozzle_base.__str__())
+            for fishing_nozzle in fishing_nozzles:
+                report['tackles']['nozzle'][len(report['tackles']['nozzle'])-1].append(fishing_nozzle.nozzle_base.__str__() + ' ' + str(fishing_nozzle.number) + ' шт. ' + str(fishing_nozzle.nozzle_state.state))
         for_delete = True
         for nozzle in report['tackles']['nozzle']:
             if nozzle != '':
@@ -870,7 +872,7 @@ class FishingReportsSettings(models.Model):
         if for_delete:
             report['tackles'].pop('nozzle')
     
-    def report_pace(self, *args, **kwargs):
+    def __report_pace(self, *args, **kwargs):
         report = kwargs['report']
         report['tackles']['pace'] = []
         fishing_tackles = kwargs['fishing_tackles']
@@ -888,7 +890,7 @@ class FishingReportsSettings(models.Model):
         if for_delete:
             report['tackles'].pop('pace')
     
-    def report_tackle(self, *args, **kwargs):
+    def __report_tackle(self, *args, **kwargs):
         try:
             fishing_tackles = FishingTackle.objects.filter(fishing=kwargs['fishing'])
             report = kwargs['report']
@@ -901,19 +903,20 @@ class FishingReportsSettings(models.Model):
                 for fishing_tackle in fishing_tackles:
                     report['tackles']['tackle'].append(fishing_tackle.tackle.__str__())
             if self.montage:
-                self.report_montage(report=report, fishing_tackles=fishing_tackles)
+                self.__report_montage(report=report, fishing_tackles=fishing_tackles)
             if self.trough:
-                self.report_trough(report=report, fishing_tackles=fishing_tackles)
+                self.__report_trough(report=report, fishing_tackles=fishing_tackles)
             if self.leash:
-                self.report_leash(report=report, fishing_tackles=fishing_tackles)
+                self.__report_leash(report=report, fishing_tackles=fishing_tackles)
             if self.crochet:
-                self.report_crochet(report=report, fishing_tackles=fishing_tackles)
+                self.__report_crochet(report=report, fishing_tackles=fishing_tackles)
             if self.nozzle:
-                self.report_nozzle(report=report, fishing_tackles=fishing_tackles)
+                # pass
+                self.__report_nozzle(report=report, fishing_tackles=fishing_tackles)
             if self.pace:
-                self.report_pace(report=report, fishing_tackles=fishing_tackles)
+                self.__report_pace(report=report, fishing_tackles=fishing_tackles)
     
-    def report_lure(self, *args, **kwargs):
+    def __report_lure(self, *args, **kwargs):
         try:
             fishing_luremix = FishingLureMix.objects.get(fishing=kwargs['fishing'])
             lure_mix = fishing_luremix.lure_mix
@@ -952,7 +955,7 @@ class FishingReportsSettings(models.Model):
         elif lure:
             report['lure'] = lure.__str__()
     
-    def report_fishs(self, *args, **kwargs):
+    def __report_fishs(self, *args, **kwargs):
         try:
             fishing_results = FishingResult.objects.filter(fishing=kwargs['fishing'])
             report = kwargs['report']
@@ -968,7 +971,7 @@ class FishingReportsSettings(models.Model):
                 report['fishs']['target'].append(False)
         del(fishing_results)
     
-    def report_trophys(self, *agrs, **kwargs):
+    def __report_trophys(self, *agrs, **kwargs):
         try:
             fishing_results = FishingResult.objects.filter(fishing=kwargs['fishing'])
             fishing_trophys = FishingTrophy.objects.filter(fishing=kwargs['fishing'])
@@ -998,20 +1001,20 @@ class FishingReportsSettings(models.Model):
             report['time_end'] = fishing.time_end
         if (self.place_water or self.place_name or
                 self.place_coordinate or self.place_locality):
-            self.report_place(report=report, fishing=fishing)
+            self.__report_place(report=report, fishing=fishing)
         if self.weather:
-            self.report_weather(report=report, fishing=fishing)
+            self.__report_weather(report=report, fishing=fishing)
         if (self.tackle or self.montage or
                 self.trough or self.leash or
                 self.crochet or self.nozzle or
                 self.pace):
-            self.report_tackle(report=report, fishing=fishing)
+            self.__report_tackle(report=report, fishing=fishing)
         if self.lure:
-            self.report_lure(report=report, fishing=fishing)
+            self.__report_lure(report=report, fishing=fishing)
         if self.result:
-            self.report_fishs(report=report, fishing=fishing)
+            self.__report_fishs(report=report, fishing=fishing)
         if self.trophy:
-            self.report_trophys(report=report, fishing=fishing)
+            self.__report_trophys(report=report, fishing=fishing)
         if self.note:
             report['note'] = str(fishing.note)
         return report
@@ -1325,15 +1328,21 @@ class FishingNozzle(models.Model):  # Наживки\насадки исполь
                         result = result.exclude(state = fishing_nozzle_upper.nozzle_state.state)
             else:
                 if len(fishing_nozzles) > 1:
-                    fishing_nozzle_upper = FishingNozzle.objects.get(fishing_tackle=fishing_tackle,
-                                                                        position=self.position-1)
-                    if fishing_nozzle_upper.nozzle_base == self.nozzle_base:
-                        result = result.exclude(state=fishing_nozzle_upper.nozzle_state.state)
+                    try:
+                        fishing_nozzle_upper = FishingNozzle.objects.get(fishing_tackle=fishing_tackle,
+                                                                            position=self.position-1)
+                        if fishing_nozzle_upper.nozzle_base == self.nozzle_base:
+                            result = result.exclude(state=fishing_nozzle_upper.nozzle_state.state)
+                    except:
+                        pass
                 if len(fishing_nozzles) > self.position:
-                    fishing_nozzle_down = FishingNozzle.objects.get(fishing_tackle=fishing_tackle,
-                                                                    position=self.position+1)
-                    if fishing_nozzle_down.nozzle_base == self.nozzle_base:
-                        result = result.exclude(state=fishing_nozzle_down.nozzle_state.state)
+                    try:
+                        fishing_nozzle_down = FishingNozzle.objects.get(fishing_tackle=fishing_tackle,
+                                                                        position=self.position+1)
+                        if fishing_nozzle_down.nozzle_base == self.nozzle_base:
+                            result = result.exclude(state=fishing_nozzle_down.nozzle_state.state)
+                    except:
+                        pass
         else:
             return result
         return result
