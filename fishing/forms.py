@@ -498,10 +498,12 @@ class FishingResultForm(forms.ModelForm):
         number_of_fish = self.cleaned_data.get('number_of_fish')
         fish_weight = self.cleaned_data.get('fish_weight')
         is_target = self.cleaned_data.get('target')
+        print(number_of_fish)
+        print(fish_weight)
         if fish == None:
             self.add_error('fish', fishing_result_fish_not_select)
         
-        if (number_of_fish and fish_weight) == None :
+        if number_of_fish == None and fish_weight == None :
             if not is_target:
                 self.add_error('number_of_fish', fishing_result_number_of_fish_is_empty)
         

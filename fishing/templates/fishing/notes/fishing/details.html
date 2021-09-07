@@ -510,6 +510,13 @@
 </p>
 {% endfor %}
 
+{% if details.average_weight %}
+  <p>
+    <strong>Средний вес рыбы в улове: </strong> {{details.average_weight}}
+  </p>
+{% endif %}
+
+
 <p><strong>Трофеи:</strong><a href="{% url 'fishing:fish_trophy_add' details.id %}"><img class="button__img" src="{% static 'images/add.png' %}" alt="Add"></a></p>
 {% for trophy in details.trophys %}
   <p>

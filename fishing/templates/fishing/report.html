@@ -307,6 +307,11 @@
               {% endif %}
             </p>
           {% endfor %}
+          {% if report.average_weight %}
+            <p>
+              <strong>Средни вес рыбы в улове: </strong> {{report.average_weight}}
+            </p>
+          {% endif %}
         </td>
       {% endif %}
       {% if report.trophys %}
