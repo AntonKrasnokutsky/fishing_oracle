@@ -4,9 +4,6 @@
 
 <div class="errors">
   <div class="errors__inner">
-    <div class="errors__item">
-      <p>{{ errors }}</p>
-    </div>
     {% for error in form.non_field_errors %}
       <div class="errors__item">
         <p>{{ error }}</p>
@@ -51,7 +48,7 @@
       <td>{{ form.number_of_fish.label_tag }}</td>
       <td>
         <label class="textareaContainer textareaContainer--right8">
-          <input class="content__input" type="number" min="0" step="1" name="number_of_fish" id="id_number_of_fish" value={{ form.number_of_fish.value|default_if_none:"0" }}>
+          <input class="content__input" type="number" min="0" step="1" name="number_of_fish" id="id_number_of_fish" value={{ form.number_of_fish.value|default_if_none:"" }}>
         </label>
       </td>
     </tr>

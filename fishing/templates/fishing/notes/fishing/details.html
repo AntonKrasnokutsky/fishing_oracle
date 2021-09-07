@@ -487,11 +487,19 @@
     {% if result.target %}
       <img class="content__img" src="{% static 'images/target.png' %}" alt="Целевая" title="Целевая рыба">
     {% endif %}
-    {{ result.fish }}:
-    {{ result.number_of_fish }} шт.
+    {{ result.fish }}
+    {% if result.number_of_fish or result.fish_weight %}
+    :
+    {% if result.number_of_fish %}
+      {{ result.number_of_fish }}
+    {% endif %}
     {% if result.fish_weight %}
       общим весом:
-      {{ result.fish_weight }} кг.
+      {{ result.fish_weight }}
+    {% endif %}
+    {% endif %}
+    {% if result.average_weight %}
+      <strong>Средний вес: </strong> {{ result.average_weight }}
     {% endif %}
     <a href="{% url 'fishing:fishing_result_edit' details.id result.id %}">
       <img class="button__img" src="{% static 'images/edit.png' %}" alt="Edit">

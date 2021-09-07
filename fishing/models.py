@@ -622,9 +622,12 @@ class Fishing(models.Model):  # Рыбалки
                 result['results'].append({})
                 result['results'][len(result['results'])-1]['id'] = fishing_result.id
                 result['results'][len(result['results'])-1]['fish'] = str(fishing_result.fish)
-                result['results'][len(result['results'])-1]['number_of_fish'] = str(fishing_result.number_of_fish) if fishing_result.number_of_fish else None
-                result['results'][len(result['results'])-1]['fish_weight'] = str(fishing_result.fish_weight) if fishing_result.fish_weight else None
+                result['results'][len(result['results'])-1]['number_of_fish'] = (str(fishing_result.number_of_fish) + ' шт.') if fishing_result.number_of_fish else None
+                result['results'][len(result['results'])-1]['fish_weight'] = (str(fishing_result.fish_weight) + ' кг.') if fishing_result.fish_weight else None
                 result['results'][len(result['results'])-1]['target'] = fishing_result.target
+                if fishing_result.fish_weight and fishing_result.number_of_fish:
+                    result['results'][len(result['results'])-1]['average_weight'] = str(fishing_result.fish_weight / fishing_result.number_of_fish) + ' кг.'
+                else: result['results'][len(result['results'])-1]['average_weight'] = None
         else:
             result['results'] = None
     
@@ -911,7 +914,6 @@ class FishingReportsSettings(models.Model):
             if self.crochet:
                 self.__report_crochet(report=report, fishing_tackles=fishing_tackles)
             if self.nozzle:
-                # pass
                 self.__report_nozzle(report=report, fishing_tackles=fishing_tackles)
             if self.pace:
                 self.__report_pace(report=report, fishing_tackles=fishing_tackles)
@@ -960,15 +962,18 @@ class FishingReportsSettings(models.Model):
             fishing_results = FishingResult.objects.filter(fishing=kwargs['fishing'])
             report = kwargs['report']
             report['fishs'] = {'fish': [],
-                               'target': []}
+                               'target': [],
+                               'average_weight': []}
         except:
             fishing_results = False
         if fishing_results:
             for fishing_result in fishing_results:
                 report['fishs']['fish'].append(fishing_result.__str__())
-                if fishing_result.target:
-                    report['fishs']['target'].append(True)
-                report['fishs']['target'].append(False)
+                report['fishs']['target'].append(fishing_result.target)
+                if fishing_result.fish_weight and fishing_result.number_of_fish:
+                    report['fishs']['average_weight'].append(str(fishing_result.fish_weight / fishing_result.number_of_fish) + ' кг.')
+                else:
+                    report['fishs']['average_weight'].append(None)
         del(fishing_results)
     
     def __report_trophys(self, *agrs, **kwargs):

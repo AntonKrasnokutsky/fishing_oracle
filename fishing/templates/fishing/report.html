@@ -302,6 +302,9 @@
                 <img class="content__img" src="{% static 'images/target.png' %}" alt="Целевая" title="Целевая рыба">
               {% endif %}
               {{report.fishs.fish|get_element:id_element}}
+              {% if report.fishs.average_weight|get_element:id_element %}
+                <strong>Средний вес: </strong>{{report.fishs.average_weight|get_element:id_element}}
+              {% endif %}
             </p>
           {% endfor %}
         </td>

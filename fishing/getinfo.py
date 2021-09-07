@@ -15,8 +15,8 @@ def siteinfo():
     fish = 0
     fish_weight = 0
     for fishingresult in fishingresults:
-        fish += fishingresult.number_of_fish
-        fish_weight += fishingresult.fish_weight
+        fish += fishingresult.number_of_fish if fishingresult.number_of_fish else 0
+        fish_weight += fishingresult.fish_weight if fishingresult.fish_weight else 0
     result['fish'] = fish
     result['fish_weight'] = fish_weight
     fishingtrophi = FishingTrophy.objects.all()
@@ -42,8 +42,8 @@ def getuserinfo(request):
         fish = 0
         fish_weight = 0
         for fishingresult in fishingresults:
-            fish += fishingresult.number_of_fish
-            fish_weight += fishingresult.fish_weight
+            fish += fishingresult.number_of_fish if fishingresult.number_of_fish else 0
+            fish_weight += fishingresult.fish_weight if fishingresult.fish_weight else 0
         result_dict['fish'] = fish
         result_dict['fish_weight'] = fish_weight
         fishingtrophi = FishingTrophy.objects.filter(owner=request.user)

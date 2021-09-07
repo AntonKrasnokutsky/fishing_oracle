@@ -1,7 +1,7 @@
 {% extends 'fishing/base.html' %}
 {% block content %}
 
-<div class="content__item">
+
   <div class="errors">
     <div class="errors__inner">
       {% for error in form.name.errors %}
@@ -31,5 +31,5 @@
       <a class="button__std" href="{% url 'fishing:fishing_details' fishing.id %}">Назад</a>
     </div>
   </form>
-</div>
+
 {% endblock %}

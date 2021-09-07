@@ -3,13 +3,8 @@
 {% block content %}
 {% load static %}
 
-<div class="content__item">
-
   <div class="errors">
     <div class="errors__inner">
-      <div class="errors__item">
-        <p>{{ errors }}</p>
-      </div>
       {% for error in form.non_field_errors %}
         <div class="errors__item">
           <p>{{ error }}</p>
@@ -83,5 +78,4 @@
       <a class="button__std  button__std--center" href="{% url 'fishing:fishing' %}">Назад</a>
     </div>
   </form>
-</div>
 {% endblock %}

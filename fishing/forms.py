@@ -62,7 +62,7 @@ time_start_more_time_end = 'Время окончания рыбалки дол�
 
 # FishingResultFormErrors
 fishing_result_fish_not_select = 'Выбирете рыбу'
-fishing_result_number_of_fish_is_empty = 'Укажите количество рыб'
+fishing_result_number_of_fish_is_empty = 'Рыба не целевая. Укажите количество или вес рыб'
 
 # FishingTrophyFormErrors
 fishing_trophy_fish_is_empty = 'Выберите рыбу'
@@ -491,14 +491,17 @@ class FishingResultForm(forms.ModelForm):
         fields = ['fish', 'number_of_fish', 'fish_weight', 'target', ]
     
     def clean(self):
+        super().clean()
         fish = self.cleaned_data.get('fish')
         number_of_fish = self.cleaned_data.get('number_of_fish')
-
+        fish_weight = self.cleaned_data.get('fish_weight')
+        is_target = self.cleaned_data.get('target')
         if fish == None:
             self.add_error('fish', fishing_result_fish_not_select)
         
-        if number_of_fish == None:
-            self.add_error('number_of_fish', fishing_result_number_of_fish_is_empty)
+        if (number_of_fish and fish_weight) == None :
+            if not is_target:
+                self.add_error('number_of_fish', fishing_result_number_of_fish_is_empty)
         
         return super().clean()
 
