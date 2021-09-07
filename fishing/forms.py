@@ -71,7 +71,9 @@ fishing_trophy_weight_is_empty = 'Укажите вес трофея'
 # LeashFormErrors
 leash_material_empty = 'Укажите материал поводка'
 leash_diameter_empty = 'Укажите диаметр поводка'
+leash_diameter_zero = 'Диаметр должен быть больше 0'
 leash_length_empty = 'Укажите длину поводка'
+leash_length_zero = 'Длина должна быть больше 0'
 leash_no_valid_char_error = 'Название поводочного материала' + no_valid_char_error_end
 
 # LureFormErrors
@@ -541,8 +543,14 @@ class LeashForm(forms.ModelForm):
         if diameter == None:
             self.add_error('diameter', leash_diameter_empty)
         
+        if diameter <= 0:
+            self.add_error('diameter', leash_diameter_zero)
+            
         if length == None:
             self.add_error('length', leash_length_empty)
+        
+        if length <=0:
+            self.add_error('length', leash_length_zero)
         
         for no_valid_char in no_valid_char_list:
             if material.startswith(no_valid_char) or material.endswith(no_valid_char):
