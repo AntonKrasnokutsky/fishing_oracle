@@ -2009,6 +2009,7 @@ class FishingNewLureMixFillingNozzleAdd(View):
         return render(self.request,
                       self.template)
 
+
 class FishingLureMixAdd(View):
     """
     Добавляет выбраную прикормочную смесь в рыбалку
@@ -2067,7 +2068,7 @@ class FishingResultAdd(View):
                 fishing_result.save()
                 return redirect('fishing:fishing_details', fishing.id)
             else:
-                fishs = Fish.objects.all()
+                fishs = fishing.get_fish_for_result()
                 return render(request,
                               self.template,
                               {'fisherman': getuserinfo(request),
@@ -2081,7 +2082,7 @@ class FishingResultAdd(View):
         fishing = get_object_or_404(Fishing, pk=kwargs['fishing_id'])
         if fishing.owner == request.user:
             form = FishingResultForm()
-            fishs = Fish.objects.all()
+            fishs = fishing.get_fish_for_result()
             return render(request,
                           self.template,
                           {'fisherman': getuserinfo(request),

@@ -14,6 +14,7 @@ class FishTestCase(TestCase):
         fish.save()
         self.assertEqual(fish.name, 'Карась')
 
+
 class FishingDetailsTestCase(TestCase):
     maxDiff = None
     
@@ -368,6 +369,8 @@ class FishingTestCase(TestCase):
                                  password='foo',
                                  nick='second')
         Fish.objects.create(name='карась')
+        Fish.objects.create(name='лещ')
+        Fish.objects.create(name='окунь')
     
     def setUp(self):
         User = get_user_model()
@@ -415,6 +418,22 @@ class FishingTestCase(TestCase):
         fishing.save()
         fishing = Fishing.objects.get(owner=user)
         fishing.set_planned()
+    
+    def test_get_fish_for_result(self):
+        print('FishingTestCase Fishing.get_trophys_report()')
+        User = get_user_model()
+        user = User.objects.get(email='normal@user.com')
+        fishing = Fishing.objects.get(owner=user)
+        result = Fish.objects.all()
+        self.assertQuerysetEqual(fishing.get_fish_for_result(), result)
+        fish = Fish.objects.get(name='карась')
+        result = result.exclude(name='карась')
+        FishingResult.objects.create(owner=user,
+                                     fishing=fishing,
+                                     fish=fish,
+                                     number_of_fish=1,
+                                     fish_weight=1)
+        self.assertQuerysetEqual(fishing.get_fish_for_result(), result)
     
     def test_fishing_get_trophy_report(self):
         print('FishingTestCase Fishing.get_trophys_report()')
@@ -505,7 +524,7 @@ class FishingTestCase(TestCase):
         result['weight'].append('2.20')
         result['target'].append(True)
         self.assertEqual(fishing.get_trophy(), result)
-        
+
 
 class TackleTestCase(TestCase):
     def setUp(self):
@@ -628,10 +647,8 @@ class FishingNozzleTestCase(TestCase):
         fishing_nozzle = FishingNozzle.objects.get(nozzle_base=NozzleBase.objects.get(name='Червь'))
         self.assertEqual(fishing_nozzle.position, 3)
         fishing_nozzle = FishingNozzle.objects.get(nozzle_base=NozzleBase.objects.get(name='Мотыль'))
-        print(fishing_nozzle.position)
         fishing_nozzle.set_position()
         fishing_nozzle.save()
-        print(fishing_nozzle.position)
         self.assertEqual(fishing_nozzle.position, 2)
     
     def test_reindexing_position(self):

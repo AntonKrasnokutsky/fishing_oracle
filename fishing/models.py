@@ -426,6 +426,17 @@ class Fishing(models.Model):  # Рыбалки
             return False
         return fishing_lure_mix.lure_mix
 
+    def get_fish_for_result(self, *args, **kwargs):
+        fishing_results = FishingResult.objects.filter(fishing=self.id)
+        if fishing_results:
+            result = Fish.objects.all()
+            for fishing_result in fishing_results:
+                if fishing_result.fish in result:
+                    result = result.exclude(name=fishing_result.fish.name)
+        else:
+            result = Fish.objects.all()
+        return result
+
     def get_fish_for_trophy(self, *args, **kwargs):
         result = []
         fishing_results = FishingResult.objects.filter(fishing=self)
